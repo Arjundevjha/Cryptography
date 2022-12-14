@@ -1,3 +1,4 @@
+#plugboard
 class Plugboard:
     
     def __init__(self, pairs):
