@@ -1,18 +1,13 @@
 #Enigma machine logic
 class Enigma:
     
-    def __init__(self, re, r1, r2, r3, r4, r5, r6, r7, r8, pb, kb):
+    def __init__(self, re, r1, r2, r3, pb, kb):
         self.re = re
         self.r1 = r1
         self.r2 = r2
         self.r3 = r3
-        self.r4 = r4
-        self.r3 = r5
-        self.r6 = r6
-        self.r7 = r7
-        self.r8 = r8
-        self.pb = pb
         self.kb = kb
+        self.pb = pb
 
     def set_rings(self, rings):
         self.r1.set_ring(rings[0])
