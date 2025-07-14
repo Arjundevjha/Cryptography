@@ -35,7 +35,8 @@ ENIGMA.set_rings((5, 26, 2))
 ENIGMA.set_key("CAT")
 
 #encipher a message
-message = "HELLO THERE"
+message = input("Enter the message to encipher: ").upper()
+message = message.replace(" ", "").replace(",", "").replace(".", "")
 cipher_text = ""
 for letter in message:
     cipher_text = cipher_text + ENIGMA.encipher(letter)
