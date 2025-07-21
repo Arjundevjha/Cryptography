@@ -15,11 +15,6 @@ class Rotor:
         signal = self.right.find(letter)
         return signal
     
-    def show():
-        print(self.left)
-        print(self.right)
-        print("")
-    
     def rotate(self, n=1, forward=True):
         for i in range(n):
             if forward:
