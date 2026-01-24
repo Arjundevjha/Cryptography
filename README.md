@@ -41,6 +41,8 @@ Cryptography/
 ├── web/                     # Future web interface (in development)
 └── LICENSE
 ```
+# In the future we plan on making this a fulll library that will be used by others. Kindly contribute if possible.
+
 
 ## Quick Start
 
