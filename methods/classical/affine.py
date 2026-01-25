@@ -67,5 +67,7 @@ if __name__ == "__main__":
     encrypted = encrypt(message, a_key, b_key)
     decrypted = decrypt(encrypted, a_key, b_key)
     print(f"Original: {message}")
+    print(f"Key-A: {a_key}")
+    print(f"Key-B: {b_key}")
     print(f"Encrypted: {encrypted}")
     print(f"Decrypted: {decrypted}")
