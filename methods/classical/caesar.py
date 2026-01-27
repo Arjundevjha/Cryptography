@@ -1,13 +1,44 @@
 import string
 
-plain_text = input("Please enter in your plain text: ")
-shift = 3
-shift %= 26
+def pick_keys() -> int:
+    """Generate a random shift key for Caesar cipher (1-25)."""
+    import random
+    return random.randint(1, 25)
 
-alphabet = string.ascii_lowercase
-shifted = alphabet[shift:] + alphabet[:shift]
-table = str.maketrans(alphabet, shifted)
+def encrypt(plaintext: str, shift: int) -> str:
+    """
+    Encrypt plaintext using Caesar cipher.
+    
+    Each letter is shifted forward by the shift amount in the alphabet.
+    Non-alphabetic characters are preserved.
+    """
+    shift = shift % 26
+    alphabet = string.ascii_lowercase
+    shifted = alphabet[shift:] + alphabet[:shift]
+    table = str.maketrans(alphabet + alphabet.upper(), 
+                          shifted + shifted.upper())
+    return plaintext.translate(table)
 
-encrypted = plain_text.translate(table)
+def decrypt(ciphertext: str, shift: int) -> str:
+    """
+    Decrypt ciphertext using Caesar cipher.
+    
+    Each letter is shifted backward by the shift amount in the alphabet.
+    Non-alphabetic characters are preserved.
+    """
+    # Decryption is just encryption with the inverse shift
+    return encrypt(ciphertext, 26 - shift)
 
-print(encrypted)
+def main():
+    message = input("Please enter a message: ")
+    shift = pick_keys()
+    encrypted = encrypt(message, shift)
+    decrypted = decrypt(encrypted, shift)
+    
+    print(f"Original: {message}")
+    print(f"Shift: {shift}")
+    print(f"Encrypted: {encrypted}")
+    print(f"Decrypted: {decrypted}")
+
+if __name__ == "__main__":
+    main()
