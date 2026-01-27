@@ -1,29 +1,66 @@
-def substitutionCipher(plaintext, key):
-  # Create a variable to store the ciphertext
-  ciphertext = ""
+import random
+import string
 
-  # Loop through each character in the plaintext
-  for i in range(len(plaintext)):
-    # Get the current character
-    char = plaintext[i]
+def pick_keys() -> dict:
+    """
+    Generate a random substitution key mapping each letter to another.
+    
+    Returns a dictionary mapping each lowercase letter to a unique substitute.
+    """
+    alphabet = list(string.ascii_lowercase)
+    shuffled = alphabet.copy()
+    random.shuffle(shuffled)
+    return dict(zip(alphabet, shuffled))
 
-    # Check if the character is a letter
-    if char >= "a" and char <= "z":
-      # Replace the character with the corresponding number in the key
-      char = key[char]
+def _invert_key(key: dict) -> dict:
+    """Create inverse mapping for decryption."""
+    return {v: k for k, v in key.items()}
 
-    # Add the character to the ciphertext
-    ciphertext += char
+def encrypt(plaintext: str, key: dict) -> str:
+    """
+    Encrypt plaintext using substitution cipher.
+    
+    Each letter is replaced according to the key mapping.
+    Non-alphabetic characters are preserved.
+    """
+    ciphertext = ""
+    for char in plaintext:
+        if char.lower() in key:
+            substituted = key[char.lower()]
+            # Preserve original case
+            ciphertext += substituted.upper() if char.isupper() else substituted
+        else:
+            ciphertext += char
+    return ciphertext
 
-  # Return the ciphertext
-  return ciphertext
+def decrypt(ciphertext: str, key: dict) -> str:
+    """
+    Decrypt ciphertext using substitution cipher.
+    
+    Each letter is replaced according to the inverse key mapping.
+    Non-alphabetic characters are preserved.
+    """
+    inverse_key = _invert_key(key)
+    plaintext = ""
+    for char in ciphertext:
+        if char.lower() in inverse_key:
+            substituted = inverse_key[char.lower()]
+            # Preserve original case
+            plaintext += substituted.upper() if char.isupper() else substituted
+        else:
+            plaintext += char
+    return plaintext
 
-# Define the key (the numbers "1234567890" corresponding to the letters "abcdefghij")
-key = "1234567890"
+def main():
+    message = input("Please enter a message: ")
+    key = pick_keys()
+    encrypted = encrypt(message, key)
+    decrypted = decrypt(encrypted, key)
+    
+    print(f"Original: {message}")
+    print(f"Key: {''.join(key.values())}")
+    print(f"Encrypted: {encrypted}")
+    print(f"Decrypted: {decrypted}")
 
-# Encrypt the plaintext "hello world" using the substitution cipher
-ciphertext = substitutionCipher("hello world", key)
-
-# Print the ciphertext
-print(ciphertext) # "8512121543 815121"
-
+if __name__ == "__main__":
+    main()
