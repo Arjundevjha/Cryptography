@@ -1,5 +1,4 @@
-"""
-Cryptography Methods Package
+"""Cryptography Methods Package
 
 This package contains various cryptographic algorithm implementations
 organized by era and type.

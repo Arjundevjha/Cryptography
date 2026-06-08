@@ -1,9 +1,16 @@
+"""Keyboard component for Enigma machine."""
+
 class Keyboard:
-    
+    """Keyboard simulator for Enigma machine."""
+
+    def __init__(self):
+        """Initialize the keyboard layout."""
+        self.alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
     def forward(self, letter):
-        signal = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(letter)
-        return signal
-    
+        """Map a letter to its alphabetical signal index (0-25)."""
+        return self.alphabet.find(letter)
+
     def backward(self, signal):
-        letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[signal]
-        return letter
+        """Map an alphabetical signal index (0-25) back to a letter."""
+        return self.alphabet[signal]

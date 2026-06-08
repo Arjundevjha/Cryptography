@@ -1,10 +1,12 @@
-from keyboard import Keyboard
-from rotor import Rotor
-from plugboard import Plugboard
-from reflector import Reflector
-from enigma import Enigma
+"""Main simulation runner for the Enigma machine."""
 
-#enigma components
+from .keyboard import Keyboard
+from .rotor import Rotor
+from .plugboard import Plugboard
+from .reflector import Reflector
+from .enigma import Enigma
+
+# enigma components
 I = Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q")
 II = Rotor("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W")
 III = Rotor("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V")
@@ -13,28 +15,28 @@ V = Rotor("VZBRGITYUPSDNHLXAWMJQOFECK", "Z")
 VI = Rotor("JPGVOUMFYQBENHZRDKASXLICTW", "M")
 VII = Rotor("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z")
 VIII = Rotor("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
-Beta = Reflector("LEYJVCNIXWPBQMDRTAKZGFUHOS")
-Gamma = Reflector("FSOKANUERHMBTIYCWLQPZXVGJD")
+BETA = Reflector("LEYJVCNIXWPBQMDRTAKZGFUHOS")
+GAMMA = Reflector("FSOKANUERHMBTIYCWLQPZXVGJD")
 A = Reflector("EJMZALYXVBWFCRQUONTSPIKHGD")
 B = Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT")
 C = Reflector("FVPJIAOYEDRZXWGCTKUQSBNMHL")
-B_thin = Reflector("ENKQAUYWJICOPBLMDXZVFTHRGS")
-C_thin = Reflector("RDOBJNTKVEHMLFCWZAXGYIPSUQ")
+B_THIN = Reflector("ENKQAUYWJICOPBLMDXZVFTHRGS")
+C_THIN = Reflector("RDOBJNTKVEHMLFCWZAXGYIPSUQ")
 
-#keaybard and plugboard
+# keyboard and plugboard
 KB = Keyboard()
 PB = Plugboard(["AB", "CD", "EF"])
 
-#define enigma machine
-ENIGMA = Enigma(B,IV,II,I,PB,KB)
+# define enigma machine
+ENIGMA = Enigma(B, [IV, II, I], PB, KB)
 
-#set the rings
+# set the rings
 ENIGMA.set_rings((5, 26, 2))
 
-#set message key
+# set message key
 ENIGMA.set_key("CAT")
 
-#encipher a message
+# encipher a message
 message = input("Enter the message to encipher: ").upper()
 message = message.replace(" ", "").replace(",", "").replace(".", "")
 cipher_text = ""

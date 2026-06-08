@@ -1,10 +1,11 @@
+"""Substitution cipher implementation."""
+
 import random
 import string
 
 def pick_keys() -> dict:
-    """
-    Generate a random substitution key mapping each letter to another.
-    
+    """Generate a random substitution key mapping each letter to another.
+
     Returns a dictionary mapping each lowercase letter to a unique substitute.
     """
     alphabet = list(string.ascii_lowercase)
@@ -17,9 +18,8 @@ def _invert_key(key: dict) -> dict:
     return {v: k for k, v in key.items()}
 
 def encrypt(plaintext: str, key: dict) -> str:
-    """
-    Encrypt plaintext using substitution cipher.
-    
+    """Encrypt plaintext using substitution cipher.
+
     Each letter is replaced according to the key mapping.
     Non-alphabetic characters are preserved.
     """
@@ -34,9 +34,8 @@ def encrypt(plaintext: str, key: dict) -> str:
     return ciphertext
 
 def decrypt(ciphertext: str, key: dict) -> str:
-    """
-    Decrypt ciphertext using substitution cipher.
-    
+    """Decrypt ciphertext using substitution cipher.
+
     Each letter is replaced according to the inverse key mapping.
     Non-alphabetic characters are preserved.
     """
@@ -52,11 +51,12 @@ def decrypt(ciphertext: str, key: dict) -> str:
     return plaintext
 
 def main():
+    """Run an interactive test of the substitution cipher."""
     message = input("Please enter a message: ")
     key = pick_keys()
     encrypted = encrypt(message, key)
     decrypted = decrypt(encrypted, key)
-    
+
     print(f"Original: {message}")
     print(f"Key: {''.join(key.values())}")
     print(f"Encrypted: {encrypted}")
