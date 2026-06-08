@@ -1,3 +1,10 @@
+"""Vigenere cipher implementation."""
+
+import random
+import string
+
+MODE_ENCRYPT = 'encrypt'
+
 def _pad_key(text: str, key: str) -> str:
     """Pad the key to match the length of the text, cycling through key characters."""
     padded_key = ''
@@ -10,7 +17,7 @@ def _pad_key(text: str, key: str) -> str:
             padded_key += ' '
     return padded_key
 
-def _encrypt_decrypt_char(text_char: str, key_char: str, mode: str = 'encrypt') -> str:
+def _encrypt_decrypt_char(text_char: str, key_char: str, mode: str = MODE_ENCRYPT) -> str:
     """Encrypt or decrypt a single character using the Vigenère method."""
     if text_char.isalpha():
         first_alphabet_letter = 'a'
@@ -20,7 +27,7 @@ def _encrypt_decrypt_char(text_char: str, key_char: str, mode: str = 'encrypt') 
         old_char_position = ord(text_char) - ord(first_alphabet_letter)
         key_char_position = ord(key_char.lower()) - ord('a')
 
-        if mode == 'encrypt':
+        if mode == MODE_ENCRYPT:
             new_char_position = (old_char_position + key_char_position) % 26
         else:
             new_char_position = (old_char_position - key_char_position + 26) % 26
@@ -28,29 +35,24 @@ def _encrypt_decrypt_char(text_char: str, key_char: str, mode: str = 'encrypt') 
     return text_char
 
 def pick_keys() -> str:
-    """Prompt user for a key or generate a random one."""
-    import random
-    import string
-    # Generate a random 5-letter key
+    """Generate a random 5-letter key."""
     return ''.join(random.choices(string.ascii_lowercase, k=5))
 
 def encrypt(plaintext: str, key: str) -> str:
-    """
-    Encrypt plaintext using Vigenère cipher.
-    
+    """Encrypt plaintext using Vigenère cipher.
+
     Each letter is shifted by the corresponding key letter position.
     Non-alphabetic characters are preserved.
     """
     ciphertext = ''
     padded_key = _pad_key(plaintext, key)
     for plaintext_char, key_char in zip(plaintext, padded_key):
-        ciphertext += _encrypt_decrypt_char(plaintext_char, key_char, mode='encrypt')
+        ciphertext += _encrypt_decrypt_char(plaintext_char, key_char, mode=MODE_ENCRYPT)
     return ciphertext
 
 def decrypt(ciphertext: str, key: str) -> str:
-    """
-    Decrypt ciphertext using Vigenère cipher.
-    
+    """Decrypt ciphertext using Vigenère cipher.
+
     Each letter is shifted back by the corresponding key letter position.
     Non-alphabetic characters are preserved.
     """
@@ -61,15 +63,14 @@ def decrypt(ciphertext: str, key: str) -> str:
     return plaintext
 
 def main():
+    """Run an interactive test of the Vigenère cipher."""
     message = input("Please enter a message: ")
-    key = input("Please enter a key (or press Enter for random): ")
-    
-    if not key:
+    if not (key := input("Please enter a key (or press Enter for random): ")):
         key = pick_keys()
-    
+
     encrypted = encrypt(message, key)
     decrypted = decrypt(encrypted, key)
-    
+
     print(f"Original: {message}")
     print(f"Key: {key}")
     print(f"Encrypted: {encrypted}")
