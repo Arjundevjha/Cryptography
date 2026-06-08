@@ -4,15 +4,17 @@ This module provides functionality for generating RSA public/private key pairs
 without external dependencies.
 """
 
-import base64
-import hashlib
-import json
 import random
 
 try:
     from .symmetric import encrypt, generate_iv
 except ImportError:
     from symmetric import encrypt, generate_iv
+
+try:
+    from .helpers import b64encode, sha256
+except ImportError:
+    from helpers import b64encode, sha256
 
 PRIME_BITS = 512
 RSA_EXPONENT = 65537
@@ -76,18 +78,16 @@ def generate_keypair(
     phi = (p - 1) * (q - 1)
     d = pow(public_exponent, -1, phi)
 
-    pub_b64 = base64.b64encode(
-        json.dumps({"n": n, "e": public_exponent}).encode('utf-8')
-    ).decode('utf-8')
+    pub_str = f"{n}:{public_exponent}"
+    pub_b64 = b64encode(pub_str.encode('utf-8'))
     public_key_pem = (
         f"-----BEGIN RSA PUBLIC KEY-----\n"
         f"{pub_b64}\n"
         f"-----END RSA PUBLIC KEY-----\n"
     ).encode('utf-8')
 
-    priv_b64 = base64.b64encode(
-        json.dumps({"n": n, "e": public_exponent, "d": d, "p": p, "q": q}).encode('utf-8')
-    ).decode('utf-8')
+    priv_str = f"{n}:{public_exponent}:{d}:{p}:{q}"
+    priv_b64 = b64encode(priv_str.encode('utf-8'))
     private_key_pem = (
         f"-----BEGIN RSA PRIVATE KEY-----\n"
         f"{priv_b64}\n"
@@ -113,13 +113,13 @@ def generate_encrypted_keypair(
     """
     public_key_pem, private_key_pem = generate_keypair(key_size, public_exponent)
 
-    # Derive AES-256 key from passphrase using SHA-256
-    aes_key = hashlib.sha256(passphrase).digest()
+    # Derive AES-256 key from passphrase using SHA-256 helper
+    aes_key = sha256(passphrase)
     iv = generate_iv()
     enc_priv = encrypt(private_key_pem.decode('utf-8'), aes_key, iv)
 
     enc_payload = iv + enc_priv
-    enc_b64 = base64.b64encode(enc_payload).decode('utf-8')
+    enc_b64 = b64encode(enc_payload)
 
     enc_private_key_pem = (
         f"-----BEGIN ENCRYPTED RSA PRIVATE KEY-----\n"

@@ -4,14 +4,15 @@ This module provides RSA encryption and decryption using custom serialized keys.
 No external libraries are used.
 """
 
-import base64
-import hashlib
-import json
-
 try:
     from .symmetric import decrypt as aes_decrypt
 except ImportError:
     from symmetric import decrypt as aes_decrypt
+
+try:
+    from .helpers import b64decode, sha256
+except ImportError:
+    from helpers import b64decode, sha256
 
 try:
     from .keypair import generate_keypair, generate_encrypted_keypair
@@ -21,12 +22,12 @@ except ImportError:
 # Size constants
 IV_SIZE = 16
 
-def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> dict:
-    """Helper to strip PEM wrapping and parse base64 JSON payload."""
+def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
+    """Helper to strip PEM wrapping, decode base64, and split by colon."""
     pem_str = pem_bytes.decode('utf-8').strip()
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
-    decoded = base64.b64decode(payload.encode('utf-8')).decode('utf-8')
-    return json.loads(decoded)
+    decoded = b64decode(payload).decode('utf-8')
+    return [int(val) for val in decoded.split(":")]
 
 def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     """Decrypt an encrypted private key PEM using the passphrase."""
@@ -35,11 +36,11 @@ def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     footer = "-----END ENCRYPTED RSA PRIVATE KEY-----"
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
 
-    raw_payload = base64.b64decode(payload.encode('utf-8'))
+    raw_payload = b64decode(payload)
     iv = raw_payload[:IV_SIZE]
     ciphertext = raw_payload[IV_SIZE:]
 
-    aes_key = hashlib.sha256(passphrase).digest()
+    aes_key = sha256(passphrase)
     decrypted_pem = aes_decrypt(ciphertext, aes_key, iv)
     return decrypted_pem.encode('utf-8')
 
@@ -53,13 +54,13 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     Returns:
         Ciphertext bytes
     """
-    key_dict = _parse_pem(
+    key_params = _parse_pem(
         public_key_pem,
         "-----BEGIN RSA PUBLIC KEY-----",
         "-----END RSA PUBLIC KEY-----"
     )
-    n = key_dict["n"]
-    e = key_dict["e"]
+    n = key_params[0]
+    e = key_params[1]
 
     msg_bytes = message.encode('utf-8')
     if (m := int.from_bytes(msg_bytes, byteorder='big')) >= n:
@@ -79,13 +80,13 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     Returns:
         Decrypted plaintext string
     """
-    key_dict = _parse_pem(
+    key_params = _parse_pem(
         private_key_pem,
         "-----BEGIN RSA PRIVATE KEY-----",
         "-----END RSA PRIVATE KEY-----"
     )
-    n = key_dict["n"]
-    d = key_dict["d"]
+    n = key_params[0]
+    d = key_params[2]
 
     c = int.from_bytes(ciphertext, byteorder='big')
     m = pow(c, d, n)
