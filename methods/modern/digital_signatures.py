@@ -1,8 +1,15 @@
-"""HMAC digital signatures module."""
+"""HMAC digital signatures module in pure Python.
 
-import hashlib
-import hmac
+No external libraries or standard hashlib/hmac libraries are used.
+"""
+
 import os
+try:
+    from .helpers import hmac_sha256
+except ImportError:
+    from helpers import hmac_sha256
+
+ALGORITHM_NAME = "sha256"
 
 def generate_key(length: int = 32) -> bytes:
     """Generate a random key for HMAC signing.
@@ -26,9 +33,9 @@ def create_hmac(data: bytes, key: bytes, algorithm: str = 'sha256') -> str:
     Returns:
         HMAC digest as hexadecimal string
     """
-    hash_func = getattr(hashlib, algorithm)
-    h = hmac.new(key, data, hash_func)
-    return h.hexdigest()
+    if algorithm != ALGORITHM_NAME:
+        raise ValueError("Only sha256 is supported in this pure Python implementation")
+    return hmac_sha256(key, data).hex()
 
 def verify_hmac(data: bytes, key: bytes, expected: str, algorithm: str = 'sha256') -> bool:
     """Verify an HMAC signature against expected value.
@@ -43,21 +50,26 @@ def verify_hmac(data: bytes, key: bytes, expected: str, algorithm: str = 'sha256
         True if signature matches, False otherwise
     """
     computed = create_hmac(data, key, algorithm)
-    return hmac.compare_digest(computed, expected)
+    # Constant-time comparison to prevent timing attacks
+    return hmac_compare_digest(computed.encode('utf-8'), expected.encode('utf-8'))
+
+def hmac_compare_digest(val_a: bytes, val_b: bytes) -> bool:
+    """Compare two digests in constant time to prevent timing attacks."""
+    if len(val_a) != len(val_b):
+        return False
+    result = 0
+    for x, y in zip(val_a, val_b):
+        result |= x ^ y
+    return not result
 
 def main():
     """Run a test of key generation, signing, and verification using HMAC."""
-    # Generate a secret key
     key = generate_key()
 
-    # Get message from user
     message = input("Please enter a message to sign: ")
     data = message.encode('utf-8')
 
-    # Create signature
     signature = create_hmac(data, key, 'sha256')
-
-    # Verify signature
     is_valid = verify_hmac(data, key, signature, 'sha256')
 
     print(f"Original: {message}")
