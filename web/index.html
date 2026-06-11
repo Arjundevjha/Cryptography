@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caesar Cipher Visualizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Fallback inline CSS to ensure animation works if external CSS fails */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #444;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 300px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            max-width: 800px;
+        }
+
+        /* Fallback values overriden by style.css if it loads */
+        .char-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            background: #ecf0f1;
+            color: #e74c3c;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 50px;
+            overflow: hidden;
+            position: relative;
+            height: 50px; /* Space for one character */
+            line-height: 50px;
+            border: 2px solid #bdc3c7;
+        }
+
+        .char-steps {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            /* Animation applied per box below */
+        }
+
+        .char-step {
+            height: 50px;
+        }
+
+        /* Dynamically generate animation delays for staggered effect */
+        {% if steps %}
+            {% for step_data in steps %}
+                /*
+                   We calculate the total height to move up:
+                   (number of steps - 1) * 50px
+                */
+                @keyframes shiftAnimation{{ loop.index }} {
+                    0% { transform: translateY(0); }
+                    100% { transform: translateY(-{{ (step_data.steps|length - 1) * 50 }}px); }
+                }
+
+                .box-{{ loop.index }} .char-steps {
+                    animation: shiftAnimation{{ loop.index }} {{ (step_data.steps|length * 0.2) }}s steps({{ step_data.steps|length - 1 }}, end) forwards;
+                    animation-delay: {{ loop.index0 * 0.1 }}s; /* Stagger characters */
+                }
+            {% endfor %}
+        {% endif %}
+
+    </style>
+</head>
+<body>
+
+    <h1>Caesar Cipher Visualizer</h1>
+
+    <form method="POST" action="/">
+        <label for="plaintext">Message:</label>
+        <input type="text" id="plaintext" name="plaintext" value="{{ plaintext }}" required>
+
+        <label for="shift">Shift:</label>
+        <input type="number" id="shift" name="shift" value="{{ shift }}" required>
+
+        <button type="submit">Encrypt & Animate</button>
+    </form>
+
+    {% if steps %}
+        <div class="visualization">
+            {% for step_data in steps %}
+                <div class="char-box box-{{ loop.index }}">
+                    <div class="char-steps">
+                        {% for char in step_data.steps %}
+                            <div class="char-step">{{ char }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</body>
+</html>
