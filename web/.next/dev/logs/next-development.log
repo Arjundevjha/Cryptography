@@ -1,8 +1,0 @@
-{"timestamp":"00:00:00.585","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:04.869","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:00:04.914","source":"Server","level":"ERROR","message":"Failed to proxy http://127.0.0.1:8000/api/affine/encrypt Error: connect ECONNREFUSED 127.0.0.1:8000"}
-{"timestamp":"00:00:04.914","source":"Server","level":"ERROR","message":"Error: connect ECONNREFUSED 127.0.0.1:8000"}
-{"timestamp":"00:02:38.880","source":"Server","level":"ERROR","message":"Failed to proxy http://127.0.0.1:8000/api/sha256 Error: connect ECONNREFUSED 127.0.0.1:8000"}
-{"timestamp":"00:02:38.883","source":"Server","level":"ERROR","message":"Error: connect ECONNREFUSED 127.0.0.1:8000"}
-{"timestamp":"00:02:40.043","source":"Server","level":"ERROR","message":"Failed to proxy http://127.0.0.1:8000/api/sha256 Error: connect ECONNREFUSED 127.0.0.1:8000"}
-{"timestamp":"00:02:40.044","source":"Server","level":"ERROR","message":"Error: connect ECONNREFUSED 127.0.0.1:8000"}

@@ -1,7 +1,17 @@
+.DS_Store
 .DS_store
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .agent/rules/snyk_rules.md
+
+# Dependencies & Build files
+node_modules/
+.next/
+.fallow/
+fallow_output.json
+
+# Agent workspace
+.agents/
 
 # Log files
 *.log
