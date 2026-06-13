@@ -63,12 +63,13 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     e = key_params[1]
 
     msg_bytes = message.encode('utf-8')
-    if (m := int.from_bytes(msg_bytes, byteorder='big')) >= n:
-        raise ValueError("Message too large for RSA key size")
-
-    c = pow(m, e, n)
     key_size_bytes = (n.bit_length() + 7) // 8
-    return c.to_bytes(key_size_bytes, byteorder='big')
+    
+    ciphertext = b""
+    for b in msg_bytes:
+        c = pow(b, e, n)
+        ciphertext += c.to_bytes(key_size_bytes, byteorder='big')
+    return ciphertext
 
 def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     """Decrypt a message using RSA private key.
@@ -88,11 +89,16 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     n = key_params[0]
     d = key_params[2]
 
-    c = int.from_bytes(ciphertext, byteorder='big')
-    m = pow(c, d, n)
     key_size_bytes = (n.bit_length() + 7) // 8
-    msg_bytes = m.to_bytes(key_size_bytes, byteorder='big')
-    return msg_bytes.decode('utf-8').lstrip('\x00')
+    decrypted_bytes = bytearray()
+    for i in range(0, len(ciphertext), key_size_bytes):
+        block = ciphertext[i:i+key_size_bytes]
+        if not block:
+            continue
+        c = int.from_bytes(block, byteorder='big')
+        m = pow(c, d, n)
+        decrypted_bytes.append(m)
+    return decrypted_bytes.decode('utf-8')
 
 def main():
     """Demonstrate RSA keypair generation, encryption, and decryption."""

@@ -11,12 +11,14 @@ def pick_keys() -> str:
     random.shuffle(chars)
     return "".join(chars)
 
-def encrypt(plaintext: str, key: str) -> str:
+def encrypt(plaintext: str, key: str = None) -> str:
     """Encrypt plaintext using the Polybius Square cipher.
 
     Maps each letter to a two-digit coordinate string (row and column).
     Non-alphabetic characters are preserved.
     """
+    if not key:
+        key = ALPHABET
     ciphertext = ""
     for char in plaintext:
         if char.isalpha():
@@ -24,17 +26,22 @@ def encrypt(plaintext: str, key: str) -> str:
             idx = key.index(lower_char)
             row = (idx // GRID_SIZE) + 1
             col = (idx % GRID_SIZE) + 1
-            ciphertext += f"{row}{col}"
+            if ciphertext and ciphertext[-1].isdigit():
+                ciphertext += f" {row}{col}"
+            else:
+                ciphertext += f"{row}{col}"
         else:
             ciphertext += char
     return ciphertext
 
-def decrypt(ciphertext: str, key: str) -> str:
+def decrypt(ciphertext: str, key: str = None) -> str:
     """Decrypt ciphertext using the Polybius Square cipher.
 
     Parses two-digit coordinates back into characters.
     Non-digit/non-coordinate characters are preserved.
     """
+    if not key:
+        key = ALPHABET
     plaintext = ""
     iterator = iter(ciphertext)
     for char1 in iterator:
