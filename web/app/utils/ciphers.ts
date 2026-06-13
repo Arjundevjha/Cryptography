@@ -173,7 +173,7 @@ export function validateAesKey(key: string, format: 'text' | 'hex'): { isValid: 
 /**
  * Simple primality check for numbers.
  */
-export function isPrimeTypeScript(val: number): boolean {
+function isPrimeTypeScript(val: number): boolean {
   if (val < 2) return false;
   if (val === 2 || val === 3) return true;
   if (val % 2 === 0 || val % 3 === 0) return false;

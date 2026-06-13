@@ -1,11 +1,13 @@
 import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver which is not available in jsdom
-const mockIntersectionObserver = vi.fn(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+const mockIntersectionObserver = vi.fn(function() {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+});
 Object.defineProperty(window, 'IntersectionObserver', {
   writable: true,
   configurable: true,
