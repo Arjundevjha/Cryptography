@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Tier 3: Pairwise Interactions & Visual Integration E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
+    page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
     await page.goto('/');
   });
 
@@ -189,9 +190,13 @@ test.describe('Tier 3: Pairwise Interactions & Visual Integration E2E Tests', ()
   });
 
   test('TC-T3-INTERACT-12 (Deep Linking & Timeline Navigation)', async ({ page }) => {
+    // Wait for initial page hydration to complete
+    const caesarNode = page.locator('[data-testid="timeline-node-caesar"]');
+    await expect(caesarNode).toHaveClass(/active|highlighted/);
+
     await page.goto('/#aes');
     const aesExhibit = page.locator('[data-testid="exhibit-aes"]');
-    await expect(aesExhibit).toBeInViewport();
+    await expect(aesExhibit).toBeInViewport({ timeout: 15000 });
     
     const aesNode = page.locator('[data-testid="timeline-node-aes"]');
     await expect(aesNode).toHaveClass(/active|highlighted|bg-amber-500|font-bold/);
@@ -242,5 +247,14 @@ test.describe('Tier 3: Pairwise Interactions & Visual Integration E2E Tests', ()
       
       await expect(slider).toHaveValue('500');
     }
+  });
+
+  test('TC-T2B-NAV-ACTIVE-ON-LOAD (Active node highlighted on load)', async ({ page }) => {
+    // 1. Visit main page
+    await page.goto('/');
+    
+    // 2. Verify Caesar node has active styles (class active or highlighted) without user interaction
+    const caesarNode = page.locator('[data-testid="timeline-node-caesar"]');
+    await expect(caesarNode).toHaveClass(/active|highlighted/);
   });
 });

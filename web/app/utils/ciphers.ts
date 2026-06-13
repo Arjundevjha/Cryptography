@@ -225,3 +225,156 @@ export function sha256PadDescription(messageLenBytes: number): {
   };
 }
 
+/**
+ * Playfair cipher implementation.
+ */
+export function playfairEncrypt(plaintext: string, key: string): string {
+  const ALPHABET = "abcdefghiklmnopqrstuvwxyz";
+  // Create grid
+  const cleanKey = key.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
+  const seen = new Set<string>();
+  const gridChars: string[] = [];
+  for (const char of cleanKey) {
+    if (ALPHABET.includes(char) && !seen.has(char)) {
+      seen.add(char);
+      gridChars.push(char);
+    }
+  }
+  for (const char of ALPHABET) {
+    if (!seen.has(char)) {
+      seen.add(char);
+      gridChars.push(char);
+    }
+  }
+  
+  // Find position
+  const findPos = (char: string): [number, number] => {
+    const idx = gridChars.indexOf(char);
+    if (idx === -1) return [0, 0];
+    return [Math.floor(idx / 5), idx % 5];
+  };
+
+  // Prepare text
+  const cleanText = plaintext.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
+  const digraphs: string[] = [];
+  let i = 0;
+  while (i < cleanText.length) {
+    const char1 = cleanText[i];
+    if (i + 1 < cleanText.length) {
+      const char2 = cleanText[i + 1];
+      if (char1 === char2) {
+        digraphs.push(char1 + "x");
+        i++;
+      } else {
+        digraphs.push(char1 + char2);
+        i += 2;
+      }
+    } else {
+      digraphs.push(char1 + "x");
+      i++;
+    }
+  }
+
+  let ciphertext = "";
+  for (const pair of digraphs) {
+    const [r1, c1] = findPos(pair[0]);
+    const [r2, c2] = findPos(pair[1]);
+    if (r1 === r2) {
+      ciphertext += gridChars[r1 * 5 + ((c1 + 1) % 5)];
+      ciphertext += gridChars[r2 * 5 + ((c2 + 1) % 5)];
+    } else if (c1 === c2) {
+      ciphertext += gridChars[((r1 + 1) % 5) * 5 + c1];
+      ciphertext += gridChars[((r2 + 1) % 5) * 5 + c2];
+    } else {
+      ciphertext += gridChars[r1 * 5 + c2];
+      ciphertext += gridChars[r2 * 5 + c1];
+    }
+  }
+  return ciphertext.toUpperCase();
+}
+
+export function playfairDecrypt(ciphertext: string, key: string): string {
+  const ALPHABET = "abcdefghiklmnopqrstuvwxyz";
+  // Create grid
+  const cleanKey = key.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
+  const seen = new Set<string>();
+  const gridChars: string[] = [];
+  for (const char of cleanKey) {
+    if (ALPHABET.includes(char) && !seen.has(char)) {
+      seen.add(char);
+      gridChars.push(char);
+    }
+  }
+  for (const char of ALPHABET) {
+    if (!seen.has(char)) {
+      seen.add(char);
+      gridChars.push(char);
+    }
+  }
+  
+  const findPos = (char: string): [number, number] => {
+    const idx = gridChars.indexOf(char);
+    if (idx === -1) return [0, 0];
+    return [Math.floor(idx / 5), idx % 5];
+  };
+
+  const cleanText = ciphertext.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
+  let plaintext = "";
+  for (let idx = 0; idx < cleanText.length; idx += 2) {
+    if (idx + 1 >= cleanText.length) break;
+    const [r1, c1] = findPos(cleanText[idx]);
+    const [r2, c2] = findPos(cleanText[idx+1]);
+    if (r1 === r2) {
+      plaintext += gridChars[r1 * 5 + ((c1 - 1 + 5) % 5)];
+      plaintext += gridChars[r2 * 5 + ((c2 - 1 + 5) % 5)];
+    } else if (c1 === c2) {
+      plaintext += gridChars[((r1 - 1 + 5) % 5) * 5 + c1];
+      plaintext += gridChars[((r2 - 1 + 5) % 5) * 5 + c2];
+    } else {
+      plaintext += gridChars[r1 * 5 + c2];
+      plaintext += gridChars[r2 * 5 + c1];
+    }
+  }
+  return plaintext;
+}
+
+/**
+ * Substitution cipher implementation.
+ */
+export function substitutionEncrypt(plaintext: string, keyAlphabet: string): string {
+  const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+  const cleanKey = keyAlphabet.toLowerCase();
+  let result = "";
+  for (let i = 0; i < plaintext.length; i++) {
+    const char = plaintext[i];
+    const lower = char.toLowerCase();
+    const idx = ALPHABET.indexOf(lower);
+    if (idx !== -1) {
+      const substituted = cleanKey[idx] || lower;
+      result += char === char.toUpperCase() ? substituted.toUpperCase() : substituted;
+    } else {
+      result += char;
+    }
+  }
+  return result;
+}
+
+export function substitutionDecrypt(ciphertext: string, keyAlphabet: string): string {
+  const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+  const cleanKey = keyAlphabet.toLowerCase();
+  let result = "";
+  for (let i = 0; i < ciphertext.length; i++) {
+    const char = ciphertext[i];
+    const lower = char.toLowerCase();
+    const idx = cleanKey.indexOf(lower);
+    if (idx !== -1) {
+      const substituted = ALPHABET[idx] || lower;
+      result += char === char.toUpperCase() ? substituted.toUpperCase() : substituted;
+    } else {
+      result += char;
+    }
+  }
+  return result;
+}
+
+

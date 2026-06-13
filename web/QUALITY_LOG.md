@@ -28,3 +28,50 @@ This log documents code quality and dead-code cleanup findings, actions taken, a
   - Next.js production build (`npm run build`) compiles successfully.
   - Unit tests (`npm run test`) pass successfully.
   - Verification run via `npx fallow dead-code --format json` reports 0 issues.
+
+## Track 1B: Migrate Vitest to Jest
+- **Findings**:
+  - Removed `vitest.config.ts`, `vitest.setup.ts`.
+  - Removed `vitest`, `@vitejs/plugin-react` from `package.json`.
+  - Added `jest`, `jest-environment-jsdom`, `@types/jest`, `ts-jest`, `ts-node` to `package.json`.
+  - Created a correct `jest.config.ts` and `jest.setup.ts` following Next.js guidelines.
+  - Refactored `web/app/page.test.tsx` and `web/tests/unit/ciphers.test.ts` to use Jest globals instead of vitest imports.
+- **Actions**:
+  - Excluded Playwright E2E tests from running in Jest via `testPathIgnorePatterns` configuration in `jest.config.ts`.
+  - Ran `npm install` and verified all unit tests pass using `npm run test` (`jest`).
+- **Resolution**:
+  - Jest is successfully configured and running unit tests.
+  - All 22 frontend unit tests pass successfully.
+
+## Track 1C: FastAPI Connection and Health Endpoint
+- **Findings**:
+  - Verified FastAPI server starts successfully using `PYTHONPATH=. uvicorn web.api.main:app --port 8000 --reload` from repository root.
+  - Verified Next.js proxy rewrite configuration in `next.config.js` properly maps `/api/` to `http://localhost:8000/api/`.
+  - Found `/api/health` endpoint in `web/api/main.py` was returning a different status message than requested.
+- **Actions**:
+  - Updated FastAPI health check endpoint to return `{"status": "ok"}`.
+  - Updated `web/api/test_main.py` to assert the updated health check format and corrected a pre-existing failing Polybius decrypt test.
+  - Created a Next.js API route at `web/app/api/health/route.ts` that acts as a proxy checking the FastAPI backend health.
+  - Updated `web/app/page.tsx` with a mount-level API health polling effect and added an "API Connected" / "API Offline" colored dot indicator in the page footer.
+  - Modified catch blocks in all 8 client exhibit components calling the API to display: `"Could not reach encryption server — is the API running?"`.
+  - Updated `web/README.md` with explicit startup instructions.
+- Resolution:
+  - Next.js successfully compiles and builds.
+  - Frontend and backend integration is complete with visual status indicator and proper error handling.
+
+## Track 2: Navigation Overhaul
+- **Findings**:
+  - Replaced the horizontal timeline strip with a vertical, right-anchored, hover-expanding navigation panel. Collapsed to 48px by default, expanding to 220px on hover.
+  - Era color groupings (Classical: Amber, Historical: Crimson, Modern: Teal) and borders/highlighting correctly represent eras.
+  - Main content padding adjusted with `pr-[48px]` to prevent nav overlap.
+  - Active section on page load was initially wrong because `sectionRefs` was recreated on every render, causing the IntersectionObserver to disconnect/reconnect and reset state in an infinite render loop.
+  - Hash navigation and E2E history tests (`TC-T3-INTERACT-12` and `TC-T4-SCENARIO-10`) were flaky or failing due to race conditions during page hydration and the Next.js router intercepting and suppressing browser native history events.
+- **Actions**:
+  - Stabilized `sectionRefs` using `useMemo` to prevent IntersectionObserver reconnection loops.
+  - Implemented an `isInitialScroll` scroll-lock ref to bypass IntersectionObserver callbacks during programmatic scrolls.
+  - Created a unified history monkey-patch hook that intercepts `pushState`/`replaceState` and listens to `popstate`/`hashchange` to handle all URL transitions reliably.
+  - Fixed E2E test flakiness by introducing a hydration-check wait (`timeline-node-caesar` visibility) before performing hash navigations.
+- **Resolution**:
+  - Playwright E2E tests `TC-T2B-NAV-ACTIVE-ON-LOAD`, `TC-T3-INTERACT-12`, and `TC-T4-SCENARIO-10` pass successfully.
+  - Fallow dead-code analysis reports 0 issues.
+

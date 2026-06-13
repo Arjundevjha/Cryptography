@@ -25,3 +25,13 @@ yarn-error.log*
 *.pid
 *.seed
 *.pid.lock
+
+# Test artifacts
+test-results/
+playwright-report/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/

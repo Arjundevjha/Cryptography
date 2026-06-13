@@ -56,14 +56,13 @@ The backend server must be started with the repository root in the Python path s
 
 From the **repository root** directory:
 ```bash
-export PYTHONPATH=.
-uvicorn web.api.main:app --host 127.0.0.1 --port 8000
+PYTHONPATH=. uvicorn web.api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Or from the **web/** directory:
+Or by exporting PYTHONPATH:
 ```bash
-export PYTHONPATH=/path/to/Cryptography
-uvicorn api.main:app --host 127.0.0.1 --port 8000
+export PYTHONPATH=.
+uvicorn web.api.main:app --host 127.0.0.1 --port 8000
 ```
 
 The backend API will be running at `http://127.0.0.1:8000`. You can access the interactive Swagger API documentation at `http://127.0.0.1:8000/api/docs`.

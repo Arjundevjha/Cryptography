@@ -1,1 +1,9 @@
 .fallow/
+node_modules/
+.next/
+.swc/
+playwright-report/
+test-results/
+*.pid
+*.seed
+*.pid.lock

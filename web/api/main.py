@@ -55,7 +55,7 @@ class AffineDecryptInput(BaseModel):
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "version": "0.1.0"}
+    return {"status": "ok"}
 
 @app.post("/api/validate")
 async def validate_input(data: CipherInput):

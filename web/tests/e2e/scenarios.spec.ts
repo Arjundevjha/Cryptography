@@ -369,22 +369,22 @@ test.describe('Tier 4: Real-World Application Scenarios E2E Tests', () => {
     // Click Caesar, Enigma, AES
     const caesarNode = page.locator('[data-testid="timeline-node-caesar"]');
     await caesarNode.click();
-    expect(page.url()).toContain('#caesar');
+    await expect(page).toHaveURL(/#caesar/);
 
     const enigmaNode = page.locator('[data-testid="timeline-node-enigma"]');
     await enigmaNode.click();
-    expect(page.url()).toContain('#enigma');
+    await expect(page).toHaveURL(/#enigma/);
 
     const aesNode = page.locator('[data-testid="timeline-node-aes"]');
     await aesNode.click();
-    expect(page.url()).toContain('#aes');
+    await expect(page).toHaveURL(/#aes/);
 
     // Back
     await page.goBack();
-    expect(page.url()).toContain('#enigma');
+    await expect(page).toHaveURL(/#enigma/);
 
     // Forward
     await page.goForward();
-    expect(page.url()).toContain('#aes');
+    await expect(page).toHaveURL(/#aes/);
   });
 });

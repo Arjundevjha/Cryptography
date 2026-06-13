@@ -18,3 +18,35 @@ body {
     rgb(var(--background-start-rgb));
   min-height: 100vh;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+.exhibit-section, section {
+  scroll-margin-top: 80px;
+}
+
+@keyframes driftUp {
+  0% {
+    transform: translateY(105vh);
+  }
+  100% {
+    transform: translateY(-10vh);
+  }
+}
+
+.animate-drift {
+  animation: driftUp var(--drift-duration) linear infinite;
+  animation-delay: var(--drift-delay);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift {
+    animation: none !important;
+    transform: translateY(50vh) !important;
+  }
+}
+
+
+

@@ -9,25 +9,239 @@ import {
   padVigenereKey,
   validateAesKey,
   validateRsaParams,
-  sha256PadDescription
+  sha256PadDescription,
+  playfairEncrypt,
+  playfairDecrypt,
+  substitutionEncrypt,
+  substitutionDecrypt
 } from "./utils/ciphers";
+import { ExhibitInput } from "../src/components/ui/ExhibitInput";
+
+const DRIFTING_CHARS = [
+  { char: "A", left: "5%", delay: "0s", duration: "25s", size: "text-2xl" },
+  { char: "7", left: "12%", delay: "-5s", duration: "32s", size: "text-lg" },
+  { char: "X", left: "20%", delay: "-12s", duration: "20s", size: "text-xl" },
+  { char: "9", left: "28%", delay: "-2s", duration: "28s", size: "text-3xl" },
+  { char: "M", left: "35%", delay: "-15s", duration: "35s", size: "text-lg" },
+  { char: "3", left: "42%", delay: "-8s", duration: "22s", size: "text-2xl" },
+  { char: "K", left: "50%", delay: "-22s", duration: "40s", size: "text-xl" },
+  { char: "Y", left: "58%", delay: "-4s", duration: "26s", size: "text-3xl" },
+  { char: "2", left: "65%", delay: "-18s", duration: "30s", size: "text-lg" },
+  { char: "Q", left: "72%", delay: "-10s", duration: "24s", size: "text-2xl" },
+  { char: "5", left: "80%", delay: "-27s", duration: "38s", size: "text-xl" },
+  { char: "W", left: "88%", delay: "-6s", duration: "29s", size: "text-3xl" },
+  { char: "Z", left: "95%", delay: "-14s", duration: "33s", size: "text-lg" },
+  { char: "B", left: "8%", delay: "-19s", duration: "27s", size: "text-xl" },
+  { char: "4", left: "22%", delay: "-7s", duration: "36s", size: "text-2xl" },
+  { char: "F", left: "31%", delay: "-25s", duration: "31s", size: "text-lg" },
+  { char: "8", left: "47%", delay: "-3s", duration: "23s", size: "text-3xl" },
+  { char: "P", left: "62%", delay: "-11s", duration: "34s", size: "text-xl" },
+  { char: "C", left: "77%", delay: "-16s", duration: "28s", size: "text-2xl" },
+  { char: "0", left: "85%", delay: "-23s", duration: "37s", size: "text-lg" },
+];
+
+const eras = [
+  {
+    id: "classical",
+    name: "Classical",
+    color: "#D4A853",
+    items: [
+      {
+        id: "scytale",
+        name: "Scytale",
+        year: "~700 BC",
+        whenWhere: "Ancient Sparta, ~700 BC",
+        blurb: "The scytale is one of history's oldest known encryption devices, used by the Spartans as early as the 7th century BC to send secret military orders between commanders. A strip of parchment was wound diagonally around a wooden rod and written across; unwound, it appeared as a jumble of letters. Only a recipient with a rod of the same diameter could reassemble the message. It is a transposition cipher — it rearranges letters rather than replacing them, a distinction that would not be formalised for another two millennia.",
+        howItWorks: "The message is written across a rod in rows, then the strip is unwound and the columns become the ciphertext."
+      },
+      {
+        id: "polybius",
+        name: "Polybius Square",
+        year: "~150 BC",
+        whenWhere: "Ancient Greece, ~150 BC",
+        blurb: "Invented by the Greek historian Polybius around 150 BC, this cipher converts each letter into a coordinate pair on a 5×5 grid. Polybius originally designed it for fire signalling — operators held up torches to indicate row and column numbers across long distances. It was later adapted by medieval cryptographers, Russian Nihilist revolutionaries, and Charles Wheatstone, who used it as the foundation for the Playfair cipher. Its grid structure is a conceptual ancestor of both binary encoding and modern substitution boxes.",
+        howItWorks: "Each letter is located on a 5×5 grid; its row number followed by its column number becomes the ciphertext."
+      },
+      {
+        id: "caesar",
+        name: "Caesar Cipher",
+        year: "~60 BC",
+        whenWhere: "Ancient Rome, ~60 BC",
+        blurb: "Julius Caesar used this cipher to protect military communications during his Gallic campaigns, reportedly with a shift of three positions. It is the earliest well-documented substitution cipher in recorded history — simple enough to memorise, fast enough to use under battlefield conditions. Suetonius documented its use in 69 AD; Augustus Caesar later adopted a shift of one. It offers no meaningful security against modern analysis, but as the purest expression of the shift principle it remains the conceptual starting point for all substitution-based cryptography.",
+        howItWorks: "Each letter is shifted N positions forward in the alphabet, wrapping from Z back to A."
+      },
+      {
+        id: "affine",
+        name: "Affine Cipher",
+        year: "~800 AD",
+        whenWhere: "Arab world, ~800 AD",
+        blurb: "A mathematical generalisation of the Caesar cipher that emerged during the Islamic Golden Age, the affine cipher encodes each letter using the formula C = (aP + b) mod 26, where a and b are secret keys. The 9th-century polymath al-Kindi described methods for breaking it in his Treatise on Deciphering Cryptographic Messages — the first known work on frequency analysis. The key a must be coprime with 26, yielding 312 possible key combinations, which sounds large until you realise al-Kindi's method defeats it in minutes with enough text. It was the first cipher to be broken through mathematical reasoning rather than brute force.",
+        howItWorks: "Each letter's alphabetic index P is transformed to C = (aP + b) mod 26, then converted back to a letter."
+      },
+      {
+        id: "vigenere",
+        name: "Vigenère",
+        year: "1553",
+        whenWhere: "Europe, 1553",
+        blurb: "First described by Giovan Battista Bellaso in 1553 and later misattributed to Blaise de Vigenère, this polyalphabetic cipher earned the title \"le chiffre indéchiffrable\" — the indecipherable cipher — and held that reputation for nearly 300 years. By shifting each letter using a different position in a repeating keyword, it defeated the frequency analysis that broke every previous cipher. Charles Babbage cracked it privately around 1854 using periodicity analysis; Friedrich Kasiski published the method independently in 1863, ending its era of dominance.",
+        howItWorks: "Each plaintext letter is shifted by the value of the corresponding letter in a repeating keyword, cycling the key continuously."
+      },
+      {
+        id: "playfair",
+        name: "Playfair Cipher",
+        year: "1854",
+        whenWhere: "Britain, 1854",
+        blurb: "Invented by Charles Wheatstone in 1854 but named after his friend Baron Playfair, who championed its adoption — a common injustice in the history of cryptography. It was the first widely used cipher to encrypt pairs of letters (digraphs) rather than individual characters, which significantly undermined traditional frequency analysis. The British Foreign Office used it during the Second Boer War and World War I. It was eventually defeated by statistical analysis of digraph frequencies and replaced by electromechanical cipher machines in the 1940s.",
+        howItWorks: "Letter pairs are located in a 5×5 key square and transformed using one of three geometric rules based on whether they share a row, column, or neither."
+      },
+      {
+        id: "substitution",
+        name: "Substitution Cipher",
+        year: "varies",
+        whenWhere: "Widespread, ~100 BC onward",
+        blurb: "The simple substitution cipher maps each letter of the alphabet to a unique replacement letter using a secret scrambled key. It was used across the ancient and medieval world — Mary Queen of Scots deployed a variant in 1586 to communicate with conspirators, but the letters were intercepted and deciphered, leading directly to her execution. With 26! possible keys — roughly 4×10²⁶ — it appears unbreakable, but al-Kindi's 9th-century frequency analysis defeats it reliably using just a few hundred characters of ciphertext. Any cipher that substitutes letters one-for-one without variation inherits this fundamental weakness.",
+        howItWorks: "Every letter is replaced by its fixed counterpart from a shuffled 26-character key alphabet."
+      }
+    ]
+  },
+  {
+    id: "historical",
+    name: "Historical",
+    color: "#C0392B",
+    items: [
+      {
+        id: "enigma",
+        name: "Enigma Machine",
+        year: "1918",
+        whenWhere: "Germany, developed 1918 · used 1939–1945",
+        blurb: "Invented by Arthur Scherbius in 1918 as a commercial encryption machine, Enigma was adopted by the German military in the 1920s and became the cryptographic backbone of the Nazi war effort. Three or more interchangeable rotors, a plugboard, and a reflector combined to produce a polyalphabetic substitution with over 158 quintillion possible daily settings. British codebreakers at Bletchley Park — led mathematically by Alan Turing — built electromechanical Bombe machines to systematically eliminate impossible settings, cracking Enigma traffic daily throughout the war. The breach was kept secret until 1974; its impact is estimated to have shortened World War II by two to four years.",
+        howItWorks: "Each keypress routes an electrical signal through a plugboard, three stepping rotors, and a reflector, producing a different substitution for every single letter."
+      }
+    ]
+  },
+  {
+    id: "modern",
+    name: "Modern",
+    color: "#4ECDC4",
+    items: [
+      {
+        id: "rsa",
+        name: "RSA Standard",
+        year: "1977",
+        whenWhere: "United States, 1977",
+        blurb: "Invented in 1977 by Ron Rivest, Adi Shamir, and Leonard Adleman at MIT — though British intelligence agency GCHQ had independently discovered the same algorithm in 1973 under Clifford Cocks, and classified it. RSA was the first practical public-key cryptosystem, solving the fundamental problem of how to establish a shared secret over an insecure channel without having met beforehand. Its security rests on the mathematical hardness of factoring the product of two large prime numbers — a problem for which no efficient general algorithm is known. RSA-2048 would require more computation to factor than exists in the known universe using current methods, though quantum computers threaten this assumption.",
+        howItWorks: "Two large primes generate a mathematically linked key pair; data encrypted with the public key can only be decrypted with the private key."
+      },
+      {
+        id: "sha256",
+        name: "SHA-256 Hash",
+        year: "1993",
+        whenWhere: "United States, SHA-1: 1993 · SHA-256 & SHA-512: 2001 · BLAKE2: 2012",
+        blurb: "The SHA family was developed by the NSA and standardised by NIST across three decades. SHA-1 (1993) is now cryptographically broken — Google's 2017 SHAttered project produced the first real-world collision. SHA-256 and SHA-512, released in 2001 as part of SHA-2, remain sound and underpin Bitcoin's proof-of-work, TLS certificate signing, and software package verification worldwide. MD5 (1992), while faster, is broken for collision resistance and should not be used for security. BLAKE2 (2012) matches SHA-2 in security while outperforming it in speed on most hardware without the NSA's involvement in its design.",
+        howItWorks: "Input of any length is compressed into a fixed-size digest; identical inputs always produce identical output, but no efficient method exists to reverse the process or find two inputs that collide."
+      },
+      {
+        id: "aes",
+        name: "AES Standard",
+        year: "2001",
+        whenWhere: "United States, standardised 2001",
+        blurb: "AES was selected in 2001 by the US National Institute of Standards and Technology after a five-year open international competition to replace the ageing DES standard, which had become vulnerable to brute-force attacks. The winning algorithm, Rijndael, was designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. It operates on 128-bit blocks of data, putting each block through 10 rounds of four mathematical transformations — SubBytes, ShiftRows, MixColumns, and AddRoundKey — using keys of 128, 192, or 256 bits. AES is the most widely deployed symmetric encryption algorithm in existence, securing HTTPS connections, disk encryption, Wi-Fi, government communications, and virtually every modern digital transaction.",
+        howItWorks: "A 128-bit data block is transformed through 10 rounds of substitution, row-shifting, column-mixing, and key-addition operations."
+      }
+    ]
+  }
+];
+
+const renderExhibitHeader = (cipherId: string) => {
+  // Find the cipher in eras
+  let cipherItem: any = null;
+  let eraName = "";
+  let eraColor = "";
+  
+  for (const era of eras) {
+    const found = era.items.find(item => item.id === cipherId);
+    if (found) {
+      cipherItem = found;
+      eraName = era.name;
+      eraColor = era.color;
+      break;
+    }
+  }
+  
+  if (!cipherItem) return null;
+  
+  return (
+    <div className="mb-6 space-y-4">
+      {/* 1. Era badge matching the era color */}
+      <div>
+        <span
+          className="inline-block px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider"
+          style={{
+            backgroundColor: `${eraColor}22`,
+            color: eraColor,
+            border: `1px solid ${eraColor}44`,
+          }}
+        >
+          {eraName} Era
+        </span>
+      </div>
+
+      {/* 2. "When & where" line — displayed in small caps, muted color */}
+      <div className="text-xs tracking-widest text-slate-400 uppercase font-mono">
+        <span className="text-slate-500 mr-1">WHEN & WHERE:</span> {cipherItem.whenWhere}
+      </div>
+
+      {/* 3. Historical blurb */}
+      <p className="text-slate-300 text-sm md:text-base font-serif leading-relaxed">
+        {cipherItem.blurb}
+      </p>
+
+      {/* 4. "How it works" one-liner */}
+      <div className="p-3 bg-slate-950/60 border border-slate-800/80 rounded-lg">
+        <span className="text-xs font-mono text-slate-500 block mb-1 tracking-wider uppercase">// HOW IT WORKS</span>
+        <code className="text-xs font-mono text-amber-500/90 leading-relaxed block whitespace-normal">
+          {cipherItem.howItWorks}
+        </code>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
   // Navigation / Scroll
   const [activeSection, setActiveSection] = useState("caesar");
-  const sectionRefs = {
-    caesar: useRef<HTMLDivElement>(null),
-    vigenere: useRef<HTMLDivElement>(null),
-    affine: useRef<HTMLDivElement>(null),
-    scytale: useRef<HTMLDivElement>(null),
-    polybius: useRef<HTMLDivElement>(null),
-    enigma: useRef<HTMLDivElement>(null),
-    aes: useRef<HTMLDivElement>(null),
-    rsa: useRef<HTMLDivElement>(null),
-    sha256: useRef<HTMLDivElement>(null)
-  };
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isInitialScroll = useRef(false);
+  const lastHashRef = useRef("");
+
+  const caesarRef = useRef<HTMLDivElement>(null);
+  const vigenereRef = useRef<HTMLDivElement>(null);
+  const affineRef = useRef<HTMLDivElement>(null);
+  const scytaleRef = useRef<HTMLDivElement>(null);
+  const polybiusRef = useRef<HTMLDivElement>(null);
+  const enigmaRef = useRef<HTMLDivElement>(null);
+  const aesRef = useRef<HTMLDivElement>(null);
+  const rsaRef = useRef<HTMLDivElement>(null);
+  const sha256Ref = useRef<HTMLDivElement>(null);
+  const playfairRef = useRef<HTMLDivElement>(null);
+  const substitutionRef = useRef<HTMLDivElement>(null);
+
+  const sectionRefs = useMemo(() => ({
+    caesar: caesarRef,
+    vigenere: vigenereRef,
+    affine: affineRef,
+    scytale: scytaleRef,
+    polybius: polybiusRef,
+    enigma: enigmaRef,
+    aes: aesRef,
+    rsa: rsaRef,
+    sha256: sha256Ref,
+    playfair: playfairRef,
+    substitution: substitutionRef
+  }), []);
 
   const scrollToSection = (sectionId: keyof typeof sectionRefs) => {
+    isInitialScroll.current = true;
     setActiveSection(sectionId);
     setCaesarIsPlaying(false);
     setVigenereIsPlaying(false);
@@ -38,35 +252,110 @@ export default function Home() {
     setAesIsPlaying(false);
     setRsaIsPlaying(false);
     setShaIsPlaying(false);
-    sectionRefs[sectionId].current?.scrollIntoView({ behavior: "smooth" });
+    
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+    
     if (typeof window !== "undefined") {
-      window.location.hash = sectionId;
+      lastHashRef.current = `#${sectionId}`;
+      window.history.pushState(null, "", `#${sectionId}`);
     }
+
+    setTimeout(() => {
+      isInitialScroll.current = false;
+    }, 800);
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash) {
-      const hash = window.location.hash.substring(1);
-      if (Object.keys(sectionRefs).includes(hash)) {
-        const sectionId = hash as keyof typeof sectionRefs;
-        setActiveSection(sectionId);
-        setTimeout(() => {
-          sectionRefs[sectionId].current?.scrollIntoView({ behavior: "auto" });
-        }, 100);
+    setActiveSection("caesar"); // Explicitly set first cipher ID before observer fires
+
+    const handleHashTransition = (url: string | URL | null | undefined, isInitial = false) => {
+      if (!url) return;
+      const urlStr = url.toString();
+      const hashIndex = urlStr.indexOf("#");
+      if (hashIndex !== -1) {
+        const hash = urlStr.substring(hashIndex + 1);
+        const fullHash = `#${hash}`;
+        if (hash && fullHash !== lastHashRef.current && Object.keys(sectionRefs).includes(hash)) {
+          lastHashRef.current = fullHash;
+          const sectionId = hash as keyof typeof sectionRefs;
+          isInitialScroll.current = true;
+          setActiveSection(sectionId);
+          
+          if (isInitial) {
+            const refCurrent = sectionRefs[sectionId].current;
+            refCurrent?.scrollIntoView({ behavior: "auto" });
+            // Staggered scrolls to handle next dev compilation/loading delays
+            setTimeout(() => {
+              sectionRefs[sectionId].current?.scrollIntoView({ behavior: "auto" });
+            }, 100);
+            setTimeout(() => {
+              sectionRefs[sectionId].current?.scrollIntoView({ behavior: "auto" });
+            }, 400);
+            setTimeout(() => {
+              sectionRefs[sectionId].current?.scrollIntoView({ behavior: "auto" });
+              isInitialScroll.current = false;
+            }, 1000);
+          } else {
+            sectionRefs[sectionId].current?.scrollIntoView({ behavior: "smooth" });
+            setTimeout(() => {
+              isInitialScroll.current = false;
+            }, 800);
+          }
+        }
       }
+    };
+
+    if (typeof window !== "undefined") {
+      const originalPushState = window.history.pushState;
+      window.history.pushState = function(state, title, url) {
+        const result = originalPushState.apply(this, [state, title, url]);
+        handleHashTransition(url);
+        return result;
+      };
+
+      const originalReplaceState = window.history.replaceState;
+      window.history.replaceState = function(state, title, url) {
+        const result = originalReplaceState.apply(this, [state, title, url]);
+        handleHashTransition(url);
+        return result;
+      };
+      
+      const handleNative = () => {
+        handleHashTransition(window.location.hash);
+      };
+      window.addEventListener("popstate", handleNative);
+      window.addEventListener("hashchange", handleNative);
+      
+      // Initial mount check
+      handleHashTransition(window.location.hash, true);
+
+      return () => {
+        window.history.pushState = originalPushState;
+        window.history.replaceState = originalReplaceState;
+        window.removeEventListener("popstate", handleNative);
+        window.removeEventListener("hashchange", handleNative);
+      };
     }
   }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isInitialScroll.current) return;
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveSection(entry.target.id);
           }
         });
       },
-      { threshold: 0.3 }
+      {
+        root: null,
+        rootMargin: "-40% 0px -55% 0px",
+        threshold: 0,
+      }
     );
 
     Object.values(sectionRefs).forEach((ref) => {
@@ -75,6 +364,7 @@ export default function Home() {
 
     return () => observer.disconnect();
   }, [sectionRefs]);
+
 
   // Reduced motion preference
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -85,6 +375,97 @@ export default function Home() {
     mediaQuery.addEventListener("change", listener);
     return () => mediaQuery.removeEventListener("change", listener);
   }, []);
+
+  // API Health Status Tracking
+  const [apiStatus, setApiStatus] = useState<"checking" | "connected" | "offline">("checking");
+  useEffect(() => {
+    const checkApiHealth = async () => {
+      try {
+        const res = await fetch("/api/health");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === "ok") {
+            setApiStatus("connected");
+            return;
+          }
+        }
+        setApiStatus("offline");
+      } catch (err) {
+        setApiStatus("offline");
+      }
+    };
+    checkApiHealth();
+    const interval = setInterval(checkApiHealth, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // -------------------------------------------------------------
+  // PLAYFAIR STATE & HANDLERS
+  // -------------------------------------------------------------
+  const [playfairInput, setPlayfairInput] = useState("");
+  const [playfairKey, setPlayfairKey] = useState("KEY");
+  const [playfairMode, setPlayfairMode] = useState<"encrypt" | "decrypt">("encrypt");
+  const [playfairOutput, setPlayfairOutput] = useState("");
+  const [playfairError, setPlayfairError] = useState("");
+
+  useEffect(() => {
+    if (!playfairInput) {
+      setPlayfairOutput("");
+      return;
+    }
+    const cleanKey = playfairKey.trim();
+    if (!cleanKey) {
+      setPlayfairError("Key must not be empty");
+      setPlayfairOutput("");
+      return;
+    }
+    setPlayfairError("");
+    try {
+      const out = playfairMode === "encrypt"
+        ? playfairEncrypt(playfairInput, cleanKey)
+        : playfairDecrypt(playfairInput, cleanKey);
+      setPlayfairOutput(out);
+    } catch (e) {
+      setPlayfairError("Failed to process Playfair encryption");
+    }
+  }, [playfairInput, playfairKey, playfairMode]);
+
+  // -------------------------------------------------------------
+  // SUBSTITUTION STATE & HANDLERS
+  // -------------------------------------------------------------
+  const [substitutionInput, setSubstitutionInput] = useState("");
+  const [substitutionKey, setSubstitutionKey] = useState("zebrasdfghijkmnopqrstuvwxy");
+  const [substitutionMode, setSubstitutionMode] = useState<"encrypt" | "decrypt">("encrypt");
+  const [substitutionOutput, setSubstitutionOutput] = useState("");
+  const [substitutionError, setSubstitutionError] = useState("");
+
+  useEffect(() => {
+    if (!substitutionInput) {
+      setSubstitutionOutput("");
+      return;
+    }
+    const cleanKey = substitutionKey.trim();
+    if (cleanKey.length !== 26) {
+      setSubstitutionError("Key alphabet must be exactly 26 characters long");
+      setSubstitutionOutput("");
+      return;
+    }
+    const uniqueChars = new Set(cleanKey.toLowerCase());
+    if (uniqueChars.size !== 26) {
+      setSubstitutionError("Key alphabet must contain 26 unique characters");
+      setSubstitutionOutput("");
+      return;
+    }
+    setSubstitutionError("");
+    try {
+      const out = substitutionMode === "encrypt"
+        ? substitutionEncrypt(substitutionInput, cleanKey)
+        : substitutionDecrypt(substitutionInput, cleanKey);
+      setSubstitutionOutput(out);
+    } catch (e) {
+      setSubstitutionError("Failed to process Substitution encryption");
+    }
+  }, [substitutionInput, substitutionKey, substitutionMode]);
 
   // -------------------------------------------------------------
   // CAESAR STATE & HANDLERS
@@ -323,7 +704,7 @@ export default function Home() {
         setAffineOutput(affineMode === "encrypt" ? data.ciphertext : data.plaintext);
       }
     } catch (err) {
-      setAffineError("Network connection to FastAPI server failed.");
+      setAffineError("Could not reach encryption server — is the API running?");
       setAffineOutput("");
     }
   };
@@ -442,7 +823,7 @@ export default function Home() {
         setScytaleOutput(scytaleMode === "encrypt" ? data.ciphertext : data.plaintext);
       }
     } catch (err) {
-      setScytaleError("Network connection to FastAPI server failed.");
+      setScytaleError("Could not reach encryption server — is the API running?");
       setScytaleOutput("");
     }
   };
@@ -558,7 +939,7 @@ export default function Home() {
         setPolybiusOutput(polybiusMode === "encrypt" ? data.ciphertext : data.plaintext);
       }
     } catch (err) {
-      setPolybiusError("Network connection to FastAPI server failed.");
+      setPolybiusError("Could not reach encryption server — is the API running?");
       setPolybiusOutput("");
     }
   };
@@ -746,7 +1127,7 @@ export default function Home() {
         setEnigmaOutput(data.ciphertext);
       }
     } catch (err) {
-      setEnigmaError("Network connection to FastAPI server failed.");
+      setEnigmaError("Could not reach encryption server — is the API running?");
       setEnigmaOutput("");
     }
   };
@@ -1016,7 +1397,7 @@ export default function Home() {
         }
       }
     } catch (err) {
-      setAesError("Network connection to FastAPI server failed.");
+      setAesError("Could not reach encryption server — is the API running?");
       setAesOutput("");
     }
   };
@@ -1131,7 +1512,7 @@ export default function Home() {
         setRsaPrivateKey(data.private_key);
       }
     } catch (err) {
-      setRsaError("Network connection to FastAPI server failed.");
+      setRsaError("Could not reach encryption server — is the API running?");
     }
   };
 
@@ -1176,7 +1557,7 @@ export default function Home() {
         setRsaOutput(targetMode === "encrypt" ? data.ciphertext : data.plaintext);
       }
     } catch (err) {
-      setRsaError("Network connection to FastAPI server failed.");
+      setRsaError("Could not reach encryption server — is the API running?");
       setRsaOutput("");
     }
   };
@@ -1252,56 +1633,186 @@ export default function Home() {
         setShaOutput(data.hash);
       }
     } catch (err) {
-      setShaError("Network connection to FastAPI server failed.");
+      setShaError("Could not reach encryption server — is the API running?");
       setShaOutput("");
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-serif">
-      {/* Horizontal Scrollable Timeline Navigation */}
-      <div className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur border-b border-slate-800 py-3 shadow-md">
-        <nav
-          className="container mx-auto px-4 flex space-x-4 overflow-x-auto whitespace-nowrap scrollbar-hide"
-          aria-label="Chronological Timeline"
-        >
-          {[
-            { id: "caesar", name: "Caesar Cipher (50 BC)" },
-            { id: "vigenere", name: "Vigenère (1553)" },
-            { id: "affine", name: "Affine Cipher (Math)" },
-            { id: "scytale", name: "Scytale" },
-            { id: "polybius", name: "Polybius Square" },
-            { id: "enigma", name: "Enigma Machine" },
-            { id: "aes", name: "AES Standard" },
-            { id: "rsa", name: "RSA Standard" },
-            { id: "sha256", name: "SHA-256 Hash" }
-          ].map((node) => (
-            <button
-              key={node.id}
-              onClick={() => scrollToSection(node.id as keyof typeof sectionRefs)}
-              data-testid={`timeline-node-${node.id}`}
-              className={`px-4 py-2 rounded-full text-xs font-mono border transition ${
-                activeSection === node.id
-                  ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
-                  : "bg-slate-850 border-slate-700 text-slate-400 hover:text-slate-200"
-              }`}
-              aria-current={activeSection === node.id ? "location" : undefined}
-            >
-              {node.name}
-            </button>
+      {/* Mobile Hamburger Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="fixed top-4 right-4 z-50 md:hidden p-3 bg-slate-900/90 backdrop-blur border border-slate-800 rounded-full shadow-lg text-slate-200 hover:text-white focus:outline-none"
+        aria-label="Toggle Menu"
+        data-testid="timeline-node-hamburger"
+      >
+        {isMobileMenuOpen ? (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+      </button>
+
+      {/* Mobile Full-screen Overlay Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-slate-950/95 flex flex-col justify-center items-center md:hidden p-6">
+          <div className="flex flex-col space-y-6 w-full max-w-xs overflow-y-auto max-h-[80vh] pr-2">
+            {eras.map((era) => (
+              <div key={era.id} className="flex flex-col space-y-2">
+                <span
+                  className="text-xs font-bold font-mono tracking-wider uppercase border-b border-slate-800 pb-1"
+                  style={{ color: era.color }}
+                >
+                  {era.name} Era
+                </span>
+                <div
+                  className="border-l pl-3 flex flex-col space-y-2"
+                  style={{ borderColor: era.color }}
+                >
+                  {era.items.map((item) => {
+                    const isActive = activeSection === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        data-testid={`timeline-node-${item.id}`}
+                        onClick={() => {
+                          scrollToSection(item.id as any);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`py-2 px-3 rounded-md text-sm font-mono text-left transition-all ${
+                          isActive
+                            ? "bg-slate-800 text-white font-bold active highlighted"
+                            : "text-slate-400 hover:text-slate-200"
+                        }`}
+                        style={{
+                          borderLeft: isActive ? `3px solid ${era.color}` : "none",
+                        }}
+                      >
+                        {item.name} <span className="text-[10px] text-slate-500">({item.year})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Vertical Sidebar Navigation */}
+      <nav
+        className="fixed top-0 right-0 h-screen z-50 bg-slate-900 border-l border-slate-800 flex flex-col justify-center transition-all duration-300 w-12 hover:w-[220px] group overflow-hidden hidden md:flex shadow-2xl"
+        aria-label="Chronological Timeline"
+      >
+        <div className="flex flex-col space-y-4 py-8">
+          {eras.map((era, index) => (
+            <div key={era.id} className="flex flex-col">
+              {/* Era container with a thin colored left border per section */}
+              <div
+                className="border-l-2 pl-0 flex flex-col"
+                style={{ borderColor: era.color }}
+              >
+                {era.items.map((item) => {
+                  const isActive = activeSection === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToSection(item.id as any)}
+                      data-testid={`timeline-node-${item.id}`}
+                      className={`w-full text-left py-2 flex items-center transition-all duration-200 relative ${
+                        isActive ? "active highlighted" : ""
+                      }`}
+                      style={{
+                        backgroundColor: isActive ? `${era.color}33` : "transparent",
+                      }}
+                    >
+                      {/* 2px solid era-color left accent */}
+                      {isActive && (
+                        <div
+                          className="absolute left-0 top-0 bottom-0 w-[2px]"
+                          style={{ backgroundColor: era.color }}
+                        />
+                      )}
+
+                      {/* Centered era dot */}
+                      <div className="w-12 h-10 flex justify-center items-center shrink-0">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: era.color }}
+                        />
+                      </div>
+
+                      {/* Name & Year */}
+                      <div className="flex flex-col justify-center min-w-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100 pl-1 pr-4">
+                        <span className="text-xs font-mono font-bold text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis">
+                          {item.name}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-500 whitespace-nowrap">
+                          {item.year}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* Divider line between era groups */}
+              {index < eras.length - 1 && (
+                <div className="border-t border-slate-800 my-2 mx-3" />
+              )}
+            </div>
           ))}
-        </nav>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="w-full min-h-screen flex flex-col justify-center items-center relative overflow-hidden px-4 md:pr-12 text-center border-b border-slate-900 bg-slate-950">
+        {/* Floating Background Characters */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+          {DRIFTING_CHARS.map((item, idx) => (
+            <span
+              key={idx}
+              className={`drift-char absolute bottom-0 font-mono text-slate-700/5 ${item.size} animate-drift`}
+              style={{
+                "--drift-duration": item.duration,
+                "--drift-delay": item.delay,
+                left: item.left,
+              } as React.CSSProperties}
+            >
+              {item.char}
+            </span>
+          ))}
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+          <h1 className="text-5xl md:text-7xl font-serif font-extrabold tracking-tight text-slate-100">
+            Cryptography Museum
+          </h1>
+          <p className="text-amber-500/80 font-mono text-sm md:text-base tracking-wider">
+            // A Record of Secrets Through Time
+          </p>
+          <div className="w-24 h-0.5 bg-amber-500/30 mx-auto my-4" />
+          <p className="text-slate-400 text-base md:text-lg font-serif leading-relaxed max-w-2xl mx-auto border-l-2 border-amber-500/20 pl-6 text-left">
+            Welcome to the Cryptography Museum, a living archive dedicated to the eternal human quest for confidentiality. From the physical cylinder-wraps of ancient Sparta to the mathematical complexity of modern algorithms, this space charts the history of hidden communications. Explore the mechanical gears, mathematical formulas, and computational steps that have protected—and broken—our most critical secrets through time.
+          </p>
+          <div className="pt-8">
+            <button
+              onClick={() => scrollToSection("scytale")}
+              className="px-8 py-4 bg-transparent border border-amber-500/50 hover:border-amber-500 hover:bg-amber-500/10 text-amber-400 hover:text-amber-300 font-mono text-sm rounded-lg transition-all duration-300 shadow-[0_0_15px_rgba(212,168,83,0.1)] hover:shadow-[0_0_25px_rgba(212,168,83,0.25)]"
+            >
+              Enter the Museum ↓
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-extrabold tracking-tight text-white mb-4">
-            🔒 Cryptography Museum
-          </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Interact with classical substitution ciphers, historical enigma machine emulators, and modern cryptographic standards.
-          </p>
-        </div>
+      <div className="container mx-auto pl-4 pr-[48px] py-12 max-w-5xl">
 
         {/* -------------------------------------------------------------
             CAESAR CIPHER EXHIBIT
@@ -1313,9 +1824,7 @@ export default function Home() {
           className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
         >
           <h3 className="text-3xl font-bold text-amber-400 mb-2">Caesar Cipher</h3>
-          <p className="text-slate-400 mb-6 font-serif">
-            A basic shift cipher where each letter is replaced by a letter some fixed number of positions down the alphabet.
-          </p>
+          {renderExhibitHeader("caesar")}
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -1323,10 +1832,11 @@ export default function Home() {
                 <label htmlFor="input-caesar" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Text (Max 500 Chars)
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="classical"
                   id="input-caesar"
-                  data-testid="input-text-caesar"
-                  className="w-full h-32 px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  dataTestId="input-text-caesar"
                   value={caesarInput}
                   onChange={(e) => setCaesarInput(e.target.value)}
                   maxLength={505} // Allow typing more to trigger boundary tests
@@ -1339,11 +1849,11 @@ export default function Home() {
                   <label htmlFor="shift-caesar" className="block text-sm font-mono text-slate-300 mb-2">
                     Shift Amount
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="classical"
                     id="shift-caesar"
                     type="text"
-                    data-testid="param-shift-caesar"
-                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    dataTestId="param-shift-caesar"
                     value={caesarShift}
                     onChange={(e) => setCaesarShift(e.target.value)}
                   />
@@ -1584,9 +2094,7 @@ export default function Home() {
           className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
         >
           <h3 className="text-3xl font-bold text-amber-400 mb-2">Vigenère Cipher</h3>
-          <p className="text-slate-400 mb-6 font-serif">
-            A polyalphabetic substitution cipher that shifts text letters using a keyword cycled repeatedly.
-          </p>
+          {renderExhibitHeader("vigenere")}
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -1594,10 +2102,11 @@ export default function Home() {
                 <label htmlFor="input-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Text (Max 500 Chars)
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="classical"
                   id="input-vigenere"
-                  data-testid="input-text-vigenere"
-                  className="w-full h-32 px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  dataTestId="input-text-vigenere"
                   value={vigenereInput}
                   onChange={(e) => setVigenereInput(e.target.value)}
                   maxLength={505}
@@ -1610,11 +2119,11 @@ export default function Home() {
                   <label htmlFor="key-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
                     Keyword
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="classical"
                     id="key-vigenere"
                     type="text"
-                    data-testid="param-key-vigenere"
-                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    dataTestId="param-key-vigenere"
                     value={vigenereKey}
                     onChange={(e) => setVigenereKey(e.target.value)}
                   />
@@ -1831,9 +2340,7 @@ export default function Home() {
           className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
         >
           <h3 className="text-3xl font-bold text-amber-400 mb-2">Affine Cipher</h3>
-          <p className="text-slate-400 mb-6 font-serif">
-            A mathematical substitution cipher where each letter is mapped to its numeric equivalent, encrypted via the formula: E(x) = (ax + b) mod 26.
-          </p>
+          {renderExhibitHeader("affine")}
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -1841,10 +2348,11 @@ export default function Home() {
                 <label htmlFor="input-affine" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Text (Max 500 Chars)
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="classical"
                   id="input-affine"
-                  data-testid="input-text-affine"
-                  className="w-full h-32 px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  dataTestId="input-text-affine"
                   value={affineInput}
                   onChange={(e) => setAffineInput(e.target.value)}
                   maxLength={505}
@@ -1857,11 +2365,11 @@ export default function Home() {
                   <label htmlFor="param-a-affine" className="block text-sm font-mono text-slate-300 mb-2">
                     Key a
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="classical"
                     id="param-a-affine"
                     type="text"
-                    data-testid="param-a-affine"
-                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    dataTestId="param-a-affine"
                     value={affineA}
                     onChange={(e) => setAffineA(e.target.value)}
                   />
@@ -1870,11 +2378,11 @@ export default function Home() {
                   <label htmlFor="param-b-affine" className="block text-sm font-mono text-slate-300 mb-2">
                     Key b
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="classical"
                     id="param-b-affine"
                     type="text"
-                    data-testid="param-b-affine"
-                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    dataTestId="param-b-affine"
                     value={affineB}
                     onChange={(e) => setAffineB(e.target.value)}
                   />
@@ -2134,19 +2642,18 @@ export default function Home() {
           className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
         >
           <h3 className="text-3xl font-bold text-amber-400 mb-2">Scytale Cipher</h3>
-          <p className="text-slate-400 mb-6 font-serif">
-            A transposition cipher used by the ancient Greeks, consisting of a cylinder with a strip of parchment wrapped around it.
-          </p>
+          {renderExhibitHeader("scytale")}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div>
                 <label htmlFor="input-scytale" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Text (Max 500 Chars)
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="classical"
                   id="input-scytale"
-                  data-testid="input-text-scytale"
-                  className="w-full h-32 px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  dataTestId="input-text-scytale"
                   value={scytaleInput}
                   onChange={(e) => setScytaleInput(e.target.value)}
                   maxLength={505}
@@ -2159,11 +2666,11 @@ export default function Home() {
                   <label htmlFor="width-scytale" className="block text-sm font-mono text-slate-300 mb-2">
                     Cylinder Width (Diameter)
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="classical"
                     id="width-scytale"
                     type="text"
-                    data-testid="param-width-scytale"
-                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    dataTestId="param-width-scytale"
                     value={scytaleWidth}
                     onChange={(e) => setScytaleWidth(e.target.value)}
                   />
@@ -2363,19 +2870,18 @@ export default function Home() {
           className="mb-16 bg-slate-900 border border-slate-850 rounded-2xl p-8 shadow-xl"
         >
           <h3 className="text-3xl font-bold text-amber-400 mb-2">Polybius Square</h3>
-          <p className="text-slate-400 mb-6 font-serif">
-            A device invented by the ancient Greeks for fractionating letters into grid coordinates (1-5 for rows and columns).
-          </p>
+          {renderExhibitHeader("polybius")}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div>
                 <label htmlFor="input-polybius" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Text (Max 500 Chars)
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="classical"
                   id="input-polybius"
-                  data-testid="input-text-polybius"
-                  className="w-full h-32 px-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  dataTestId="input-text-polybius"
                   value={polybiusInput}
                   onChange={(e) => setPolybiusInput(e.target.value)}
                   maxLength={505}
@@ -2388,11 +2894,11 @@ export default function Home() {
                   <label htmlFor="key-polybius" className="block text-sm font-mono text-slate-300 mb-2">
                     Grid Key (25 letters)
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="classical"
                     id="key-polybius"
                     type="text"
-                    data-testid="param-key-polybius"
-                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    dataTestId="param-key-polybius"
                     value={polybiusKey}
                     onChange={(e) => setPolybiusKey(e.target.value)}
                   />
@@ -2581,6 +3087,258 @@ export default function Home() {
           </div>
         </section>
 
+        {/* -------------------------------------------------------------
+            PLAYFAIR CIPHER EXHIBIT
+            ------------------------------------------------------------- */}
+        <section
+          id="playfair"
+          ref={sectionRefs.playfair}
+          data-testid="exhibit-playfair"
+          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
+        >
+          <h3 className="text-3xl font-bold text-amber-400 mb-2">Playfair Cipher</h3>
+          {renderExhibitHeader("playfair")}
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="input-playfair" className="block text-sm font-mono text-slate-300 mb-2">
+                  Input Text (Max 500 Chars)
+                </label>
+                <ExhibitInput
+                  textarea
+                  era="classical"
+                  id="input-playfair"
+                  dataTestId="input-text-playfair"
+                  value={playfairInput}
+                  onChange={(e) => {
+                    setPlayfairInput(e.target.value);
+                    setPlayfairError("");
+                  }}
+                  maxLength={505}
+                  placeholder="Enter message (letters only)..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="key-playfair" className="block text-sm font-mono text-slate-300 mb-2">
+                    Key Alphabet / Keyword
+                  </label>
+                  <ExhibitInput
+                    era="classical"
+                    id="key-playfair"
+                    type="text"
+                    dataTestId="param-key-playfair"
+                    value={playfairKey}
+                    onChange={(e) => {
+                      setPlayfairKey(e.target.value);
+                      setPlayfairError("");
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-mono text-slate-300 mb-2">
+                    Action
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setPlayfairMode("encrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        playfairMode === "encrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Encrypt
+                    </button>
+                    <button
+                      onClick={() => setPlayfairMode("decrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        playfairMode === "decrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Decrypt
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {playfairError && (
+                <div className="p-3 bg-red-950/80 border border-red-800 rounded-lg text-red-200 text-sm font-mono">
+                  {playfairError}
+                </div>
+              )}
+
+              <div>
+                <span className="block text-sm font-mono text-slate-300 mb-2">
+                  Output Text
+                </span>
+                <div
+                  data-testid="output-text-playfair"
+                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
+                >
+                  {playfairOutput}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center items-center bg-slate-950/40 border border-slate-800/60 rounded-xl p-6">
+              <span className="text-xs font-mono text-slate-500 mb-4 uppercase tracking-wider">// 5x5 Key Grid Visualization</span>
+              <div className="grid grid-cols-5 gap-2 w-full max-w-[250px]">
+                {(() => {
+                  const ALPHABET = "abcdefghiklmnopqrstuvwxyz";
+                  const cleanKey = playfairKey.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
+                  const seen = new Set<string>();
+                  const gridChars: string[] = [];
+                  for (const char of cleanKey) {
+                    if (ALPHABET.includes(char) && !seen.has(char)) {
+                      seen.add(char);
+                      gridChars.push(char);
+                    }
+                  }
+                  for (const char of ALPHABET) {
+                    if (!seen.has(char)) {
+                      seen.add(char);
+                      gridChars.push(char);
+                    }
+                  }
+                  return gridChars.map((char, idx) => (
+                    <div
+                      key={idx}
+                      className="w-10 h-10 border border-slate-800/80 bg-slate-900/50 flex items-center justify-center font-mono text-sm font-bold text-amber-400/80 rounded"
+                    >
+                      {char.toUpperCase()}
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------------------------------
+            SUBSTITUTION COMPONENT EXHIBIT
+            ------------------------------------------------------------- */}
+        <section
+          id="substitution"
+          ref={sectionRefs.substitution}
+          data-testid="exhibit-substitution"
+          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
+        >
+          <h3 className="text-3xl font-bold text-amber-400 mb-2">Substitution Cipher</h3>
+          {renderExhibitHeader("substitution")}
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="input-substitution" className="block text-sm font-mono text-slate-300 mb-2">
+                  Input Text (Max 500 Chars)
+                </label>
+                <ExhibitInput
+                  textarea
+                  era="classical"
+                  id="input-substitution"
+                  dataTestId="input-text-substitution"
+                  value={substitutionInput}
+                  onChange={(e) => {
+                    setSubstitutionInput(e.target.value);
+                    setSubstitutionError("");
+                  }}
+                  maxLength={505}
+                  placeholder="Enter secret message..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="key-substitution" className="block text-sm font-mono text-slate-300 mb-2">
+                    Key Alphabet (26 unique chars)
+                  </label>
+                  <ExhibitInput
+                    era="classical"
+                    id="key-substitution"
+                    type="text"
+                    dataTestId="param-key-substitution"
+                    value={substitutionKey}
+                    onChange={(e) => {
+                      setSubstitutionKey(e.target.value);
+                      setSubstitutionError("");
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-mono text-slate-300 mb-2">
+                    Action
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setSubstitutionMode("encrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        substitutionMode === "encrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Encrypt
+                    </button>
+                    <button
+                      onClick={() => setSubstitutionMode("decrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        substitutionMode === "decrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Decrypt
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {substitutionError && (
+                <div className="p-3 bg-red-950/80 border border-red-800 rounded-lg text-red-200 text-sm font-mono">
+                  {substitutionError}
+                </div>
+              )}
+
+              <div>
+                <span className="block text-sm font-mono text-slate-300 mb-2">
+                  Output Text
+                </span>
+                <div
+                  data-testid="output-text-substitution"
+                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
+                >
+                  {substitutionOutput}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center items-center bg-slate-950/40 border border-slate-800/60 rounded-xl p-6 overflow-x-auto w-full">
+              <span className="text-xs font-mono text-slate-500 mb-4 uppercase tracking-wider">// Alphabet Substitution Map</span>
+              <div className="flex flex-col space-y-2 font-mono text-xs text-slate-300 w-full min-w-[300px]">
+                <div className="flex border-b border-slate-800 pb-1">
+                  <span className="w-12 text-slate-500 uppercase">Plain:</span>
+                  <span className="tracking-widest">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</span>
+                </div>
+                <div className="flex pt-1">
+                  <span className="w-12 text-amber-400 uppercase font-bold">Cipher:</span>
+                  <span className="tracking-widest text-amber-400 font-bold">
+                    {(() => {
+                      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                      const clean = substitutionKey.toUpperCase();
+                      return alphabet.split("").map((c, idx) => clean[idx] || "-").join(" ");
+                    })()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section
           id="enigma"
           ref={sectionRefs.enigma}
@@ -2588,23 +3346,23 @@ export default function Home() {
           className="mb-16 bg-slate-900 border border-slate-850 rounded-2xl p-8 shadow-xl"
         >
           <h3 className="text-3xl font-bold text-amber-400 mb-2">Enigma Machine</h3>
-          <p className="text-slate-400 mb-6 font-serif">
-            The legendary electro-mechanical rotor cipher machine used in WWII, featuring configurable rotors, ring settings, and plugboard connections.
-          </p>
+          {renderExhibitHeader("enigma")}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div>
                 <label htmlFor="input-enigma" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Text (Max 500 Chars)
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="historical"
                   id="input-enigma"
-                  data-testid="input-text-enigma"
-                  className="w-full h-24 px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                  dataTestId="input-text-enigma"
                   value={enigmaInput}
                   onChange={(e) => setEnigmaInput(e.target.value)}
                   maxLength={505}
                   placeholder="Enter message to encipher (A-Z only)..."
+                  className="h-24 text-sm"
                 />
               </div>
 
@@ -2613,26 +3371,28 @@ export default function Home() {
                   <label htmlFor="rotors-enigma" className="block text-xs font-mono text-slate-300 mb-1">
                     Rotors (e.g. I-II-III)
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="historical"
                     id="rotors-enigma"
                     type="text"
-                    data-testid="param-rotors-enigma"
-                    className="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs"
+                    dataTestId="param-rotors-enigma"
                     value={enigmaRotors}
                     onChange={(e) => setEnigmaRotors(e.target.value)}
+                    className="px-3 py-1.5 text-xs"
                   />
                 </div>
                 <div>
                   <label htmlFor="positions-enigma" className="block text-xs font-mono text-slate-300 mb-1">
                     Initial Positions (e.g. A-A-A)
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="historical"
                     id="positions-enigma"
                     type="text"
-                    data-testid="param-positions-enigma"
-                    className="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs"
+                    dataTestId="param-positions-enigma"
                     value={enigmaPositions}
                     onChange={(e) => setEnigmaPositions(e.target.value)}
+                    className="px-3 py-1.5 text-xs"
                   />
                 </div>
               </div>
@@ -2642,26 +3402,28 @@ export default function Home() {
                   <label htmlFor="rings-enigma" className="block text-xs font-mono text-slate-300 mb-1">
                     Ring Settings (e.g. A-A-A or 1-1-1)
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="historical"
                     id="rings-enigma"
                     type="text"
-                    data-testid="param-rings-enigma"
-                    className="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs"
+                    dataTestId="param-rings-enigma"
                     value={enigmaRings}
                     onChange={(e) => setEnigmaRings(e.target.value)}
+                    className="px-3 py-1.5 text-xs"
                   />
                 </div>
                 <div>
                   <label htmlFor="plugboard-enigma" className="block text-xs font-mono text-slate-300 mb-1">
                     Plugboard Swaps (e.g. AB CD)
                   </label>
-                  <input
+                  <ExhibitInput
+                    era="historical"
                     id="plugboard-enigma"
                     type="text"
-                    data-testid="param-plugboard-enigma"
-                    className="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs"
+                    dataTestId="param-plugboard-enigma"
                     value={enigmaPlugboard}
                     onChange={(e) => setEnigmaPlugboard(e.target.value)}
+                    className="px-3 py-1.5 text-xs"
                   />
                 </div>
               </div>
@@ -2986,10 +3748,7 @@ export default function Home() {
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
             <div>
-              <h3 className="text-3xl font-bold text-amber-400 mb-2 font-serif">AES Cipher</h3>
-              <p className="text-sm text-slate-400 font-mono">
-                Advanced Encryption Standard (AES-256 CTR Mode)
-              </p>
+              <h3 className="text-3xl font-bold text-teal-400 mb-2 font-serif">AES Cipher</h3>
             </div>
             <div className="flex items-center space-x-2 mt-4 md:mt-0">
               <select
@@ -3003,6 +3762,7 @@ export default function Home() {
               </select>
             </div>
           </div>
+          {renderExhibitHeader("aes")}
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
@@ -3010,13 +3770,15 @@ export default function Home() {
                 <label htmlFor="input-aes" className="block text-sm font-mono text-slate-300 mb-2">
                   Input String
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="modern"
                   id="input-aes"
-                  data-testid="input-text-aes"
+                  dataTestId="input-text-aes"
                   value={aesInput}
                   onChange={(e) => setAesInput(e.target.value)}
-                  className="w-full h-24 p-3 bg-slate-955 border border-slate-800 rounded-lg font-mono text-sm text-slate-200 focus:border-amber-500 outline-none"
                   placeholder="Enter text or hex to encrypt/decrypt..."
+                  className="h-24 text-sm"
                 />
               </div>
 
@@ -3057,13 +3819,14 @@ export default function Home() {
                 <label htmlFor="key-aes" className="block text-sm font-mono text-slate-300 mb-2">
                   Cipher Key (16 or 32 bytes)
                 </label>
-                <input
+                <ExhibitInput
+                  era="modern"
                   id="key-aes"
                   type="text"
-                  data-testid="param-key-aes"
+                  dataTestId="param-key-aes"
                   value={aesKey}
                   onChange={(e) => setAesKey(e.target.value)}
-                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg font-mono text-sm text-slate-200 focus:border-amber-500 outline-none"
+                  className="text-sm"
                 />
               </div>
 
@@ -3275,10 +4038,7 @@ export default function Home() {
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
             <div>
-              <h3 className="text-3xl font-bold text-amber-400 mb-2 font-serif">RSA Cipher</h3>
-              <p className="text-sm text-slate-400 font-mono">
-                Asymmetric Cryptography (Modular Exponentiation)
-              </p>
+              <h3 className="text-3xl font-bold text-teal-400 mb-2 font-serif">RSA Cipher</h3>
             </div>
             <div className="flex items-center space-x-2 mt-4 md:mt-0">
               <select
@@ -3292,6 +4052,7 @@ export default function Home() {
               </select>
             </div>
           </div>
+          {renderExhibitHeader("rsa")}
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
@@ -3306,39 +4067,42 @@ export default function Home() {
                     <label htmlFor="p-rsa" className="block text-xs font-mono text-slate-400 mb-1">
                       Prime p
                     </label>
-                    <input
+                    <ExhibitInput
+                      era="modern"
                       id="p-rsa"
                       type="number"
-                      data-testid="param-p-rsa"
+                      dataTestId="param-p-rsa"
                       value={rsaP}
                       onChange={(e) => setRsaP(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded p-2 font-mono text-xs text-slate-200 outline-none"
+                      className="p-2 text-xs"
                     />
                   </div>
                   <div>
                     <label htmlFor="q-rsa" className="block text-xs font-mono text-slate-400 mb-1">
                       Prime q
                     </label>
-                    <input
+                    <ExhibitInput
+                      era="modern"
                       id="q-rsa"
                       type="number"
-                      data-testid="param-q-rsa"
+                      dataTestId="param-q-rsa"
                       value={rsaQ}
                       onChange={(e) => setRsaQ(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded p-2 font-mono text-xs text-slate-200 outline-none"
+                      className="p-2 text-xs"
                     />
                   </div>
                   <div>
                     <label htmlFor="e-rsa" className="block text-xs font-mono text-slate-400 mb-1">
                       Exponent e
                     </label>
-                    <input
+                    <ExhibitInput
+                      era="modern"
                       id="e-rsa"
                       type="number"
-                      data-testid="param-e-rsa"
+                      dataTestId="param-e-rsa"
                       value={rsaE}
                       onChange={(e) => setRsaE(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded p-2 font-mono text-xs text-slate-200 outline-none"
+                      className="p-2 text-xs"
                     />
                   </div>
                 </div>
@@ -3371,13 +4135,15 @@ export default function Home() {
                 <label htmlFor="input-rsa" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Message (Number or Text)
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="modern"
                   id="input-rsa"
-                  data-testid="input-text-rsa"
+                  dataTestId="input-text-rsa"
                   value={rsaInput}
                   onChange={(e) => setRsaInput(e.target.value)}
-                  className="w-full h-20 p-3 bg-slate-950 border border-slate-800 rounded-lg font-mono text-sm text-slate-200 focus:border-amber-500 outline-none"
                   placeholder="Enter message to encrypt or decrypt..."
+                  className="h-20 text-sm"
                 />
               </div>
 
@@ -3594,12 +4360,10 @@ export default function Home() {
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
             <div>
-              <h3 className="text-3xl font-bold text-amber-400 mb-2 font-serif">SHA-256 Hash</h3>
-              <p className="text-sm text-slate-400 font-mono">
-                Cryptographic Secure Hash Algorithm (256-bit Digest)
-              </p>
+              <h3 className="text-3xl font-bold text-teal-400 mb-2 font-serif">SHA-256 Hash</h3>
             </div>
           </div>
+          {renderExhibitHeader("sha256")}
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
@@ -3607,13 +4371,15 @@ export default function Home() {
                 <label htmlFor="input-sha256" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Plaintext
                 </label>
-                <textarea
+                <ExhibitInput
+                  textarea
+                  era="modern"
                   id="input-sha256"
-                  data-testid="input-text-sha256"
+                  dataTestId="input-text-sha256"
                   value={shaInput}
                   onChange={(e) => setShaInput(e.target.value)}
-                  className="w-full h-28 p-3 bg-slate-950 border border-slate-800 rounded-lg font-mono text-sm text-slate-200 focus:border-amber-500 outline-none"
                   placeholder="Enter text to hash..."
+                  className="h-28 text-sm"
                 />
               </div>
 
@@ -3810,7 +4576,98 @@ export default function Home() {
             </div>
           </div>
         </section>
+        {/* -------------------------------------------------------------
+            ABOUT THIS MUSEUM
+            ------------------------------------------------------------- */}
+        <section
+          id="about"
+          className="mt-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl space-y-8"
+        >
+          <h3 className="text-3xl font-bold text-slate-100 font-serif">About This Museum</h3>
+          <p className="text-slate-300 leading-relaxed font-serif">
+            This Cryptography Museum is an open-source interactive reference for classical, historical, and modern cryptography methods. The project is designed to bridge the gap between abstract mathematical/mechanical descriptions and visual intuition, allowing visitors to inspect how character transitions and data blocks mutate step-by-step. You can contribute to the development or check the source code on our{" "}
+            <a
+              href="https://github.com/Arjundevjha/Cryptography"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-400 hover:text-amber-300 underline font-mono text-sm"
+            >
+              GitHub repository
+            </a>.
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-8 pt-4 border-t border-slate-800/80">
+            <div>
+              <h4 className="text-lg font-bold text-slate-200 mb-3 font-serif">How to Use</h4>
+              <ul className="list-disc list-inside space-y-2 text-sm text-slate-400 font-mono">
+                <li>Input your secret text into any exhibit's text field.</li>
+                <li>Adjust parameters (shifts, keys, or selected rotors).</li>
+                <li>Toggle between Encrypt and Decrypt modes.</li>
+                <li>Use playback controls (Play, Step, Reset) to observe.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold text-slate-200 mb-3 font-serif">Era Guide</h4>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#D4A853] block" />
+                  <span className="text-sm font-mono text-[#D4A853]">Classical (Amber)</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#C0392B] block" />
+                  <span className="text-sm font-mono text-[#C0392B]">Historical Machines (Crimson)</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#4ECDC4] block" />
+                  <span className="text-sm font-mono text-[#4ECDC4]">Modern (Teal)</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold text-slate-200 mb-3 font-serif">Built With</h4>
+              <ul className="list-disc list-inside space-y-1 text-sm text-slate-400 font-mono">
+                <li>Next.js</li>
+                <li>TypeScript</li>
+                <li>Tailwind CSS</li>
+                <li>Framer Motion</li>
+                <li>FastAPI</li>
+              </ul>
+            </div>
+          </div>
+        </section>
       </div>
+
+      {/* Footer with API Status Indicator */}
+      <footer className="border-t border-slate-800 bg-slate-900/60 py-6 mt-12 text-center text-xs font-mono text-slate-400">
+        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-left space-y-1">
+            <div>© 2026 Cryptography Museum. All rights reserved.</div>
+            <div>
+              <a
+                href="https://github.com/Arjundevjha/Cryptography"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-500/80 hover:text-amber-400 underline transition-colors"
+              >
+                GitHub Repository
+              </a>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2" data-testid="api-status-container">
+            <span
+              data-testid="api-status-dot"
+              className={`h-2.5 w-2.5 rounded-full ${
+                apiStatus === "connected" ? "bg-emerald-500 shadow-[0_0_8px_#10b981]" : "bg-rose-500 shadow-[0_0_8px_#f43f5e]"
+              }`}
+            ></span>
+            <span data-testid="api-status-text" className="text-slate-350">
+              {apiStatus === "connected" ? "API Connected" : "API Offline"}
+            </span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
