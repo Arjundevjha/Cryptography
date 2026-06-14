@@ -59,7 +59,7 @@ This log documents code quality and dead-code cleanup findings, actions taken, a
   - Next.js successfully compiles and builds.
   - Frontend and backend integration is complete with visual status indicator and proper error handling.
 
-## Track 2: Navigation Overhaul
+## Track 2A–C: Navigation Overhaul
 - **Findings**:
   - Replaced the horizontal timeline strip with a vertical, right-anchored, hover-expanding navigation panel. Collapsed to 48px by default, expanding to 220px on hover.
   - Era color groupings (Classical: Amber, Historical: Crimson, Modern: Teal) and borders/highlighting correctly represent eras.
@@ -74,4 +74,30 @@ This log documents code quality and dead-code cleanup findings, actions taken, a
 - **Resolution**:
   - Playwright E2E tests `TC-T2B-NAV-ACTIVE-ON-LOAD`, `TC-T3-INTERACT-12`, and `TC-T4-SCENARIO-10` pass successfully.
   - Fallow dead-code analysis reports 0 issues.
+
+## Track 3A–D: Museum Experience & UI Consistency
+- **Findings**:
+  - The museum dashboard lacked context on page entry (missing Hero section) and detailed educational references (missing About section).
+  - Individual cipher exhibits lacked standardized metadata card overlays (blurbs detailing history, usage era, and mechanics).
+  - Input elements across all 11 cipher exhibits were inconsistent in styling, label positioning, and error state reporting, causing layout duplication and maintenance overhead.
+- **Actions**:
+  - **Track 3A**: Created a full-screen dynamic Hero section featuring interactive, custom CSS-animated drifting characters, fully optimized for performance and respects user `prefers-reduced-motion` settings.
+  - **Track 3B**: Designed and added a detailed "About" section containing user interaction guides, an era guide, build specifications, GitHub links, and a unified footer.
+  - **Track 3C**: Unified and structured the metadata (historical background, mechanism explanation, etc.) for all 11 ciphers into a central configuration object.
+  - **Track 3D**: Designed and implemented a unified, reusable `ExhibitInput` component in `web/src/components/ui/ExhibitInput.tsx` to handle labels, placeholders, input values, and validation errors consistently.
+- **Resolution**:
+  - The museum experience is visually polished and cohesive across all viewport sizes.
+  - All 11 cipher exhibits leverage the structured metadata config and the reusable `ExhibitInput` component, ensuring uniform form layouts, error display styles, and centralized validation feedback.
+
+## Track 1D: Final Sweep (Fallow Cleanup)
+- **Findings**:
+  - Code analysis revealed duplication of the Playfair grid generation logic (mapping "j" to "i", stripping non-alphabetic characters, and creating the 5x5 key square) across `playfairEncrypt`, `playfairDecrypt`, and the visual key grid visualization loop inside `web/app/page.tsx`.
+- **Actions**:
+  - Extracted the grid logic into a single, exported helper function `generatePlayfairGrid(key: string)` in `web/app/utils/ciphers.ts`.
+  - Refactored `playfairEncrypt`, `playfairDecrypt`, and `web/app/page.tsx` to use the unified helper function.
+  - Added new Jest unit tests in `web/tests/unit/ciphers.test.ts` to verify the grid generation behavior (duplicate character filtering, J-to-I mapping) and standard encryption/decryption flows.
+- **Resolution**:
+  - Eliminated duplicate implementation patterns, improving maintainability.
+  - All unit tests pass successfully.
+
 

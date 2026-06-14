@@ -8,7 +8,10 @@ import {
   enigmaStepRotors,
   validateAesKey,
   validateRsaParams,
-  sha256PadDescription
+  sha256PadDescription,
+  playfairEncrypt,
+  playfairDecrypt,
+  generatePlayfairGrid
 } from '../../app/utils/ciphers';
 
 describe('Caesar Cipher Adapter', () => {
@@ -122,5 +125,36 @@ describe('SHA-256 Padding helper', () => {
   it('should calculate multiple blocks for long messages', () => {
     const res = sha256PadDescription(70); // > 64 bytes
     expect(res.blockCount).toBe(2);
+  });
+});
+
+describe('Playfair Cipher', () => {
+  it('should generate a correct 5x5 Playfair grid without duplicate letters and with J mapped to I', () => {
+    const grid = generatePlayfairGrid('playfair example');
+    // 'playfair example' -> 'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm' (mapping 'j' to 'i')
+    // and then appending remaining letters of the 25-letter alphabet:
+    // 'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's', 't', 'u', 'v', 'w', 'z'
+    const expected = [
+      'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm',
+      'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's',
+      't', 'u', 'v', 'w', 'z'
+    ];
+    expect(grid).toEqual(expected);
+  });
+
+  it('should encrypt and decrypt text correctly', () => {
+    const key = 'playfair example';
+    
+    // Case 1: Plaintext with adjacent duplicate letters ('ee' in 'tree')
+    const plaintext1 = 'hidethegoldinthetreestump';
+    const ciphertext1 = playfairEncrypt(plaintext1, key);
+    const decrypted1 = playfairDecrypt(ciphertext1, key);
+    expect(decrypted1).toBe('hidethegoldinthetrexestump');
+
+    // Case 2: Plaintext of even length with no duplicate adjacent letters
+    const plaintext2 = 'hidethegoldintheroad';
+    const ciphertext2 = playfairEncrypt(plaintext2, key);
+    const decrypted2 = playfairDecrypt(ciphertext2, key);
+    expect(decrypted2).toBe(plaintext2);
   });
 });

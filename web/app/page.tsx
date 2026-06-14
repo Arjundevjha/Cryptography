@@ -12,6 +12,7 @@ import {
   sha256PadDescription,
   playfairEncrypt,
   playfairDecrypt,
+  generatePlayfairGrid,
   substitutionEncrypt,
   substitutionDecrypt
 } from "./utils/ciphers";
@@ -3189,22 +3190,7 @@ export default function Home() {
               <span className="text-xs font-mono text-slate-500 mb-4 uppercase tracking-wider">// 5x5 Key Grid Visualization</span>
               <div className="grid grid-cols-5 gap-2 w-full max-w-[250px]">
                 {(() => {
-                  const ALPHABET = "abcdefghiklmnopqrstuvwxyz";
-                  const cleanKey = playfairKey.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
-                  const seen = new Set<string>();
-                  const gridChars: string[] = [];
-                  for (const char of cleanKey) {
-                    if (ALPHABET.includes(char) && !seen.has(char)) {
-                      seen.add(char);
-                      gridChars.push(char);
-                    }
-                  }
-                  for (const char of ALPHABET) {
-                    if (!seen.has(char)) {
-                      seen.add(char);
-                      gridChars.push(char);
-                    }
-                  }
+                  const gridChars = generatePlayfairGrid(playfairKey);
                   return gridChars.map((char, idx) => (
                     <div
                       key={idx}

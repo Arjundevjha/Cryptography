@@ -225,12 +225,8 @@ export function sha256PadDescription(messageLenBytes: number): {
   };
 }
 
-/**
- * Playfair cipher implementation.
- */
-export function playfairEncrypt(plaintext: string, key: string): string {
+export function generatePlayfairGrid(key: string): string[] {
   const ALPHABET = "abcdefghiklmnopqrstuvwxyz";
-  // Create grid
   const cleanKey = key.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
   const seen = new Set<string>();
   const gridChars: string[] = [];
@@ -246,6 +242,14 @@ export function playfairEncrypt(plaintext: string, key: string): string {
       gridChars.push(char);
     }
   }
+  return gridChars;
+}
+
+/**
+ * Playfair cipher implementation.
+ */
+export function playfairEncrypt(plaintext: string, key: string): string {
+  const gridChars = generatePlayfairGrid(key);
   
   // Find position
   const findPos = (char: string): [number, number] => {
@@ -294,23 +298,7 @@ export function playfairEncrypt(plaintext: string, key: string): string {
 }
 
 export function playfairDecrypt(ciphertext: string, key: string): string {
-  const ALPHABET = "abcdefghiklmnopqrstuvwxyz";
-  // Create grid
-  const cleanKey = key.toLowerCase().replace(/j/g, "i").replace(/[^a-z]/g, "");
-  const seen = new Set<string>();
-  const gridChars: string[] = [];
-  for (const char of cleanKey) {
-    if (ALPHABET.includes(char) && !seen.has(char)) {
-      seen.add(char);
-      gridChars.push(char);
-    }
-  }
-  for (const char of ALPHABET) {
-    if (!seen.has(char)) {
-      seen.add(char);
-      gridChars.push(char);
-    }
-  }
+  const gridChars = generatePlayfairGrid(key);
   
   const findPos = (char: string): [number, number] => {
     const idx = gridChars.indexOf(char);

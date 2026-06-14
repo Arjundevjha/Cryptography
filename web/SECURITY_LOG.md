@@ -97,3 +97,62 @@ Testing /Users/abc/Desktop/Cryptography/methods ...
 ## Final Snyk Verification (Post-Fixes) — 2026-06-12
 
 Static analysis verified that no new security issues or vulnerabilities were introduced by the E2E test fixes. First-party code directories `web/api/`, `methods/`, and `web/app/` remain 100% clean with 0 security issues.
+
+## Post-Milestone Snyk Sweep — 2026-06-14
+
+Static analysis scan of first-party code was performed using `snyk code test` across the following directories:
+- `web/app/`
+- `web/api/`
+- `web/src/`
+
+### Results Summary
+- **First-Party Code Issues**: 0 high/critical issues found.
+- **Detailed Scan Outputs**:
+
+#### Scan Results for `web/app/`
+```
+Testing /Users/abc/Desktop/Cryptography/web/app ...
+
+╭─────────────────────────────────────────────────────────────────╮
+│ Test Summary                                                    │
+│                                                                 │
+│   Organization:      arjundevjha111                             │
+│   Test type:         Static code analysis                       │
+│   Project path:      /Users/abc/Desktop/Cryptography/web/app    │
+│                                                                 │
+│   Total issues:   0                                             │
+╰─────────────────────────────────────────────────────────────────╯
+```
+
+#### Scan Results for `web/api/`
+```
+Testing /Users/abc/Desktop/Cryptography/web/api ...
+
+╭─────────────────────────────────────────────────────────────────╮
+│ Test Summary                                                    │
+│                                                                 │
+│   Organization:      arjundevjha111                             │
+│   Test type:         Static code analysis                       │
+│   Project path:      /Users/abc/Desktop/Cryptography/web/api    │
+│                                                                 │
+│   Total issues:   0                                             │
+╰─────────────────────────────────────────────────────────────────╯
+```
+
+#### Scan Results for `web/src/`
+```
+Testing /Users/abc/Desktop/Cryptography/web/src ...
+
+╭─────────────────────────────────────────────────────────────────╮
+│ Test Summary                                                    │
+│                                                                 │
+│   Organization:      arjundevjha111                             │
+│   Test type:         Static code analysis                       │
+│   Project path:      /Users/abc/Desktop/Cryptography/web/src    │
+│                                                                 │
+│   Total issues:   0                                             │
+╰─────────────────────────────────────────────────────────────────╯
+```
+
+No security issues or vulnerabilities were found in first-party code. Package-level vulnerabilities (e.g. out-of-scope npm dependencies) were ignored for this sweep.
+
