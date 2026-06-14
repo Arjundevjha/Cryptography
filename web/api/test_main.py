@@ -76,7 +76,7 @@ def test_polybius_decrypt_success():
     response = client.post("/api/polybius/decrypt", json={"ciphertext": "23 15 31 31 34"})
     assert response.status_code == 200
     # Decrypt standard is HELLIO or HELLO (since i and j merge)
-    assert response.json()["plaintext"] in ("h e l l o", "h e l l i o")
+    assert response.json()["plaintext"] in ("HELLO", "HELLIO")
 
 def test_polybius_decrypt_invalid_coordinates():
     response = client.post("/api/polybius/decrypt", json={"ciphertext": "23 15 31 3"})

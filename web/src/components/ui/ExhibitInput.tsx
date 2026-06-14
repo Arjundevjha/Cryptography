@@ -24,7 +24,7 @@ export const ExhibitInput: React.FC<ExhibitInputProps> = ({
 
   // Shared styles
   // Higher contrast: solid darker bg with bright white text for readability
-  const baseStyles = `w-full px-4 py-2 bg-slate-950 border border-slate-600 rounded-lg text-white font-mono placeholder-slate-400 focus:outline-none focus:ring-2 ${focusRingColor} focus:border-transparent transition-all`;
+  const baseStyles = `w-full px-4 py-2 bg-slate-950 border border-slate-500 rounded-lg text-white font-mono placeholder-slate-400 focus:outline-none focus:ring-2 ${focusRingColor} focus:border-transparent transition-all`;
 
   if (textarea) {
     return (

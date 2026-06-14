@@ -35,7 +35,9 @@ test.describe('Modern Ciphers E2E Tests', () => {
       await encryptBtn.click();
     }
     
-    const ciphertext = await page.locator('[data-testid="output-text-aes"]').textContent();
+    const ciphertextLocator = page.locator('[data-testid="output-text-aes"]');
+    await expect(ciphertextLocator).not.toBeEmpty();
+    const ciphertext = await ciphertextLocator.textContent();
     expect(ciphertext).not.toBeNull();
     
     await page.fill('[data-testid="input-text-aes"]', ciphertext || '');
@@ -192,7 +194,9 @@ test.describe('Modern Ciphers E2E Tests', () => {
     await page.fill('[data-testid="input-text-rsa"]', '42');
     const encryptBtn = page.locator('[data-testid="encrypt-btn-rsa"]');
     if (await encryptBtn.count() > 0) { await encryptBtn.click(); }
-    const ciphertext = await page.locator('[data-testid="output-text-rsa"]').textContent();
+    const outputRsaLocator = page.locator('[data-testid="output-text-rsa"]');
+    await expect(outputRsaLocator).not.toBeEmpty();
+    const ciphertext = await outputRsaLocator.textContent();
     
     await page.fill('[data-testid="input-text-rsa"]', ciphertext || '');
     const decryptBtn = page.locator('[data-testid="decrypt-btn-rsa"]');
@@ -224,7 +228,7 @@ test.describe('Modern Ciphers E2E Tests', () => {
     
     const visualizer = page.locator('[data-testid="visualizer-rsa"]');
     await expect(visualizer).toBeVisible();
-    await expect(visualizer.locator('text=n = p, text=d, svg, div').first()).toBeVisible();
+    await expect(visualizer.locator('text=n = p * q').first()).toBeVisible();
   });
 
   test('TC-T2-RSA-01 (Non-Prime Parameters)', async ({ page }) => {
@@ -317,7 +321,7 @@ test.describe('Modern Ciphers E2E Tests', () => {
     
     const visualizer = page.locator('[data-testid="visualizer-sha256"]');
     await expect(visualizer).toBeVisible();
-    await expect(visualizer.locator('text=pad, text=1, svg, div').first()).toBeVisible();
+    await expect(visualizer.locator('text=Padding added').first()).toBeVisible();
   });
 
   test('TC-T1-SHA256-05 (Block Splitting)', async ({ page }) => {
@@ -326,7 +330,7 @@ test.describe('Modern Ciphers E2E Tests', () => {
     
     const visualizer = page.locator('[data-testid="visualizer-sha256"]');
     await expect(visualizer).toBeVisible();
-    await expect(visualizer.locator('text=Block 1, text=Block 2, svg, div').first()).toBeVisible();
+    await expect(visualizer.locator('text=Message Blocks').first()).toBeVisible();
   });
 
   test('TC-T2-SHA256-01 (Empty Input Handling)', async ({ page }) => {

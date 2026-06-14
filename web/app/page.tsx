@@ -210,7 +210,7 @@ const renderExhibitHeader = (cipherId: string) => {
 
 export default function Home() {
   // Navigation / Scroll
-  const [activeSection, setActiveSection] = useState("caesar");
+  const [activeSection, setActiveSection] = useState("scytale");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isInitialScroll = useRef(false);
   const lastHashRef = useRef("");
@@ -270,7 +270,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    setActiveSection("caesar"); // Explicitly set first cipher ID before observer fires
+    setActiveSection("scytale"); // Explicitly set first cipher ID before observer fires
 
     const handleHashTransition = (url: string | URL | null | undefined, isInitial = false) => {
       if (!url) return;
@@ -1823,6 +1823,470 @@ export default function Home() {
       <div className="container mx-auto pl-4 pr-[48px] py-12 max-w-5xl">
 
         {/* -------------------------------------------------------------
+            SCYTALE CIPHER EXHIBIT
+            ------------------------------------------------------------- */}
+        <section
+          id="scytale"
+          ref={sectionRefs.scytale}
+          data-testid="exhibit-scytale"
+          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
+        >
+          <h3 className="text-3xl font-bold text-amber-400 mb-2">Scytale Cipher</h3>
+          {renderExhibitHeader("scytale")}
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="input-scytale" className="block text-sm font-mono text-slate-300 mb-2">
+                  Input Text (Max 500 Chars)
+                </label>
+                <ExhibitInput
+                  textarea
+                  era="classical"
+                  id="input-scytale"
+                  dataTestId="input-text-scytale"
+                  value={scytaleInput}
+                  onChange={(e) => setScytaleInput(e.target.value)}
+                  maxLength={505}
+                  placeholder="Enter secret message..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="width-scytale" className="block text-sm font-mono text-slate-300 mb-2">
+                    Cylinder Width (Diameter)
+                  </label>
+                  <ExhibitInput
+                    era="classical"
+                    id="width-scytale"
+                    type="text"
+                    dataTestId="param-width-scytale"
+                    value={scytaleWidth}
+                    onChange={(e) => setScytaleWidth(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-mono text-slate-300 mb-2">
+                    Action
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      data-testid="encrypt-btn-scytale"
+                      onClick={() => {
+                        setScytaleMode("encrypt");
+                        handleScytaleProcess("encrypt");
+                      }}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        scytaleMode === "encrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Encrypt
+                    </button>
+                    <button
+                      data-testid="decrypt-btn-scytale"
+                      onClick={() => {
+                        setScytaleMode("decrypt");
+                        handleScytaleProcess("decrypt");
+                      }}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        scytaleMode === "decrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Decrypt
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Playback Controls */}
+              <div className="bg-slate-950/50 p-4 border border-slate-800/80 rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-slate-400">Step: {scytaleIndex + 1} / {Math.max(1, scytaleInput.length)}</span>
+                  <div className="flex space-x-2">
+                    <button
+                      type="button"
+                      data-testid="step-backward-btn-scytale"
+                      onClick={() => setScytaleIndex((prev) => Math.max(0, prev - 1))}
+                      disabled={scytaleIndex === 0}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
+                      aria-label="Step Backward"
+                    >
+                      ⏮️
+                    </button>
+                    {scytaleIsPlaying ? (
+                      <button
+                        type="button"
+                        data-testid="pause-btn-scytale"
+                        onClick={() => setScytaleIsPlaying(false)}
+                        className="p-1 text-slate-400 hover:text-white transition"
+                        aria-label="Pause"
+                      >
+                        ⏸️
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        data-testid="play-btn-scytale"
+                        onClick={() => setScytaleIsPlaying(true)}
+                        className="p-1 text-slate-400 hover:text-white transition"
+                        aria-label="Play"
+                      >
+                        ▶️
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      data-testid="step-forward-btn-scytale"
+                      onClick={() => setScytaleIndex((prev) => Math.min(scytaleInput.length - 1, prev + 1))}
+                      disabled={scytaleIndex >= scytaleInput.length - 1}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
+                      aria-label="Step Forward"
+                    >
+                      ⏭️
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="reset-btn-scytale"
+                      onClick={() => {
+                        setScytaleIsPlaying(false);
+                        setScytaleIndex(0);
+                      }}
+                      className="p-1 text-slate-400 hover:text-white transition"
+                      aria-label="Reset"
+                    >
+                      🔄
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <label htmlFor="speed-scytale" className="text-xs font-mono text-slate-400">Speed</label>
+                  <input
+                    id="speed-scytale"
+                    type="range"
+                    data-testid="speed-slider-scytale"
+                    min="100"
+                    max="2000"
+                    step="100"
+                    value={scytaleSpeed}
+                    onChange={(e) => setScytaleSpeed(parseInt(e.target.value, 10))}
+                    className="flex-1 accent-amber-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <span className="text-xs font-mono text-slate-400">{scytaleSpeed}ms</span>
+                </div>
+              </div>
+
+              {scytaleError && (
+                <div
+                  data-testid="error-message-scytale"
+                  className="p-3 bg-red-950/80 border border-red-900 text-red-400 rounded-lg text-sm font-mono"
+                >
+                  {scytaleError}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              <div data-testid="visualizer-scytale" className="relative">
+                {/* SVG Cylinder */}
+                <svg viewBox="0 0 400 240" className="w-full h-60 bg-slate-950 rounded-lg border border-slate-800">
+                  <defs>
+                    <linearGradient id="cylinderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#1e293b" />
+                      <stop offset="50%" stopColor="#475569" />
+                      <stop offset="100%" stopColor="#0f172a" />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Cylinder Body */}
+                  <rect x="120" y="10" width="160" height="220" rx="15" fill="url(#cylinderGrad)" stroke="#64748b" strokeWidth="2" />
+                  
+                  {/* Diagonal tape wraps */}
+                  {Array.from({ length: Math.min(Math.ceil((scytaleInput.length || 8) / (cleanScytaleWidth || 4)), 8) }).map((_, rIdx) => (
+                    <path
+                      key={`ribbon-${rIdx}`}
+                      d={`M 120 ${30 + rIdx * 25} L 280 ${45 + rIdx * 25} L 280 ${65 + rIdx * 25} L 120 ${50 + rIdx * 25} Z`}
+                      fill="#b45309"
+                      fillOpacity="0.4"
+                      stroke="#d97706"
+                      strokeWidth="1"
+                    />
+                  ))}
+                  
+                  {/* Letters on the tape */}
+                  {scytaleInput.split("").slice(0, 32).map((char, charIdx) => {
+                    const scytaleWidthVal = cleanScytaleWidth || 4;
+                    const col = charIdx % scytaleWidthVal;
+                    const row = Math.floor(charIdx / scytaleWidthVal);
+                    const x = 140 + (col / Math.max(1, scytaleWidthVal - 1)) * 120;
+                    const y = 42 + row * 25;
+                    const isActive = charIdx === scytaleIndex;
+                    return (
+                      <g key={`scytale-char-${charIdx}`}>
+                        {isActive && (
+                          <circle cx={x} cy={y} r="12" fill="#f59e0b" className="animate-pulse" />
+                        )}
+                        <text
+                          x={x}
+                          y={y}
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          className={`font-mono font-bold text-xs ${isActive ? "fill-slate-950" : "fill-amber-400"}`}
+                        >
+                          {char === " " ? "_" : char}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
+
+              <div>
+                <span className="block text-sm font-mono text-slate-300 mb-2">
+                  Output Text
+                </span>
+                <div
+                  data-testid="output-text-scytale"
+                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
+                >
+                  {scytaleOutput}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------------------------------
+            POLYBIUS SQUARE EXHIBIT
+            ------------------------------------------------------------- */}
+        <section
+          id="polybius"
+          ref={sectionRefs.polybius}
+          data-testid="exhibit-polybius"
+          className="mb-16 bg-slate-900 border border-slate-850 rounded-2xl p-8 shadow-xl"
+        >
+          <h3 className="text-3xl font-bold text-amber-400 mb-2">Polybius Square</h3>
+          {renderExhibitHeader("polybius")}
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="input-polybius" className="block text-sm font-mono text-slate-300 mb-2">
+                  Input Text (Max 500 Chars)
+                </label>
+                <ExhibitInput
+                  textarea
+                  era="classical"
+                  id="input-polybius"
+                  dataTestId="input-text-polybius"
+                  value={polybiusInput}
+                  onChange={(e) => setPolybiusInput(e.target.value)}
+                  maxLength={505}
+                  placeholder="Enter message (letters for encrypt, coordinate pairs for decrypt)..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="key-polybius" className="block text-sm font-mono text-slate-300 mb-2">
+                    Grid Key (25 letters)
+                  </label>
+                  <ExhibitInput
+                    era="classical"
+                    id="key-polybius"
+                    type="text"
+                    dataTestId="param-key-polybius"
+                    value={polybiusKey}
+                    onChange={(e) => setPolybiusKey(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-mono text-slate-300 mb-2">
+                    Action
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      data-testid="encrypt-btn-polybius"
+                      onClick={() => setPolybiusMode("encrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        polybiusMode === "encrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Encrypt
+                    </button>
+                    <button
+                      data-testid="decrypt-btn-polybius"
+                      onClick={() => setPolybiusMode("decrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        polybiusMode === "decrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Decrypt
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Playback Controls */}
+              <div className="bg-slate-950/50 p-4 border border-slate-800/80 rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-slate-400">Step: {polybiusIndex + 1} / {Math.max(1, polybiusInput.length)}</span>
+                  <div className="flex space-x-2">
+                    <button
+                      type="button"
+                      data-testid="step-backward-btn-polybius"
+                      onClick={() => setPolybiusIndex((prev) => Math.max(0, prev - 1))}
+                      disabled={polybiusIndex === 0}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
+                      aria-label="Step Backward"
+                    >
+                      ⏮️
+                    </button>
+                    {polybiusIsPlaying ? (
+                      <button
+                        type="button"
+                        data-testid="pause-btn-polybius"
+                        onClick={() => setPolybiusIsPlaying(false)}
+                        className="p-1 text-slate-400 hover:text-white transition"
+                        aria-label="Pause"
+                      >
+                        ⏸️
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        data-testid="play-btn-polybius"
+                        onClick={() => setPolybiusIsPlaying(true)}
+                        className="p-1 text-slate-400 hover:text-white transition"
+                        aria-label="Play"
+                      >
+                        ▶️
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      data-testid="step-forward-btn-polybius"
+                      onClick={() => setPolybiusIndex((prev) => Math.min(polybiusInput.length - 1, prev + 1))}
+                      disabled={polybiusIndex >= polybiusInput.length - 1}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
+                      aria-label="Step Forward"
+                    >
+                      ⏭️
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="reset-btn-polybius"
+                      onClick={() => {
+                        setPolybiusIsPlaying(false);
+                        setPolybiusIndex(0);
+                      }}
+                      className="p-1 text-slate-400 hover:text-white transition"
+                      aria-label="Reset"
+                    >
+                      🔄
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <label htmlFor="speed-polybius" className="text-xs font-mono text-slate-400">Speed</label>
+                  <input
+                    id="speed-polybius"
+                    type="range"
+                    data-testid="speed-slider-polybius"
+                    min="100"
+                    max="2000"
+                    step="100"
+                    value={polybiusSpeed}
+                    onChange={(e) => setPolybiusSpeed(parseInt(e.target.value, 10))}
+                    className="flex-1 accent-amber-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <span className="text-xs font-mono text-slate-400">{polybiusSpeed}ms</span>
+                </div>
+              </div>
+
+              {polybiusError && (
+                <div
+                  data-testid="error-message-polybius"
+                  className="p-3 bg-red-950/80 border border-red-900 text-red-400 rounded-lg text-sm font-mono"
+                >
+                  {polybiusError}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              <div data-testid="visualizer-polybius" className="flex justify-center p-2 bg-slate-950 rounded-lg border border-slate-800">
+                <table className="border-collapse border border-slate-800 bg-slate-900/60 font-mono text-sm">
+                  <thead>
+                    <tr>
+                      <th className="p-2 border border-slate-800 bg-slate-950 text-slate-500"></th>
+                      {[1, 2, 3, 4, 5].map((col) => (
+                        <th
+                          key={`col-hdr-${col}`}
+                          className={`p-2 border border-slate-800 bg-slate-950 ${col === polybiusActiveCoords.col ? "text-amber-400 font-bold" : "text-slate-500"}`}
+                        >
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[1, 2, 3, 4, 5].map((row) => (
+                      <tr key={`row-${row}`}>
+                        <th
+                          className={`p-2 border border-slate-800 bg-slate-950 ${row === polybiusActiveCoords.row ? "text-amber-400 font-bold" : "text-slate-500"}`}
+                        >
+                          {row}
+                        </th>
+                        {[1, 2, 3, 4, 5].map((col) => {
+                          const cellIndex = (row - 1) * 5 + (col - 1);
+                          const letter = cleanPolybiusKey[cellIndex] || "";
+                          const isRowMatch = row === polybiusActiveCoords.row;
+                          const isColMatch = col === polybiusActiveCoords.col;
+                          const isIntersect = isRowMatch && isColMatch;
+                          return (
+                            <td
+                              key={`cell-${row}-${col}`}
+                              className={`p-3 border border-slate-800 text-center transition ${
+                                isIntersect
+                                  ? "bg-amber-500 text-slate-950 font-extrabold scale-105 shadow-lg"
+                                  : isRowMatch || isColMatch
+                                  ? "bg-slate-800 text-amber-300"
+                                  : "text-slate-500"
+                              }`}
+                            >
+                              {letter.toUpperCase()}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div>
+                <span className="block text-sm font-mono text-slate-300 mb-2">
+                  Output Text
+                </span>
+                <div
+                  data-testid="output-text-polybius"
+                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
+                >
+                  {polybiusOutput}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------------------------------
             CAESAR CIPHER EXHIBIT
             ------------------------------------------------------------- */}
         <section
@@ -2086,252 +2550,6 @@ export default function Home() {
                     onChange={(e) => setCaesarSpeed(parseInt(e.target.value, 10))}
                   />
                   <span className="text-xs font-mono text-slate-400">{caesarSpeed}ms</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* -------------------------------------------------------------
-            VIGENERE CIPHER EXHIBIT
-            ------------------------------------------------------------- */}
-        <section
-          id="vigenere"
-          ref={sectionRefs.vigenere}
-          data-testid="exhibit-vigenere"
-          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
-        >
-          <h3 className="text-3xl font-bold text-amber-400 mb-2">Vigenère Cipher</h3>
-          {renderExhibitHeader("vigenere")}
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="input-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
-                  Input Text (Max 500 Chars)
-                </label>
-                <ExhibitInput
-                  textarea
-                  era="classical"
-                  id="input-vigenere"
-                  dataTestId="input-text-vigenere"
-                  value={vigenereInput}
-                  onChange={(e) => setVigenereInput(e.target.value)}
-                  maxLength={505}
-                  placeholder="Enter secret message..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="key-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
-                    Keyword
-                  </label>
-                  <ExhibitInput
-                    era="classical"
-                    id="key-vigenere"
-                    type="text"
-                    dataTestId="param-key-vigenere"
-                    value={vigenereKey}
-                    onChange={(e) => setVigenereKey(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="mode-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
-                    Mode Select
-                  </label>
-                  <select
-                    id="mode-vigenere"
-                    data-testid="mode-select-vigenere"
-                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    value={vigenereMode}
-                    onChange={(e) => setVigenereMode(e.target.value as "encrypt" | "decrypt")}
-                  >
-                    <option value="encrypt">Encrypt</option>
-                    <option value="decrypt">Decrypt</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Mode button triggers for Playwright tests */}
-              <div className="flex space-x-2">
-                <button
-                  data-testid="encrypt-btn-vigenere"
-                  onClick={() => setVigenereMode("encrypt")}
-                  className={`flex-1 py-2 rounded font-mono text-sm border transition ${
-                    vigenereMode === "encrypt" ? "bg-amber-500 text-slate-950 font-bold border-amber-500" : "bg-slate-800 border-slate-700 text-slate-300"
-                  }`}
-                >
-                  Encrypt Mode
-                </button>
-                <button
-                  data-testid="decrypt-btn-vigenere"
-                  onClick={() => setVigenereMode("decrypt")}
-                  className={`flex-1 py-2 rounded font-mono text-sm border transition ${
-                    vigenereMode === "decrypt" ? "bg-amber-500 text-slate-950 font-bold border-amber-500" : "bg-slate-800 border-slate-700 text-slate-300"
-                  }`}
-                >
-                  Decrypt Mode
-                </button>
-              </div>
-
-              {vigenereError && (
-                <div
-                  data-testid="error-message-vigenere"
-                  className="p-3 bg-red-950/80 border border-red-800 rounded-lg text-red-200 text-sm font-mono"
-                  role="alert"
-                >
-                  {vigenereError}
-                </div>
-              )}
-
-              <div>
-                <span className="block text-sm font-mono text-slate-300 mb-2">Output Text</span>
-                <div
-                  data-testid="output-text-vigenere"
-                  className="w-full min-h-[50px] p-4 bg-slate-950 border border-slate-800 rounded-lg text-amber-300 font-mono break-all whitespace-pre-wrap"
-                >
-                  {vigenereOutput}
-                </div>
-              </div>
-            </div>
-
-            {/* VIGENERE VISUALIZER */}
-            <div className="flex flex-col justify-between items-center border border-slate-800 rounded-xl p-6 bg-slate-950/40 min-h-[450px]">
-              <h4 className="text-lg font-bold text-slate-300 mb-4 font-serif">Vigenère Square (Tabula Recta)</h4>
-              
-              <div
-                ref={vigenereGridRef}
-                data-testid="visualizer-vigenere"
-                className="w-full h-64 overflow-auto border border-slate-800 rounded bg-slate-950 p-2 scrollbar-thin scrollbar-thumb-slate-850"
-              >
-                <table className="table-auto border-collapse font-mono text-[10px] w-full text-center">
-                  <thead>
-                    <tr>
-                      <th className="p-1 text-slate-500 font-bold bg-slate-950 border border-slate-900 sticky top-0 left-0 z-10 bg-slate-950"></th>
-                      {alphabet.split("").map((letter, idx) => (
-                        <th
-                          key={`col-${letter}`}
-                          className={`p-1 font-bold sticky top-0 bg-slate-950 border border-slate-900 transition-colors ${
-                            idx === activeColIdx ? "text-amber-400 bg-slate-800" : "text-slate-400"
-                          }`}
-                        >
-                          {letter}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {alphabet.split("").map((rowLetter, rowIdx) => (
-                      <tr key={`row-tr-${rowLetter}`}>
-                        <td
-                          className={`p-1 font-bold sticky left-0 bg-slate-950 border border-slate-900 transition-colors ${
-                            rowIdx === activeRowIdx ? "text-amber-400 bg-slate-800" : "text-slate-400"
-                          }`}
-                        >
-                          {rowLetter}
-                        </td>
-                        {alphabet.split("").map((colLetter, colIdx) => {
-                          const cellLetterIdx = (rowIdx + colIdx) % 26;
-                          const cellLetter = alphabet[cellLetterIdx];
-                          const isIntersection = rowIdx === activeRowIdx && colIdx === activeColIdx;
-                          const isHighlighted = rowIdx === activeRowIdx || colIdx === activeColIdx;
-
-                          return (
-                            <td
-                              id={`vig-cell-${rowIdx}-${colIdx}`}
-                              key={`cell-${rowIdx}-${colIdx}`}
-                              className={`p-1 border border-slate-900 transition-colors ${
-                                isIntersection
-                                  ? "bg-amber-400 text-slate-950 font-bold scale-110 ring-2 ring-amber-500 z-10"
-                                  : isHighlighted
-                                  ? "bg-slate-900/60 text-slate-300"
-                                  : "text-slate-600"
-                              }`}
-                            >
-                              {cellLetter}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Playback controls */}
-              <div className="w-full mt-6 space-y-4">
-                <div className="flex justify-center items-center space-x-3">
-                  <button
-                    data-testid="step-backward-btn-vigenere"
-                    onClick={() => {
-                      setVigenereIsPlaying(false);
-                      setVigenereIndex((prev) => (prev > 0 ? prev - 1 : vigenereInput.length - 1));
-                    }}
-                    className="p-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 text-slate-300"
-                    aria-label="Step Backward"
-                  >
-                    ⏮
-                  </button>
-                  {vigenereIsPlaying ? (
-                    <button
-                      data-testid="pause-btn-vigenere"
-                      onClick={() => setVigenereIsPlaying(false)}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded"
-                      aria-label="Pause"
-                    >
-                      Pause
-                    </button>
-                  ) : (
-                    <button
-                      data-testid="play-btn-vigenere"
-                      onClick={() => setVigenereIsPlaying(true)}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded"
-                      aria-label="Play"
-                    >
-                      Play
-                    </button>
-                  )}
-                  <button
-                    data-testid="step-forward-btn-vigenere"
-                    onClick={() => {
-                      setVigenereIsPlaying(false);
-                      setVigenereIndex((prev) => (prev < vigenereInput.length - 1 ? prev + 1 : 0));
-                    }}
-                    className="p-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 text-slate-300"
-                    aria-label="Step Forward"
-                  >
-                    ⏭
-                  </button>
-                  <button
-                    data-testid="reset-btn-vigenere"
-                    onClick={() => {
-                      setVigenereIsPlaying(false);
-                      setVigenereIndex(0);
-                    }}
-                    className="p-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 text-slate-300"
-                    aria-label="Reset"
-                  >
-                    🔄
-                  </button>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <label htmlFor="speed-vigenere" className="text-xs font-mono text-slate-400">
-                    Speed:
-                  </label>
-                  <input
-                    id="speed-vigenere"
-                    type="range"
-                    min="100"
-                    max="2000"
-                    step="100"
-                    data-testid="speed-slider-vigenere"
-                    className="flex-1 accent-amber-500"
-                    value={vigenereSpeed}
-                    onChange={(e) => setVigenereSpeed(parseInt(e.target.value, 10))}
-                  />
-                  <span className="text-xs font-mono text-slate-400">{vigenereSpeed}ms</span>
                 </div>
               </div>
             </div>
@@ -2641,29 +2859,30 @@ export default function Home() {
         </section>
 
         {/* -------------------------------------------------------------
-            SKELETON PLACEHOLDERS FOR REMAINING CIPHERS
+            VIGENERE CIPHER EXHIBIT
             ------------------------------------------------------------- */}
         <section
-          id="scytale"
-          ref={sectionRefs.scytale}
-          data-testid="exhibit-scytale"
+          id="vigenere"
+          ref={sectionRefs.vigenere}
+          data-testid="exhibit-vigenere"
           className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
         >
-          <h3 className="text-3xl font-bold text-amber-400 mb-2">Scytale Cipher</h3>
-          {renderExhibitHeader("scytale")}
+          <h3 className="text-3xl font-bold text-amber-400 mb-2">Vigenère Cipher</h3>
+          {renderExhibitHeader("vigenere")}
+
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div>
-                <label htmlFor="input-scytale" className="block text-sm font-mono text-slate-300 mb-2">
+                <label htmlFor="input-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
                   Input Text (Max 500 Chars)
                 </label>
                 <ExhibitInput
                   textarea
                   era="classical"
-                  id="input-scytale"
-                  dataTestId="input-text-scytale"
-                  value={scytaleInput}
-                  onChange={(e) => setScytaleInput(e.target.value)}
+                  id="input-vigenere"
+                  dataTestId="input-text-vigenere"
+                  value={vigenereInput}
+                  onChange={(e) => setVigenereInput(e.target.value)}
                   maxLength={505}
                   placeholder="Enter secret message..."
                 />
@@ -2671,412 +2890,132 @@ export default function Home() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="width-scytale" className="block text-sm font-mono text-slate-300 mb-2">
-                    Cylinder Width (Diameter)
+                  <label htmlFor="key-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
+                    Keyword
                   </label>
                   <ExhibitInput
                     era="classical"
-                    id="width-scytale"
+                    id="key-vigenere"
                     type="text"
-                    dataTestId="param-width-scytale"
-                    value={scytaleWidth}
-                    onChange={(e) => setScytaleWidth(e.target.value)}
+                    dataTestId="param-key-vigenere"
+                    value={vigenereKey}
+                    onChange={(e) => setVigenereKey(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-mono text-slate-300 mb-2">
-                    Action
+                  <label htmlFor="mode-vigenere" className="block text-sm font-mono text-slate-300 mb-2">
+                    Mode Select
                   </label>
-                  <div className="flex space-x-2">
-                    <button
-                      data-testid="encrypt-btn-scytale"
-                      onClick={() => {
-                        setScytaleMode("encrypt");
-                        handleScytaleProcess("encrypt");
-                      }}
-                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
-                        scytaleMode === "encrypt"
-                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
-                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
-                      }`}
-                    >
-                      Encrypt
-                    </button>
-                    <button
-                      data-testid="decrypt-btn-scytale"
-                      onClick={() => {
-                        setScytaleMode("decrypt");
-                        handleScytaleProcess("decrypt");
-                      }}
-                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
-                        scytaleMode === "decrypt"
-                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
-                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
-                      }`}
-                    >
-                      Decrypt
-                    </button>
-                  </div>
+                  <select
+                    id="mode-vigenere"
+                    data-testid="mode-select-vigenere"
+                    className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    value={vigenereMode}
+                    onChange={(e) => setVigenereMode(e.target.value as "encrypt" | "decrypt")}
+                  >
+                    <option value="encrypt">Encrypt</option>
+                    <option value="decrypt">Decrypt</option>
+                  </select>
                 </div>
               </div>
 
-              {/* Playback Controls */}
-              <div className="bg-slate-950/50 p-4 border border-slate-800/80 rounded-xl space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-slate-400">Step: {scytaleIndex + 1} / {Math.max(1, scytaleInput.length)}</span>
-                  <div className="flex space-x-2">
-                    <button
-                      type="button"
-                      data-testid="step-backward-btn-scytale"
-                      onClick={() => setScytaleIndex((prev) => Math.max(0, prev - 1))}
-                      disabled={scytaleIndex === 0}
-                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
-                      aria-label="Step Backward"
-                    >
-                      ⏮️
-                    </button>
-                    {scytaleIsPlaying ? (
-                      <button
-                        type="button"
-                        data-testid="pause-btn-scytale"
-                        onClick={() => setScytaleIsPlaying(false)}
-                        className="p-1 text-slate-400 hover:text-white transition"
-                        aria-label="Pause"
-                      >
-                        ⏸️
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        data-testid="play-btn-scytale"
-                        onClick={() => setScytaleIsPlaying(true)}
-                        className="p-1 text-slate-400 hover:text-white transition"
-                        aria-label="Play"
-                      >
-                        ▶️
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      data-testid="step-forward-btn-scytale"
-                      onClick={() => setScytaleIndex((prev) => Math.min(scytaleInput.length - 1, prev + 1))}
-                      disabled={scytaleIndex >= scytaleInput.length - 1}
-                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
-                      aria-label="Step Forward"
-                    >
-                      ⏭️
-                    </button>
-                    <button
-                      type="button"
-                      data-testid="reset-btn-scytale"
-                      onClick={() => {
-                        setScytaleIsPlaying(false);
-                        setScytaleIndex(0);
-                      }}
-                      className="p-1 text-slate-400 hover:text-white transition"
-                      aria-label="Reset"
-                    >
-                      🔄
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <label htmlFor="speed-scytale" className="text-xs font-mono text-slate-400">Speed</label>
-                  <input
-                    id="speed-scytale"
-                    type="range"
-                    data-testid="speed-slider-scytale"
-                    min="100"
-                    max="2000"
-                    step="100"
-                    value={scytaleSpeed}
-                    onChange={(e) => setScytaleSpeed(parseInt(e.target.value, 10))}
-                    className="flex-1 accent-amber-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <span className="text-xs font-mono text-slate-400">{scytaleSpeed}ms</span>
-                </div>
-              </div>
-
-              {scytaleError && (
-                <div
-                  data-testid="error-message-scytale"
-                  className="p-3 bg-red-950/80 border border-red-900 text-red-400 rounded-lg text-sm font-mono"
+              {/* Mode button triggers for Playwright tests */}
+              <div className="flex space-x-2">
+                <button
+                  data-testid="encrypt-btn-vigenere"
+                  onClick={() => setVigenereMode("encrypt")}
+                  className={`flex-1 py-2 rounded font-mono text-sm border transition ${
+                    vigenereMode === "encrypt" ? "bg-amber-500 text-slate-950 font-bold border-amber-500" : "bg-slate-800 border-slate-700 text-slate-300"
+                  }`}
                 >
-                  {scytaleError}
+                  Encrypt Mode
+                </button>
+                <button
+                  data-testid="decrypt-btn-vigenere"
+                  onClick={() => setVigenereMode("decrypt")}
+                  className={`flex-1 py-2 rounded font-mono text-sm border transition ${
+                    vigenereMode === "decrypt" ? "bg-amber-500 text-slate-950 font-bold border-amber-500" : "bg-slate-800 border-slate-700 text-slate-300"
+                  }`}
+                >
+                  Decrypt Mode
+                </button>
+              </div>
+
+              {vigenereError && (
+                <div
+                  data-testid="error-message-vigenere"
+                  className="p-3 bg-red-950/80 border border-red-800 rounded-lg text-red-200 text-sm font-mono"
+                  role="alert"
+                >
+                  {vigenereError}
                 </div>
               )}
-            </div>
-
-            <div className="space-y-6">
-              <div data-testid="visualizer-scytale" className="relative">
-                {/* SVG Cylinder */}
-                <svg viewBox="0 0 400 240" className="w-full h-60 bg-slate-950 rounded-lg border border-slate-800">
-                  <defs>
-                    <linearGradient id="cylinderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#1e293b" />
-                      <stop offset="50%" stopColor="#475569" />
-                      <stop offset="100%" stopColor="#0f172a" />
-                    </linearGradient>
-                  </defs>
-                  
-                  {/* Cylinder Body */}
-                  <rect x="120" y="10" width="160" height="220" rx="15" fill="url(#cylinderGrad)" stroke="#64748b" strokeWidth="2" />
-                  
-                  {/* Diagonal tape wraps */}
-                  {Array.from({ length: Math.min(Math.ceil((scytaleInput.length || 8) / (cleanScytaleWidth || 4)), 8) }).map((_, rIdx) => (
-                    <path
-                      key={`ribbon-${rIdx}`}
-                      d={`M 120 ${30 + rIdx * 25} L 280 ${45 + rIdx * 25} L 280 ${65 + rIdx * 25} L 120 ${50 + rIdx * 25} Z`}
-                      fill="#b45309"
-                      fillOpacity="0.4"
-                      stroke="#d97706"
-                      strokeWidth="1"
-                    />
-                  ))}
-                  
-                  {/* Letters on the tape */}
-                  {scytaleInput.split("").slice(0, 32).map((char, charIdx) => {
-                    const scytaleWidthVal = cleanScytaleWidth || 4;
-                    const col = charIdx % scytaleWidthVal;
-                    const row = Math.floor(charIdx / scytaleWidthVal);
-                    const x = 140 + (col / Math.max(1, scytaleWidthVal - 1)) * 120;
-                    const y = 42 + row * 25;
-                    const isActive = charIdx === scytaleIndex;
-                    return (
-                      <g key={`scytale-char-${charIdx}`}>
-                        {isActive && (
-                          <circle cx={x} cy={y} r="12" fill="#f59e0b" className="animate-pulse" />
-                        )}
-                        <text
-                          x={x}
-                          y={y}
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                          className={`font-mono font-bold text-xs ${isActive ? "fill-slate-950" : "fill-amber-400"}`}
-                        >
-                          {char === " " ? "_" : char}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              </div>
 
               <div>
-                <span className="block text-sm font-mono text-slate-300 mb-2">
-                  Output Text
-                </span>
+                <span className="block text-sm font-mono text-slate-300 mb-2">Output Text</span>
                 <div
-                  data-testid="output-text-scytale"
-                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
+                  data-testid="output-text-vigenere"
+                  className="w-full min-h-[50px] p-4 bg-slate-950 border border-slate-800 rounded-lg text-amber-300 font-mono break-all whitespace-pre-wrap"
                 >
-                  {scytaleOutput}
+                  {vigenereOutput}
                 </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        <section
-          id="polybius"
-          ref={sectionRefs.polybius}
-          data-testid="exhibit-polybius"
-          className="mb-16 bg-slate-900 border border-slate-850 rounded-2xl p-8 shadow-xl"
-        >
-          <h3 className="text-3xl font-bold text-amber-400 mb-2">Polybius Square</h3>
-          {renderExhibitHeader("polybius")}
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="input-polybius" className="block text-sm font-mono text-slate-300 mb-2">
-                  Input Text (Max 500 Chars)
-                </label>
-                <ExhibitInput
-                  textarea
-                  era="classical"
-                  id="input-polybius"
-                  dataTestId="input-text-polybius"
-                  value={polybiusInput}
-                  onChange={(e) => setPolybiusInput(e.target.value)}
-                  maxLength={505}
-                  placeholder="Enter message (letters for encrypt, coordinate pairs for decrypt)..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="key-polybius" className="block text-sm font-mono text-slate-300 mb-2">
-                    Grid Key (25 letters)
-                  </label>
-                  <ExhibitInput
-                    era="classical"
-                    id="key-polybius"
-                    type="text"
-                    dataTestId="param-key-polybius"
-                    value={polybiusKey}
-                    onChange={(e) => setPolybiusKey(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-mono text-slate-300 mb-2">
-                    Action
-                  </label>
-                  <div className="flex space-x-2">
-                    <button
-                      data-testid="encrypt-btn-polybius"
-                      onClick={() => setPolybiusMode("encrypt")}
-                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
-                        polybiusMode === "encrypt"
-                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
-                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
-                      }`}
-                    >
-                      Encrypt
-                    </button>
-                    <button
-                      data-testid="decrypt-btn-polybius"
-                      onClick={() => setPolybiusMode("decrypt")}
-                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
-                        polybiusMode === "decrypt"
-                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
-                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
-                      }`}
-                    >
-                      Decrypt
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Playback Controls */}
-              <div className="bg-slate-950/50 p-4 border border-slate-800/80 rounded-xl space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-slate-400">Step: {polybiusIndex + 1} / {Math.max(1, polybiusInput.length)}</span>
-                  <div className="flex space-x-2">
-                    <button
-                      type="button"
-                      data-testid="step-backward-btn-polybius"
-                      onClick={() => setPolybiusIndex((prev) => Math.max(0, prev - 1))}
-                      disabled={polybiusIndex === 0}
-                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
-                      aria-label="Step Backward"
-                    >
-                      ⏮️
-                    </button>
-                    {polybiusIsPlaying ? (
-                      <button
-                        type="button"
-                        data-testid="pause-btn-polybius"
-                        onClick={() => setPolybiusIsPlaying(false)}
-                        className="p-1 text-slate-400 hover:text-white transition"
-                        aria-label="Pause"
-                      >
-                        ⏸️
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        data-testid="play-btn-polybius"
-                        onClick={() => setPolybiusIsPlaying(true)}
-                        className="p-1 text-slate-400 hover:text-white transition"
-                        aria-label="Play"
-                      >
-                        ▶️
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      data-testid="step-forward-btn-polybius"
-                      onClick={() => setPolybiusIndex((prev) => Math.min(polybiusInput.length - 1, prev + 1))}
-                      disabled={polybiusIndex >= polybiusInput.length - 1}
-                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
-                      aria-label="Step Forward"
-                    >
-                      ⏭️
-                    </button>
-                    <button
-                      type="button"
-                      data-testid="reset-btn-polybius"
-                      onClick={() => {
-                        setPolybiusIsPlaying(false);
-                        setPolybiusIndex(0);
-                      }}
-                      className="p-1 text-slate-400 hover:text-white transition"
-                      aria-label="Reset"
-                    >
-                      🔄
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <label htmlFor="speed-polybius" className="text-xs font-mono text-slate-400">Speed</label>
-                  <input
-                    id="speed-polybius"
-                    type="range"
-                    data-testid="speed-slider-polybius"
-                    min="100"
-                    max="2000"
-                    step="100"
-                    value={polybiusSpeed}
-                    onChange={(e) => setPolybiusSpeed(parseInt(e.target.value, 10))}
-                    className="flex-1 accent-amber-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <span className="text-xs font-mono text-slate-400">{polybiusSpeed}ms</span>
-                </div>
-              </div>
-
-              {polybiusError && (
-                <div
-                  data-testid="error-message-polybius"
-                  className="p-3 bg-red-950/80 border border-red-900 text-red-400 rounded-lg text-sm font-mono"
-                >
-                  {polybiusError}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-6">
-              <div data-testid="visualizer-polybius" className="flex justify-center p-2 bg-slate-950 rounded-lg border border-slate-800">
-                <table className="border-collapse border border-slate-800 bg-slate-900/60 font-mono text-sm">
+            {/* VIGENERE VISUALIZER */}
+            <div className="flex flex-col justify-between items-center border border-slate-800 rounded-xl p-6 bg-slate-950/40 min-h-[450px]">
+              <h4 className="text-lg font-bold text-slate-300 mb-4 font-serif">Vigenère Square (Tabula Recta)</h4>
+              
+              <div
+                ref={vigenereGridRef}
+                data-testid="visualizer-vigenere"
+                className="w-full h-64 overflow-auto border border-slate-800 rounded bg-slate-950 p-2 scrollbar-thin scrollbar-thumb-slate-850"
+              >
+                <table className="table-auto border-collapse font-mono text-[10px] w-full text-center">
                   <thead>
                     <tr>
-                      <th className="p-2 border border-slate-800 bg-slate-950 text-slate-500"></th>
-                      {[1, 2, 3, 4, 5].map((col) => (
+                      <th className="p-1 text-slate-500 font-bold bg-slate-950 border border-slate-900 sticky top-0 left-0 z-10 bg-slate-950"></th>
+                      {alphabet.split("").map((letter, idx) => (
                         <th
-                          key={`col-hdr-${col}`}
-                          className={`p-2 border border-slate-800 bg-slate-950 ${col === polybiusActiveCoords.col ? "text-amber-400 font-bold" : "text-slate-500"}`}
+                          key={`col-${letter}`}
+                          className={`p-1 font-bold sticky top-0 bg-slate-950 border border-slate-900 transition-colors ${
+                            idx === activeColIdx ? "text-amber-400 bg-slate-800" : "text-slate-400"
+                          }`}
                         >
-                          {col}
+                          {letter}
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {[1, 2, 3, 4, 5].map((row) => (
-                      <tr key={`row-${row}`}>
-                        <th
-                          className={`p-2 border border-slate-800 bg-slate-950 ${row === polybiusActiveCoords.row ? "text-amber-400 font-bold" : "text-slate-500"}`}
+                    {alphabet.split("").map((rowLetter, rowIdx) => (
+                      <tr key={`row-tr-${rowLetter}`}>
+                        <td
+                          className={`p-1 font-bold sticky left-0 bg-slate-950 border border-slate-900 transition-colors ${
+                            rowIdx === activeRowIdx ? "text-amber-400 bg-slate-800" : "text-slate-400"
+                          }`}
                         >
-                          {row}
-                        </th>
-                        {[1, 2, 3, 4, 5].map((col) => {
-                          const cellIndex = (row - 1) * 5 + (col - 1);
-                          const letter = cleanPolybiusKey[cellIndex] || "";
-                          const isRowMatch = row === polybiusActiveCoords.row;
-                          const isColMatch = col === polybiusActiveCoords.col;
-                          const isIntersect = isRowMatch && isColMatch;
+                          {rowLetter}
+                        </td>
+                        {alphabet.split("").map((colLetter, colIdx) => {
+                          const cellLetterIdx = (rowIdx + colIdx) % 26;
+                          const cellLetter = alphabet[cellLetterIdx];
+                          const isIntersection = rowIdx === activeRowIdx && colIdx === activeColIdx;
+                          const isHighlighted = rowIdx === activeRowIdx || colIdx === activeColIdx;
+
                           return (
                             <td
-                              key={`cell-${row}-${col}`}
-                              className={`p-3 border border-slate-800 text-center transition ${
-                                isIntersect
-                                  ? "bg-amber-500 text-slate-950 font-extrabold scale-105 shadow-lg"
-                                  : isRowMatch || isColMatch
-                                  ? "bg-slate-800 text-amber-300"
-                                  : "text-slate-500"
+                              id={`vig-cell-${rowIdx}-${colIdx}`}
+                              key={`cell-${rowIdx}-${colIdx}`}
+                              className={`p-1 border border-slate-900 transition-colors ${
+                                isIntersection
+                                  ? "bg-amber-400 text-slate-950 font-bold scale-110 ring-2 ring-amber-500 z-10"
+                                  : isHighlighted
+                                  ? "bg-slate-900/60 text-slate-300"
+                                  : "text-slate-600"
                               }`}
                             >
-                              {letter.toUpperCase()}
+                              {cellLetter}
                             </td>
                           );
                         })}
@@ -3086,15 +3025,79 @@ export default function Home() {
                 </table>
               </div>
 
-              <div>
-                <span className="block text-sm font-mono text-slate-300 mb-2">
-                  Output Text
-                </span>
-                <div
-                  data-testid="output-text-polybius"
-                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
-                >
-                  {polybiusOutput}
+              {/* Playback controls */}
+              <div className="w-full mt-6 space-y-4">
+                <div className="flex justify-center items-center space-x-3">
+                  <button
+                    data-testid="step-backward-btn-vigenere"
+                    onClick={() => {
+                      setVigenereIsPlaying(false);
+                      setVigenereIndex((prev) => (prev > 0 ? prev - 1 : vigenereInput.length - 1));
+                    }}
+                    className="p-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 text-slate-300"
+                    aria-label="Step Backward"
+                  >
+                    ⏮
+                  </button>
+                  {vigenereIsPlaying ? (
+                    <button
+                      data-testid="pause-btn-vigenere"
+                      onClick={() => setVigenereIsPlaying(false)}
+                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded"
+                      aria-label="Pause"
+                    >
+                      Pause
+                    </button>
+                  ) : (
+                    <button
+                      data-testid="play-btn-vigenere"
+                      onClick={() => setVigenereIsPlaying(true)}
+                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded"
+                      aria-label="Play"
+                    >
+                      Play
+                    </button>
+                  )}
+                  <button
+                    data-testid="step-forward-btn-vigenere"
+                    onClick={() => {
+                      setVigenereIsPlaying(false);
+                      setVigenereIndex((prev) => (prev < vigenereInput.length - 1 ? prev + 1 : 0));
+                    }}
+                    className="p-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 text-slate-300"
+                    aria-label="Step Forward"
+                  >
+                    ⏭
+                  </button>
+                  <button
+                    data-testid="reset-btn-vigenere"
+                    onClick={() => {
+                      setVigenereIsPlaying(false);
+                      setVigenereIndex(0);
+                    }}
+                    className="p-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 text-slate-300"
+                    aria-label="Reset"
+                  >
+                    🔄
+                  </button>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <label htmlFor="speed-vigenere" className="text-xs font-mono text-slate-400">
+                    Speed:
+                  </label>
+                  <input
+                    id="speed-vigenere"
+                    type="range"
+                    min="100"
+                    max="2000"
+                    step="100"
+                    data-testid="speed-slider-vigenere"
+                    className="flex-1 accent-amber-500"
+                    value={vigenereSpeed}
+                    onChange={(e) => setVigenereSpeed(parseInt(e.target.value, 10))}
+                  />
+                  <span className="text-xs font-mono text-slate-400">{vigenereSpeed}ms</span>
                 </div>
               </div>
             </div>
@@ -3219,7 +3222,7 @@ export default function Home() {
         </section>
 
         {/* -------------------------------------------------------------
-            SUBSTITUTION COMPONENT EXHIBIT
+            SUBSTITUTION CIPHER EXHIBIT
             ------------------------------------------------------------- */}
         <section
           id="substitution"
@@ -3338,6 +3341,9 @@ export default function Home() {
           </div>
         </section>
 
+        {/* -------------------------------------------------------------
+            ENIGMA MACHINE EXHIBIT
+            ------------------------------------------------------------- */}
         <section
           id="enigma"
           ref={sectionRefs.enigma}
@@ -3739,296 +3745,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section
-          id="aes"
-          ref={sectionRefs.aes}
-          data-testid="exhibit-aes"
-          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 opacity-90 hover:opacity-100 transition"
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div>
-              <h3 className="text-3xl font-bold text-teal-400 mb-2 font-serif">AES Cipher</h3>
-            </div>
-            <div className="flex items-center space-x-2 mt-4 md:mt-0">
-              <select
-                data-testid="mode-select-aes"
-                value={aesMode}
-                onChange={(e) => setAesMode(e.target.value as "encrypt" | "decrypt")}
-                className="bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-amber-400 focus:border-amber-500 outline-none"
-              >
-                <option value="encrypt">Encrypt Mode</option>
-                <option value="decrypt">Decrypt Mode</option>
-              </select>
-            </div>
-          </div>
-          {renderExhibitHeader("aes")}
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div>
-                <label htmlFor="input-aes" className="block text-sm font-mono text-slate-300 mb-2">
-                  Input String
-                </label>
-                <ExhibitInput
-                  textarea
-                  era="modern"
-                  id="input-aes"
-                  dataTestId="input-text-aes"
-                  value={aesInput}
-                  onChange={(e) => setAesInput(e.target.value)}
-                  placeholder="Enter text or hex to encrypt/decrypt..."
-                  className="h-24 text-sm"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="format-aes" className="block text-xs font-mono text-slate-400 mb-1">
-                    Input Format
-                  </label>
-                  <select
-                    id="format-aes"
-                    data-testid="param-format-aes"
-                    value={aesFormat}
-                    onChange={(e) => setAesFormat(e.target.value as "text" | "hex")}
-                    className="w-full bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-white focus:border-amber-500 outline-none"
-                  >
-                    <option value="text">Plain Text</option>
-                    <option value="hex">Hexadecimal</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="keyformat-aes" className="block text-xs font-mono text-slate-400 mb-1">
-                    Key Format
-                  </label>
-                  <select
-                    id="keyformat-aes"
-                    data-testid="param-keyformat-aes"
-                    value={aesKeyFormat}
-                    onChange={(e) => setAesKeyFormat(e.target.value as "text" | "hex")}
-                    className="w-full bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-white focus:border-amber-500 outline-none"
-                  >
-                    <option value="text">Plain Text</option>
-                    <option value="hex">Hexadecimal</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="key-aes" className="block text-sm font-mono text-slate-300 mb-2">
-                  Cipher Key (16 or 32 bytes)
-                </label>
-                <ExhibitInput
-                  era="modern"
-                  id="key-aes"
-                  type="text"
-                  dataTestId="param-key-aes"
-                  value={aesKey}
-                  onChange={(e) => setAesKey(e.target.value)}
-                  className="text-sm"
-                />
-              </div>
-
-              <div className="flex space-x-4">
-                <button
-                  data-testid="encrypt-btn-aes"
-                  onClick={() => {
-                    setAesMode("encrypt");
-                    handleAesProcess("encrypt");
-                  }}
-                  className={`flex-1 py-3 rounded-lg font-mono text-sm font-bold border transition ${
-                    aesMode === "encrypt"
-                      ? "bg-amber-500 border-amber-500 text-slate-950"
-                      : "bg-slate-800 border-slate-700 text-slate-350 hover:bg-slate-750"
-                  }`}
-                >
-                  Encrypt
-                </button>
-                <button
-                  data-testid="decrypt-btn-aes"
-                  onClick={() => {
-                    setAesMode("decrypt");
-                    handleAesProcess("decrypt");
-                  }}
-                  className={`flex-1 py-3 rounded-lg font-mono text-sm font-bold border transition ${
-                    aesMode === "decrypt"
-                      ? "bg-amber-500 border-amber-500 text-slate-950"
-                      : "bg-slate-800 border-slate-700 text-slate-350 hover:bg-slate-750"
-                  }`}
-                >
-                  Decrypt
-                </button>
-              </div>
-
-              {/* Playback Controls */}
-              <div className="bg-slate-950/50 p-4 border border-slate-800/80 rounded-xl space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-slate-400">
-                    Round: {aesIndex} / 10
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      type="button"
-                      data-testid="step-backward-btn-aes"
-                      onClick={() => setAesIndex((prev) => Math.max(0, prev - 1))}
-                      disabled={aesIndex === 0}
-                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
-                      aria-label="Step Backward"
-                    >
-                      ⏮️
-                    </button>
-                    {aesIsPlaying ? (
-                      <button
-                        type="button"
-                        data-testid="pause-btn-aes"
-                        onClick={() => setAesIsPlaying(false)}
-                        className="p-1 text-slate-400 hover:text-white transition"
-                        aria-label="Pause"
-                      >
-                        ⏸️
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        data-testid="play-btn-aes"
-                        onClick={() => setAesIsPlaying(true)}
-                        className="p-1 text-slate-400 hover:text-white transition"
-                        aria-label="Play"
-                      >
-                        ▶️
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      data-testid="step-forward-btn-aes"
-                      onClick={() => setAesIndex((prev) => Math.min(10, prev + 1))}
-                      disabled={aesIndex >= 10}
-                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
-                      aria-label="Step Forward"
-                    >
-                      ⏭️
-                    </button>
-                    <button
-                      type="button"
-                      data-testid="reset-btn-aes"
-                      onClick={() => {
-                        setAesIsPlaying(false);
-                        setAesIndex(0);
-                      }}
-                      className="p-1 text-slate-400 hover:text-white transition"
-                      aria-label="Reset"
-                    >
-                      🔄
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <label htmlFor="speed-aes" className="text-xs font-mono text-slate-400">Speed</label>
-                  <input
-                    id="speed-aes"
-                    type="range"
-                    data-testid="speed-slider-aes"
-                    min="100"
-                    max="2000"
-                    step="100"
-                    value={aesSpeed}
-                    onChange={(e) => setAesSpeed(parseInt(e.target.value, 10))}
-                    className="flex-1 accent-amber-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <span className="text-xs font-mono text-slate-400">{aesSpeed}ms</span>
-                </div>
-              </div>
-
-              {aesError && (
-                <div
-                  data-testid="error-message-aes"
-                  className="p-3 bg-red-950/80 border border-red-900 text-red-400 rounded-lg text-sm font-mono"
-                >
-                  {aesError}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-6">
-              {/* Visualizer */}
-              <div
-                data-testid="visualizer-aes"
-                className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-4"
-              >
-                <span className="block text-xs font-mono text-slate-400 uppercase tracking-wider">
-                  AES-256 CTR Block Diagram & Visualizer
-                </span>
-                
-                <div className="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-850">
-                  <span className="text-xs font-mono text-slate-300">Round {aesIndex} Operation:</span>
-                  <span className="text-xs font-bold text-amber-400 font-mono">
-                    {aesIndex === 0
-                      ? "AddRoundKey (Pre-round)"
-                      : aesIndex === 10
-                      ? "SubBytes, ShiftRows, AddRoundKey (Final)"
-                      : "SubBytes, ShiftRows, MixColumns, AddRoundKey"}
-                  </span>
-                </div>
-
-                <div className="flex flex-col space-y-2 text-xs font-mono">
-                  <div className={`p-2 rounded transition ${aesIndex >= 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
-                    <span>1. Key Expansion (generating round keys 0-10)</span>
-                  </div>
-                  <div className={`p-2 rounded transition ${aesIndex > 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
-                    <span>2. SubBytes: S-Box non-linear byte substitution</span>
-                  </div>
-                  <div className={`p-2 rounded transition ${aesIndex > 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
-                    <span>3. ShiftRows: Cyclic shift of rows in state matrix</span>
-                  </div>
-                  <div className={`p-2 rounded transition ${aesIndex > 0 && aesIndex < 10 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
-                    <span>4. MixColumns: Column transformation in GF(2^8)</span>
-                  </div>
-                  <div className={`p-2 rounded transition ${aesIndex >= 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
-                    <span>5. AddRoundKey: XOR with round key W[{aesIndex*4}..{aesIndex*4+3}]</span>
-                  </div>
-                </div>
-
-                {/* SVG Visual Flow */}
-                <div className="w-full">
-                  <svg className="w-full h-32 border border-slate-800 rounded bg-slate-900" viewBox="0 0 400 120">
-                    <rect x="20" y="40" width="80" height="40" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="1" />
-                    <text x="60" y="64" fill="#f8fafc" fontSize="10" textAnchor="middle" fontFamily="monospace">Plaintext</text>
-                    
-                    <path d="M 100 60 L 140 60" stroke="#fbbf24" strokeWidth="2" markerEnd="url(#arrow)" />
-                    
-                    <rect x="140" y="30" width="120" height="60" rx="4" fill="#fbbf24" fillOpacity="0.1" stroke="#fbbf24" strokeWidth="1.5" />
-                    <text x="200" y="54" fill="#fbbf24" fontSize="10" textAnchor="middle" fontWeight="bold" fontFamily="monospace">AES CTR Round {aesIndex}</text>
-                    <text x="200" y="74" fill="#94a3b8" fontSize="8" textAnchor="middle" fontFamily="monospace">Counter + Nonce</text>
-
-                    <path d="M 260 60 L 300 60" stroke="#fbbf24" strokeWidth="2" markerEnd="url(#arrow)" />
-
-                    <rect x="300" y="40" width="80" height="40" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="1" />
-                    <text x="340" y="64" fill="#f8fafc" fontSize="10" textAnchor="middle" fontFamily="monospace">Output</text>
-                    
-                    <defs>
-                      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24" />
-                      </marker>
-                    </defs>
-                  </svg>
-                </div>
-              </div>
-
-              <div>
-                <span className="block text-sm font-mono text-slate-300 mb-2">
-                  Output Text
-                </span>
-                <div
-                  data-testid="output-text-aes"
-                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
-                >
-                  {aesOutput}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        {/* -------------------------------------------------------------
+            RSA STANDARD EXHIBIT
+            ------------------------------------------------------------- */}
         <section
           id="rsa"
           ref={sectionRefs.rsa}
@@ -4351,6 +4070,9 @@ export default function Home() {
           </div>
         </section>
 
+        {/* -------------------------------------------------------------
+            SHA-256 HASH EXHIBIT
+            ------------------------------------------------------------- */}
         <section
           id="sha256"
           ref={sectionRefs.sha256}
@@ -4575,6 +4297,299 @@ export default function Home() {
             </div>
           </div>
         </section>
+        {/* -------------------------------------------------------------
+            AES STANDARD EXHIBIT
+            ------------------------------------------------------------- */}
+        <section
+          id="aes"
+          ref={sectionRefs.aes}
+          data-testid="exhibit-aes"
+          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 opacity-90 hover:opacity-100 transition"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+            <div>
+              <h3 className="text-3xl font-bold text-teal-400 mb-2 font-serif">AES Cipher</h3>
+            </div>
+            <div className="flex items-center space-x-2 mt-4 md:mt-0">
+              <select
+                data-testid="mode-select-aes"
+                value={aesMode}
+                onChange={(e) => setAesMode(e.target.value as "encrypt" | "decrypt")}
+                className="bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-amber-400 focus:border-amber-500 outline-none"
+              >
+                <option value="encrypt">Encrypt Mode</option>
+                <option value="decrypt">Decrypt Mode</option>
+              </select>
+            </div>
+          </div>
+          {renderExhibitHeader("aes")}
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="input-aes" className="block text-sm font-mono text-slate-300 mb-2">
+                  Input String
+                </label>
+                <ExhibitInput
+                  textarea
+                  era="modern"
+                  id="input-aes"
+                  dataTestId="input-text-aes"
+                  value={aesInput}
+                  onChange={(e) => setAesInput(e.target.value)}
+                  placeholder="Enter text or hex to encrypt/decrypt..."
+                  className="h-24 text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="format-aes" className="block text-xs font-mono text-slate-400 mb-1">
+                    Input Format
+                  </label>
+                  <select
+                    id="format-aes"
+                    data-testid="param-format-aes"
+                    value={aesFormat}
+                    onChange={(e) => setAesFormat(e.target.value as "text" | "hex")}
+                    className="w-full bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-white focus:border-amber-500 outline-none"
+                  >
+                    <option value="text">Plain Text</option>
+                    <option value="hex">Hexadecimal</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="keyformat-aes" className="block text-xs font-mono text-slate-400 mb-1">
+                    Key Format
+                  </label>
+                  <select
+                    id="keyformat-aes"
+                    data-testid="param-keyformat-aes"
+                    value={aesKeyFormat}
+                    onChange={(e) => setAesKeyFormat(e.target.value as "text" | "hex")}
+                    className="w-full bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-white focus:border-amber-500 outline-none"
+                  >
+                    <option value="text">Plain Text</option>
+                    <option value="hex">Hexadecimal</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="key-aes" className="block text-sm font-mono text-slate-300 mb-2">
+                  Cipher Key (16 or 32 bytes)
+                </label>
+                <ExhibitInput
+                  era="modern"
+                  id="key-aes"
+                  type="text"
+                  dataTestId="param-key-aes"
+                  value={aesKey}
+                  onChange={(e) => setAesKey(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  data-testid="encrypt-btn-aes"
+                  onClick={() => {
+                    setAesMode("encrypt");
+                    handleAesProcess("encrypt");
+                  }}
+                  className={`flex-1 py-3 rounded-lg font-mono text-sm font-bold border transition ${
+                    aesMode === "encrypt"
+                      ? "bg-amber-500 border-amber-500 text-slate-950"
+                      : "bg-slate-800 border-slate-700 text-slate-350 hover:bg-slate-750"
+                  }`}
+                >
+                  Encrypt
+                </button>
+                <button
+                  data-testid="decrypt-btn-aes"
+                  onClick={() => {
+                    setAesMode("decrypt");
+                    handleAesProcess("decrypt");
+                  }}
+                  className={`flex-1 py-3 rounded-lg font-mono text-sm font-bold border transition ${
+                    aesMode === "decrypt"
+                      ? "bg-amber-500 border-amber-500 text-slate-950"
+                      : "bg-slate-800 border-slate-700 text-slate-350 hover:bg-slate-750"
+                  }`}
+                >
+                  Decrypt
+                </button>
+              </div>
+
+              {/* Playback Controls */}
+              <div className="bg-slate-950/50 p-4 border border-slate-800/80 rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-slate-400">
+                    Round: {aesIndex} / 10
+                  </span>
+                  <div className="flex space-x-2">
+                    <button
+                      type="button"
+                      data-testid="step-backward-btn-aes"
+                      onClick={() => setAesIndex((prev) => Math.max(0, prev - 1))}
+                      disabled={aesIndex === 0}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
+                      aria-label="Step Backward"
+                    >
+                      ⏮️
+                    </button>
+                    {aesIsPlaying ? (
+                      <button
+                        type="button"
+                        data-testid="pause-btn-aes"
+                        onClick={() => setAesIsPlaying(false)}
+                        className="p-1 text-slate-400 hover:text-white transition"
+                        aria-label="Pause"
+                      >
+                        ⏸️
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        data-testid="play-btn-aes"
+                        onClick={() => setAesIsPlaying(true)}
+                        className="p-1 text-slate-400 hover:text-white transition"
+                        aria-label="Play"
+                      >
+                        ▶️
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      data-testid="step-forward-btn-aes"
+                      onClick={() => setAesIndex((prev) => Math.min(10, prev + 1))}
+                      disabled={aesIndex >= 10}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-40 transition"
+                      aria-label="Step Forward"
+                    >
+                      ⏭️
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="reset-btn-aes"
+                      onClick={() => {
+                        setAesIsPlaying(false);
+                        setAesIndex(0);
+                      }}
+                      className="p-1 text-slate-400 hover:text-white transition"
+                      aria-label="Reset"
+                    >
+                      🔄
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <label htmlFor="speed-aes" className="text-xs font-mono text-slate-400">Speed</label>
+                  <input
+                    id="speed-aes"
+                    type="range"
+                    data-testid="speed-slider-aes"
+                    min="100"
+                    max="2000"
+                    step="100"
+                    value={aesSpeed}
+                    onChange={(e) => setAesSpeed(parseInt(e.target.value, 10))}
+                    className="flex-1 accent-amber-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <span className="text-xs font-mono text-slate-400">{aesSpeed}ms</span>
+                </div>
+              </div>
+
+              {aesError && (
+                <div
+                  data-testid="error-message-aes"
+                  className="p-3 bg-red-950/80 border border-red-900 text-red-400 rounded-lg text-sm font-mono"
+                >
+                  {aesError}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              {/* Visualizer */}
+              <div
+                data-testid="visualizer-aes"
+                className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-4"
+              >
+                <span className="block text-xs font-mono text-slate-400 uppercase tracking-wider">
+                  AES-256 CTR Block Diagram & Visualizer
+                </span>
+                
+                <div className="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-850">
+                  <span className="text-xs font-mono text-slate-300">Round {aesIndex} Operation:</span>
+                  <span className="text-xs font-bold text-amber-400 font-mono">
+                    {aesIndex === 0
+                      ? "AddRoundKey (Pre-round)"
+                      : aesIndex === 10
+                      ? "SubBytes, ShiftRows, AddRoundKey (Final)"
+                      : "SubBytes, ShiftRows, MixColumns, AddRoundKey"}
+                  </span>
+                </div>
+
+                <div className="flex flex-col space-y-2 text-xs font-mono">
+                  <div className={`p-2 rounded transition ${aesIndex >= 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
+                    <span>1. Key Expansion (generating round keys 0-10)</span>
+                  </div>
+                  <div className={`p-2 rounded transition ${aesIndex > 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
+                    <span>2. SubBytes: S-Box non-linear byte substitution</span>
+                  </div>
+                  <div className={`p-2 rounded transition ${aesIndex > 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
+                    <span>3. ShiftRows: Cyclic shift of rows in state matrix</span>
+                  </div>
+                  <div className={`p-2 rounded transition ${aesIndex > 0 && aesIndex < 10 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
+                    <span>4. MixColumns: Column transformation in GF(2^8)</span>
+                  </div>
+                  <div className={`p-2 rounded transition ${aesIndex >= 0 ? 'bg-amber-955/30 border border-amber-900/50' : 'bg-slate-900 text-slate-500 border border-slate-850'}`}>
+                    <span>5. AddRoundKey: XOR with round key W[{aesIndex*4}..{aesIndex*4+3}]</span>
+                  </div>
+                </div>
+
+                {/* SVG Visual Flow */}
+                <div className="w-full">
+                  <svg className="w-full h-32 border border-slate-800 rounded bg-slate-900" viewBox="0 0 400 120">
+                    <rect x="20" y="40" width="80" height="40" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="1" />
+                    <text x="60" y="64" fill="#f8fafc" fontSize="10" textAnchor="middle" fontFamily="monospace">Plaintext</text>
+                    
+                    <path d="M 100 60 L 140 60" stroke="#fbbf24" strokeWidth="2" markerEnd="url(#arrow)" />
+                    
+                    <rect x="140" y="30" width="120" height="60" rx="4" fill="#fbbf24" fillOpacity="0.1" stroke="#fbbf24" strokeWidth="1.5" />
+                    <text x="200" y="54" fill="#fbbf24" fontSize="10" textAnchor="middle" fontWeight="bold" fontFamily="monospace">AES CTR Round {aesIndex}</text>
+                    <text x="200" y="74" fill="#94a3b8" fontSize="8" textAnchor="middle" fontFamily="monospace">Counter + Nonce</text>
+
+                    <path d="M 260 60 L 300 60" stroke="#fbbf24" strokeWidth="2" markerEnd="url(#arrow)" />
+
+                    <rect x="300" y="40" width="80" height="40" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="1" />
+                    <text x="340" y="64" fill="#f8fafc" fontSize="10" textAnchor="middle" fontFamily="monospace">Output</text>
+                    
+                    <defs>
+                      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24" />
+                      </marker>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+
+              <div>
+                <span className="block text-sm font-mono text-slate-300 mb-2">
+                  Output Text
+                </span>
+                <div
+                  data-testid="output-text-aes"
+                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
+                >
+                  {aesOutput}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* -------------------------------------------------------------
             ABOUT THIS MUSEUM
             ------------------------------------------------------------- */}

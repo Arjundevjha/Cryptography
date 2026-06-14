@@ -78,13 +78,16 @@ test.describe('Historical Ciphers E2E Tests', () => {
     if (await encryptBtn.count() > 0) {
       await encryptBtn.click();
     }
-    const outputText3 = await page.locator('[data-testid="output-text-scytale"]').textContent();
+    const outputScytale = page.locator('[data-testid="output-text-scytale"]');
+    await expect(outputScytale).not.toBeEmpty();
+    const outputText3 = await outputScytale.textContent();
     
     await page.fill('[data-testid="param-width-scytale"]', '4');
     if (await encryptBtn.count() > 0) {
       await encryptBtn.click();
     }
-    const outputText4 = await page.locator('[data-testid="output-text-scytale"]').textContent();
+    await expect(outputScytale).not.toHaveText(outputText3 || '');
+    const outputText4 = await outputScytale.textContent();
     
     expect(outputText3).not.toEqual(outputText4);
   });

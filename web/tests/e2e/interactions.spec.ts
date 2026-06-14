@@ -191,8 +191,8 @@ test.describe('Tier 3: Pairwise Interactions & Visual Integration E2E Tests', ()
 
   test('TC-T3-INTERACT-12 (Deep Linking & Timeline Navigation)', async ({ page }) => {
     // Wait for initial page hydration to complete
-    const caesarNode = page.locator('[data-testid="timeline-node-caesar"]');
-    await expect(caesarNode).toHaveClass(/active|highlighted/);
+    const scytaleNode = page.locator('[data-testid="timeline-node-scytale"]');
+    await expect(scytaleNode).toHaveClass(/active|highlighted/);
 
     await page.goto('/#aes');
     const aesExhibit = page.locator('[data-testid="exhibit-aes"]');
@@ -253,8 +253,8 @@ test.describe('Tier 3: Pairwise Interactions & Visual Integration E2E Tests', ()
     // 1. Visit main page
     await page.goto('/');
     
-    // 2. Verify Caesar node has active styles (class active or highlighted) without user interaction
-    const caesarNode = page.locator('[data-testid="timeline-node-caesar"]');
-    await expect(caesarNode).toHaveClass(/active|highlighted/);
+    // 2. Verify Scytale node has active styles (class active or highlighted) without user interaction
+    const scytaleNode = page.locator('[data-testid="timeline-node-scytale"]');
+    await expect(scytaleNode).toHaveClass(/active|highlighted/);
   });
 });
