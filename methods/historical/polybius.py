@@ -43,7 +43,7 @@ def decrypt(ciphertext: str, key: str = None) -> str:
     if not key:
         key = ALPHABET
     plaintext = ""
-    iterator = iter(ciphertext)
+    iterator = iter(ciphertext.replace(" ", ""))
     for char1 in iterator:
         if char1.isdigit():
             char2 = next(iterator, None)
@@ -61,7 +61,7 @@ def decrypt(ciphertext: str, key: str = None) -> str:
                     plaintext += char2
         else:
             plaintext += char1
-    return plaintext
+    return plaintext.upper()
 
 def main():
     """Run an interactive test of the Polybius Square cipher."""

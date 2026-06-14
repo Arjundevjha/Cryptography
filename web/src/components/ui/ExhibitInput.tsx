@@ -23,8 +23,8 @@ export const ExhibitInput: React.FC<ExhibitInputProps> = ({
       : 'focus:ring-teal-500';
 
   // Shared styles
-  // bg-slate-800/50 is slightly lighter than bg-slate-900 (card background)
-  const baseStyles = `w-full px-4 py-2 bg-slate-800/50 border border-slate-800 rounded-lg text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:ring-2 ${focusRingColor} focus:border-transparent transition-all`;
+  // Higher contrast: solid darker bg with bright white text for readability
+  const baseStyles = `w-full px-4 py-2 bg-slate-950 border border-slate-600 rounded-lg text-white font-mono placeholder-slate-400 focus:outline-none focus:ring-2 ${focusRingColor} focus:border-transparent transition-all`;
 
   if (textarea) {
     return (

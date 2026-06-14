@@ -601,3 +601,113 @@ Reorder the exhibit cards on the page to match this chronological order.
 - [ ] `npx fallow --format json` reports zero unused files, zero unused exports, zero unused dependencies, and zero circular dependencies across `web/`. Any intentional suppressions are documented inline with a comment explaining why.
 - [ ] `npx fallow dupes --format json` reports no clone groups above the default threshold — shared logic has been extracted into `web/src/lib/` or `web/src/components/ui/`.
 - [ ] `web/QUALITY_LOG.md` exists and contains an entry for every Fallow finding that was addressed across all tracks.
+
+## Follow-up — 2026-06-14T02:50:20Z
+
+Finalize and verify the **Cryptography Museum** Next.js web application at `/Users/abc/Desktop/Cryptography`. Milestones 1–2 are complete and committed. This task covers the remaining verification sweep, code quality checks, log completion, and a clean final commit.
+
+Working directory: `/Users/abc/Desktop/Cryptography`
+Integrity mode: development
+
+---
+
+## Current State (do not redo this work)
+
+The following is **already committed** to `main`. Do not re-implement or revert:
+
+- **Track 1A**: Log files removed; `.gitignore` covers all log/artifact patterns.
+- **Track 1B**: Vitest → Jest migration complete. `npm run test` passes 22 unit tests.
+- **Track 1C**: FastAPI `/api/health` returns `{"status":"ok"}`. Next.js `/api/health` proxy route created. API status dot in footer. All 8 cipher error handlers unified.
+- **Track 1D**: Fallow initialised (`.fallowrc.json`). Dead-code baseline established.
+- **Track 2A–C**: Vertical right-side collapsible nav (48px/220px), era colours, IntersectionObserver (`rootMargin: "-40% 0px -55% 0px"`), `activeSection` initialised to `"caesar"`, smooth scroll in CSS + JS.
+- **Track 3A**: Hero section with CSS drift animation and `prefers-reduced-motion` support.
+- **Track 3B**: About section — how-to, era guide, built-with, GitHub link, copyright footer.
+- **Track 3C**: All 11 cipher `whenWhere`/`blurb`/`howItWorks` strings in the `eras` data object in `web/app/page.tsx`.
+- **Track 3D**: `ExhibitInput` shared component created at `web/src/components/ui/ExhibitInput.tsx`; imported and used for all text/textarea exhibit inputs. Range sliders and number inputs remain as native `<input>` — this is correct.
+
+---
+
+## Requirements
+
+### R1. Run a final Fallow dead-code scan and fix all findings
+
+Inside `web/`, run:
+```bash
+npx fallow dead-code --format json
+```
+- Fix every reported unused file, unused export, and unused dependency.
+- If any duplicate logic was introduced (check with `npx fallow dupes --format json`), extract shared code into `web/src/lib/` and update importers.
+- Re-run after fixes and confirm 0 issues remain.
+- Append a **Track 1D Final Sweep** entry to `web/QUALITY_LOG.md` listing what was found and resolved.
+
+### R2. Run Snyk code scan on all first-party code
+
+Run `snyk code test` on each of these directories:
+- `web/app/` (Next.js pages, components, API routes)
+- `web/api/` (FastAPI backend)
+- `web/src/` (shared components)
+
+If any HIGH or CRITICAL issues are found in **first-party code you wrote**, fix them. Low/Medium issues that cannot be fixed without breaking the app may be acknowledged in `web/SECURITY_LOG.md` with rationale. Dependency-level vulnerabilities (in `next`, `postcss`, etc.) are out of scope for this task.
+
+Append a **Post-Milestone Snyk Sweep** entry to `web/SECURITY_LOG.md` with the scan summary.
+
+### R3. Complete QUALITY_LOG.md for all tracks
+
+`web/QUALITY_LOG.md` must have entries for:
+- Track 2A–C (Navigation overhaul: what was done, what was verified)
+- Track 3A–D (Hero/About/descriptions/ExhibitInput: what was done)
+
+Use the same format as the existing Track 1A, 1D, 1B, 1C entries already in the file.
+
+### R4. Verify all 11 acceptance criteria against the live codebase
+
+Walk through every criterion below. For each passing criterion, annotate it `✅`. For any failing criterion, fix the issue before marking it done.
+
+**Criteria to verify (read the actual code/output — do not self-certify without checking):**
+
+1. `git status` — no `.log` files tracked. `.gitignore` covers `*.log`, `test-results/`, `playwright-report/`, `__pycache__/`.
+2. `npm run test` in `web/` — all tests pass, no Vitest config present (`vitest.config.ts` deleted).
+3. `PYTHONPATH=.. python3 -m pytest api` from `web/` — all backend tests pass.
+4. `npm run build` in `web/` — compiles without TypeScript errors.
+5. `web/app/page.tsx` — vertical right-side nav present; collapsed width ~48px class; hamburger for mobile present.
+6. `web/app/page.tsx` — `activeSection` initialised to `"caesar"` (first cipher) before observer fires.
+7. `web/app/globals.css` — `scroll-behavior: smooth` and `scroll-margin-top` on exhibit sections present.
+8. `web/app/page.tsx` — Hero section with `<h1>Cryptography Museum</h1>` and "Enter the Museum" CTA present.
+9. `web/app/page.tsx` — About section with id="about" present, contains how-to, era guide, built-with content.
+10. `web/app/page.tsx` — All 11 ciphers in the `eras` array each have `whenWhere`, `blurb`, and `howItWorks` fields populated (non-empty strings).
+11. `web/app/page.tsx` — API status indicator in footer (data-testid="api-status-dot") present.
+12. `web/src/components/ui/ExhibitInput.tsx` — component exists and is imported and used in `page.tsx` for text/textarea exhibit inputs.
+13. `web/QUALITY_LOG.md` — entries present for all tracks (1A, 1D, 1B, 1C, 2A–C, 3A–D).
+14. `web/SECURITY_LOG.md` — Snyk results logged; no unaddressed HIGH/CRITICAL first-party findings.
+15. Fallow final scan — 0 unused files, 0 unused exports, 0 circular deps.
+
+### R5. Commit all remaining changes
+
+After all checks pass, commit with a descriptive message:
+```
+chore: final verification sweep — Fallow clean, Snyk scan, QUALITY_LOG complete
+```
+
+---
+
+## Acceptance Criteria
+
+### Code Quality
+- [ ] `npx fallow dead-code --format json` inside `web/` reports 0 issues.
+- [ ] `npx fallow dupes --format json` reports no clone groups above threshold.
+- [ ] `web/QUALITY_LOG.md` has entries for tracks 1A, 1D, 1B, 1C, 2A–C, 3A–D — no gaps.
+
+### Security
+- [ ] `web/SECURITY_LOG.md` contains a Post-Milestone Snyk Sweep section.
+- [ ] Zero HIGH or CRITICAL first-party Snyk findings left unaddressed.
+
+### Functional Correctness
+- [ ] `npm run test` — 22 frontend unit tests pass.
+- [ ] `PYTHONPATH=.. python3 -m pytest api` — all backend tests pass.
+- [ ] `npm run build` — production build compiles cleanly with zero TypeScript errors.
+- [ ] All 11 cipher `whenWhere` / `blurb` / `howItWorks` fields confirmed non-empty in the `eras` data object.
+- [ ] API status dot indicator present in footer (`data-testid="api-status-dot"`).
+
+### Repository Hygiene
+- [ ] `git status` shows no `.log`, `test-results/`, `playwright-report/`, or `__pycache__` files tracked.
+- [ ] Final commit is on `main` with message matching the pattern `chore: final verification sweep`.

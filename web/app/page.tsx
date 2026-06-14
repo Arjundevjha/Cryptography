@@ -48,6 +48,30 @@ const eras = [
     color: "#D4A853",
     items: [
       {
+        id: "caesar",
+        name: "Caesar Cipher",
+        year: "~60 BC",
+        whenWhere: "Ancient Rome, ~60 BC",
+        blurb: "Julius Caesar used this cipher to protect military communications during his Gallic campaigns, reportedly with a shift of three positions. It is the earliest well-documented substitution cipher in recorded history — simple enough to memorise, fast enough to use under battlefield conditions. Suetonius documented its use in 69 AD; Augustus Caesar later adopted a shift of one. It offers no meaningful security against modern analysis, but as the purest expression of the shift principle it remains the conceptual starting point for all substitution-based cryptography.",
+        howItWorks: "Each letter is shifted N positions forward in the alphabet, wrapping from Z back to A."
+      },
+      {
+        id: "vigenere",
+        name: "Vigenère",
+        year: "1553",
+        whenWhere: "Europe, 1553",
+        blurb: "First described by Giovan Battista Bellaso in 1553 and later misattributed to Blaise de Vigenère, this polyalphabetic cipher earned the title \"le chiffre indéchiffrable\" — the indecipherable cipher — and held that reputation for nearly 300 years. By shifting each letter using a different position in a repeating keyword, it defeated the frequency analysis that broke every previous cipher. Charles Babbage cracked it privately around 1854 using periodicity analysis; Friedrich Kasiski published the method independently in 1863, ending its era of dominance.",
+        howItWorks: "Each plaintext letter is shifted by the value of the corresponding letter in a repeating keyword, cycling the key continuously."
+      },
+      {
+        id: "affine",
+        name: "Affine Cipher",
+        year: "~800 AD",
+        whenWhere: "Arab world, ~800 AD",
+        blurb: "A mathematical generalisation of the Caesar cipher that emerged during the Islamic Golden Age, the affine cipher encodes each letter using the formula C = (aP + b) mod 26, where a and b are secret keys. The 9th-century polymath al-Kindi described methods for breaking it in his Treatise on Deciphering Cryptographic Messages — the first known work on frequency analysis. The key a must be coprime with 26, yielding 312 possible key combinations, which sounds large until you realise al-Kindi's method defeats it in minutes with enough text. It was the first cipher to be broken through mathematical reasoning rather than brute force.",
+        howItWorks: "Each letter's alphabetic index P is transformed to C = (aP + b) mod 26, then converted back to a letter."
+      },
+      {
         id: "scytale",
         name: "Scytale",
         year: "~700 BC",
@@ -62,30 +86,6 @@ const eras = [
         whenWhere: "Ancient Greece, ~150 BC",
         blurb: "Invented by the Greek historian Polybius around 150 BC, this cipher converts each letter into a coordinate pair on a 5×5 grid. Polybius originally designed it for fire signalling — operators held up torches to indicate row and column numbers across long distances. It was later adapted by medieval cryptographers, Russian Nihilist revolutionaries, and Charles Wheatstone, who used it as the foundation for the Playfair cipher. Its grid structure is a conceptual ancestor of both binary encoding and modern substitution boxes.",
         howItWorks: "Each letter is located on a 5×5 grid; its row number followed by its column number becomes the ciphertext."
-      },
-      {
-        id: "caesar",
-        name: "Caesar Cipher",
-        year: "~60 BC",
-        whenWhere: "Ancient Rome, ~60 BC",
-        blurb: "Julius Caesar used this cipher to protect military communications during his Gallic campaigns, reportedly with a shift of three positions. It is the earliest well-documented substitution cipher in recorded history — simple enough to memorise, fast enough to use under battlefield conditions. Suetonius documented its use in 69 AD; Augustus Caesar later adopted a shift of one. It offers no meaningful security against modern analysis, but as the purest expression of the shift principle it remains the conceptual starting point for all substitution-based cryptography.",
-        howItWorks: "Each letter is shifted N positions forward in the alphabet, wrapping from Z back to A."
-      },
-      {
-        id: "affine",
-        name: "Affine Cipher",
-        year: "~800 AD",
-        whenWhere: "Arab world, ~800 AD",
-        blurb: "A mathematical generalisation of the Caesar cipher that emerged during the Islamic Golden Age, the affine cipher encodes each letter using the formula C = (aP + b) mod 26, where a and b are secret keys. The 9th-century polymath al-Kindi described methods for breaking it in his Treatise on Deciphering Cryptographic Messages — the first known work on frequency analysis. The key a must be coprime with 26, yielding 312 possible key combinations, which sounds large until you realise al-Kindi's method defeats it in minutes with enough text. It was the first cipher to be broken through mathematical reasoning rather than brute force.",
-        howItWorks: "Each letter's alphabetic index P is transformed to C = (aP + b) mod 26, then converted back to a letter."
-      },
-      {
-        id: "vigenere",
-        name: "Vigenère",
-        year: "1553",
-        whenWhere: "Europe, 1553",
-        blurb: "First described by Giovan Battista Bellaso in 1553 and later misattributed to Blaise de Vigenère, this polyalphabetic cipher earned the title \"le chiffre indéchiffrable\" — the indecipherable cipher — and held that reputation for nearly 300 years. By shifting each letter using a different position in a repeating keyword, it defeated the frequency analysis that broke every previous cipher. Charles Babbage cracked it privately around 1854 using periodicity analysis; Friedrich Kasiski published the method independently in 1863, ending its era of dominance.",
-        howItWorks: "Each plaintext letter is shifted by the value of the corresponding letter in a repeating keyword, cycling the key continuously."
       },
       {
         id: "playfair",
@@ -126,6 +126,14 @@ const eras = [
     color: "#4ECDC4",
     items: [
       {
+        id: "aes",
+        name: "AES Standard",
+        year: "2001",
+        whenWhere: "United States, standardised 2001",
+        blurb: "AES was selected in 2001 by the US National Institute of Standards and Technology after a five-year open international competition to replace the ageing DES standard, which had become vulnerable to brute-force attacks. The winning algorithm, Rijndael, was designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. It operates on 128-bit blocks of data, putting each block through 10 rounds of four mathematical transformations — SubBytes, ShiftRows, MixColumns, and AddRoundKey — using keys of 128, 192, or 256 bits. AES is the most widely deployed symmetric encryption algorithm in existence, securing HTTPS connections, disk encryption, Wi-Fi, government communications, and virtually every modern digital transaction.",
+        howItWorks: "A 128-bit data block is transformed through 10 rounds of substitution, row-shifting, column-mixing, and key-addition operations."
+      },
+      {
         id: "rsa",
         name: "RSA Standard",
         year: "1977",
@@ -140,14 +148,6 @@ const eras = [
         whenWhere: "United States, SHA-1: 1993 · SHA-256 & SHA-512: 2001 · BLAKE2: 2012",
         blurb: "The SHA family was developed by the NSA and standardised by NIST across three decades. SHA-1 (1993) is now cryptographically broken — Google's 2017 SHAttered project produced the first real-world collision. SHA-256 and SHA-512, released in 2001 as part of SHA-2, remain sound and underpin Bitcoin's proof-of-work, TLS certificate signing, and software package verification worldwide. MD5 (1992), while faster, is broken for collision resistance and should not be used for security. BLAKE2 (2012) matches SHA-2 in security while outperforming it in speed on most hardware without the NSA's involvement in its design.",
         howItWorks: "Input of any length is compressed into a fixed-size digest; identical inputs always produce identical output, but no efficient method exists to reverse the process or find two inputs that collide."
-      },
-      {
-        id: "aes",
-        name: "AES Standard",
-        year: "2001",
-        whenWhere: "United States, standardised 2001",
-        blurb: "AES was selected in 2001 by the US National Institute of Standards and Technology after a five-year open international competition to replace the ageing DES standard, which had become vulnerable to brute-force attacks. The winning algorithm, Rijndael, was designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. It operates on 128-bit blocks of data, putting each block through 10 rounds of four mathematical transformations — SubBytes, ShiftRows, MixColumns, and AddRoundKey — using keys of 128, 192, or 256 bits. AES is the most widely deployed symmetric encryption algorithm in existence, securing HTTPS connections, disk encryption, Wi-Fi, government communications, and virtually every modern digital transaction.",
-        howItWorks: "A 128-bit data block is transformed through 10 rounds of substitution, row-shifting, column-mixing, and key-addition operations."
       }
     ]
   }
@@ -514,6 +514,7 @@ export default function Home() {
   useEffect(() => {
     handleCaesarProcess(caesarInput, caesarShift, caesarMode);
     setCaesarIndex(0);
+    setCaesarIsPlaying(false);
   }, [caesarInput, caesarShift, caesarMode]);
 
   // Caesar Playback
@@ -776,7 +777,8 @@ export default function Home() {
     return isNaN(parsed) ? null : parsed;
   }, [scytaleWidth]);
 
-  const handleScytaleProcess = async () => {
+  const handleScytaleProcess = async (currentMode?: "encrypt" | "decrypt") => {
+    const targetMode = currentMode || scytaleMode;
     if (!scytaleInput) {
       setScytaleError("");
       setScytaleOutput("");
@@ -804,10 +806,11 @@ export default function Home() {
       return;
     }
     setScytaleError("");
+    setScytaleOutput("");
 
     try {
-      const endpoint = scytaleMode === "encrypt" ? "/api/scytale/encrypt" : "/api/scytale/decrypt";
-      const payload = scytaleMode === "encrypt"
+      const endpoint = targetMode === "encrypt" ? "/api/scytale/encrypt" : "/api/scytale/decrypt";
+      const payload = targetMode === "encrypt"
         ? { plaintext: scytaleInput, width: parsedWidth }
         : { ciphertext: scytaleInput, width: parsedWidth };
       const response = await fetch(endpoint, {
@@ -821,7 +824,7 @@ export default function Home() {
         setScytaleOutput("");
       } else {
         const data = await response.json();
-        setScytaleOutput(scytaleMode === "encrypt" ? data.ciphertext : data.plaintext);
+        setScytaleOutput(targetMode === "encrypt" ? data.ciphertext : data.plaintext);
       }
     } catch (err) {
       setScytaleError("Could not reach encryption server — is the API running?");
@@ -867,7 +870,8 @@ export default function Home() {
     return cleanKey.toLowerCase().replace(/j/g, "i");
   }, [polybiusKey]);
 
-  const handlePolybiusProcess = async () => {
+  const handlePolybiusProcess = async (currentMode?: "encrypt" | "decrypt") => {
+    const targetMode = currentMode || polybiusMode;
     if (!polybiusInput) {
       setPolybiusError("");
       setPolybiusOutput("");
@@ -886,7 +890,7 @@ export default function Home() {
       return;
     }
 
-    if (polybiusMode === "decrypt") {
+    if (targetMode === "decrypt") {
       let isValid = true;
       let errorMsg = "";
       let i = 0;
@@ -920,10 +924,11 @@ export default function Home() {
     }
 
     setPolybiusError("");
+    setPolybiusOutput("");
 
     try {
-      const endpoint = polybiusMode === "encrypt" ? "/api/polybius/encrypt" : "/api/polybius/decrypt";
-      const payload = polybiusMode === "encrypt"
+      const endpoint = targetMode === "encrypt" ? "/api/polybius/encrypt" : "/api/polybius/decrypt";
+      const payload = targetMode === "encrypt"
         ? { plaintext: polybiusInput, key: keyClean }
         : { ciphertext: polybiusInput, key: keyClean };
       const response = await fetch(endpoint, {
@@ -937,7 +942,7 @@ export default function Home() {
         setPolybiusOutput("");
       } else {
         const data = await response.json();
-        setPolybiusOutput(polybiusMode === "encrypt" ? data.ciphertext : data.plaintext);
+        setPolybiusOutput(targetMode === "encrypt" ? data.ciphertext : data.plaintext);
       }
     } catch (err) {
       setPolybiusError("Could not reach encryption server — is the API running?");
@@ -1356,6 +1361,7 @@ export default function Home() {
     }
 
     setAesError("");
+    setAesOutput("");
     try {
       if (targetMode === "encrypt") {
         const response = await fetch("/api/aes/encrypt", {
@@ -1382,7 +1388,7 @@ export default function Home() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            ciphertext: aesInput,
+            ciphertext: aesInput.trim().replace(/\s/g, ""),
             key: aesKey,
             nonce: aesNonce || "0".repeat(24),
             key_format: aesKeyFormat
@@ -1619,6 +1625,7 @@ export default function Home() {
       return;
     }
     setShaError("");
+    setShaOutput("");
     try {
       const response = await fetch("/api/sha256", {
         method: "POST",
@@ -2683,7 +2690,10 @@ export default function Home() {
                   <div className="flex space-x-2">
                     <button
                       data-testid="encrypt-btn-scytale"
-                      onClick={() => setScytaleMode("encrypt")}
+                      onClick={() => {
+                        setScytaleMode("encrypt");
+                        handleScytaleProcess("encrypt");
+                      }}
                       className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
                         scytaleMode === "encrypt"
                           ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
@@ -2694,7 +2704,10 @@ export default function Home() {
                     </button>
                     <button
                       data-testid="decrypt-btn-scytale"
-                      onClick={() => setScytaleMode("decrypt")}
+                      onClick={() => {
+                        setScytaleMode("decrypt");
+                        handleScytaleProcess("decrypt");
+                      }}
                       className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
                         scytaleMode === "decrypt"
                           ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
@@ -3741,7 +3754,7 @@ export default function Home() {
                 data-testid="mode-select-aes"
                 value={aesMode}
                 onChange={(e) => setAesMode(e.target.value as "encrypt" | "decrypt")}
-                className="bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-xs text-amber-400 focus:border-amber-500 outline-none"
+                className="bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-amber-400 focus:border-amber-500 outline-none"
               >
                 <option value="encrypt">Encrypt Mode</option>
                 <option value="decrypt">Decrypt Mode</option>
@@ -3778,7 +3791,7 @@ export default function Home() {
                     data-testid="param-format-aes"
                     value={aesFormat}
                     onChange={(e) => setAesFormat(e.target.value as "text" | "hex")}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-xs text-slate-300 focus:border-amber-500 outline-none"
+                    className="w-full bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-white focus:border-amber-500 outline-none"
                   >
                     <option value="text">Plain Text</option>
                     <option value="hex">Hexadecimal</option>
@@ -3793,7 +3806,7 @@ export default function Home() {
                     data-testid="param-keyformat-aes"
                     value={aesKeyFormat}
                     onChange={(e) => setAesKeyFormat(e.target.value as "text" | "hex")}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-xs text-slate-300 focus:border-amber-500 outline-none"
+                    className="w-full bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-white focus:border-amber-500 outline-none"
                   >
                     <option value="text">Plain Text</option>
                     <option value="hex">Hexadecimal</option>
@@ -4031,7 +4044,7 @@ export default function Home() {
                 data-testid="mode-select-rsa"
                 value={rsaMode}
                 onChange={(e) => setRsaMode(e.target.value as "encrypt" | "decrypt")}
-                className="bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-xs text-amber-400 focus:border-amber-500 outline-none"
+                className="bg-slate-950 border border-slate-600 rounded-lg p-2 font-mono text-xs text-amber-400 focus:border-amber-500 outline-none"
               >
                 <option value="encrypt">Encrypt Mode</option>
                 <option value="decrypt">Decrypt Mode</option>
