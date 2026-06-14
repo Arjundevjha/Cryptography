@@ -33,5 +33,6 @@ playwright-report/
 # Python cache
 __pycache__/
 *.pyc
+*.tsbuildinfo
 *.pyo
 .pytest_cache/
