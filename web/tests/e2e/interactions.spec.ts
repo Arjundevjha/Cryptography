@@ -121,13 +121,13 @@ test.describe('Tier 3: Pairwise Interactions & Visual Integration E2E Tests', ()
 
   test('TC-T3-INTERACT-08 (Keyboard Accessibility Navigation)', async ({ page }) => {
     // Focus first timeline node
-    const firstNode = page.locator('[data-testid="timeline-node-caesar"]');
+    const firstNode = page.locator('[data-testid="timeline-node-scytale"]');
     await firstNode.focus();
     await expect(firstNode).toBeFocused();
     
     // Tab to next
     await page.keyboard.press('Tab');
-    const secondNode = page.locator('[data-testid="timeline-node-vigenere"]');
+    const secondNode = page.locator('[data-testid="timeline-node-polybius"]');
     await expect(secondNode).toBeFocused();
     
     // Tab to Polybius (let's focus directly or tab to it)

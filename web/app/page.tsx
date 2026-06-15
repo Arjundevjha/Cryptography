@@ -48,30 +48,6 @@ const eras = [
     color: "#D4A853",
     items: [
       {
-        id: "caesar",
-        name: "Caesar Cipher",
-        year: "~60 BC",
-        whenWhere: "Ancient Rome, ~60 BC",
-        blurb: "Julius Caesar used this cipher to protect military communications during his Gallic campaigns, reportedly with a shift of three positions. It is the earliest well-documented substitution cipher in recorded history — simple enough to memorise, fast enough to use under battlefield conditions. Suetonius documented its use in 69 AD; Augustus Caesar later adopted a shift of one. It offers no meaningful security against modern analysis, but as the purest expression of the shift principle it remains the conceptual starting point for all substitution-based cryptography.",
-        howItWorks: "Each letter is shifted N positions forward in the alphabet, wrapping from Z back to A."
-      },
-      {
-        id: "vigenere",
-        name: "Vigenère",
-        year: "1553",
-        whenWhere: "Europe, 1553",
-        blurb: "First described by Giovan Battista Bellaso in 1553 and later misattributed to Blaise de Vigenère, this polyalphabetic cipher earned the title \"le chiffre indéchiffrable\" — the indecipherable cipher — and held that reputation for nearly 300 years. By shifting each letter using a different position in a repeating keyword, it defeated the frequency analysis that broke every previous cipher. Charles Babbage cracked it privately around 1854 using periodicity analysis; Friedrich Kasiski published the method independently in 1863, ending its era of dominance.",
-        howItWorks: "Each plaintext letter is shifted by the value of the corresponding letter in a repeating keyword, cycling the key continuously."
-      },
-      {
-        id: "affine",
-        name: "Affine Cipher",
-        year: "~800 AD",
-        whenWhere: "Arab world, ~800 AD",
-        blurb: "A mathematical generalisation of the Caesar cipher that emerged during the Islamic Golden Age, the affine cipher encodes each letter using the formula C = (aP + b) mod 26, where a and b are secret keys. The 9th-century polymath al-Kindi described methods for breaking it in his Treatise on Deciphering Cryptographic Messages — the first known work on frequency analysis. The key a must be coprime with 26, yielding 312 possible key combinations, which sounds large until you realise al-Kindi's method defeats it in minutes with enough text. It was the first cipher to be broken through mathematical reasoning rather than brute force.",
-        howItWorks: "Each letter's alphabetic index P is transformed to C = (aP + b) mod 26, then converted back to a letter."
-      },
-      {
         id: "scytale",
         name: "Scytale",
         year: "~700 BC",
@@ -88,20 +64,44 @@ const eras = [
         howItWorks: "Each letter is located on a 5×5 grid; its row number followed by its column number becomes the ciphertext."
       },
       {
-        id: "playfair",
-        name: "Playfair Cipher",
-        year: "1854",
-        whenWhere: "Britain, 1854",
-        blurb: "Invented by Charles Wheatstone in 1854 but named after his friend Baron Playfair, who championed its adoption — a common injustice in the history of cryptography. It was the first widely used cipher to encrypt pairs of letters (digraphs) rather than individual characters, which significantly undermined traditional frequency analysis. The British Foreign Office used it during the Second Boer War and World War I. It was eventually defeated by statistical analysis of digraph frequencies and replaced by electromechanical cipher machines in the 1940s.",
-        howItWorks: "Letter pairs are located in a 5×5 key square and transformed using one of three geometric rules based on whether they share a row, column, or neither."
-      },
-      {
         id: "substitution",
         name: "Substitution Cipher",
         year: "varies",
         whenWhere: "Widespread, ~100 BC onward",
         blurb: "The simple substitution cipher maps each letter of the alphabet to a unique replacement letter using a secret scrambled key. It was used across the ancient and medieval world — Mary Queen of Scots deployed a variant in 1586 to communicate with conspirators, but the letters were intercepted and deciphered, leading directly to her execution. With 26! possible keys — roughly 4×10²⁶ — it appears unbreakable, but al-Kindi's 9th-century frequency analysis defeats it reliably using just a few hundred characters of ciphertext. Any cipher that substitutes letters one-for-one without variation inherits this fundamental weakness.",
         howItWorks: "Every letter is replaced by its fixed counterpart from a shuffled 26-character key alphabet."
+      },
+      {
+        id: "caesar",
+        name: "Caesar Cipher",
+        year: "~60 BC",
+        whenWhere: "Ancient Rome, ~60 BC",
+        blurb: "Julius Caesar used this cipher to protect military communications during his Gallic campaigns, reportedly with a shift of three positions. It is the earliest well-documented substitution cipher in recorded history — simple enough to memorise, fast enough to use under battlefield conditions. Suetonius documented its use in 69 AD; Augustus Caesar later adopted a shift of one. It offers no meaningful security against modern analysis, but as the purest expression of the shift principle it remains the conceptual starting point for all substitution-based cryptography.",
+        howItWorks: "Each letter is shifted N positions forward in the alphabet, wrapping from Z back to A."
+      },
+      {
+        id: "affine",
+        name: "Affine Cipher",
+        year: "~800 AD",
+        whenWhere: "Arab world, ~800 AD",
+        blurb: "A mathematical generalisation of the Caesar cipher that emerged during the Islamic Golden Age, the affine cipher encodes each letter using the formula C = (aP + b) mod 26, where a and b are secret keys. The 9th-century polymath al-Kindi described methods for breaking it in his Treatise on Deciphering Cryptographic Messages — the first known work on frequency analysis. The key a must be coprime with 26, yielding 312 possible key combinations, which sounds large until you realise al-Kindi's method defeats it in minutes with enough text. It was the first cipher to be broken through mathematical reasoning rather than brute force.",
+        howItWorks: "Each letter's alphabetic index P is transformed to C = (aP + b) mod 26, then converted back to a letter."
+      },
+      {
+        id: "vigenere",
+        name: "Vigenère",
+        year: "1553",
+        whenWhere: "Europe, 1553",
+        blurb: "First described by Giovan Battista Bellaso in 1553 and later misattributed to Blaise de Vigenère, this polyalphabetic cipher earned the title \"le chiffre indéchiffrable\" — the indecipherable cipher — and held that reputation for nearly 300 years. By shifting each letter using a different position in a repeating keyword, it defeated the frequency analysis that broke every previous cipher. Charles Babbage cracked it privately around 1854 using periodicity analysis; Friedrich Kasiski published the method independently in 1863, ending its era of dominance.",
+        howItWorks: "Each plaintext letter is shifted by the value of the corresponding letter in a repeating keyword, cycling the key continuously."
+      },
+      {
+        id: "playfair",
+        name: "Playfair Cipher",
+        year: "1854",
+        whenWhere: "Britain, 1854",
+        blurb: "Invented by Charles Wheatstone in 1854 but named after his friend Baron Playfair, who championed its adoption — a common injustice in the history of cryptography. It was the first widely used cipher to encrypt pairs of letters (digraphs) rather than individual characters, which significantly undermined traditional frequency analysis. The British Foreign Office used it during the Second Boer War and World War I. It was eventually defeated by statistical analysis of digraph frequencies and replaced by electromechanical cipher machines in the 1940s.",
+        howItWorks: "Letter pairs are located in a 5×5 key square and transformed using one of three geometric rules based on whether they share a row, column, or neither."
       }
     ]
   },
@@ -126,14 +126,6 @@ const eras = [
     color: "#4ECDC4",
     items: [
       {
-        id: "aes",
-        name: "AES Standard",
-        year: "2001",
-        whenWhere: "United States, standardised 2001",
-        blurb: "AES was selected in 2001 by the US National Institute of Standards and Technology after a five-year open international competition to replace the ageing DES standard, which had become vulnerable to brute-force attacks. The winning algorithm, Rijndael, was designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. It operates on 128-bit blocks of data, putting each block through 10 rounds of four mathematical transformations — SubBytes, ShiftRows, MixColumns, and AddRoundKey — using keys of 128, 192, or 256 bits. AES is the most widely deployed symmetric encryption algorithm in existence, securing HTTPS connections, disk encryption, Wi-Fi, government communications, and virtually every modern digital transaction.",
-        howItWorks: "A 128-bit data block is transformed through 10 rounds of substitution, row-shifting, column-mixing, and key-addition operations."
-      },
-      {
         id: "rsa",
         name: "RSA Standard",
         year: "1977",
@@ -148,6 +140,14 @@ const eras = [
         whenWhere: "United States, SHA-1: 1993 · SHA-256 & SHA-512: 2001 · BLAKE2: 2012",
         blurb: "The SHA family was developed by the NSA and standardised by NIST across three decades. SHA-1 (1993) is now cryptographically broken — Google's 2017 SHAttered project produced the first real-world collision. SHA-256 and SHA-512, released in 2001 as part of SHA-2, remain sound and underpin Bitcoin's proof-of-work, TLS certificate signing, and software package verification worldwide. MD5 (1992), while faster, is broken for collision resistance and should not be used for security. BLAKE2 (2012) matches SHA-2 in security while outperforming it in speed on most hardware without the NSA's involvement in its design.",
         howItWorks: "Input of any length is compressed into a fixed-size digest; identical inputs always produce identical output, but no efficient method exists to reverse the process or find two inputs that collide."
+      },
+      {
+        id: "aes",
+        name: "AES Standard",
+        year: "2001",
+        whenWhere: "United States, standardised 2001",
+        blurb: "AES was selected in 2001 by the US National Institute of Standards and Technology after a five-year open international competition to replace the ageing DES standard, which had become vulnerable to brute-force attacks. The winning algorithm, Rijndael, was designed by Belgian cryptographers Joan Daemen and Vincent Rijmen. It operates on 128-bit blocks of data, putting each block through 10 rounds of four mathematical transformations — SubBytes, ShiftRows, MixColumns, and AddRoundKey — using keys of 128, 192, or 256 bits. AES is the most widely deployed symmetric encryption algorithm in existence, securing HTTPS connections, disk encryption, Wi-Fi, government communications, and virtually every modern digital transaction.",
+        howItWorks: "A 128-bit data block is transformed through 10 rounds of substitution, row-shifting, column-mixing, and key-addition operations."
       }
     ]
   }
@@ -228,17 +228,17 @@ export default function Home() {
   const substitutionRef = useRef<HTMLDivElement>(null);
 
   const sectionRefs = useMemo(() => ({
-    caesar: caesarRef,
-    vigenere: vigenereRef,
-    affine: affineRef,
     scytale: scytaleRef,
     polybius: polybiusRef,
+    substitution: substitutionRef,
+    caesar: caesarRef,
+    affine: affineRef,
+    vigenere: vigenereRef,
+    playfair: playfairRef,
     enigma: enigmaRef,
-    aes: aesRef,
     rsa: rsaRef,
     sha256: sha256Ref,
-    playfair: playfairRef,
-    substitution: substitutionRef
+    aes: aesRef
   }), []);
 
   const scrollToSection = (sectionId: keyof typeof sectionRefs) => {
@@ -543,7 +543,10 @@ export default function Home() {
     const angleRad = ((index / 26) * 360 - 90) * (Math.PI / 180);
     const x = 150 + radius * Math.cos(angleRad);
     const y = 150 + radius * Math.sin(angleRad);
-    return { x, y };
+    return {
+      x: Math.round(x * 10000) / 10000,
+      y: Math.round(y * 10000) / 10000
+    };
   };
 
   const currentCaesarActiveChar = caesarInput[caesarIndex]?.toUpperCase() || "";
@@ -618,8 +621,8 @@ export default function Home() {
 
   const currentVigenereActivePChar = vigenereInput[vigenereIndex]?.toUpperCase() || "";
   const currentVigenereActiveKChar = vigenerePaddedKey[vigenereIndex]?.toUpperCase() || "";
-  const activeColIdx = alphabet.indexOf(currentVigenereActivePChar);
-  const activeRowIdx = alphabet.indexOf(currentVigenereActiveKChar);
+  const activeColIdx = currentVigenereActivePChar ? alphabet.indexOf(currentVigenereActivePChar) : -1;
+  const activeRowIdx = currentVigenereActiveKChar ? alphabet.indexOf(currentVigenereActiveKChar) : -1;
 
   // Auto-scroll Vigenere active cell
   useEffect(() => {
@@ -2287,6 +2290,126 @@ export default function Home() {
         </section>
 
         {/* -------------------------------------------------------------
+            SUBSTITUTION CIPHER EXHIBIT
+            ------------------------------------------------------------- */}
+        <section
+          id="substitution"
+          ref={sectionRefs.substitution}
+          data-testid="exhibit-substitution"
+          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
+        >
+          <h3 className="text-3xl font-bold text-amber-400 mb-2">Substitution Cipher</h3>
+          {renderExhibitHeader("substitution")}
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="input-substitution" className="block text-sm font-mono text-slate-300 mb-2">
+                  Input Text (Max 500 Chars)
+                </label>
+                <ExhibitInput
+                  textarea
+                  era="classical"
+                  id="input-substitution"
+                  dataTestId="input-text-substitution"
+                  value={substitutionInput}
+                  onChange={(e) => {
+                    setSubstitutionInput(e.target.value);
+                    setSubstitutionError("");
+                  }}
+                  maxLength={505}
+                  placeholder="Enter secret message..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="key-substitution" className="block text-sm font-mono text-slate-300 mb-2">
+                    Key Alphabet (26 unique chars)
+                  </label>
+                  <ExhibitInput
+                    era="classical"
+                    id="key-substitution"
+                    type="text"
+                    dataTestId="param-key-substitution"
+                    value={substitutionKey}
+                    onChange={(e) => {
+                      setSubstitutionKey(e.target.value);
+                      setSubstitutionError("");
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-mono text-slate-300 mb-2">
+                    Action
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setSubstitutionMode("encrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        substitutionMode === "encrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Encrypt
+                    </button>
+                    <button
+                      onClick={() => setSubstitutionMode("decrypt")}
+                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
+                        substitutionMode === "decrypt"
+                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
+                      }`}
+                    >
+                      Decrypt
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {substitutionError && (
+                <div className="p-3 bg-red-950/80 border border-red-800 rounded-lg text-red-200 text-sm font-mono">
+                  {substitutionError}
+                </div>
+              )}
+
+              <div>
+                <span className="block text-sm font-mono text-slate-300 mb-2">
+                  Output Text
+                </span>
+                <div
+                  data-testid="output-text-substitution"
+                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
+                >
+                  {substitutionOutput}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center items-center bg-slate-950/40 border border-slate-800/60 rounded-xl p-6 overflow-x-auto w-full">
+              <span className="text-xs font-mono text-slate-500 mb-4 uppercase tracking-wider">// Alphabet Substitution Map</span>
+              <div className="flex flex-col space-y-2 font-mono text-xs text-slate-300 w-full min-w-[300px]">
+                <div className="flex border-b border-slate-800 pb-1">
+                  <span className="w-12 text-slate-500 uppercase">Plain:</span>
+                  <span className="tracking-widest">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</span>
+                </div>
+                <div className="flex pt-1">
+                  <span className="w-12 text-amber-400 uppercase font-bold">Cipher:</span>
+                  <span className="tracking-widest text-amber-400 font-bold">
+                    {(() => {
+                      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                      const clean = substitutionKey.toUpperCase();
+                      return alphabet.split("").map((c, idx) => clean[idx] || "-").join(" ");
+                    })()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------------------------------
             CAESAR CIPHER EXHIBIT
             ------------------------------------------------------------- */}
         <section
@@ -3216,126 +3339,6 @@ export default function Home() {
                     </div>
                   ));
                 })()}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* -------------------------------------------------------------
-            SUBSTITUTION CIPHER EXHIBIT
-            ------------------------------------------------------------- */}
-        <section
-          id="substitution"
-          ref={sectionRefs.substitution}
-          data-testid="exhibit-substitution"
-          className="mb-16 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl"
-        >
-          <h3 className="text-3xl font-bold text-amber-400 mb-2">Substitution Cipher</h3>
-          {renderExhibitHeader("substitution")}
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="input-substitution" className="block text-sm font-mono text-slate-300 mb-2">
-                  Input Text (Max 500 Chars)
-                </label>
-                <ExhibitInput
-                  textarea
-                  era="classical"
-                  id="input-substitution"
-                  dataTestId="input-text-substitution"
-                  value={substitutionInput}
-                  onChange={(e) => {
-                    setSubstitutionInput(e.target.value);
-                    setSubstitutionError("");
-                  }}
-                  maxLength={505}
-                  placeholder="Enter secret message..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="key-substitution" className="block text-sm font-mono text-slate-300 mb-2">
-                    Key Alphabet (26 unique chars)
-                  </label>
-                  <ExhibitInput
-                    era="classical"
-                    id="key-substitution"
-                    type="text"
-                    dataTestId="param-key-substitution"
-                    value={substitutionKey}
-                    onChange={(e) => {
-                      setSubstitutionKey(e.target.value);
-                      setSubstitutionError("");
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-mono text-slate-300 mb-2">
-                    Action
-                  </label>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setSubstitutionMode("encrypt")}
-                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
-                        substitutionMode === "encrypt"
-                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
-                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
-                      }`}
-                    >
-                      Encrypt
-                    </button>
-                    <button
-                      onClick={() => setSubstitutionMode("decrypt")}
-                      className={`flex-1 py-2 rounded-lg font-mono text-xs border transition ${
-                        substitutionMode === "decrypt"
-                          ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
-                          : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750"
-                      }`}
-                    >
-                      Decrypt
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {substitutionError && (
-                <div className="p-3 bg-red-950/80 border border-red-800 rounded-lg text-red-200 text-sm font-mono">
-                  {substitutionError}
-                </div>
-              )}
-
-              <div>
-                <span className="block text-sm font-mono text-slate-300 mb-2">
-                  Output Text
-                </span>
-                <div
-                  data-testid="output-text-substitution"
-                  className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-lg font-mono text-amber-500 text-sm whitespace-pre-wrap break-all"
-                >
-                  {substitutionOutput}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-center items-center bg-slate-950/40 border border-slate-800/60 rounded-xl p-6 overflow-x-auto w-full">
-              <span className="text-xs font-mono text-slate-500 mb-4 uppercase tracking-wider">// Alphabet Substitution Map</span>
-              <div className="flex flex-col space-y-2 font-mono text-xs text-slate-300 w-full min-w-[300px]">
-                <div className="flex border-b border-slate-800 pb-1">
-                  <span className="w-12 text-slate-500 uppercase">Plain:</span>
-                  <span className="tracking-widest">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</span>
-                </div>
-                <div className="flex pt-1">
-                  <span className="w-12 text-amber-400 uppercase font-bold">Cipher:</span>
-                  <span className="tracking-widest text-amber-400 font-bold">
-                    {(() => {
-                      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                      const clean = substitutionKey.toUpperCase();
-                      return alphabet.split("").map((c, idx) => clean[idx] || "-").join(" ");
-                    })()}
-                  </span>
-                </div>
               </div>
             </div>
           </div>

@@ -9,6 +9,19 @@ date
 
 cd "$WEB_DIR"
 
+# Pre-cleanup: Kill any stray uvicorn or next processes on port 8000 and 3000
+echo "Cleaning up ports 8000 and 3000..."
+backend_stray=$(lsof -t -i:8000 || true)
+if [ -n "$backend_stray" ]; then
+    echo "Killing stray backend on port 8000: $backend_stray"
+    kill -9 $backend_stray || true
+fi
+frontend_stray=$(lsof -t -i:3000 || true)
+if [ -n "$frontend_stray" ]; then
+    echo "Killing stray frontend on port 3000: $frontend_stray"
+    kill -9 $frontend_stray || true
+fi
+
 # 3. Start backend FastAPI server in background
 echo "Starting FastAPI backend on port 8000..."
 export PYTHONPATH="$WORKSPACE_DIR"
@@ -16,9 +29,12 @@ python3 -m uvicorn api.main:app --host 127.0.0.1 --port 8000 > "$WORKSPACE_DIR/b
 BACKEND_PID=$!
 echo "Backend started with PID $BACKEND_PID"
 
-# 4. Start Next.js frontend in background
+# 4. Build and start Next.js frontend in production mode
+echo "Building Next.js frontend..."
+npm run build
+
 echo "Starting Next.js frontend on port 3000..."
-npm run dev > "$WORKSPACE_DIR/frontend.log" 2>&1 &
+npm run start > "$WORKSPACE_DIR/frontend.log" 2>&1 &
 FRONTEND_PID=$!
 echo "Frontend started with PID $FRONTEND_PID"
 

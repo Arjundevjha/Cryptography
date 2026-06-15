@@ -57,7 +57,9 @@ test.describe('Historical Ciphers E2E Tests', () => {
       await encryptBtn.click();
     }
     
-    const outputText = await page.locator('[data-testid="output-text-scytale"]').textContent();
+    const outputScytale = page.locator('[data-testid="output-text-scytale"]');
+    await expect(outputScytale).not.toBeEmpty();
+    const outputText = await outputScytale.textContent();
     expect(outputText?.replace(/\s+/g, '')).toBe('HELLO');
   });
 
@@ -169,9 +171,7 @@ test.describe('Historical Ciphers E2E Tests', () => {
     }
     
     const outputLocator = page.locator('[data-testid="output-text-polybius"]');
-    await expect(outputLocator).not.toBeEmpty();
-    const outputText = await outputLocator.textContent();
-    expect(outputText === 'HELLO' || outputText === 'HELLIO').toBe(true);
+    await expect(outputLocator).toHaveText(/(HELLO|HELLIO)/);
   });
 
   test('TC-T1-POLYBIUS-03 (I and J Merge)', async ({ page }) => {
@@ -183,8 +183,8 @@ test.describe('Historical Ciphers E2E Tests', () => {
     }
     
     const outputLocator = page.locator('[data-testid="output-text-polybius"]');
-    await expect(outputLocator).not.toBeEmpty();
-    const outputText = await outputLocator.textContent();
+    await expect(outputLocator).toHaveText(/\d/);
+    const outputText = (await outputLocator.textContent())?.trim();
     
     await page.fill('[data-testid="input-text-polybius"]', 'IULIET');
     if (await encryptBtn.count() > 0) {
@@ -202,9 +202,9 @@ test.describe('Historical Ciphers E2E Tests', () => {
     }
     
     const outputLocator = page.locator('[data-testid="output-text-polybius"]');
-    await expect(outputLocator).not.toBeEmpty();
+    await expect(outputLocator).toHaveText(/\d/);
     const outputText = await outputLocator.textContent();
-    expect(outputText).not.toBe('');
+    expect(outputText?.trim()).not.toBe('');
   });
 
   test('TC-T1-POLYBIUS-05 (Grid Highlight)', async ({ page }) => {
