@@ -1,6 +1,5 @@
 """Reflector component for Enigma machine."""
 
-# pylint: disable=too-few-public-methods
 class Reflector:
     """Reflector simulator for reversing signal direction in Enigma."""
 
@@ -14,3 +13,7 @@ class Reflector:
         letter = self.right[signal]
         signal = self.left.find(letter)
         return signal
+
+    def get_wiring(self) -> str:
+        """Get the current reflector wiring mapping."""
+        return self.right

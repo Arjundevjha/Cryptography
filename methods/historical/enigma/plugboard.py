@@ -17,12 +17,10 @@ class Plugboard:
 
     def forward(self, signal):
         """Pass the signal forward through the plugboard mapping."""
-        letter = self.right[signal]
-        signal = self.left.find(letter)
-        return signal
+        mapped_letter = self.right[signal]
+        return self.left.index(mapped_letter)
 
     def backwards(self, signal):
         """Pass the signal backwards through the plugboard mapping."""
-        letter = self.left[signal]
-        signal = self.right.find(letter)
-        return signal
+        mapped_letter = self.left[signal]
+        return self.right.index(mapped_letter)

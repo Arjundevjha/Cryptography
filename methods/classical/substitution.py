@@ -52,15 +52,15 @@ def decrypt(ciphertext: str, key: dict) -> str:
 
 def main():
     """Run an interactive test of the substitution cipher."""
-    message = input("Please enter a message: ")
-    key = pick_keys()
-    encrypted = encrypt(message, key)
-    decrypted = decrypt(encrypted, key)
+    raw_msg = input("Please enter a message for Substitution: ")
+    sub_map = pick_keys()
+    substituted_text = encrypt(raw_msg, sub_map)
+    restored_text = decrypt(substituted_text, sub_map)
 
-    print(f"Original: {message}")
-    print(f"Key: {''.join(key.values())}")
-    print(f"Encrypted: {encrypted}")
-    print(f"Decrypted: {decrypted}")
+    print(f"Substitution Input Message: {raw_msg}")
+    print(f"Substitution Cipher Key Map: {''.join(sub_map.values())}")
+    print(f"Substitution Ciphertext (Encrypted): {substituted_text}")
+    print(f"Substitution Restored Message (Decrypted): {restored_text}")
 
 if __name__ == "__main__":
     main()

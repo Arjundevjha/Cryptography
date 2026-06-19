@@ -121,17 +121,16 @@ def decrypt(ciphertext: str, key: str) -> str:
 
 def main():
     """Run an interactive test of the Playfair cipher."""
-    message = input("Please enter a message: ")
-    # Allow user to input key if they want, but default to pick_keys() if empty
-    key = pick_keys()
+    plaintext_msg = input("Please enter a message for Playfair: ")
+    grid_key = pick_keys()
 
-    encrypted = encrypt(message, key)
-    decrypted = decrypt(encrypted, key)
+    playfair_encrypted = encrypt(plaintext_msg, grid_key)
+    playfair_decrypted = decrypt(playfair_encrypted, grid_key)
 
-    print(f"Original: {message}")
-    print(f"Key: {key}")
-    print(f"Encrypted: {encrypted}")
-    print(f"Decrypted: {decrypted}")
+    print(f"Playfair Original Message: {plaintext_msg}")
+    print(f"Playfair Generated Key: {grid_key}")
+    print(f"Playfair Encrypted Result: {playfair_encrypted}")
+    print(f"Playfair Decrypted Result: {playfair_decrypted}")
 
 if __name__ == "__main__":
     main()

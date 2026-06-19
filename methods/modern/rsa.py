@@ -64,7 +64,7 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
 
     msg_bytes = message.encode('utf-8')
     key_size_bytes = (n.bit_length() + 7) // 8
-    
+
     ciphertext = b""
     for b in msg_bytes:
         c = pow(b, e, n)
@@ -92,8 +92,7 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     key_size_bytes = (n.bit_length() + 7) // 8
     decrypted_bytes = bytearray()
     for i in range(0, len(ciphertext), key_size_bytes):
-        block = ciphertext[i:i+key_size_bytes]
-        if not block:
+        if not (block := ciphertext[i : i + key_size_bytes]):
             continue
         c = int.from_bytes(block, byteorder='big')
         m = pow(c, d, n)

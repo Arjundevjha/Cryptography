@@ -64,17 +64,17 @@ def decrypt(ciphertext: str, key: str) -> str:
 
 def main():
     """Run an interactive test of the Vigenère cipher."""
-    message = input("Please enter a message: ")
-    if not (key := input("Please enter a key (or press Enter for random): ")):
-        key = pick_keys()
+    vigenere_text = input("Please enter a message for Vigenere: ")
+    if not (vigenere_key := input("Please enter a key (or press Enter for random): ")):
+        vigenere_key = pick_keys()
 
-    encrypted = encrypt(message, key)
-    decrypted = decrypt(encrypted, key)
+    vigenere_cipher = encrypt(vigenere_text, vigenere_key)
+    vigenere_decrypted = decrypt(vigenere_cipher, vigenere_key)
 
-    print(f"Original: {message}")
-    print(f"Key: {key}")
-    print(f"Encrypted: {encrypted}")
-    print(f"Decrypted: {decrypted}")
+    print(f"Vigenere Original Plaintext: {vigenere_text}")
+    print(f"Vigenere Key Utilized: {vigenere_key}")
+    print(f"Vigenere Encrypted Text: {vigenere_cipher}")
+    print(f"Vigenere Decrypted Result: {vigenere_decrypted}")
 
 if __name__ == "__main__":
     main()

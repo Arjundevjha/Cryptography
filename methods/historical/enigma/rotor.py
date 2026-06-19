@@ -9,17 +9,15 @@ class Rotor:
         self.right = wiring
         self.notch = notch
 
-    def forward(self, signal):
+    def forward(self, signal_idx: int) -> int:
         """Pass the signal forward from right side to left side of the rotor."""
-        letter = self.right[signal]
-        signal = self.left.find(letter)
-        return signal
+        target_char = self.right[signal_idx]
+        return self.left.find(target_char)
 
-    def backwards(self, signal):
+    def backwards(self, signal_idx: int) -> int:
         """Pass the signal backwards from left side to right side of the rotor."""
-        letter = self.left[signal]
-        signal = self.right.find(letter)
-        return signal
+        target_char = self.left[signal_idx]
+        return self.right.find(target_char)
 
     def rotate(self, n=1, forward=True):
         """Rotate the rotor n steps forward or backward."""
