@@ -1,6 +1,12 @@
 """Affine cipher implementation."""
 
 import random
+import math
+
+def _check_coprime(a_key: int):
+    """Check if the a_key is coprime to 26."""
+    if math.gcd(a_key, 26) != 1:
+        raise ValueError(f"The key 'a' ({a_key}) must be coprime to 26.")
 
 def pick_keys():
     """Generate a random key pair (a, b) where a is coprime to 26."""
@@ -26,6 +32,7 @@ def encrypt(plaintext: str, a_key: int, b_key: int) -> str:
     Each letter is mapped to (a_key * x + b_key) % 26.
     Non-alphabetic characters are preserved.
     """
+    _check_coprime(a_key)
     ciphertext = ""
     for char in plaintext:
         if char.isalpha():
@@ -43,6 +50,7 @@ def decrypt(ciphertext: str, a_key: int, b_key: int) -> str:
     Each letter is decrypted using the modular inverse of a_key.
     Non-alphabetic characters are preserved.
     """
+    _check_coprime(a_key)
     decrypted_text = ""
     for char in ciphertext:
         if char.isalpha():
