@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, Field
 import math
 import traceback
+import os
 from methods.classical import affine
 
 app = FastAPI(
@@ -16,9 +17,14 @@ app = FastAPI(
 )
 
 # CORS Middleware
+allowed_origins = os.getenv(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[origin.strip() for origin in allowed_origins if origin.strip()],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
