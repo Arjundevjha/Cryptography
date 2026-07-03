@@ -11,7 +11,9 @@ import {
   sha256PadDescription,
   playfairEncrypt,
   playfairDecrypt,
-  generatePlayfairGrid
+  generatePlayfairGrid,
+  substitutionEncrypt,
+  substitutionDecrypt
 } from '../../app/utils/ciphers';
 
 describe('Caesar Cipher Adapter', () => {
@@ -37,6 +39,11 @@ describe('Caesar Cipher Adapter', () => {
 
   it('should handle large shift', () => {
     expect(caesarEncrypt('HELLO', 1000)).toBe('TQXXA');
+  });
+
+  it('should handle empty string', () => {
+    expect(caesarEncrypt('', 5)).toBe('');
+    expect(caesarDecrypt('', 5)).toBe('');
   });
 });
 
@@ -156,5 +163,27 @@ describe('Playfair Cipher', () => {
     const ciphertext2 = playfairEncrypt(plaintext2, key);
     const decrypted2 = playfairDecrypt(ciphertext2, key);
     expect(decrypted2).toBe(plaintext2);
+  });
+});
+
+describe('Substitution Cipher', () => {
+  const keyAlphabet = 'zebrascdfghijklmnopqtuvwxy'; // A->Z, B->E, C->B, etc.
+
+  it('should encrypt correctly', () => {
+    expect(substitutionEncrypt('flee at once', keyAlphabet)).toBe('siaa zq lkba');
+  });
+
+  it('should decrypt correctly', () => {
+    expect(substitutionDecrypt('siaa zq lkba', keyAlphabet)).toBe('flee at once');
+  });
+
+  it('should preserve case', () => {
+    expect(substitutionEncrypt('Flee At Once', keyAlphabet)).toBe('Siaa Zq Lkba');
+    expect(substitutionDecrypt('Siaa Zq Lkba', keyAlphabet)).toBe('Flee At Once');
+  });
+
+  it('should preserve non-alphabetic characters', () => {
+    expect(substitutionEncrypt('flee at once! 123', keyAlphabet)).toBe('siaa zq lkba! 123');
+    expect(substitutionDecrypt('siaa zq lkba! 123', keyAlphabet)).toBe('flee at once! 123');
   });
 });
