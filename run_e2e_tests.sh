@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define directories
-WORKSPACE_DIR="/Users/abc/Desktop/Cryptography"
+WORKSPACE_DIR=$(pwd)
 WEB_DIR="$WORKSPACE_DIR/web"
 
 echo "=== Starting E2E Setup and Test Script ==="

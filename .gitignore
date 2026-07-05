@@ -36,3 +36,4 @@ __pycache__/
 *.tsbuildinfo
 *.pyo
 .pytest_cache/
+.coverage

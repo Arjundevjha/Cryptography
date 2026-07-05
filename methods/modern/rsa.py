@@ -4,6 +4,8 @@ This module provides RSA encryption and decryption using custom serialized keys.
 No external libraries are used.
 """
 
+import os
+
 try:
     from .symmetric import decrypt as aes_decrypt
 except ImportError:
@@ -102,13 +104,20 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
 def main():
     """Demonstrate RSA keypair generation, encryption, and decryption."""
     message = "Secret message for RSA"
-    passphrase = b"supersecretpassphrase"
 
     print("--- Testing Unencrypted Keypair ---")
     pub, priv = generate_keypair()
     ciphertext = encrypt(message, pub)
     decrypted = decrypt(ciphertext, priv)
     print(f"Decrypted message: {decrypted}")
+
+    passphrase_str = os.environ.get("RSA_PASSPHRASE")
+    if not passphrase_str:
+        print("\n--- Skipping Encrypted Keypair Test ---")
+        print("To run the encrypted keypair test, set the RSA_PASSPHRASE environment variable.")
+        return
+
+    passphrase = passphrase_str.encode("utf-8")
 
     print("\n--- Testing Encrypted Keypair ---")
     pub_enc, priv_enc = generate_encrypted_keypair(passphrase)

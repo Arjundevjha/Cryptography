@@ -64,24 +64,36 @@ def rot_word(word: list[int]) -> list[int]:
     return word[1:] + word[:1]
 
 def key_expansion(key: bytes) -> list[list[int]]:
-    """Expand the AES-256 key into round keys."""
-    words = [list(key[i:i+4]) for i in range(0, KEY_SIZE, 4)]
-    for idx in range(8, EXPANDED_KEY_WORDS):
+    """Expand the AES key into round keys. Supports 16, 24, and 32 byte keys."""
+    nk = len(key) // 4
+    if len(key) not in {16, 24, 32} or len(key) % 4 != 0:
+        raise ValueError("Key length must be 16, 24, or 32 bytes")
+
+    words = [list(key[i:i+4]) for i in range(0, len(key), 4)]
+
+    # Calculate expanded key words based on key size
+    # 16 bytes -> 44 words (10 rounds)
+    # 24 bytes -> 52 words (12 rounds)
+    # 32 bytes -> 60 words (14 rounds)
+    rounds = nk + 6
+    expanded_key_words = (rounds + 1) * 4
+
+    for idx in range(nk, expanded_key_words):
         temp = words[-1].copy()
-        if not idx % 8:
+        if not idx % nk:
             temp = sub_word(rot_word(temp))
-            temp[0] ^= RCON[idx // 8]
-        elif idx % 8 == KEY_WORDS_HALF:
+            temp[0] ^= RCON[idx // nk]
+        elif nk > 6 and idx % nk == 4:
             temp = sub_word(temp)
 
-        word_prev = words[-8]
+        word_prev = words[-nk]
         new_word = [temp[j] ^ word_prev[j] for j in range(4)]
         words.append(new_word)
 
     flat_bytes = []
     for w in words:
         flat_bytes.extend(w)
-    return [flat_bytes[i:i+BLOCK_SIZE] for i in range(0, 240, BLOCK_SIZE)]
+    return [flat_bytes[i:i+BLOCK_SIZE] for i in range(0, len(flat_bytes), BLOCK_SIZE)]
 
 def add_round_key(state: list[int], round_key: list[int]) -> list[int]:
     """XOR state with the round key."""
@@ -159,26 +171,28 @@ def inv_mix_columns(state: list[int]) -> list[int]:
     return new_state
 
 def encrypt_block(block: bytes, round_keys: list[list[int]]) -> bytes:
-    """Encrypt a single 16-byte block using AES-256."""
+    """Encrypt a single 16-byte block using AES."""
+    rounds = len(round_keys) - 1
     state = list(block)
     state = add_round_key(state, round_keys[0])
-    for r in range(1, 14):
+    for r in range(1, rounds):
         state = sub_bytes(state)
         state = shift_rows(state)
         state = mix_columns(state)
         state = add_round_key(state, round_keys[r])
     state = sub_bytes(state)
     state = shift_rows(state)
-    state = add_round_key(state, round_keys[14])
+    state = add_round_key(state, round_keys[rounds])
     return bytes(state)
 
 def decrypt_block(block: bytes, round_keys: list[list[int]]) -> bytes:
-    """Decrypt a single 16-byte block using AES-256."""
+    """Decrypt a single 16-byte block using AES."""
+    rounds = len(round_keys) - 1
     state = list(block)
-    state = add_round_key(state, round_keys[14])
+    state = add_round_key(state, round_keys[rounds])
     state = inv_shift_rows(state)
     state = inv_sub_bytes(state)
-    for r in range(13, 0, -1):
+    for r in range(rounds - 1, 0, -1):
         state = add_round_key(state, round_keys[r])
         state = inv_mix_columns(state)
         state = inv_shift_rows(state)
