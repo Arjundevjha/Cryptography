@@ -1,4 +1,3 @@
-import pytest
 from methods.modern.helpers import (
     b64encode, b64decode, rotr, shr,
     ch_func, maj_func, sigma_0_upper, sigma_1_upper, sigma_0_lower, sigma_1_lower,
