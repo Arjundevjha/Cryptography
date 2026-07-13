@@ -354,3 +354,19 @@ def test_sha256_text():
 
 
 
+
+from unittest.mock import patch
+
+def test_aes_decrypt_exception():
+    payload = {
+        "ciphertext": "00112233",
+        "key": "1234567890123456",
+        "nonce": "aabbccdd",
+        "key_format": "text"
+    }
+    with patch("methods.modern.aes.decrypt") as mock_decrypt:
+        mock_decrypt.side_effect = Exception("Mocked decryption error")
+        response = client.post("/api/aes/decrypt", json=payload)
+
+    assert response.status_code == 400
+    assert "Mocked decryption error" in response.json()["detail"]
