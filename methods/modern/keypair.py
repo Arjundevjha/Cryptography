@@ -5,6 +5,7 @@ without external dependencies.
 """
 
 import random
+import secrets
 
 try:
     from .symmetric import encrypt, generate_iv
@@ -38,7 +39,7 @@ def is_prime(val: int, tests: int = 5) -> bool:
             break
 
     for _ in range(tests):
-        a = random.randint(2, val - 2)
+        a = secrets.randbelow(val - 3) + 2
         if (x := pow(a, d, val)) in {1, val - 1}:
             continue
         for _ in range(r - 1):
@@ -52,7 +53,7 @@ def generate_prime(bits: int) -> int:
     """Generate a random prime number of specified bit length."""
     # Practical upper bound to avoid while-used warning
     for _ in range(100000):
-        n = random.getrandbits(bits)
+        n = secrets.randbits(bits)
         n |= (1 << (bits - 1)) | 1
         if is_prime(n):
             return n
