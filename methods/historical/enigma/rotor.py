@@ -5,40 +5,36 @@ class Rotor:
 
     def __init__(self, wiring, notch):
         """Initialize the rotor with a wiring permutation and turnover notch."""
-        self.left = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        self.right = wiring
+        self.left = wiring
+        self.right = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         self.notch = notch
+        self.position = 0
+        self.ring = 0
 
     def forward(self, signal_idx: int) -> int:
-        """Pass the signal forward from right side to left side of the rotor."""
-        target_char = self.right[signal_idx]
-        return self.left.find(target_char)
+        """Pass signal from right to left."""
+        letter = self.right[(signal_idx + self.position - self.ring) % 26]
+        signal_idx = self.left.index(letter)
+        return (signal_idx - self.position + self.ring) % 26
 
     def backwards(self, signal_idx: int) -> int:
         """Pass the signal backwards from left side to right side of the rotor."""
-        target_char = self.left[signal_idx]
-        return self.right.find(target_char)
+        letter = self.left[(signal_idx + self.position - self.ring) % 26]
+        signal_idx = self.right.index(letter)
+        return (signal_idx - self.position + self.ring) % 26
 
     def rotate(self, n=1, forward=True):
         """Rotate the rotor n steps forward or backward."""
-        for _ in range(n):
-            if forward:
-                self.left = self.left[1:] + self.left[0]
-                self.right = self.right[1:] + self.right[0]
-            else:
-                self.left = self.left[25] + self.left[:25]
-                self.right = self.right[25] + self.right[:25]
+        if forward:
+            self.position = (self.position + n) % 26
+        else:
+            self.position = (self.position - n) % 26
 
     def rotate_to_letter(self, letter):
         """Rotate the rotor until the specified letter is at the top position."""
         n = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(letter)
-        self.rotate(n)
+        self.position = n
 
     def set_ring(self, n):
         """Set the ring offset for the rotor, adjusting notch and wiring."""
-        # Rotate the rotor backwards
-        self.rotate(n-1, forward=False)
-
-        # Adjust the turnover notch in relationship to the wiring
-        n_notch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(self.notch)
-        self.notch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(n_notch - n) % 26]
+        self.ring = n
