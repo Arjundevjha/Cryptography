@@ -4,6 +4,7 @@ No external libraries or standard hashlib/hmac libraries are used.
 """
 
 import os
+import secrets
 try:
     from .helpers import hmac_sha256
 except ImportError:
@@ -20,7 +21,7 @@ def generate_key(length: int = 32) -> bytes:
     Returns:
         Random bytes of specified length
     """
-    return os.urandom(length)
+    return secrets.token_bytes(length)
 
 def create_hmac(data: bytes, key: bytes, algorithm: str = 'sha256') -> str:
     """Create an HMAC signature for the given data.

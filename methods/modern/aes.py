@@ -5,6 +5,7 @@ No external libraries are used.
 """
 
 import os
+import secrets
 
 try:
     from .symmetric import encrypt_block, key_expansion, generate_key
@@ -25,7 +26,7 @@ def encrypt(message: str, key: bytes) -> tuple[bytes, bytes]:
         Tuple of (ciphertext, 12-byte nonce)
     """
     round_keys = key_expansion(key)
-    nonce = os.urandom(NONCE_SIZE)
+    nonce = secrets.token_bytes(NONCE_SIZE)
     plaintext_bytes = message.encode('utf-8')
 
     ciphertext = b""
