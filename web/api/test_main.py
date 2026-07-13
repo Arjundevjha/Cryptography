@@ -354,3 +354,17 @@ def test_sha256_text():
 
 
 
+
+from unittest.mock import patch
+
+def test_aes_encrypt_exception():
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "text"
+    }
+    with patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+        response = client.post("/api/aes/encrypt", json=payload)
+        assert response.status_code == 400
+        assert "Mocked AES encryption error" in response.json()["detail"]
