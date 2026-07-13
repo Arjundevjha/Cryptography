@@ -66,7 +66,7 @@ def encrypt(plaintext: str, key: str) -> str:
     """Encrypt plaintext using Playfair cipher."""
     grid = _create_grid(key)
     digraphs = _prepare_text(plaintext)
-    ciphertext = ""
+    ciphertext_chars = []
 
     for pair in digraphs:
         r1, c1 = _find_position(grid, pair[0])
@@ -74,18 +74,18 @@ def encrypt(plaintext: str, key: str) -> str:
 
         if r1 == r2:
             # Same row: shift right
-            ciphertext += grid[r1][(c1 + 1) % 5]
-            ciphertext += grid[r2][(c2 + 1) % 5]
+            ciphertext_chars.append(grid[r1][(c1 + 1) % 5])
+            ciphertext_chars.append(grid[r2][(c2 + 1) % 5])
         elif c1 == c2:
             # Same column: shift down
-            ciphertext += grid[(r1 + 1) % 5][c1]
-            ciphertext += grid[(r2 + 1) % 5][c2]
+            ciphertext_chars.append(grid[(r1 + 1) % 5][c1])
+            ciphertext_chars.append(grid[(r2 + 1) % 5][c2])
         else:
             # Rectangle: swap columns
-            ciphertext += grid[r1][c2]
-            ciphertext += grid[r2][c1]
+            ciphertext_chars.append(grid[r1][c2])
+            ciphertext_chars.append(grid[r2][c1])
 
-    return ciphertext
+    return "".join(ciphertext_chars)
 
 def decrypt(ciphertext: str, key: str) -> str:
     """Decrypt ciphertext using Playfair cipher."""
@@ -95,7 +95,7 @@ def decrypt(ciphertext: str, key: str) -> str:
     ciphertext = "".join([c for c in ciphertext if c in ALPHABET])
 
     pairs = [ciphertext[i:i+2] for i in range(0, len(ciphertext), 2)]
-    plaintext = ""
+    plaintext_chars = []
 
     for pair in pairs:
         if len(pair) != DIGRAPH_LEN:
@@ -106,18 +106,18 @@ def decrypt(ciphertext: str, key: str) -> str:
 
         if r1 == r2:
             # Same row: shift left
-            plaintext += grid[r1][(c1 - 1) % 5]
-            plaintext += grid[r2][(c2 - 1) % 5]
+            plaintext_chars.append(grid[r1][(c1 - 1) % 5])
+            plaintext_chars.append(grid[r2][(c2 - 1) % 5])
         elif c1 == c2:
             # Same column: shift up
-            plaintext += grid[(r1 - 1) % 5][c1]
-            plaintext += grid[(r2 - 1) % 5][c2]
+            plaintext_chars.append(grid[(r1 - 1) % 5][c1])
+            plaintext_chars.append(grid[(r2 - 1) % 5][c2])
         else:
             # Rectangle: swap columns
-            plaintext += grid[r1][c2]
-            plaintext += grid[r2][c1]
+            plaintext_chars.append(grid[r1][c2])
+            plaintext_chars.append(grid[r2][c1])
 
-    return plaintext
+    return "".join(plaintext_chars)
 
 def main():
     """Run an interactive test of the Playfair cipher."""
