@@ -238,32 +238,32 @@ async def polybius_decrypt(data: PolybiusDecryptInput):
             detail=str(e)
         )
 
-@app.post("/api/enigma/encipher")
-async def enigma_encipher(data: EnigmaEncipherInput):
-    # 1. Rotors check
-    if len(data.rotors) != 3:
+def validate_enigma_rotors(rotors: list[str]) -> None:
+    if len(rotors) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 rotors must be specified.")
-    if len(set(data.rotors)) != 3:
+    if len(set(rotors)) != 3:
         raise HTTPException(status_code=400, detail="Duplicate rotors are not allowed.")
     
     allowed_rotors = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII"}
-    for r in data.rotors:
+    for r in rotors:
         if r not in allowed_rotors:
             raise HTTPException(status_code=400, detail=f"Invalid rotor '{r}'.")
-            
-    # 2. Positions check
-    if len(data.positions) != 3:
+
+
+def validate_enigma_positions(positions: list[str]) -> None:
+    if len(positions) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 rotor positions must be specified.")
-    for pos in data.positions:
+    for pos in positions:
         if len(pos) != 1 or not pos.isalpha():
             raise HTTPException(status_code=400, detail="Rotor positions must be single letters.")
-            
-    # 3. Rings check
-    if len(data.rings) != 3:
+
+
+def parse_and_validate_enigma_rings(rings: list[str]) -> list[int]:
+    if len(rings) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 ring settings must be specified.")
         
     parsed_rings = []
-    for r in data.rings:
+    for r in rings:
         if isinstance(r, int):
             if 1 <= r <= 26:
                 parsed_rings.append(r)
@@ -284,10 +284,12 @@ async def enigma_encipher(data: EnigmaEncipherInput):
                 raise HTTPException(status_code=400, detail="Invalid ring setting")
         else:
             raise HTTPException(status_code=400, detail="Invalid ring setting")
+    return parsed_rings
 
-    # 4. Plugboard check
+
+def validate_enigma_plugboard(plugboard: list[str]) -> None:
     seen_chars = set()
-    for swap in data.plugboard:
+    for swap in plugboard:
         if len(swap) != 2 or not swap.isalpha():
             raise HTTPException(status_code=400, detail="Invalid plugboard swap format")
         swap_upper = swap.upper()
@@ -295,7 +297,15 @@ async def enigma_encipher(data: EnigmaEncipherInput):
             if char in seen_chars:
                 raise HTTPException(status_code=400, detail="Duplicate plugboard connection")
             seen_chars.add(char)
-            
+
+
+@app.post("/api/enigma/encipher")
+async def enigma_encipher(data: EnigmaEncipherInput):
+    validate_enigma_rotors(data.rotors)
+    validate_enigma_positions(data.positions)
+    parsed_rings = parse_and_validate_enigma_rings(data.rings)
+    validate_enigma_plugboard(data.plugboard)
+
     # Instantiate Enigma machine components
     from methods.historical.enigma.rotor import Rotor
     from methods.historical.enigma.plugboard import Plugboard
