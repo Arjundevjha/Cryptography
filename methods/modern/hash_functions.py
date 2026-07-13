@@ -305,8 +305,8 @@ def sha256(data: str) -> str:
     b_data = bytearray(data.encode('utf-8'))
     orig_len_bits = (len(b_data) * 8) & 0xffffffffffffffff
     b_data.append(0x80)
-    while len(b_data) % PADDING_MOD_64 != PADDING_TARGET_56:
-        b_data.append(0x00)
+    pad_len = (PADDING_TARGET_56 - len(b_data)) % PADDING_MOD_64
+    b_data.extend(b'\x00' * pad_len)
     b_data.extend(orig_len_bits.to_bytes(8, 'big'))
 
     h_state = list(SHA256_H_INIT)
@@ -376,8 +376,8 @@ def md5(data: str) -> str:
     """
     b_data = bytearray(data.encode('utf-8'))
     b_data.append(0x80)
-    while len(b_data) % PADDING_MOD_64 != PADDING_TARGET_56:
-        b_data.append(0x00)
+    pad_len = (PADDING_TARGET_56 - len(b_data)) % PADDING_MOD_64
+    b_data.extend(b'\x00' * pad_len)
     b_data.extend(((len(b_data) - 1) * 8).to_bytes(8, 'little'))
 
     a_state, b_state, c_state, d_state = 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476
@@ -430,8 +430,8 @@ def sha1(data: str) -> str:
     b_data = bytearray(data.encode('utf-8'))
     orig_len_bits = (len(b_data) * 8) & 0xffffffffffffffff
     b_data.append(0x80)
-    while len(b_data) % PADDING_MOD_64 != PADDING_TARGET_56:
-        b_data.append(0x00)
+    pad_len = (PADDING_TARGET_56 - len(b_data)) % PADDING_MOD_64
+    b_data.extend(b'\x00' * pad_len)
     b_data.extend(orig_len_bits.to_bytes(8, 'big'))
 
     h_state = list(SHA1_H_INIT)
@@ -497,8 +497,8 @@ def sha512(data: str) -> str:
     b_data = bytearray(data.encode('utf-8'))
     orig_len_bits = (len(b_data) * 8) & 0xffffffffffffffff
     b_data.append(0x80)
-    while len(b_data) % PADDING_MOD_128 != PADDING_TARGET_112:
-        b_data.append(0x00)
+    pad_len = (PADDING_TARGET_112 - len(b_data)) % PADDING_MOD_128
+    b_data.extend(b'\x00' * pad_len)
     b_data.extend((0).to_bytes(8, 'big'))
     b_data.extend(orig_len_bits.to_bytes(8, 'big'))
 
