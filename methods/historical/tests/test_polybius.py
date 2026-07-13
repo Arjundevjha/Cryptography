@@ -1,5 +1,3 @@
-import pytest
-
 from methods.historical.polybius import encrypt, decrypt, pick_keys, ALPHABET
 
 def test_pick_keys():
