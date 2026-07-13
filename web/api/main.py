@@ -26,8 +26,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in allowed_origins if origin.strip()],
     allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
 # Custom exception handler for validation errors to return HTTP 400 on limit violation
