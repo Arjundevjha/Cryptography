@@ -203,7 +203,7 @@ async def polybius_decrypt(data: PolybiusDecryptInput):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Key must contain exactly 25 unique letters."
             )
-    
+
     # validate ciphertext coordinates
     try:
         digits = []
@@ -243,7 +243,7 @@ def validate_enigma_rotors(rotors: list[str]) -> None:
         raise HTTPException(status_code=400, detail="Exactly 3 rotors must be specified.")
     if len(set(rotors)) != 3:
         raise HTTPException(status_code=400, detail="Duplicate rotors are not allowed.")
-    
+
     allowed_rotors = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII"}
     for r in rotors:
         if r not in allowed_rotors:
@@ -261,7 +261,7 @@ def validate_enigma_positions(positions: list[str]) -> None:
 def parse_and_validate_enigma_rings(rings: list[str]) -> list[int]:
     if len(rings) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 ring settings must be specified.")
-        
+
     parsed_rings = []
     for r in rings:
         if isinstance(r, int):
@@ -312,7 +312,7 @@ async def enigma_encipher(data: EnigmaEncipherInput):
     from methods.historical.enigma.reflector import Reflector
     from methods.historical.enigma.keyboard import Keyboard
     from methods.historical.enigma.enigma import Enigma
-    
+
     ROTOR_MAP = {
         "I": ("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"),
         "II": ("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W"),
@@ -323,31 +323,31 @@ async def enigma_encipher(data: EnigmaEncipherInput):
         "VII": ("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z"),
         "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
     }
-    
+
     # Reflector B is standard
     reflector = Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT")
-    
+
     rotors_list = []
     for r_name in data.rotors:
         wiring, notch = ROTOR_MAP[r_name]
         rotors_list.append(Rotor(wiring, notch))
-        
+
     plugboard = Plugboard([swap.upper() for swap in data.plugboard])
     keyboard = Keyboard()
-    
+
     enigma_machine = Enigma(reflector, rotors_list, plugboard, keyboard)
     enigma_machine.set_rings(parsed_rings)
-    
+
     initial_key = "".join([pos.upper() for pos in data.positions])
     enigma_machine.set_key(initial_key)
-    
+
     ciphertext_chars = []
     for char in data.plaintext:
         if char.isalpha():
             ciphertext_chars.append(enigma_machine.encipher(char.upper()))
         else:
             ciphertext_chars.append(char)
-            
+
     ciphertext = "".join(ciphertext_chars)
     return {"ciphertext": ciphertext}
 
@@ -397,14 +397,14 @@ def parse_aes_key(key: str, key_format: str = "text") -> bytes:
             key_bytes = bytes.fromhex(key)
         else:
             key_bytes = key.encode('utf-8')
-    
+
     if len(key_bytes) not in (16, 32):
         raise HTTPException(status_code=400, detail="Key must be 16 or 32 bytes (or 32 or 64 hex characters)")
-    
+
     # Repeat a 16-byte key to make it 32 bytes for AES-256 CTR
     if len(key_bytes) == 16:
         key_bytes = key_bytes * 2
-        
+
     return key_bytes
 
 
@@ -417,9 +417,9 @@ async def aes_encrypt(data: AesEncryptInput):
             plaintext = bytes.fromhex(plaintext).decode('utf-8')
         except Exception:
             raise HTTPException(status_code=400, detail="Invalid hex plaintext")
-            
+
     key_bytes = parse_aes_key(data.key, data.key_format)
-    
+
     try:
         from methods.modern import aes
         ciphertext_bytes, nonce_bytes = aes.encrypt(plaintext, key_bytes)
@@ -434,14 +434,14 @@ async def aes_encrypt(data: AesEncryptInput):
 @app.post("/api/aes/decrypt")
 async def aes_decrypt_endpoint(data: AesDecryptInput):
     key_bytes = parse_aes_key(data.key, data.key_format)
-    
+
     try:
         ciphertext_bytes = bytes.fromhex(data.ciphertext)
         nonce_bytes = bytes.fromhex(data.nonce)
     except ValueError as ve:
         traceback.print_exc()
         raise HTTPException(status_code=400, detail="Ciphertext and nonce must be valid hex strings")
-        
+
     try:
         from methods.modern import aes
         plaintext = aes.decrypt(ciphertext_bytes, key_bytes, nonce_bytes)
@@ -452,26 +452,26 @@ async def aes_decrypt_endpoint(data: AesDecryptInput):
 
 
 @app.post("/api/rsa/keygen")
-def rsa_keygen(data: RsaKeygenInput):
+async def rsa_keygen(data: RsaKeygenInput):
     from methods.modern.keypair import is_prime
     from methods.modern.helpers import b64encode
-    
+
     if data.p <= 2 or not is_prime(data.p):
         raise HTTPException(status_code=400, detail="p must be a prime greater than 2")
     if data.q <= 2 or not is_prime(data.q):
         raise HTTPException(status_code=400, detail="q must be a prime greater than 2")
-        
+
     n = data.p * data.q
     phi = (data.p - 1) * (data.q - 1)
-    
+
     if math.gcd(data.e, phi) != 1:
         raise HTTPException(status_code=400, detail="e must be coprime to phi")
-        
+
     try:
         d = pow(data.e, -1, phi)
     except ValueError:
         raise HTTPException(status_code=400, detail="Modular inverse of e mod phi does not exist")
-        
+
     pub_str = f"{n}:{data.e}"
     pub_b64 = b64encode(pub_str.encode('utf-8'))
     public_key_pem = (
@@ -487,7 +487,7 @@ def rsa_keygen(data: RsaKeygenInput):
         f"{priv_b64}\n"
         f"-----END RSA PRIVATE KEY-----\n"
     )
-    
+
     return {
         "n": n,
         "phi": phi,
@@ -510,7 +510,7 @@ def rsa_encrypt(data: RsaEncryptInput):
 
 
 @app.post("/api/rsa/decrypt")
-def rsa_decrypt(data: RsaDecryptInput):
+async def rsa_decrypt(data: RsaDecryptInput):
     try:
         from methods.modern import rsa
         priv_key_bytes = data.private_key.strip().encode('utf-8')
@@ -530,5 +530,3 @@ async def sha256_endpoint(data: Sha256Input):
         return {"hash": hash_val}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
