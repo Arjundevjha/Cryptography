@@ -1,4 +1,3 @@
-import pytest
 import string
 from methods.classical.caesar import encrypt, decrypt, pick_keys
 

@@ -1,4 +1,3 @@
-import pytest
 import string
 from methods.classical.vigenere import (
     encrypt,
