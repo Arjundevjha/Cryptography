@@ -354,3 +354,16 @@ def test_sha256_text():
 
 
 
+
+from unittest.mock import patch
+
+def test_rsa_decrypt_exception():
+    dec_payload = {
+        "ciphertext": "00",
+        "private_key": "dummy_private_key"
+    }
+    with patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
+        response = client.post("/api/rsa/decrypt", json=dec_payload)
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Test mock exception"
