@@ -300,7 +300,7 @@ def validate_enigma_plugboard(plugboard: list[str]) -> None:
 
 
 @app.post("/api/enigma/encipher")
-async def enigma_encipher(data: EnigmaEncipherInput):
+def enigma_encipher(data: EnigmaEncipherInput):
     validate_enigma_rotors(data.rotors)
     validate_enigma_positions(data.positions)
     parsed_rings = parse_and_validate_enigma_rings(data.rings)
