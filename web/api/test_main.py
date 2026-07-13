@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from unittest.mock import patch
 from api.main import app
 
 client = TestClient(app)
@@ -341,6 +342,20 @@ def test_rsa_encrypt_decrypt_success():
     dec_resp = client.post("/api/rsa/decrypt", json=dec_payload)
     assert dec_resp.status_code == 200
     assert dec_resp.json() == {"plaintext": "42"}
+
+@patch("methods.modern.rsa.encrypt")
+def test_rsa_encrypt_exception(mock_encrypt):
+    mock_encrypt.side_effect = Exception("Mocked encryption error")
+
+    # Send a request with dummy data to trigger the mock
+    payload = {
+        "plaintext": "test message",
+        "public_key": "dummy public key"
+    }
+    response = client.post("/api/rsa/encrypt", json=payload)
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Mocked encryption error"}
 
 def test_sha256_empty_string():
     response = client.post("/api/sha256", json={"plaintext": ""})
