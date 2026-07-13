@@ -452,7 +452,7 @@ async def aes_decrypt_endpoint(data: AesDecryptInput):
 
 
 @app.post("/api/rsa/keygen")
-async def rsa_keygen(data: RsaKeygenInput):
+def rsa_keygen(data: RsaKeygenInput):
     from methods.modern.keypair import is_prime
     from methods.modern.helpers import b64encode
     
