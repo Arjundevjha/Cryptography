@@ -26,8 +26,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in allowed_origins if origin.strip()],
     allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
 # Custom exception handler for validation errors to return HTTP 400 on limit violation
@@ -300,7 +300,7 @@ def validate_enigma_plugboard(plugboard: list[str]) -> None:
 
 
 @app.post("/api/enigma/encipher")
-async def enigma_encipher(data: EnigmaEncipherInput):
+def enigma_encipher(data: EnigmaEncipherInput):
     validate_enigma_rotors(data.rotors)
     validate_enigma_positions(data.positions)
     parsed_rings = parse_and_validate_enigma_rings(data.rings)
@@ -452,7 +452,7 @@ async def aes_decrypt_endpoint(data: AesDecryptInput):
 
 
 @app.post("/api/rsa/keygen")
-async def rsa_keygen(data: RsaKeygenInput):
+def rsa_keygen(data: RsaKeygenInput):
     from methods.modern.keypair import is_prime
     from methods.modern.helpers import b64encode
     
@@ -498,7 +498,7 @@ async def rsa_keygen(data: RsaKeygenInput):
 
 
 @app.post("/api/rsa/encrypt")
-async def rsa_encrypt(data: RsaEncryptInput):
+def rsa_encrypt(data: RsaEncryptInput):
     try:
         from methods.modern import rsa
         pub_key_bytes = data.public_key.strip().encode('utf-8')
@@ -510,7 +510,7 @@ async def rsa_encrypt(data: RsaEncryptInput):
 
 
 @app.post("/api/rsa/decrypt")
-async def rsa_decrypt(data: RsaDecryptInput):
+def rsa_decrypt(data: RsaDecryptInput):
     try:
         from methods.modern import rsa
         priv_key_bytes = data.private_key.strip().encode('utf-8')

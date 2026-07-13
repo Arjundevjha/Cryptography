@@ -6,6 +6,7 @@ No external libraries are used.
 """
 
 import os
+import secrets
 
 # AES Constants
 BLOCK_SIZE = 16
@@ -217,11 +218,11 @@ def pkcs7_unpad(data: bytes) -> bytes:
 
 def generate_key() -> bytes:
     """Generate a random 256-bit (32 bytes) key for AES-256."""
-    return os.urandom(KEY_SIZE)
+    return secrets.token_bytes(KEY_SIZE)
 
 def generate_iv() -> bytes:
     """Generate a random 128-bit (16 bytes) initialization vector."""
-    return os.urandom(BLOCK_SIZE)
+    return secrets.token_bytes(BLOCK_SIZE)
 
 def encrypt(message: str, key: bytes, iv: bytes) -> bytes:
     """Encrypt a message string using AES-256-CBC with PKCS7 padding."""

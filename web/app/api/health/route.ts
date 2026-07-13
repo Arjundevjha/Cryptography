@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const res = await fetch('http://localhost:8000/api/health', {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    const res = await fetch(`${backendUrl}/api/health`, {
       cache: 'no-store',
     });
     if (!res.ok) {
@@ -20,3 +21,4 @@ export async function GET() {
     );
   }
 }
+

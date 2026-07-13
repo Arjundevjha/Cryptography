@@ -19,20 +19,23 @@ def encrypt(plaintext: str, key: str = None) -> str:
     """
     if not key:
         key = ALPHABET
-    ciphertext = ""
+    ciphertext_parts = []
+    last_was_digit = False
     for char in plaintext:
         if char.isalpha():
             lower_char = char.lower().replace("j", "i")
             idx = key.index(lower_char)
             row = (idx // GRID_SIZE) + 1
             col = (idx % GRID_SIZE) + 1
-            if ciphertext and ciphertext[-1].isdigit():
-                ciphertext += f" {row}{col}"
+            if last_was_digit:
+                ciphertext_parts.append(f" {row}{col}")
             else:
-                ciphertext += f"{row}{col}"
+                ciphertext_parts.append(f"{row}{col}")
+            last_was_digit = True
         else:
-            ciphertext += char
-    return ciphertext
+            ciphertext_parts.append(char)
+            last_was_digit = char.isdigit()
+    return "".join(ciphertext_parts)
 
 def decrypt(ciphertext: str, key: str = None) -> str:
     """Decrypt ciphertext using the Polybius Square cipher.
@@ -42,7 +45,7 @@ def decrypt(ciphertext: str, key: str = None) -> str:
     """
     if not key:
         key = ALPHABET
-    plaintext = ""
+    plaintext_parts = []
     iterator = iter(ciphertext.replace(" ", ""))
     for char1 in iterator:
         if char1.isdigit():
@@ -52,16 +55,17 @@ def decrypt(ciphertext: str, key: str = None) -> str:
                 col = int(char2) - 1
                 if 0 <= row < GRID_SIZE and 0 <= col < GRID_SIZE:
                     idx = row * GRID_SIZE + col
-                    plaintext += key[idx]
+                    plaintext_parts.append(key[idx])
                 else:
-                    plaintext += char1 + char2
+                    plaintext_parts.append(char1)
+                    plaintext_parts.append(char2)
             else:
-                plaintext += char1
+                plaintext_parts.append(char1)
                 if char2:
-                    plaintext += char2
+                    plaintext_parts.append(char2)
         else:
-            plaintext += char1
-    return plaintext.upper()
+            plaintext_parts.append(char1)
+    return "".join(plaintext_parts).upper()
 
 def main():
     """Run an interactive test of the Polybius Square cipher."""

@@ -11,7 +11,7 @@ KAT_CIPHERTEXT = bytes.fromhex("f5b920a6de7c469bae8c07689b336ade9db1fb74b0a86483
 
 def test_aes_encrypt_kat():
     """Known Answer Test for AES-256-CTR encryption."""
-    with patch('os.urandom', return_value=KAT_NONCE):
+    with patch('secrets.token_bytes', return_value=KAT_NONCE):
         ciphertext, nonce = encrypt(KAT_PLAINTEXT, KAT_KEY)
 
     assert nonce == KAT_NONCE
@@ -24,7 +24,7 @@ def test_aes_decrypt_kat():
 
 def test_aes_encrypt_decrypt_roundtrip():
     """Test that encrypting and decrypting a message recovers the original."""
-    key = os.urandom(32)
+    key = os.urandom(32) # Test data generation doesn't need secrets module, but we can update anyway or leave it. We'll use os.urandom for testing.
     message = "A test message with arbitrary length!"
     ciphertext, nonce = encrypt(message, key)
     decrypted = decrypt(ciphertext, key, nonce)

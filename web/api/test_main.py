@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 from api.main import app
+import unittest.mock
 
 client = TestClient(app)
 
@@ -41,6 +42,26 @@ def test_affine_encrypt_input_too_long():
     response = client.post("/api/affine/encrypt", json={"plaintext": long_text, "a_key": 5, "b_key": 8})
     assert response.status_code == 400
     assert "exceeds" in response.json()["detail"].lower()
+
+def test_affine_decrypt_non_coprime():
+    response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": 13, "b_key": 5})
+    assert response.status_code == 400
+    assert "coprime" in response.json()["detail"].lower()
+
+@unittest.mock.patch("api.main.affine.encrypt")
+def test_affine_encrypt_internal_error(mock_encrypt):
+    mock_encrypt.side_effect = Exception("Test internal error")
+    response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": 5, "b_key": 8})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Test internal error"}
+
+@unittest.mock.patch("api.main.affine.decrypt")
+def test_affine_decrypt_internal_error(mock_decrypt):
+    mock_decrypt.side_effect = Exception("Test internal error")
+    response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": 5, "b_key": 8})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Test internal error"}
+
 
 
 # ==========================================
@@ -351,6 +372,51 @@ def test_sha256_text():
     response = client.post("/api/sha256", json={"plaintext": "hello"})
     assert response.status_code == 200
     assert response.json() == {"hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"}
+
+def test_rsa_encrypt_exception():
+    enc_payload = {
+        "plaintext": "Secret Message",
+        "public_key": "dummy_public_key"
+    }
+    with unittest.mock.patch("methods.modern.rsa.encrypt", side_effect=Exception("Test mock exception")):
+        response = client.post("/api/rsa/encrypt", json=enc_payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Test mock exception"
+
+def test_rsa_decrypt_exception():
+    dec_payload = {
+        "ciphertext": "00",
+        "private_key": "dummy_private_key"
+    }
+    with unittest.mock.patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
+        response = client.post("/api/rsa/decrypt", json=dec_payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Test mock exception"
+
+def test_aes_decrypt_exception():
+    payload = {
+        "ciphertext": "00112233",
+        "key": "1234567890123456",
+        "nonce": "aabbccdd",
+        "key_format": "text"
+    }
+    with unittest.mock.patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")):
+        response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Mocked decryption error" in response.json()["detail"]
+
+def test_aes_encrypt_exception():
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "text"
+    }
+    with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+        response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert "Mocked AES encryption error" in response.json()["detail"]
+
 
 
 

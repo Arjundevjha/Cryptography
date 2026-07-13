@@ -135,3 +135,27 @@ def test_enigma_normal_step():
     assert enigma.r3.left[0] == "W"
     assert enigma.r2.left[0] == "B"
     assert enigma.r1.left[0] == "A"
+
+def test_enigma_r2_r3_notch_simultaneous():
+    """Test the condition where both R2 and R3 are at their notch simultaneously."""
+    I, II, III, IV, V, A, B, C = get_components()
+    KB = Keyboard()
+    PB = Plugboard([])
+
+    # I notch: Q, II notch: W, III notch: V
+    # Let's set R3 to its notch (V) and R2 to its notch (W).
+    # We want to trigger lines 36-38:
+    # if self.r2.left[0] == self.r2.notch and self.r3.left[0] == self.r3.notch:
+    #     self.r1.rotate()
+    #     self.r2.rotate()
+    #     self.r3.rotate()
+    enigma = Enigma(B, [I, II, III], PB, KB)
+    enigma.set_key("AWV")
+
+    # Keypress 1: R2 is at W (notch), R3 is at V (notch).
+    # This should rotate R1, R2, and R3.
+    enigma.encipher("A")
+
+    assert enigma.r1.left[0] == "B"
+    assert enigma.r2.left[0] == "X"
+    assert enigma.r3.left[0] == "W"
