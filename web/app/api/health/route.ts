@@ -2,7 +2,15 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    let backendUrl = process.env.BACKEND_URL;
+    if (!backendUrl) {
+      if (process.env.VERCEL_URL) {
+        backendUrl = `https://${process.env.VERCEL_URL}/api/main`;
+      } else {
+        backendUrl = 'http://localhost:8000';
+      }
+    }
+
     const res = await fetch(`${backendUrl}/api/health`, {
       cache: 'no-store',
     });

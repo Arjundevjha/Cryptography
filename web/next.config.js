@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    const isVercel = process.env.VERCEL === '1';
+    const backendUrl = process.env.BACKEND_URL || (isVercel ? '/api/main' : 'http://localhost:8000');
     return [
       {
         source: '/api/:path*',

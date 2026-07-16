@@ -1,3 +1,10 @@
+import sys
+import os
+
+# Ensure repository root is in python path to resolve methods package in Vercel serverless environment
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -5,7 +12,6 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, Field
 import math
 import traceback
-import os
 from methods.classical import affine
 
 app = FastAPI(
@@ -15,6 +21,22 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json"
 )
+
+# ASGI middleware to strip /api/main prefix on Vercel deployments
+class VercelPathMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            path = scope.get("path", "")
+            if path.startswith("/api/main"):
+                scope["path"] = path[len("/api/main"):]
+                if "raw_path" in scope:
+                    scope["raw_path"] = scope["raw_path"][len("/api/main".encode()):]
+        await self.app(scope, receive, send)
+
+app.add_middleware(VercelPathMiddleware)
 
 # CORS Middleware
 allowed_origins = os.getenv(
