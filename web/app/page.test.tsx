@@ -1,13 +1,26 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import React from 'react';
 import Home from './page';
+import { ApiStatusDot } from '@/src/components/museum/hud/ApiStatusDot';
 
-test('renders heading and content', () => {
-  render(<Home />);
-  // Museum title appears in the hero heading, about section, and footer
-  expect(screen.getAllByText(/Cryptography Museum/i).length).toBeGreaterThan(0);
-  // Cipher names appear in both the timeline nav and exhibit headings — use getAllByText
-  expect(screen.getAllByText(/Caesar Cipher/i).length).toBeGreaterThan(0);
-  expect(screen.getAllByText(/Vigenère/i).length).toBeGreaterThan(0);
-  expect(screen.getAllByText(/Affine Cipher/i).length).toBeGreaterThan(0);
+describe('Cryptography Museum Page Tests', () => {
+  it('renders loading state for 3D Digital Museum canvas', () => {
+    render(<Home />);
+    expect(screen.getByText(/INITIALIZING 3D DIGITAL MUSEUM/i)).toBeInTheDocument();
+  });
+
+  it('renders ApiStatusDot with correct data-testid', async () => {
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ status: 'ok' }),
+      })
+    ) as any;
+
+    await act(async () => {
+      render(<ApiStatusDot />);
+    });
+
+    expect(screen.getByTestId('api-status-dot')).toBeInTheDocument();
+  });
 });

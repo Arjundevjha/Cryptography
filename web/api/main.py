@@ -71,6 +71,30 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 class CipherInput(BaseModel):
     text: str = Field(..., max_length=500, description="The input text to process (max 500 chars)")
 
+class CaesarEncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
+    shift: int = Field(..., description="Shift amount (0-25)")
+
+class CaesarDecryptInput(BaseModel):
+    ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
+    shift: int = Field(..., description="Shift amount (0-25)")
+
+class VigenereEncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
+    key: str = Field(..., max_length=500, description="Secret key phrase")
+
+class VigenereDecryptInput(BaseModel):
+    ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
+    key: str = Field(..., max_length=500, description="Secret key phrase")
+
+class PlayfairEncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
+    key: str = Field(..., max_length=500, description="Secret key phrase")
+
+class PlayfairDecryptInput(BaseModel):
+    ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
+    key: str = Field(..., max_length=500, description="Secret key phrase")
+
 class AffineEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
     a_key: int = Field(..., description="Key a (must be coprime to 26)")
@@ -89,8 +113,101 @@ async def health_check():
 async def validate_input(data: CipherInput):
     return {"status": "valid", "length": len(data.text)}
 
+@app.post("/api/caesar/encrypt")
+async def caesar_encrypt(data: CaesarEncryptInput):
+    try:
+        from methods.classical import caesar
+        ciphertext = caesar.encrypt(data.plaintext, data.shift)
+        return {"ciphertext": ciphertext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+@app.post("/api/caesar/decrypt")
+async def caesar_decrypt(data: CaesarDecryptInput):
+    try:
+        from methods.classical import caesar
+        plaintext = caesar.decrypt(data.ciphertext, data.shift)
+        return {"plaintext": plaintext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+@app.post("/api/vigenere/encrypt")
+async def vigenere_encrypt(data: VigenereEncryptInput):
+    if not data.key:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Vigenere key cannot be empty."
+        )
+    try:
+        from methods.classical import vigenere
+        ciphertext = vigenere.encrypt(data.plaintext, data.key)
+        return {"ciphertext": ciphertext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+@app.post("/api/vigenere/decrypt")
+async def vigenere_decrypt(data: VigenereDecryptInput):
+    if not data.key:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Vigenere key cannot be empty."
+        )
+    try:
+        from methods.classical import vigenere
+        plaintext = vigenere.decrypt(data.ciphertext, data.key)
+        return {"plaintext": plaintext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+@app.post("/api/playfair/encrypt")
+async def playfair_encrypt(data: PlayfairEncryptInput):
+    if not data.key:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Playfair key cannot be empty."
+        )
+    try:
+        from methods.classical import playfair
+        ciphertext = playfair.encrypt(data.plaintext, data.key)
+        return {"ciphertext": ciphertext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+@app.post("/api/playfair/decrypt")
+async def playfair_decrypt(data: PlayfairDecryptInput):
+    if not data.key:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Playfair key cannot be empty."
+        )
+    try:
+        from methods.classical import playfair
+        plaintext = playfair.decrypt(data.ciphertext, data.key)
+        return {"plaintext": plaintext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
 @app.post("/api/affine/encrypt")
 async def affine_encrypt(data: AffineEncryptInput):
+
     # Check if a_key is coprime to 26
     # Reduce a_key mod 26 first to handle negative or large values
     a_norm = data.a_key % 26

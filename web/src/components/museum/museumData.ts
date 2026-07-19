@@ -1,0 +1,270 @@
+export interface CipherExhibit {
+  id: string;
+  name: string;
+  category: 'Classical' | 'Historical' | 'Modern';
+  wing: string;
+  subtitle: string;
+  description: string;
+  historicalContext: string;
+  vulnerabilities: string;
+  timeline: string;
+  position: [number, number, number];
+  cameraPosition: [number, number, number];
+  cameraTarget: [number, number, number];
+  macroPosition: [number, number, number];
+  macroTarget: [number, number, number];
+  rotationY: number;
+  endpoint: {
+    encrypt: string;
+    decrypt: string;
+  };
+  defaultParams: Record<string, any>;
+}
+
+export const MUSEUM_EXHIBITS: CipherExhibit[] = [
+  {
+    id: 'caesar',
+    name: 'Caesar Cipher',
+    category: 'Classical',
+    wing: 'Classical Ciphers Wing',
+    subtitle: 'Monoalphabetic Shift Cipher & Ancient Scytale',
+    description: 'Used by Julius Caesar to protect military communications by shifting letters by a fixed offset.',
+    historicalContext: 'Dating back to 58 BC, Roman commanders used the Scytale (a wooden rod with wrapped parchment) and letter-shift rules to send confidential battlefield dispatches across Gaul.',
+    vulnerabilities: 'Extremely vulnerable to frequency analysis and brute-force key search (only 25 possible shift keys in the English alphabet).',
+    timeline: 'c. 58 BC – Roman Empire Era',
+    position: [0, 0, -28],
+    cameraPosition: [0, 2.2, -22],
+    cameraTarget: [0, 1.2, -28],
+    macroPosition: [0, 1.6, -25.5],
+    macroTarget: [0, 1.2, -28],
+    rotationY: 0,
+    endpoint: {
+      encrypt: '/api/caesar/encrypt',
+      decrypt: '/api/caesar/decrypt',
+    },
+    defaultParams: {
+      shift: 3,
+    },
+  },
+  {
+    id: 'affine',
+    name: 'Affine Cipher',
+    category: 'Classical',
+    wing: 'Classical Ciphers Wing',
+    subtitle: 'Monoalphabetic Linear Substitution E(x) = (ax + b) mod 26',
+    description: 'Combines multiplicative scaling (key a, coprime to 26) and additive shift (key b).',
+    historicalContext: 'A generalized monoalphabetic substitution cipher combining modular multiplication and addition.',
+    vulnerabilities: 'Only 12 valid choices for key a and 26 for key b (312 total keys), vulnerable to frequency analysis.',
+    timeline: 'c. 1600s – Classical Cryptanalysis',
+    position: [16.5, 0, -22.6],
+    cameraPosition: [13.0, 2.2, -17.8],
+    cameraTarget: [16.5, 1.2, -22.6],
+    macroPosition: [15.0, 1.6, -20.6],
+    macroTarget: [16.5, 1.2, -22.6],
+    rotationY: -Math.PI * 0.2,
+    endpoint: {
+      encrypt: '/api/affine/encrypt',
+      decrypt: '/api/affine/decrypt',
+    },
+    defaultParams: {
+      a_key: 5,
+      b_key: 8,
+    },
+  },
+  {
+    id: 'vigenere',
+    name: 'Vigenère Cipher',
+    category: 'Classical',
+    wing: 'Classical Ciphers Wing',
+    subtitle: 'Polyalphabetic Substitution & Tabula Recta',
+    description: 'Uses a keyword to apply a sequence of different Caesar shifts based on the Tabula Recta grid.',
+    historicalContext: 'Described by Giovan Battista Bellaso in 1553 and later misattributed to Blaise de Vigenère. Known for centuries as "le chiffre indéchiffrable" (the unbreakable cipher).',
+    vulnerabilities: 'Vulnerable to Kasiski examination and Index of Coincidence analysis to determine key length, followed by frequency analysis per key position.',
+    timeline: '1553 AD – Renaissance Cryptography',
+    position: [26.6, 0, -8.7],
+    cameraPosition: [20.9, 2.2, -6.8],
+    cameraTarget: [26.6, 1.2, -8.7],
+    macroPosition: [24.3, 1.6, -7.9],
+    macroTarget: [26.6, 1.2, -8.7],
+    rotationY: -Math.PI * 0.4,
+    endpoint: {
+      encrypt: '/api/vigenere/encrypt',
+      decrypt: '/api/vigenere/decrypt',
+    },
+    defaultParams: {
+      key: 'LEMON',
+    },
+  },
+  {
+    id: 'playfair',
+    name: 'Playfair Cipher',
+    category: 'Classical',
+    wing: 'Classical Ciphers Wing',
+    subtitle: 'Bigram Substitution & 5x5 Marble Matrix',
+    description: 'Encrypts pairs of letters (digraphs) using a 5x5 matrix derived from a keyword.',
+    historicalContext: 'Invented by Charles Wheatstone in 1854 but named after Lord Playfair who promoted its tactical use in the Crimean War and World War I.',
+    vulnerabilities: 'Frequency analysis of digraphs. Does not obscure letter frequency patterns across large texts as effectively as modern polyalphabetic ciphers.',
+    timeline: '1854 AD – Victorian & WWI Era',
+    position: [26.6, 0, 8.7],
+    cameraPosition: [20.9, 2.2, 6.8],
+    cameraTarget: [26.6, 1.2, 8.7],
+    macroPosition: [24.3, 1.6, 7.9],
+    macroTarget: [26.6, 1.2, 8.7],
+    rotationY: -Math.PI * 0.6,
+    endpoint: {
+      encrypt: '/api/playfair/encrypt',
+      decrypt: '/api/playfair/decrypt',
+    },
+    defaultParams: {
+      key: 'MONARCHY',
+    },
+  },
+  {
+    id: 'polybius',
+    name: 'Polybius Square',
+    category: 'Classical',
+    wing: 'Classical Ciphers Wing',
+    subtitle: 'Greek Fractionalization & Stone Checkerboard',
+    description: 'Maps each letter of the alphabet to coordinate pairs on a 5x5 grid.',
+    historicalContext: 'Devised by ancient Greek historian Polybius (c. 200–118 BC) for signaling via torch signals between military watchtowers.',
+    vulnerabilities: 'Direct 1-to-1 coordinate substitution preserves character frequency patterns completely.',
+    timeline: 'c. 150 BC – Ancient Greece',
+    position: [16.5, 0, 22.6],
+    cameraPosition: [13.0, 2.2, 17.8],
+    cameraTarget: [16.5, 1.2, 22.6],
+    macroPosition: [15.0, 1.6, 20.6],
+    macroTarget: [16.5, 1.2, 22.6],
+    rotationY: -Math.PI * 0.8,
+    endpoint: {
+      encrypt: '/api/polybius/encrypt',
+      decrypt: '/api/polybius/decrypt',
+    },
+    defaultParams: {
+      key: 'abcdefghiklmnopqrstuvwxyz',
+    },
+  },
+  {
+    id: 'scytale',
+    name: 'Scytale Cipher',
+    category: 'Classical',
+    wing: 'Classical Ciphers Wing',
+    subtitle: 'Transposition Cylinder Cipher',
+    description: 'Ancient Spartan transposition cipher wrapping parchment around a rod of fixed diameter.',
+    historicalContext: 'Used by the Spartans during Peloponnesian military campaigns.',
+    vulnerabilities: 'Easy to break by testing different rod diameters.',
+    timeline: 'c. 400 BC – Ancient Sparta',
+    position: [0, 0, 28],
+    cameraPosition: [0, 2.2, 22],
+    cameraTarget: [0, 1.2, 28],
+    macroPosition: [0, 1.6, 25.5],
+    macroTarget: [0, 1.2, 28],
+    rotationY: Math.PI,
+    endpoint: {
+      encrypt: '/api/scytale/encrypt',
+      decrypt: '/api/scytale/decrypt',
+    },
+    defaultParams: {
+      width: 4,
+    },
+  },
+  {
+    id: 'enigma',
+    name: 'Enigma Machine',
+    category: 'Historical',
+    wing: 'Historical Systems Wing',
+    subtitle: 'Elector-Mechanical Rotor Encryption',
+    description: 'Uses stepping mechanical rotors, a plugboard (Steckerbrett), and a reflector to continuously alter substitution paths.',
+    historicalContext: 'Adopted by the German military during WWII. Broken by Alan Turing, Marian Rejewski, and Bletchley Park cryptanalysts using the electromechanical Bombe machine.',
+    vulnerabilities: 'No letter could ever encrypt to itself, a fundamental flaw exploited by Bletchley Park codebreakers along with predictable cribs.',
+    timeline: '1918–1945 AD – World War II',
+    position: [-16.5, 0, 22.6],
+    cameraPosition: [-13.0, 2.2, 17.8],
+    cameraTarget: [-16.5, 1.2, 22.6],
+    macroPosition: [-15.0, 1.6, 20.6],
+    macroTarget: [-16.5, 1.2, 22.6],
+    rotationY: Math.PI * 0.8,
+    endpoint: {
+      encrypt: '/api/enigma/encipher',
+      decrypt: '/api/enigma/encipher',
+    },
+    defaultParams: {
+      rotors: ['I', 'II', 'III'],
+      positions: ['A', 'A', 'A'],
+      rings: ['A', 'A', 'A'],
+      plugboard: ['AB', 'CD'],
+    },
+  },
+  {
+    id: 'rsa',
+    name: 'RSA Vault',
+    category: 'Modern',
+    wing: 'Modern Cryptography Wing',
+    subtitle: 'Asymmetric Public-Key & Prime Factorization',
+    description: 'Utilizes asymmetric key pairs based on the mathematical difficulty of factoring large composite prime products n = p * q.',
+    historicalContext: 'Published in 1977 by Ron Rivest, Adi Shamir, and Leonard Adleman at MIT. Formed the foundation of modern internet security, TLS/SSL, and digital signatures.',
+    vulnerabilities: 'Shor algorithm on quantum computers can solve prime factorization in polynomial time. Small primes are vulnerable to Fermat or Pollard factorization.',
+    timeline: '1977 AD – Digital Era',
+    position: [-26.6, 0, 8.7],
+    cameraPosition: [-20.9, 2.2, 6.8],
+    cameraTarget: [-26.6, 1.2, 8.7],
+    macroPosition: [-24.3, 1.6, 7.9],
+    macroTarget: [-26.6, 1.2, 8.7],
+    rotationY: Math.PI * 0.6,
+    endpoint: {
+      encrypt: '/api/rsa/encrypt',
+      decrypt: '/api/rsa/decrypt',
+    },
+    defaultParams: {
+      p: 61,
+      q: 53,
+      e: 17,
+    },
+  },
+  {
+    id: 'aes',
+    name: 'AES Vault',
+    category: 'Modern',
+    wing: 'Modern Cryptography Wing',
+    subtitle: 'Symmetric Block Cipher & SPN Network',
+    description: 'Rijndael cipher utilizing 128-bit blocks with 128/192/256-bit keys through SubBytes, ShiftRows, MixColumns, and AddRoundKey operations.',
+    historicalContext: 'Selected by NIST in 2001 after a 5-year open competition to replace DES. Protects classified government communications and worldwide disk encryption.',
+    vulnerabilities: 'No known practical attack against full AES-128/256. Quantum Grover algorithm reduces effective key security to 64/128 bits.',
+    timeline: '2001 AD – Present Standard',
+    position: [-26.6, 0, -8.7],
+    cameraPosition: [-20.9, 2.2, -6.8],
+    cameraTarget: [-26.6, 1.2, -8.7],
+    macroPosition: [-24.3, 1.6, -7.9],
+    macroTarget: [-26.6, 1.2, -8.7],
+    rotationY: Math.PI * 0.4,
+    endpoint: {
+      encrypt: '/api/aes/encrypt',
+      decrypt: '/api/aes/decrypt',
+    },
+    defaultParams: {
+      key: '1234567890123456',
+      key_format: 'text',
+    },
+  },
+  {
+    id: 'sha256',
+    name: 'SHA-256 Vault',
+    category: 'Modern',
+    wing: 'Modern Cryptography Wing',
+    subtitle: 'Cryptographic Hash Function',
+    description: 'Produces a deterministic 256-bit (32-byte) hash digest for any arbitrary input message.',
+    historicalContext: 'Designed by the NSA and published by NIST in 2001 in FIPS PUB 180-2.',
+    vulnerabilities: 'Pre-image resistant, second pre-image resistant, collision resistant. No known practical collision.',
+    timeline: '2001 AD – Secure Hashing',
+    position: [-16.5, 0, -22.6],
+    cameraPosition: [-13.0, 2.2, -17.8],
+    cameraTarget: [-16.5, 1.2, -22.6],
+    macroPosition: [-15.0, 1.6, -20.6],
+    macroTarget: [-16.5, 1.2, -22.6],
+    rotationY: Math.PI * 0.2,
+    endpoint: {
+      encrypt: '/api/sha256',
+      decrypt: '/api/sha256',
+    },
+    defaultParams: {},
+  },
+];

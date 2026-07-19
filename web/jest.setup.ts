@@ -9,6 +9,41 @@ window.IntersectionObserver = function() {
   };
 } as any;
 
+// Mock ResizeObserver
+window.ResizeObserver = function() {
+  return {
+    observe: () => {},
+    unobserve: () => {},
+    disconnect: () => {}
+  };
+} as any;
+
+// Mock HTMLCanvasElement getContext for WebGL in jsdom environment
+HTMLCanvasElement.prototype.getContext = function(type: string) {
+  if (type === 'webgl' || type === 'webgl2' || type === 'experimental-webgl') {
+    return {
+      getExtension: () => null,
+      getParameter: () => 0,
+      createShader: () => ({}),
+      shaderSource: () => {},
+      compileShader: () => {},
+      createProgram: () => ({}),
+      attachShader: () => {},
+      linkProgram: () => {},
+      useProgram: () => {},
+      createBuffer: () => ({}),
+      bindBuffer: () => {},
+      bufferData: () => {},
+      enable: () => {},
+      viewport: () => {},
+      clearColor: () => {},
+      clear: () => {},
+      drawArrays: () => {},
+    } as any;
+  }
+  return null;
+} as any;
+
 // Mock window.matchMedia which is not available in jsdom
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -27,3 +62,4 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock scrollIntoView which is not implemented in jsdom
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
+

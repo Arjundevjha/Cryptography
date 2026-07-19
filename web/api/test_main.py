@@ -417,6 +417,43 @@ def test_aes_encrypt_exception():
     assert response.status_code == 400
     assert "Mocked AES encryption error" in response.json()["detail"]
 
+def test_caesar_encrypt_decrypt_success():
+    enc = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
+    assert enc.status_code == 200
+    assert enc.json() == {"ciphertext": "KHOOR"}
+    dec = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
+    assert dec.status_code == 200
+    assert dec.json() == {"plaintext": "HELLO"}
+
+def test_vigenere_encrypt_decrypt_success():
+    enc = client.post("/api/vigenere/encrypt", json={"plaintext": "ATTACKATDAWN", "key": "LEMON"})
+    assert enc.status_code == 200
+    assert "ciphertext" in enc.json()
+    ciphertext = enc.json()["ciphertext"]
+    dec = client.post("/api/vigenere/decrypt", json={"ciphertext": ciphertext, "key": "LEMON"})
+    assert dec.status_code == 200
+    assert dec.json() == {"plaintext": "ATTACKATDAWN"}
+
+def test_vigenere_empty_key():
+    resp = client.post("/api/vigenere/encrypt", json={"plaintext": "HELLO", "key": ""})
+    assert resp.status_code == 400
+    assert "cannot be empty" in resp.json()["detail"].lower()
+
+def test_playfair_encrypt_decrypt_success():
+    enc = client.post("/api/playfair/encrypt", json={"plaintext": "INSTRUMENT", "key": "MONARCHY"})
+    assert enc.status_code == 200
+    assert "ciphertext" in enc.json()
+    ciphertext = enc.json()["ciphertext"]
+    dec = client.post("/api/playfair/decrypt", json={"ciphertext": ciphertext, "key": "MONARCHY"})
+    assert dec.status_code == 200
+    assert "plaintext" in dec.json()
+
+def test_playfair_empty_key():
+    resp = client.post("/api/playfair/encrypt", json={"plaintext": "HELLO", "key": ""})
+    assert resp.status_code == 400
+    assert "cannot be empty" in resp.json()["detail"].lower()
+
+
 
 
 
