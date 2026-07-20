@@ -84,19 +84,9 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         <span>3D EXPLORATION: Drag to Orbit • Scroll to Zoom • Click Exhibit to Focus</span>
       </div>
 
-      {/* Footer Status Dot & Live Deployment Credit Overlay */}
-      <div className="fixed bottom-6 left-6 z-40 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      {/* Footer Minimal API Status Dot */}
+      <div className="fixed bottom-6 left-6 z-40">
         <ApiStatusDot />
-
-        <a
-          href="https://cryptography-delta.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-3 py-1.5 rounded-full bg-stone-950/80 backdrop-blur-md border border-stone-800 text-stone-400 hover:text-amber-300 transition-all text-[11px] font-mono flex items-center gap-1.5 shadow-lg"
-        >
-          <span>Live Museum Implementation: https://cryptography-delta.vercel.app/</span>
-          <ExternalLink className="w-3 h-3 text-stone-400" />
-        </a>
       </div>
     </>
   );

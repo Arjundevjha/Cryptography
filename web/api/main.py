@@ -270,6 +270,7 @@ class EnigmaEncipherInput(BaseModel):
     positions: list[str] = Field(..., description="Positions like ['A', 'A', 'A']")
     rings: list[str] = Field(..., description="Rings like ['A', 'A', 'A'] or ['1', '1', '1']")
     plugboard: list[str] = Field(default=[], description="Plugboard swaps like ['AB', 'CD']")
+    reflector: str = Field(default="B", description="Reflector selection (A, B, C, B_THIN, C_THIN)")
 
 
 @app.post("/api/scytale/encrypt")
@@ -463,8 +464,19 @@ def enigma_encipher(data: EnigmaEncipherInput):
         "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
     }
     
-    # Reflector B is standard
-    reflector = Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT")
+    REFLECTOR_MAP = {
+        "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
+        "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+        "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+        "B_THIN": "ENKQAUYWJICOPBLMDXZVFTHRGS",
+        "C_THIN": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",
+    }
+    
+    reflector_key = data.reflector.upper() if data.reflector else "B"
+    if reflector_key not in REFLECTOR_MAP:
+        raise HTTPException(status_code=400, detail=f"Invalid reflector '{data.reflector}'.")
+
+    reflector = Reflector(REFLECTOR_MAP[reflector_key])
     
     rotors_list = []
     for r_name in data.rotors:

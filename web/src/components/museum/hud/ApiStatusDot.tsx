@@ -25,7 +25,10 @@ export function ApiStatusDot() {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-950/80 border border-stone-800 text-xs font-mono">
+    <div
+      className="flex items-center justify-center p-2 rounded-full bg-stone-950/80 backdrop-blur-md border border-stone-800 shadow-lg"
+      title={online === true ? 'Cryptographic Server: Online' : online === false ? 'Cryptographic Server: Offline' : 'Cryptographic Server: Connecting...'}
+    >
       <span
         data-testid="api-status-dot"
         className={`w-2.5 h-2.5 rounded-full transition-all ${
@@ -36,9 +39,6 @@ export function ApiStatusDot() {
             : 'bg-amber-500 animate-pulse'
         }`}
       />
-      <span className="text-stone-300 text-[11px]">
-        {online === true ? 'FASTAPI ONLINE' : online === false ? 'FASTAPI OFFLINE' : 'CHECKING API...'}
-      </span>
     </div>
   );
 }

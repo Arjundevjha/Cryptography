@@ -28,6 +28,9 @@ export default function ThreeMuseumScene({
   const targetCamPos = useRef(new THREE.Vector3(0, 7, 26));
   const targetLookAt = useRef(new THREE.Vector3(0, 1.2, 0));
   const isAnimatingRef = useRef(true);
+  const isMacroRef = useRef(isMacro);
+  const currentViewRef = useRef(currentView);
+  const onSelectRoomRef = useRef(onSelectRoom);
   const initializedRef = useRef(false);
 
   // Build the full 3D scene once
@@ -310,8 +313,18 @@ export default function ThreeMuseumScene({
     // ============================
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
+    let mouseDownPos = { x: 0, y: 0 };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      mouseDownPos = { x: e.clientX, y: e.clientY };
+    };
 
     const handleClick = (e: MouseEvent) => {
+      // Ignore click event if user was dragging/orbiting camera with mouse
+      const dx = e.clientX - mouseDownPos.x;
+      const dy = e.clientY - mouseDownPos.y;
+      if (Math.hypot(dx, dy) > 6) return;
+
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -325,10 +338,15 @@ export default function ThreeMuseumScene({
           obj = obj.parent;
         }
         if (obj && obj.userData?.exhibitId) {
-          onSelectRoom(obj.userData.exhibitId);
+          const clickedExhibitId = obj.userData.exhibitId;
+          // Do NOT re-trigger room selection if already in current exhibit room
+          if (clickedExhibitId !== currentViewRef.current) {
+            onSelectRoomRef.current(clickedExhibitId);
+          }
         }
       }
     };
+    renderer.domElement.addEventListener('mousedown', handleMouseDown);
     renderer.domElement.addEventListener('click', handleClick);
 
     // ============================
@@ -340,10 +358,12 @@ export default function ThreeMuseumScene({
       const delta = Math.min((time - lastTime) / 1000, 0.1);
       lastTime = time;
 
-      // Slow elegant artifact rotation
-      rotatingArtifactsRef.current.forEach((art) => {
-        art.rotation.y += delta * 0.4;
-      });
+      // Rotate artifacts ONLY when not in close-up inspect (macro) mode
+      if (!isMacroRef.current) {
+        rotatingArtifactsRef.current.forEach((art) => {
+          art.rotation.y += delta * 0.4;
+        });
+      }
 
       // Animate center monument
       monument.rotation.y += delta * 0.5;
@@ -385,6 +405,7 @@ export default function ThreeMuseumScene({
     return () => {
       cancelAnimationFrame(animIdRef.current);
       window.removeEventListener('resize', handleResize);
+      renderer.domElement.removeEventListener('mousedown', handleMouseDown);
       renderer.domElement.removeEventListener('click', handleClick);
       if (container && renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
@@ -392,7 +413,7 @@ export default function ThreeMuseumScene({
       renderer.dispose();
       initializedRef.current = false;
     };
-  }, [onSelectRoom]);
+  }, []);
 
   // Initialize scene once
   useEffect(() => {
@@ -404,6 +425,9 @@ export default function ThreeMuseumScene({
 
   // Direct room-to-room camera transition without resetting to foyer!
   useEffect(() => {
+    isMacroRef.current = isMacro;
+    currentViewRef.current = currentView;
+    onSelectRoomRef.current = onSelectRoom;
     isAnimatingRef.current = true; // Enable camera flight animation when target changes
 
     if (currentView === 'atrium') {

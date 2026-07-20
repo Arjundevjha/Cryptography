@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ThreeMuseumScene from './ThreeMuseumScene';
-import { AudioSystem } from './AudioSystem';
 import { MUSEUM_EXHIBITS } from './museumData';
 import { MuseumHUD } from './hud/MuseumHUD';
 import { WorkbenchPanel } from './workbench/WorkbenchPanel';
-import { ArtifactMetadataDrawer } from './workbench/ArtifactMetadataDrawer';
-import { BookOpen, History, ShieldAlert, ZoomIn, ArrowRight, Sparkles } from 'lucide-react';
+import { BookOpen, History, ShieldAlert, ZoomIn, ZoomOut, ArrowRight, Sparkles, Eye } from 'lucide-react';
 
 export function MuseumCanvas() {
   const [isClient, setIsClient] = useState(false);
@@ -20,20 +18,20 @@ export function MuseumCanvas() {
 
   const activeExhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
 
-  const handleSelectRoom = (roomId: string) => {
+  const handleSelectRoom = useCallback((roomId: string) => {
     setCurrentView(roomId);
     setIsMacro(false);
-  };
+  }, []);
 
-  const handleReturnToFoyer = () => {
+  const handleReturnToFoyer = useCallback(() => {
     setCurrentView('atrium');
     setIsMacro(false);
-  };
+  }, []);
 
-  const handleCaseClick = (roomId: string) => {
+  const handleCaseClick = useCallback((roomId: string) => {
     setCurrentView(roomId);
     setIsMacro(true);
-  };
+  }, []);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden select-none" style={{ background: '#d4e5f7' }}>
@@ -54,9 +52,6 @@ export function MuseumCanvas() {
         onSelectRoom={handleSelectRoom}
         onReturnToFoyer={handleReturnToFoyer}
       />
-
-      {/* Spatial Audio */}
-      <AudioSystem currentView={currentView} />
 
       {/* === ATRIUM EXHIBIT SELECTION CARDS (Bottom strip, not covering 3D) === */}
       {currentView === 'atrium' && (
@@ -97,8 +92,8 @@ export function MuseumCanvas() {
         </div>
       )}
 
-      {/* === CURATORIAL EXHIBITION PANEL (Left side, inside exhibit rooms) === */}
-      {activeExhibit && currentView !== 'atrium' && (
+      {/* === CURATORIAL EXHIBITION PANEL (Left side, inside exhibit rooms, hidden in macro inspect mode) === */}
+      {activeExhibit && currentView !== 'atrium' && !isMacro && (
         <div className="fixed top-24 left-4 z-20 w-80 max-h-[calc(100vh-140px)] overflow-y-auto pointer-events-auto">
           <div className="bg-white/90 backdrop-blur-xl border border-stone-200 shadow-2xl rounded-2xl p-5 space-y-3 text-stone-800">
             {/* Header */}
@@ -147,15 +142,26 @@ export function MuseumCanvas() {
       )}
 
       {/* === WORKBENCH PANEL (Right side, inside exhibit rooms) === */}
-      {activeExhibit && (
+      {activeExhibit && currentView !== 'atrium' && (
         <div className="fixed top-24 right-4 z-20 pointer-events-auto">
           <WorkbenchPanel exhibit={activeExhibit} />
         </div>
       )}
 
-      {/* === MACRO METADATA DRAWER === */}
+      {/* === INSPECTION MODE FLOATING BANNER (Top Center, clean top-side view) === */}
       {activeExhibit && isMacro && (
-        <ArtifactMetadataDrawer exhibit={activeExhibit} onClose={() => setIsMacro(false)} />
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/40 text-stone-100 shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider">
+            <Eye className="w-4 h-4 text-amber-400 animate-pulse" />
+            <span>Top-Side Inspection View — {activeExhibit.name}</span>
+          </div>
+          <button
+            onClick={() => setIsMacro(false)}
+            className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow transition-all"
+          >
+            <ZoomOut className="w-3.5 h-3.5" /> Exit Inspection
+          </button>
+        </div>
       )}
     </div>
   );

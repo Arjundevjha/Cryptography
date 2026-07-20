@@ -185,6 +185,21 @@ def test_enigma_duplicate_plugboard_connection():
     assert "duplicate" in response.json()["detail"].lower()
 
 
+def test_enigma_encipher_with_reflectors():
+    for ref in ["A", "B", "C", "B_THIN", "C_THIN"]:
+        response = client.post("/api/enigma/encipher", json={
+            "plaintext": "HELLO",
+            "rotors": ["I", "II", "III"],
+            "positions": ["A", "A", "A"],
+            "rings": ["A", "A", "A"],
+            "reflector": ref,
+            "plugboard": ["AB", "CD"]
+        })
+        assert response.status_code == 200
+        assert "ciphertext" in response.json()
+        assert len(response.json()["ciphertext"]) == 5
+
+
 # ==========================================
 # MODERN CIPHER TESTS
 # ==========================================

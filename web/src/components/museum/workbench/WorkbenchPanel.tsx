@@ -31,6 +31,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const [enigmaRotors, setEnigmaRotors] = useState<string[]>(['I', 'II', 'III']);
   const [enigmaPositions, setEnigmaPositions] = useState<string[]>(['A', 'A', 'A']);
   const [enigmaRings, setEnigmaRings] = useState<string[]>(['A', 'A', 'A']);
+  const [enigmaReflector, setEnigmaReflector] = useState<string>('B');
   const [enigmaPlugboard, setEnigmaPlugboard] = useState<string>('AB CD');
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           rotors: enigmaRotors,
           positions: enigmaPositions,
           rings: enigmaRings,
+          reflector: enigmaReflector,
           plugboard: plugSwaps,
         };
       } else if (exhibit.id === 'rsa') {
@@ -152,7 +154,6 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
       <div className="flex items-center justify-between mb-4 pb-2 border-b border-amber-500/20">
         <div>
           <h3 className="text-sm font-bold tracking-wider text-amber-400 font-mono uppercase">{exhibit.name} WORKBENCH</h3>
-          <p className="text-xs text-stone-400">Connected to FastAPI Python Engine</p>
         </div>
 
         {/* Encrypt / Decrypt Toggle */}
@@ -261,10 +262,115 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         )}
 
         {exhibit.id === 'enigma' && (
-          <div className="space-y-1.5 text-xs font-mono">
-            <div>Rotors: <span data-testid="param-rotors-enigma">I, II, III</span></div>
-            <div>Positions: <span data-testid="param-positions-enigma">A, A, A</span></div>
-            <div>Plugboard: <span data-testid="param-plugboard-enigma">{enigmaPlugboard}</span></div>
+          <div className="space-y-2.5 text-xs font-mono">
+            {/* Rotor Selectors */}
+            <div>
+              <label className="block text-[11px] text-stone-400 mb-1">Rotors (Select I - VIII):</label>
+              <div className="grid grid-cols-3 gap-1">
+                {[0, 1, 2].map((idx) => (
+                  <select
+                    key={`rotor-${idx}`}
+                    value={enigmaRotors[idx] || 'I'}
+                    onChange={(e) => {
+                      const updated = [...enigmaRotors];
+                      updated[idx] = e.target.value;
+                      setEnigmaRotors(updated);
+                    }}
+                    className="px-1.5 py-1 rounded bg-stone-950 border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                  >
+                    {['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'].map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                ))}
+              </div>
+              <input
+                type="text"
+                data-testid="param-rotors-enigma"
+                value={enigmaRotors.join('-')}
+                onChange={(e) => {
+                  const parts = e.target.value.split(/[-,\s]+/).map((s) => s.trim().toUpperCase());
+                  if (parts.length === 3) setEnigmaRotors(parts);
+                }}
+                className="sr-only"
+              />
+            </div>
+
+            {/* Reflector Selection */}
+            <div>
+              <label className="block text-[11px] text-stone-400 mb-1">Reflector:</label>
+              <select
+                data-testid="param-reflector-enigma"
+                value={enigmaReflector}
+                onChange={(e) => setEnigmaReflector(e.target.value)}
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+              >
+                <option value="A">Reflector A (EJMZALYX...)</option>
+                <option value="B">Reflector B (YRUHQSLD... Standard)</option>
+                <option value="C">Reflector C (FVPJIAOY...)</option>
+                <option value="B_THIN">Reflector B Thin (ENKQAUYW...)</option>
+                <option value="C_THIN">Reflector C Thin (RDOBJNTK...)</option>
+              </select>
+            </div>
+
+            {/* Positions & Rings */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[11px] text-stone-400 mb-0.5">Positions:</label>
+                <input
+                  type="text"
+                  data-testid="param-positions-enigma"
+                  value={enigmaPositions.join('')}
+                  onChange={(e) => {
+                    const raw = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+                    const p1 = raw[0] || 'A';
+                    const p2 = raw[1] || 'A';
+                    const p3 = raw[2] || 'A';
+                    setEnigmaPositions([p1, p2, p3]);
+                  }}
+                  maxLength={3}
+                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-stone-400 mb-0.5">Rings:</label>
+                <input
+                  type="text"
+                  data-testid="param-rings-enigma"
+                  value={enigmaRings.join('')}
+                  onChange={(e) => {
+                    const raw = e.target.value.toUpperCase().replace(/[^A-Z1-9]/g, '');
+                    const r1 = raw[0] || 'A';
+                    const r2 = raw[1] || 'A';
+                    const r3 = raw[2] || 'A';
+                    setEnigmaRings([r1, r2, r3]);
+                  }}
+                  maxLength={3}
+                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center"
+                />
+              </div>
+            </div>
+
+            {/* Plugboard Swaps */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[11px] text-stone-400">Plugboard (Steckerbrett Swaps):</label>
+                <span className="text-[10px] text-amber-400 font-mono">
+                  {enigmaPlugboard.trim() ? enigmaPlugboard.trim().split(/\s+/).length : 0} Swaps Active
+                </span>
+              </div>
+              <input
+                type="text"
+                data-testid="param-plugboard-enigma"
+                value={enigmaPlugboard}
+                onChange={(e) => setEnigmaPlugboard(e.target.value.toUpperCase())}
+                placeholder="e.g. AB CD EF"
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 text-xs font-mono uppercase"
+              />
+            </div>
           </div>
         )}
 
