@@ -27,7 +27,7 @@ export function caesarDecrypt(ciphertext: string, shift: number): string {
 /**
  * Vigenere cipher helper: pads/cycles the key to match input length.
  */
-export function padVigenereKey(text: string, key: string): string {
+function padVigenereKey(text: string, key: string): string {
   if (!key) return '';
   let paddedKey = '';
   let keyIndex = 0;
