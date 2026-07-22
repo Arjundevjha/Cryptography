@@ -638,6 +638,66 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
       break;
     }
 
+    case 'lorenz': {
+      // Detailed 12-Rotor Lorenz SZ42 Teleprinter Attachment
+      const chassisGeo = new THREE.BoxGeometry(1.5, 0.25, 1.0);
+      const chassisMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.85, roughness: 0.25 });
+      const chassis = new THREE.Mesh(chassisGeo, chassisMat);
+      chassis.castShadow = true;
+      group.add(chassis);
+
+      // Central Steel Drive Shaft
+      const shaftGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.35, 32);
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95, roughness: 0.1 });
+      const shaft = new THREE.Mesh(shaftGeo, steelMat);
+      shaft.rotation.z = Math.PI / 2;
+      shaft.position.set(0, 0.22, -0.1);
+      shaft.castShadow = true;
+      group.add(shaft);
+
+      // 12 Pinwheels (Brass Rotors) grouped into Chi (5), Motor (2), and Psi (5)
+      const wheelGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.05, 32);
+      const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.15 });
+      const motorMat = new THREE.MeshStandardMaterial({ color: 0xca8a04, metalness: 0.95, roughness: 0.1 });
+
+      const wheelOffsets = [
+        // Chi 1..5
+        -0.58, -0.48, -0.38, -0.28, -0.18,
+        // Motor 1..2
+        -0.05, 0.05,
+        // Psi 1..5
+        0.18, 0.28, 0.38, 0.48, 0.58,
+      ];
+
+      wheelOffsets.forEach((x, idx) => {
+        const mat = (idx >= 5 && idx <= 6) ? motorMat : brassMat;
+        const wheel = new THREE.Mesh(wheelGeo, mat);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(x, 0.22, -0.1);
+        wheel.castShadow = true;
+        group.add(wheel);
+
+        // Active Pin Notch
+        const notchGeo = new THREE.BoxGeometry(0.02, 0.05, 0.03);
+        const notchMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, emissive: 0xca8a04, emissiveIntensity: 0.8 });
+        const notch = new THREE.Mesh(notchGeo, notchMat);
+        notch.position.set(x, 0.35, -0.1);
+        group.add(notch);
+      });
+
+      // Status Telemetry LEDs
+      const ledGeo = new THREE.SphereGeometry(0.025, 16, 16);
+      const ledGreen = new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x15803d, emissiveIntensity: 1.5 });
+      const ledAmber = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xb45309, emissiveIntensity: 1.5 });
+
+      [-0.4, 0, 0.4].forEach((x, i) => {
+        const led = new THREE.Mesh(ledGeo, i === 1 ? ledAmber : ledGreen);
+        led.position.set(x, 0.14, 0.38);
+        group.add(led);
+      });
+      break;
+    }
+
     case 'rsa': {
       // High-Tech Quantum RSA Terminal with Dual Rings
       const baseGeo = new THREE.CylinderGeometry(0.5, 0.6, 0.4, 64);

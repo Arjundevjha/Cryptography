@@ -33,6 +33,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const [enigmaRings, setEnigmaRings] = useState<string[]>(['A', 'A', 'A']);
   const [enigmaReflector, setEnigmaReflector] = useState<string>('B');
   const [enigmaPlugboard, setEnigmaPlugboard] = useState<string>('AB CD');
+  const [lorenzPositions, setLorenzPositions] = useState<number[]>(Array(12).fill(0));
 
   useEffect(() => {
     setInputText('HELLO MUSEUM WORLD');
@@ -101,6 +102,10 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           reflector: enigmaReflector,
           plugboard: plugSwaps,
         };
+      } else if (exhibit.id === 'lorenz') {
+        payload = mode === 'encrypt'
+          ? { plaintext: inputText, positions: lorenzPositions }
+          : { ciphertext: inputText, positions: lorenzPositions };
       } else if (exhibit.id === 'rsa') {
         if (mode === 'encrypt') {
           if (!rsaPublicKey) {
@@ -371,6 +376,95 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
                 className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 text-xs font-mono uppercase"
               />
             </div>
+          </div>
+        )}
+
+        {exhibit.id === 'lorenz' && (
+          <div className="space-y-3 text-xs font-mono">
+            {/* Hidden Input for E2E testing string representation of positions */}
+            <input
+              type="text"
+              data-testid="param-positions-lorenz"
+              value={lorenzPositions.join(',')}
+              readOnly
+              className="sr-only"
+            />
+
+            {/* Chi Wheels (1..5) */}
+            <div>
+              <label className="block text-[11px] text-amber-400 font-bold mb-1">
+                Chi Wheels (χ₁-χ₅ Positions):
+              </label>
+              <div className="grid grid-cols-5 gap-1">
+                {[0, 1, 2, 3, 4].map((idx) => (
+                  <input
+                    key={`chi-${idx}`}
+                    type="number"
+                    min={0}
+                    value={lorenzPositions[idx]}
+                    onChange={(e) => {
+                      const updated = [...lorenzPositions];
+                      updated[idx] = parseInt(e.target.value) || 0;
+                      setLorenzPositions(updated);
+                    }}
+                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Motor Wheels (1..2) */}
+            <div>
+              <label className="block text-[11px] text-amber-400 font-bold mb-1">
+                Motor Wheels (μ₁-μ₂ Positions):
+              </label>
+              <div className="grid grid-cols-2 gap-1">
+                {[5, 6].map((idx) => (
+                  <input
+                    key={`motor-${idx}`}
+                    type="number"
+                    min={0}
+                    value={lorenzPositions[idx]}
+                    onChange={(e) => {
+                      const updated = [...lorenzPositions];
+                      updated[idx] = parseInt(e.target.value) || 0;
+                      setLorenzPositions(updated);
+                    }}
+                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Psi Wheels (1..5) */}
+            <div>
+              <label className="block text-[11px] text-amber-400 font-bold mb-1">
+                Psi Wheels (ψ₁-ψ₅ Positions):
+              </label>
+              <div className="grid grid-cols-5 gap-1">
+                {[7, 8, 9, 10, 11].map((idx) => (
+                  <input
+                    key={`psi-${idx}`}
+                    type="number"
+                    min={0}
+                    value={lorenzPositions[idx]}
+                    onChange={(e) => {
+                      const updated = [...lorenzPositions];
+                      updated[idx] = parseInt(e.target.value) || 0;
+                      setLorenzPositions(updated);
+                    }}
+                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                  />
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setLorenzPositions(Array(12).fill(0))}
+              className="w-full py-1 rounded bg-stone-900 hover:bg-stone-800 text-stone-400 text-[10px] font-mono flex items-center justify-center gap-1 border border-stone-800"
+            >
+              <RefreshCw className="w-3 h-3" /> Reset Positions to 0
+            </button>
           </div>
         )}
 

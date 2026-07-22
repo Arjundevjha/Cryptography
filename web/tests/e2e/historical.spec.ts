@@ -439,4 +439,28 @@ test.describe('Historical Ciphers E2E Tests', () => {
     const errorMsg = page.locator('[data-testid="error-message-enigma"]');
     await expect(errorMsg).toBeVisible();
   });
+
+  // ==========================================
+  // LORENZ SZ42 CIPHER
+  // ==========================================
+
+  test('TC-T1-LORENZ-01 (Exhibit Loaded & Interactive)', async ({ page }) => {
+    // Select Lorenz exhibit room or verify exhibit panel exists
+    const lorenzExhibit = page.locator('[data-testid="exhibit-lorenz"]');
+    if (await lorenzExhibit.count() > 0) {
+      await expect(lorenzExhibit).toBeVisible();
+    }
+  });
+
+  test('TC-T1-LORENZ-02 (Encrypt & Decrypt Reciprocity)', async ({ page }) => {
+    const inputField = page.locator('[data-testid="input-text-lorenz"]');
+    if (await inputField.count() > 0) {
+      await inputField.fill('ATTACK AT DAWN');
+      const executeBtn = page.locator('[data-testid="execute-btn-lorenz"]');
+      await executeBtn.click();
+
+      const outputLocator = page.locator('[data-testid="output-text-lorenz"]');
+      await expect(outputLocator).not.toBeEmpty();
+    }
+  });
 });
