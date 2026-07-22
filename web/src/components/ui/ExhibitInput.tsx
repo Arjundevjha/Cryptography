@@ -1,4 +1,4 @@
-// fallow-ignore-next-line unused-files
+// fallow-ignore-file unused-file
 import React from 'react';
 
 interface ExhibitInputProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
