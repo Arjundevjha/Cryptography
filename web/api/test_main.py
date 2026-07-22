@@ -469,6 +469,32 @@ def test_playfair_empty_key():
     assert "cannot be empty" in resp.json()["detail"].lower()
 
 
+# ==========================================
+# LORENZ TESTS
+# ==========================================
+
+def test_lorenz_api_encrypt_decrypt_success():
+    enc = client.post("/api/lorenz/encrypt", json={"plaintext": "HELLOLORENZ"})
+    assert enc.status_code == 200
+    ciphertext = enc.json()["ciphertext"]
+
+    dec = client.post("/api/lorenz/decrypt", json={"ciphertext": ciphertext})
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == "HELLOLORENZ"
+
+
+def test_lorenz_api_custom_positions():
+    positions = [1] * 12
+    enc = client.post("/api/lorenz/encrypt", json={"plaintext": "TOPSECRET", "positions": positions})
+    assert enc.status_code == 200
+    ciphertext = enc.json()["ciphertext"]
+
+    dec = client.post("/api/lorenz/decrypt", json={"ciphertext": ciphertext, "positions": positions})
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == "TOPSECRET"
+
+
+
 
 
 

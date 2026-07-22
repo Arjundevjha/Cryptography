@@ -272,6 +272,20 @@ class EnigmaEncipherInput(BaseModel):
     plugboard: list[str] = Field(default=[], description="Plugboard swaps like ['AB', 'CD']")
     reflector: str = Field(default="B", description="Reflector selection (A, B, C, B_THIN, C_THIN)")
 
+class LorenzEncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
+    positions: list[int] = Field(default=[], description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Psi wheels")
+
+class LorenzDecryptInput(BaseModel):
+    ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
+    positions: list[int] = Field(default=[], description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Psi wheels")
+
 
 @app.post("/api/scytale/encrypt")
 async def scytale_encrypt(data: ScytaleEncryptInput):
@@ -501,6 +515,54 @@ def enigma_encipher(data: EnigmaEncipherInput):
             
     ciphertext = "".join(ciphertext_chars)
     return {"ciphertext": ciphertext}
+
+
+@app.post("/api/lorenz/encrypt")
+def lorenz_encrypt(data: LorenzEncryptInput):
+    try:
+        from methods.historical.lorenz import Lorenz
+        positions = data.positions if data.positions else None
+        chi_pins = data.chi_pins if data.chi_pins else None
+        motor_pins = data.motor_pins if data.motor_pins else None
+        psi_pins = data.psi_pins if data.psi_pins else None
+
+        machine = Lorenz(
+            chi_pins=chi_pins,
+            motor_pins=motor_pins,
+            psi_pins=psi_pins,
+            positions=positions
+        )
+        ciphertext = machine.encrypt_text(data.plaintext)
+        return {"ciphertext": ciphertext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@app.post("/api/lorenz/decrypt")
+def lorenz_decrypt(data: LorenzDecryptInput):
+    try:
+        from methods.historical.lorenz import Lorenz
+        positions = data.positions if data.positions else None
+        chi_pins = data.chi_pins if data.chi_pins else None
+        motor_pins = data.motor_pins if data.motor_pins else None
+        psi_pins = data.psi_pins if data.psi_pins else None
+
+        machine = Lorenz(
+            chi_pins=chi_pins,
+            motor_pins=motor_pins,
+            psi_pins=psi_pins,
+            positions=positions
+        )
+        plaintext = machine.decrypt_text(data.ciphertext)
+        return {"plaintext": plaintext}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
 
 # ==========================================
