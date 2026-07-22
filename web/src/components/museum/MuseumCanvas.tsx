@@ -5,6 +5,8 @@ import ThreeMuseumScene from './ThreeMuseumScene';
 import { MUSEUM_EXHIBITS } from './museumData';
 import { MuseumHUD } from './hud/MuseumHUD';
 import { WorkbenchPanel } from './workbench/WorkbenchPanel';
+import { ArtifactMetadataDrawer } from './workbench/ArtifactMetadataDrawer';
+import { AudioSystem } from './AudioSystem';
 import { BookOpen, History, ShieldAlert, ZoomIn, ZoomOut, ArrowRight, Sparkles, Eye } from 'lucide-react';
 
 export function MuseumCanvas() {
@@ -148,20 +150,26 @@ export function MuseumCanvas() {
         </div>
       )}
 
-      {/* === INSPECTION MODE FLOATING BANNER (Top Center, clean top-side view) === */}
+      {/* === AUDIO SYSTEM (Spatial Ambient & Synth Audio) === */}
+      <AudioSystem currentView={currentView} />
+
+      {/* === INSPECTION MODE FLOATING BANNER & DRAWER (Top Center, clean top-side view) === */}
       {activeExhibit && isMacro && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/40 text-stone-100 shadow-2xl animate-in fade-in zoom-in duration-200">
-          <div className="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider">
-            <Eye className="w-4 h-4 text-amber-400 animate-pulse" />
-            <span>Top-Side Inspection View — {activeExhibit.name}</span>
+        <>
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/40 text-stone-100 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider">
+              <Eye className="w-4 h-4 text-amber-400 animate-pulse" />
+              <span>Top-Side Inspection View — {activeExhibit.name}</span>
+            </div>
+            <button
+              onClick={() => setIsMacro(false)}
+              className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow transition-all"
+            >
+              <ZoomOut className="w-3.5 h-3.5" /> Exit Inspection
+            </button>
           </div>
-          <button
-            onClick={() => setIsMacro(false)}
-            className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow transition-all"
-          >
-            <ZoomOut className="w-3.5 h-3.5" /> Exit Inspection
-          </button>
-        </div>
+          <ArtifactMetadataDrawer exhibit={activeExhibit} onClose={() => setIsMacro(false)} />
+        </>
       )}
     </div>
   );
