@@ -457,13 +457,78 @@ export default function ThreeMuseumScene({
 }
 
 // ===================================================
+// ===================================================
 // HIGH-QUALITY ARTIFACT BUILDER (High Poly, PBR Materials)
 // ===================================================
 function buildHighQualityArtifact(id: string, group: THREE.Group) {
   switch (id) {
-    case 'caesar':
+    case 'caesar': {
+      // Caesar Cipher Mechanical Concentric Disk
+      group.rotation.x = Math.PI / 5; // Tilt up towards viewer
+
+      // Outer Plaintext Disk (Bronze)
+      const outerDiskGeo = new THREE.CylinderGeometry(0.65, 0.65, 0.05, 64);
+      const bronzeMat = new THREE.MeshStandardMaterial({
+        color: 0x92400e,
+        metalness: 0.85,
+        roughness: 0.25,
+      });
+      const outerDisk = new THREE.Mesh(outerDiskGeo, bronzeMat);
+      outerDisk.castShadow = true;
+      group.add(outerDisk);
+
+      // 26 Outer Alphabet Notch Indicators
+      const outerNotchGeo = new THREE.BoxGeometry(0.025, 0.06, 0.035);
+      const notchMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.9, roughness: 0.1 });
+      for (let i = 0; i < 26; i++) {
+        const angle = (i / 26) * Math.PI * 2;
+        const notch = new THREE.Mesh(outerNotchGeo, notchMat);
+        notch.position.set(Math.cos(angle) * 0.58, 0.01, Math.sin(angle) * 0.58);
+        notch.rotation.y = -angle;
+        group.add(notch);
+      }
+
+      // Inner Shifted Ciphertext Disk (Gold/Brass, elevated)
+      const innerDiskGeo = new THREE.CylinderGeometry(0.46, 0.46, 0.06, 64);
+      const goldMat = new THREE.MeshStandardMaterial({
+        color: 0xd97706,
+        metalness: 0.9,
+        roughness: 0.15,
+      });
+      const innerDisk = new THREE.Mesh(innerDiskGeo, goldMat);
+      innerDisk.position.y = 0.02;
+      innerDisk.castShadow = true;
+      group.add(innerDisk);
+
+      // 26 Inner Alphabet Notch Indicators
+      const innerNotchGeo = new THREE.BoxGeometry(0.02, 0.07, 0.025);
+      for (let i = 0; i < 26; i++) {
+        const angle = (i / 26) * Math.PI * 2 + 0.15; // Shifted angle
+        const notch = new THREE.Mesh(innerNotchGeo, notchMat);
+        notch.position.set(Math.cos(angle) * 0.4, 0.03, Math.sin(angle) * 0.4);
+        notch.rotation.y = -angle;
+        group.add(notch);
+      }
+
+      // Central Steel Pin
+      const pinGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.1, 32);
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.95, roughness: 0.1 });
+      const pin = new THREE.Mesh(pinGeo, steelMat);
+      pin.position.y = 0.04;
+      group.add(pin);
+
+      // Shift Indicator Pointer Dial
+      const pointerGeo = new THREE.BoxGeometry(0.03, 0.08, 0.42);
+      const redBrassMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, metalness: 0.8, roughness: 0.2 });
+      const pointer = new THREE.Mesh(pointerGeo, redBrassMat);
+      pointer.position.set(0, 0.04, 0.18);
+      pointer.castShadow = true;
+      group.add(pointer);
+      break;
+    }
+
     case 'scytale': {
-      // High-poly Spartan Scytale cylinder with carved texture & parchment
+      // Spartan Scytale Cylinder with Helical Parchment Ribbon
       const woodGeo = new THREE.CylinderGeometry(0.22, 0.22, 1.6, 64);
       const woodMat = new THREE.MeshStandardMaterial({
         color: 0x78350f,
@@ -494,108 +559,274 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
       capR.castShadow = true;
       group.add(capR);
 
-      // Smooth parchment band wrapped continuously
-      const parchGeo = new THREE.CylinderGeometry(0.235, 0.235, 0.12, 64);
+      // Continuous Helical Parchment Ribbon wrapped around cylinder
       const parchMat = new THREE.MeshStandardMaterial({
         color: 0xfef3c7,
         roughness: 0.35,
       });
-      for (let x = -0.6; x <= 0.6; x += 0.2) {
-        const band = new THREE.Mesh(parchGeo, parchMat);
-        band.rotation.z = Math.PI / 2;
-        band.position.x = x;
-        band.castShadow = true;
-        group.add(band);
+      const segmentGeo = new THREE.BoxGeometry(0.05, 0.015, 0.14);
+      const turns = 6;
+      const steps = 72;
+      for (let i = 0; i < steps; i++) {
+        const progress = i / (steps - 1);
+        const x = -0.7 + progress * 1.4;
+        const angle = progress * turns * Math.PI * 2;
+        const y = Math.cos(angle) * 0.228;
+        const z = Math.sin(angle) * 0.228;
+        const seg = new THREE.Mesh(segmentGeo, parchMat);
+        seg.position.set(x, y, z);
+        seg.rotation.x = angle;
+        seg.castShadow = true;
+        group.add(seg);
       }
       break;
     }
 
     case 'affine': {
-      // Mathematical Stone Obelisk with Gold Equations
-      const obeliskGeo = new THREE.CylinderGeometry(0.1, 0.4, 1.4, 4);
-      const obeliskMat = new THREE.MeshStandardMaterial({
-        color: 0x334155,
-        roughness: 0.3,
-        metalness: 0.2,
+      // Double-Dial Mathematical Gear Machine E(x) = (ax + b) mod 26
+      // Base Block (Mahogany)
+      const baseGeo = new THREE.BoxGeometry(1.4, 0.12, 1.0);
+      const mahoganyMat = new THREE.MeshStandardMaterial({
+        color: 0x451a03,
+        roughness: 0.4,
+        metalness: 0.1,
       });
-      const obelisk = new THREE.Mesh(obeliskGeo, obeliskMat);
-      obelisk.rotation.y = Math.PI / 4;
-      obelisk.castShadow = true;
-      group.add(obelisk);
+      const base = new THREE.Mesh(baseGeo, mahoganyMat);
+      base.castShadow = true;
+      group.add(base);
 
-      // Floating gold equations ring
-      const ringGeo = new THREE.TorusGeometry(0.55, 0.03, 32, 64);
-      const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.15 });
-      const ring = new THREE.Mesh(ringGeo, goldMat);
-      ring.rotation.x = Math.PI / 2;
-      group.add(ring);
+      // Brass Inset Trim Plate
+      const trimGeo = new THREE.BoxGeometry(1.35, 0.02, 0.95);
+      const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.2 });
+      const trim = new THREE.Mesh(trimGeo, brassMat);
+      trim.position.y = 0.07;
+      group.add(trim);
+
+      // Multiplier Gear (Key 'a', Left Brass Gear)
+      const gearAGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.08, 48);
+      const gearA = new THREE.Mesh(gearAGeo, brassMat);
+      gearA.position.set(-0.32, 0.12, 0);
+      gearA.castShadow = true;
+      group.add(gearA);
+
+      // Teeth for Gear A
+      const toothGeo = new THREE.BoxGeometry(0.04, 0.08, 0.04);
+      for (let i = 0; i < 16; i++) {
+        const angle = (i / 16) * Math.PI * 2;
+        const tooth = new THREE.Mesh(toothGeo, brassMat);
+        tooth.position.set(-0.32 + Math.cos(angle) * 0.36, 0.12, Math.sin(angle) * 0.36);
+        group.add(tooth);
+      }
+
+      // Shift Gear (Key 'b', Right Copper Gear)
+      const gearBGeo = new THREE.CylinderGeometry(0.26, 0.26, 0.08, 48);
+      const copperMat = new THREE.MeshStandardMaterial({ color: 0xca8a04, metalness: 0.92, roughness: 0.15 });
+      const gearB = new THREE.Mesh(gearBGeo, copperMat);
+      gearB.position.set(0.3, 0.12, 0);
+      gearB.castShadow = true;
+      group.add(gearB);
+
+      // Teeth for Gear B
+      for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2 + 0.1;
+        const tooth = new THREE.Mesh(toothGeo, copperMat);
+        tooth.position.set(0.3 + Math.cos(angle) * 0.27, 0.12, Math.sin(angle) * 0.27);
+        group.add(tooth);
+      }
+
+      // Pointer Needles
+      const needleGeo = new THREE.BoxGeometry(0.02, 0.04, 0.25);
+      const needleA = new THREE.Mesh(needleGeo, mahoganyMat);
+      needleA.position.set(-0.32, 0.17, 0.06);
+      needleA.rotation.y = Math.PI / 4;
+      group.add(needleA);
+
+      const needleB = new THREE.Mesh(needleGeo, mahoganyMat);
+      needleB.position.set(0.3, 0.17, -0.05);
+      needleB.rotation.y = -Math.PI / 3;
+      group.add(needleB);
+
+      // Mathematical Engraved Plaque
+      const plaqueGeo = new THREE.BoxGeometry(0.4, 0.03, 0.14);
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.2 });
+      const plaque = new THREE.Mesh(plaqueGeo, steelMat);
+      plaque.position.set(0, 0.09, 0.36);
+      group.add(plaque);
       break;
     }
 
     case 'vigenere': {
-      // Renaissance Tabula Recta Grid with Polished Brass Letters
-      const baseGeo = new THREE.BoxGeometry(1.2, 0.1, 1.2);
-      const marbleMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, clearcoat: 0.8 });
-      const base = new THREE.Mesh(baseGeo, marbleMat);
-      base.castShadow = true;
-      group.add(base);
+      // Jefferson Disk / Vigenère Multi-Rotor Cylindrical Roll
+      // Base Marble Slab
+      const slabGeo = new THREE.BoxGeometry(1.5, 0.08, 0.6);
+      const marbleMat = new THREE.MeshPhysicalMaterial({ color: 0xf8fafc, roughness: 0.1, clearcoat: 0.6 });
+      const slab = new THREE.Mesh(slabGeo, marbleMat);
+      slab.position.y = -0.22;
+      slab.castShadow = true;
+      group.add(slab);
 
-      // 6x6 Raised Gold Grid Tiles
-      const tileGeo = new THREE.BoxGeometry(0.14, 0.12, 0.14);
-      const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.85, roughness: 0.2 });
-      for (let r = 0; r < 6; r++) {
-        for (let c = 0; c < 6; c++) {
-          const tile = new THREE.Mesh(tileGeo, goldMat);
-          tile.position.set(-0.42 + c * 0.17, 0.08, -0.42 + r * 0.17);
-          tile.castShadow = true;
-          group.add(tile);
-        }
+      // Central Axle Shaft (Steel)
+      const shaftGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.4, 32);
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95, roughness: 0.1 });
+      const shaft = new THREE.Mesh(shaftGeo, steelMat);
+      shaft.rotation.z = Math.PI / 2;
+      shaft.castShadow = true;
+      group.add(shaft);
+
+      // End Support Pillars (Cast Iron)
+      const pillarGeo = new THREE.BoxGeometry(0.08, 0.45, 0.38);
+      const ironMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.4 });
+      const leftPillar = new THREE.Mesh(pillarGeo, ironMat);
+      leftPillar.position.set(-0.66, 0, 0);
+      leftPillar.castShadow = true;
+      group.add(leftPillar);
+
+      const rightPillar = new THREE.Mesh(pillarGeo, ironMat);
+      rightPillar.position.set(0.66, 0, 0);
+      rightPillar.castShadow = true;
+      group.add(rightPillar);
+
+      // 9 Alternating Alphabet Disks (Ivory and Brass)
+      const diskGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.08, 48);
+      const ivoryMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.3 });
+      const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.15 });
+
+      for (let i = 0; i < 9; i++) {
+        const mat = i % 2 === 0 ? ivoryMat : brassMat;
+        const disk = new THREE.Mesh(diskGeo, mat);
+        disk.rotation.z = Math.PI / 2;
+        disk.rotation.x = i * 0.65; // Each disk rotated differently
+        disk.position.x = -0.52 + i * 0.13;
+        disk.castShadow = true;
+        group.add(disk);
       }
+
+      // Top Alignment Key Bar
+      const barGeo = new THREE.BoxGeometry(1.25, 0.025, 0.035);
+      const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1 });
+      const bar = new THREE.Mesh(barGeo, goldMat);
+      bar.position.set(0, 0.26, 0);
+      group.add(bar);
       break;
     }
 
     case 'playfair': {
-      // 5x5 Obsidian Matrix with Metallic Letters
-      const baseGeo = new THREE.BoxGeometry(1.2, 0.12, 1.2);
-      const obsidianMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.8 });
-      const base = new THREE.Mesh(baseGeo, obsidianMat);
+      // 5x5 Cryptographic Matrix Grid Board with Digraph Highlight Laser
+      // Base Walnut Board
+      const baseGeo = new THREE.BoxGeometry(1.3, 0.1, 1.3);
+      const walnutMat = new THREE.MeshStandardMaterial({ color: 0x27160c, roughness: 0.3, metalness: 0.1 });
+      const base = new THREE.Mesh(baseGeo, walnutMat);
       base.castShadow = true;
       group.add(base);
 
-      const cellGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.08, 32);
-      const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.15 });
+      // Inset Brass Matrix Plate
+      const plateGeo = new THREE.BoxGeometry(1.15, 0.02, 1.15);
+      const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85, roughness: 0.2 });
+      const plate = new THREE.Mesh(plateGeo, brassMat);
+      plate.position.y = 0.06;
+      group.add(plate);
+
+      // 5x5 Grid of Marble Letter Tiles
+      const tileGeo = new THREE.BoxGeometry(0.18, 0.04, 0.18);
+      const marbleMat = new THREE.MeshPhysicalMaterial({ color: 0xf8fafc, roughness: 0.12, clearcoat: 0.5 });
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
-          const cell = new THREE.Mesh(cellGeo, brassMat);
-          cell.position.set(-0.4 + c * 0.2, 0.08, -0.4 + r * 0.2);
-          cell.castShadow = true;
-          group.add(cell);
+          const tile = new THREE.Mesh(tileGeo, marbleMat);
+          tile.position.set(-0.4 + c * 0.2, 0.08, -0.4 + r * 0.2);
+          tile.castShadow = true;
+          group.add(tile);
         }
       }
+
+      // Digraph Highlight Ring 1 (Cyan Glow at tile 1,1)
+      const ringGeo = new THREE.TorusGeometry(0.08, 0.015, 16, 32);
+      const cyanMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0891b2, emissiveIntensity: 1.8 });
+      const ring1 = new THREE.Mesh(ringGeo, cyanMat);
+      ring1.position.set(-0.2, 0.12, -0.2);
+      ring1.rotation.x = Math.PI / 2;
+      group.add(ring1);
+
+      // Digraph Highlight Ring 2 (Magenta Glow at tile 3,4)
+      const magentaMat = new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xdb2777, emissiveIntensity: 1.8 });
+      const ring2 = new THREE.Mesh(ringGeo, magentaMat);
+      ring2.position.set(0.4, 0.12, 0.2);
+      ring2.rotation.x = Math.PI / 2;
+      group.add(ring2);
+
+      // Connecting Laser Line (Bigram Substitution Path)
+      const laserGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.72, 16);
+      const laserMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xe11d48, emissiveIntensity: 2.0 });
+      const laser = new THREE.Mesh(laserGeo, laserMat);
+      laser.position.set(0.1, 0.12, 0);
+      laser.rotation.z = -Math.PI / 3;
+      laser.rotation.x = Math.PI / 6;
+      group.add(laser);
       break;
     }
 
     case 'polybius': {
-      // Greek Bronze Checkerboard with Torch Orbs
-      const plateGeo = new THREE.CylinderGeometry(0.7, 0.75, 0.1, 64);
-      const bronzeMat = new THREE.MeshStandardMaterial({ color: 0x92400e, metalness: 0.8, roughness: 0.3 });
-      const plate = new THREE.Mesh(plateGeo, bronzeMat);
-      plate.castShadow = true;
-      group.add(plate);
+      // Ancient Greek Fortress Watchtower Torch Signalling System
+      // Masonry Rampart Base
+      const rampartGeo = new THREE.BoxGeometry(1.5, 0.14, 0.9);
+      const stoneMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.8, metalness: 0.1 });
+      const rampart = new THREE.Mesh(rampartGeo, stoneMat);
+      rampart.castShadow = true;
+      group.add(rampart);
 
-      // Glowing Torch Orbs at 4 Corners
-      const orbGeo = new THREE.SphereGeometry(0.08, 32, 32);
-      const fireMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 1.5 });
-      [
-        [-0.45, 0.45],
-        [0.45, 0.45],
-        [-0.45, -0.45],
-        [0.45, -0.45],
-      ].forEach(([x, z]) => {
-        const orb = new THREE.Mesh(orbGeo, fireMat);
-        orb.position.set(x, 0.12, z);
-        group.add(orb);
-      });
+      // Left Watchtower
+      const towerGeo = new THREE.CylinderGeometry(0.2, 0.22, 0.9, 16);
+      const leftTower = new THREE.Mesh(towerGeo, stoneMat);
+      leftTower.position.set(-0.55, 0.5, 0);
+      leftTower.castShadow = true;
+      group.add(leftTower);
+
+      // Right Watchtower
+      const rightTower = new THREE.Mesh(towerGeo, stoneMat);
+      rightTower.position.set(0.55, 0.5, 0);
+      rightTower.castShadow = true;
+      group.add(rightTower);
+
+      // Tower Battlements (Crenellations)
+      const capGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.1, 16);
+      const capL = new THREE.Mesh(capGeo, stoneMat);
+      capL.position.set(-0.55, 0.95, 0);
+      group.add(capL);
+
+      const capR = new THREE.Mesh(capGeo, stoneMat);
+      capR.position.set(0.55, 0.95, 0);
+      group.add(capR);
+
+      // Fire Braziers & Glowing Torches
+      const brazierGeo = new THREE.CylinderGeometry(0.1, 0.06, 0.08, 16);
+      const ironMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.4 });
+
+      const brazierL = new THREE.Mesh(brazierGeo, ironMat);
+      brazierL.position.set(-0.55, 1.04, 0);
+      group.add(brazierL);
+
+      const brazierR = new THREE.Mesh(brazierGeo, ironMat);
+      brazierR.position.set(0.55, 1.04, 0);
+      group.add(brazierR);
+
+      // Fire Orbs
+      const flameGeo = new THREE.SphereGeometry(0.07, 16, 16);
+      const fireMat = new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xea580c, emissiveIntensity: 2.5 });
+
+      const flameL = new THREE.Mesh(flameGeo, fireMat);
+      flameL.position.set(-0.55, 1.12, 0);
+      group.add(flameL);
+
+      const flameR = new THREE.Mesh(flameGeo, fireMat);
+      flameR.position.set(0.55, 1.12, 0);
+      group.add(flameR);
+
+      // Engraved Bronze Grid Tablet (between towers)
+      const tabletGeo = new THREE.BoxGeometry(0.48, 0.05, 0.48);
+      const bronzeMat = new THREE.MeshStandardMaterial({ color: 0x92400e, metalness: 0.85, roughness: 0.25 });
+      const tablet = new THREE.Mesh(tabletGeo, bronzeMat);
+      tablet.position.set(0, 0.1, 0);
+      tablet.castShadow = true;
+      group.add(tablet);
       break;
     }
 
@@ -699,45 +930,65 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
     }
 
     case 'rsa': {
-      // High-Tech Quantum RSA Terminal with Dual Rings
-      const baseGeo = new THREE.CylinderGeometry(0.5, 0.6, 0.4, 64);
-      const baseMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.1 });
+      // Asymmetric Prime Factorization Key Vault
+      // Titanium Base Plate
+      const baseGeo = new THREE.CylinderGeometry(0.6, 0.65, 0.1, 64);
+      const baseMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.95, roughness: 0.15 });
       const base = new THREE.Mesh(baseGeo, baseMat);
       base.castShadow = true;
       group.add(base);
 
-      // Glowing Cyan Core Sphere
-      const sphereGeo = new THREE.SphereGeometry(0.25, 64, 64);
-      const glowMat = new THREE.MeshPhysicalMaterial({
-        color: 0x38bdf8,
-        emissive: 0x0284c7,
-        emissiveIntensity: 2.0,
-        roughness: 0.1,
-      });
-      const sphere = new THREE.Mesh(sphereGeo, glowMat);
-      sphere.position.y = 0.45;
-      group.add(sphere);
-
-      // Holographic Ring 1
-      const ringGeo = new THREE.TorusGeometry(0.65, 0.02, 32, 64);
+      // Two Interlocking Prime Rings (p and q)
+      const ringGeo = new THREE.TorusGeometry(0.42, 0.03, 32, 64);
       const cyanMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0891b2, emissiveIntensity: 1.5 });
       const ring1 = new THREE.Mesh(ringGeo, cyanMat);
-      ring1.position.y = 0.45;
+      ring1.position.y = 0.35;
       ring1.rotation.x = Math.PI / 3;
       group.add(ring1);
 
-      // Holographic Ring 2
-      const ring2 = new THREE.Mesh(ringGeo, cyanMat);
-      ring2.position.y = 0.45;
+      const magentaMat = new THREE.MeshStandardMaterial({ color: 0xc084fc, emissive: 0x9333ea, emissiveIntensity: 1.5 });
+      const ring2 = new THREE.Mesh(ringGeo, magentaMat);
+      ring2.position.y = 0.35;
       ring2.rotation.x = -Math.PI / 3;
       ring2.rotation.y = Math.PI / 2;
       group.add(ring2);
+
+      // Floating Translucent Crystal Padlock
+      const lockBodyGeo = new THREE.BoxGeometry(0.3, 0.25, 0.12);
+      const glassMat = new THREE.MeshPhysicalMaterial({
+        color: 0x38bdf8,
+        transmission: 0.9,
+        transparent: true,
+        opacity: 0.85,
+        roughness: 0.05,
+        clearcoat: 1.0,
+      });
+      const lockBody = new THREE.Mesh(lockBodyGeo, glassMat);
+      lockBody.position.y = 0.35;
+      lockBody.castShadow = true;
+      group.add(lockBody);
+
+      // Shackle
+      const shackleGeo = new THREE.TorusGeometry(0.09, 0.022, 16, 32, Math.PI);
+      const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1 });
+      const shackle = new THREE.Mesh(shackleGeo, goldMat);
+      shackle.position.set(0, 0.47, 0);
+      shackle.rotation.z = Math.PI;
+      group.add(shackle);
       break;
     }
 
     case 'aes': {
-      // AES Hypercube: Inner Core + Outer Wireframe Cages
-      const coreGeo = new THREE.BoxGeometry(0.45, 0.45, 0.45);
+      // AES 128-bit State Matrix ShiftRows Diffusion Core
+      // Octagonal Chrome Plate
+      const plateGeo = new THREE.CylinderGeometry(0.65, 0.7, 0.08, 8);
+      const chromeMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.92, roughness: 0.18 });
+      const plate = new THREE.Mesh(plateGeo, chromeMat);
+      plate.castShadow = true;
+      group.add(plate);
+
+      // 4x4 State Matrix of Glowing Glass Cubes (with ShiftRows offsets)
+      const cubeGeo = new THREE.BoxGeometry(0.09, 0.09, 0.09);
       const purpleMat = new THREE.MeshPhysicalMaterial({
         color: 0xc084fc,
         emissive: 0x9333ea,
@@ -745,45 +996,82 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
         roughness: 0.1,
         clearcoat: 1.0,
       });
-      const core = new THREE.Mesh(coreGeo, purpleMat);
-      core.castShadow = true;
-      group.add(core);
 
-      const cage1Geo = new THREE.BoxGeometry(0.7, 0.7, 0.7);
-      const cage1Mat = new THREE.MeshBasicMaterial({ color: 0xa855f7, wireframe: true });
-      const cage1 = new THREE.Mesh(cage1Geo, cage1Mat);
-      group.add(cage1);
+      for (let r = 0; r < 4; r++) {
+        const rowShift = r * 0.04; // ShiftRows visualization offset per row
+        for (let c = 0; c < 4; c++) {
+          const cube = new THREE.Mesh(cubeGeo, purpleMat);
+          cube.position.set(-0.3 + c * 0.2 + rowShift - 0.06, 0.2 + r * 0.14, -0.3 + c * 0.2);
+          cube.castShadow = true;
+          group.add(cube);
+        }
+      }
 
-      const cage2Geo = new THREE.BoxGeometry(0.95, 0.95, 0.95);
-      const cage2Mat = new THREE.MeshBasicMaterial({ color: 0xe9d5ff, wireframe: true });
-      const cage2 = new THREE.Mesh(cage2Geo, cage2Mat);
-      group.add(cage2);
+      // Outer Wireframe Gimbal Ring
+      const ringGeo = new THREE.TorusGeometry(0.68, 0.015, 16, 64);
+      const wireMat = new THREE.MeshBasicMaterial({ color: 0xe9d5ff, wireframe: true });
+      const ring = new THREE.Mesh(ringGeo, wireMat);
+      ring.position.y = 0.4;
+      ring.rotation.x = Math.PI / 4;
+      group.add(ring);
       break;
     }
 
     case 'sha256': {
-      // SHA-256 Hash Chain: High-Poly Connected Geometric Polyhedra
-      const polyGeo = new THREE.IcosahedronGeometry(0.24, 1);
-      const greenMat = new THREE.MeshStandardMaterial({
-        color: 0x22c55e,
-        emissive: 0x15803d,
-        emissiveIntensity: 0.8,
-        roughness: 0.2,
-      });
-      [-0.45, 0, 0.45].forEach((x) => {
-        const poly = new THREE.Mesh(polyGeo, greenMat);
-        poly.position.x = x;
-        poly.castShadow = true;
-        group.add(poly);
+      // Merkle Tree Hash Chain Compression Cascade
+      // Dark Hexagonal Base
+      const baseGeo = new THREE.CylinderGeometry(0.7, 0.75, 0.08, 6);
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.2 });
+      const base = new THREE.Mesh(baseGeo, steelMat);
+      base.castShadow = true;
+      group.add(base);
+
+      // Tier 1: 4 Leaf Nodes (Bottom Row)
+      const leafGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+      const greenMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x15803d, emissiveIntensity: 0.8 });
+      for (let i = 0; i < 4; i++) {
+        const leaf = new THREE.Mesh(leafGeo, greenMat);
+        leaf.position.set(-0.45 + i * 0.3, 0.15, 0.3);
+        leaf.castShadow = true;
+        group.add(leaf);
+      }
+
+      // Tier 2: 2 Branch Nodes (Middle Row)
+      const branchGeo = new THREE.BoxGeometry(0.14, 0.14, 0.14);
+      const brightGreenMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x16a34a, emissiveIntensity: 1.3 });
+      [-0.25, 0.25].forEach((x) => {
+        const branch = new THREE.Mesh(branchGeo, brightGreenMat);
+        branch.position.set(x, 0.45, 0);
+        branch.castShadow = true;
+        group.add(branch);
       });
 
-      const linkGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.45, 32);
-      const linkMat = new THREE.MeshStandardMaterial({ color: 0x86efac, metalness: 0.8 });
-      [-0.225, 0.225].forEach((x) => {
-        const link = new THREE.Mesh(linkGeo, linkMat);
-        link.rotation.z = Math.PI / 2;
-        link.position.x = x;
-        group.add(link);
+      // Tier 3: 1 Master Root Hash Digest (Top Node)
+      const rootGeo = new THREE.IcosahedronGeometry(0.18, 1);
+      const rootMat = new THREE.MeshStandardMaterial({ color: 0x4ade80, emissive: 0x22c55e, emissiveIntensity: 2.2 });
+      const rootNode = new THREE.Mesh(rootGeo, rootMat);
+      rootNode.position.set(0, 0.78, -0.25);
+      rootNode.castShadow = true;
+      group.add(rootNode);
+
+      // Connecting Laser Cables
+      const cableGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.45, 16);
+      const cableMat = new THREE.MeshStandardMaterial({ color: 0x86efac, emissive: 0x4ade80, emissiveIntensity: 1.5 });
+
+      // Leaf to branch connectors
+      [-0.35, -0.15, 0.15, 0.35].forEach((x) => {
+        const cable = new THREE.Mesh(cableGeo, cableMat);
+        cable.position.set(x, 0.3, 0.15);
+        cable.rotation.x = Math.PI / 4;
+        group.add(cable);
+      });
+
+      // Branch to root connectors
+      [-0.12, 0.12].forEach((x) => {
+        const cable = new THREE.Mesh(cableGeo, cableMat);
+        cable.position.set(x, 0.6, -0.12);
+        cable.rotation.x = Math.PI / 4;
+        group.add(cable);
       });
       break;
     }
@@ -798,3 +1086,4 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
     }
   }
 }
+
