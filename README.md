@@ -1,134 +1,140 @@
-# Cryptography
+# 🏛️ Cryptography Museum & Python Core Library
 
-A comprehensive collection of cryptographic algorithms implemented in Python, ranging from historical ciphers to modern encryption methods. Built for learning, experimentation, and educational purposes.
+> An interactive 3D WebGL Cryptography Museum, FastAPI microservice suite, and comprehensive Python cryptographic library—spanning ancient classical ciphers to WWII rotor machines and modern asymmetric encryption.
 
-## Features
+---
 
-- **Classical Ciphers**: Caesar, Vigenère, Affine, Playfair, Substitution
-- **Historical Machines**: Enigma machine emulator, Polybius square, Scytale
-- **Modern Cryptography**: AES, RSA, SHA-256/512, HMAC, Digital Signatures
+## 🌟 Core Pillars
 
-## Installation
+### 1. 🎨 3D WebGL Interactive Museum (`web/src/components/museum`)
+- **Radial Exhibit Pavilions**: Explore three curated wings (Classical, Historical Systems, Modern Cryptography) arranged radially around a central monument atrium.
+- **Custom 3D Display Case Artifacts**: Each cipher features a bespoke, mathematically & historically accurate 3D model (e.g. Caesar Concentric Disk, Lorenz 12-Rotor Teleprinter, Affine Dual-Gear Machine, Playfair Digraph Laser Board, SHA-256 Merkle Cascade).
+- **Smooth OrbitControls & Camera Flights**: Cinematic camera flight transitions between exhibit rooms with auto-lerping interruption on drag.
+- **Interactive Workbench Controls**: Live parameter adjustment panels for encryption, decryption, rotor settings, key matrices, and hash generation.
+- **Top-Side Inspection Macro View**: Close-up inspection mode with curatorial drawer metadata and spatial audio synthesis.
 
-```bash
-git clone https://github.com/yourusername/Cryptography.git
-cd Cryptography
-pip install cryptography  # Required for modern crypto algorithms
-```
+### 2. ⚡ FastAPI REST Microservice (`web/api/main.py`)
+- Real-time endpoints for all 11 ciphers (`/api/caesar`, `/api/affine`, `/api/vigenere`, `/api/playfair`, `/api/polybius`, `/api/scytale`, `/api/enigma`, `/api/lorenz`, `/api/rsa`, `/api/aes`, `/api/sha256`).
+- Automatic OpenAPI documentation (`/api/docs`).
+- Vercel serverless prefix handling (`VercelPathMiddleware`) and strict input length validation.
 
-## Project Structure
+### 3. 🐍 Python Cryptographic Engine (`methods/`)
+- Pure Python implementations built for learning, research, and cryptographic analysis.
+- Includes complex emulators like the **WWII Enigma Machine** (rotors, plugboard, reflector) and the **Lorenz SZ42 Teleprinter Stream Cipher** (12-pinwheel $\chi$, $\mu$, $\psi$ stepping system).
+
+---
+
+## 🏛️ Exhibit Roster & 3D Artifact Metaphors
+
+| Wing | Exhibit | 3D Artifact Representation | Key Cryptographic Concept |
+| :--- | :--- | :--- | :--- |
+| **Classical** | **Caesar Cipher** | Mechanical Concentric Dial Disk | Monoalphabetic letter shift |
+| **Classical** | **Scytale Cipher** | Spartan Helical Parchment Cylinder | Transposition ribbon winding |
+| **Classical** | **Affine Cipher** | Dual-Gear Mathematical Machine | Modular linear transformation $E(x) = (ax + b) \bmod 26$ |
+| **Classical** | **Vigenère Cipher** | Jefferson Disk Multi-Rotor Roll | Polyalphabetic key phrase shift |
+| **Classical** | **Playfair Cipher** | 5x5 Matrix Board with Digraph Laser | Digraph substitution pairs |
+| **Classical** | **Polybius Square** | Greek Watchtower Torch Fortress | Grid coordinate substitution |
+| **Historical** | **Enigma Machine** | 3-Rotor Electromechanical Engine | Stepping mechanical rotors & plugboard |
+| **Historical** | **Lorenz SZ42** | 12-Pinwheel Teleprinter Attachment | 5-bit ITA2 Baudot stream cipher ($\chi$, $\mu$, $\psi$ wheels) |
+| **Modern** | **RSA Vault** | Asymmetric Interlocking Prime Rings & Glass Lock | Public key & prime factorization $n = p \cdot q$ |
+| **Modern** | **AES Vault** | 128-bit State Matrix ShiftRows Core | 4x4 offset glowing glass byte cubes |
+| **Modern** | **SHA-256 Vault** | Merkle Tree Compression Cascade | Tiered cryptographic hash digest |
+
+---
+
+## 📂 Repository Structure
 
 ```
 Cryptography/
-├── methods/                  # All cryptographic implementations
-│   ├── classical/           # Classical substitution & transposition ciphers
-│   │   ├── caesar.py        # Caesar cipher (shift cipher)
-│   │   ├── vigenere.py      # Vigenère polyalphabetic cipher
-│   │   ├── affine.py        # Affine cipher
-│   │   ├── playfair.py      # Playfair digraph cipher
-│   │   └── substitution.py  # Simple substitution cipher
-│   ├── historical/          # Historical encryption machines
-│   │   ├── enigma/          # WWII Enigma machine emulator
-│   │   ├── polybius.py      # Polybius square cipher
-│   │   └── scytale.py       # Spartan scytale cipher
-│   └── modern/              # Modern cryptographic algorithms
-│       ├── aes.py           # AES block cipher
-│       ├── rsa.py           # RSA asymmetric encryption
-│       ├── keypair.py       # RSA keypair generation
-│       ├── symmetric.py     # AES-256 symmetric encryption
-│       ├── hash_functions.py # SHA-256, SHA-512, MD5, BLAKE2
-│       └── digital_signatures.py # HMAC signatures
-├── web/                     # Future web interface (in development)
-└── LICENSE
-```
-# In the future we plan on making this a fulll library that will be used by others. Kindly contribute if possible. It should look something like what is shown below.
-
-
-## Quick Start
-
-### Classical Ciphers
-
-```python
-from methods.classical.caesar import encrypt, decrypt
-
-# Caesar cipher
-encrypted = encrypt("HELLO WORLD", 3)
-print(encrypted)  # "KHOOR ZRUOG"
-
-decrypted = decrypt(encrypted, 3)
-print(decrypted)  # "HELLO WORLD"
+├── methods/                      # Core Python Cryptographic Engine
+│   ├── classical/                # Caesar, Affine, Vigenère, Playfair, Substitution
+│   ├── historical/               # Historical Encryption Machines
+│   │   ├── enigma/               # WWII Enigma Machine emulator (Rotors, Plugboard, Reflector)
+│   │   ├── lorenz/               # WWII Lorenz SZ42 12-wheel teleprinter stream cipher
+│   │   ├── polybius.py           # Polybius square grid cipher
+│   │   └── scytale.py            # Spartan transposition scytale
+│   ├── modern/                   # AES, RSA, Hash Functions, Digital Signatures
+│   └── tests/                    # 231 Pytest backend unit tests
+├── web/                          # Next.js 3D WebGL Frontend & FastAPI Backend
+│   ├── api/                      # FastAPI REST Microservices (`main.py`)
+│   ├── src/
+│   │   ├── app/                  # Next.js App Router & main exhibit page
+│   │   └── components/museum/   # Three.js 3D scene, HUD, Workbench, Spatial Audio
+│   ├── tests/                    # Jest component tests & Playwright E2E tests
+│   └── package.json              # NPM scripts and dependencies
+├── handoff.md                    # Active session handoff & technical state
+├── run_e2e_tests.sh              # Full automated E2E setup and test runner script
+└── pytest.ini                    # Pytest configuration
 ```
 
-### Vigenère Cipher
+---
 
-```python
-from methods.classical.vigenere import encrypt, decrypt
+## 🚀 Quick Start
 
-message = "ATTACKATDAWN"
-key = "LEMON"
+### 🌐 Running Web Application & API (Recommended)
 
-encrypted = encrypt(message, key)
-decrypted = decrypt(encrypted, key)
-```
-
-### Modern Encryption (AES-256)
-
-```python
-from methods.modern.symmetric import encrypt, decrypt, generate_key, generate_iv
-
-key = generate_key()
-iv = generate_iv()
-
-ciphertext = encrypt("Secret message", key, iv)
-plaintext = decrypt(ciphertext, key, iv)
-```
-
-### RSA Key Pair Generation
-
-```python
-from methods.modern.keypair import generate_keypair
-
-public_key, private_key = generate_keypair(key_size=2048)
-print(public_key.decode())
-```
-
-### Hash Functions
-
-```python
-from methods.modern.hash_functions import HashFunction
-
-hasher = HashFunction("sha256", None)
-hash_value = hasher.sha256_hash("Hello World")
-print(hash_value)
-```
-
-## Algorithm Reference
-
-| Category | Algorithm | Security Level | Use Case |
-|----------|-----------|----------------|----------|
-| Classical | Caesar | ⚠️ Very Weak | Educational |
-| Classical | Vigenère | ⚠️ Weak | Educational |
-| Classical | Playfair | ⚠️ Weak | Educational |
-| Historical | Enigma | ⚠️ Broken | Historical study |
-| Modern | AES-256 | ✅ Strong | Data encryption |
-| Modern | RSA-2048 | ✅ Strong | Key exchange |
-| Modern | SHA-256 | ✅ Strong | Integrity verification |
-
-> **⚠️ Security Notice**: Classical and historical ciphers are included for educational purposes only. Do NOT use them for securing sensitive data. Use modern algorithms (AES, RSA, SHA-256) for real-world applications.
-
-## Requirements
-
-- Python 3.8+
-- `cryptography` library (for modern encryption)
+From the `web/` directory, launch both the Next.js 3D WebGL frontend (port 3000) and the FastAPI backend (port 8000) concurrently:
 
 ```bash
-pip install cryptography
+cd web
+
+# Development Mode (Hot-Reloading for Frontend + Backend)
+npm run dev:all
+
+# Production Build & Start
+npm run start:all
 ```
 
-## License
+Then navigate to `http://localhost:3000` in your browser.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+---
 
-## Contributing
+### 🐍 Using Python Core Engine
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+```python
+# 1. Caesar Shift Cipher
+from methods.classical.caesar import encrypt, decrypt
+ciphertext = encrypt("HELLOMUSEUM", shift=5)
+plaintext = decrypt(ciphertext, shift=5)
+
+# 2. Lorenz SZ42 12-Wheel Machine
+from methods.historical.lorenz.lorenz import LorenzMachine
+lorenz = LorenzMachine(wheel_positions=[0]*12)
+cipher_bits = lorenz.encrypt_message("SECRET DATA")
+
+# 3. Modern AES-256 Encryption
+from methods.modern.symmetric import generate_key, generate_iv, encrypt, decrypt
+key, iv = generate_key(), generate_iv()
+ciphertext = encrypt("Confidential Payload", key, iv)
+```
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+This repository maintains test coverage across the Python backend, Next.js frontend, and end-to-end user flows.
+
+```bash
+# 1. Python Unit Tests (231 tests passing)
+pytest
+
+# 2. Next.js Jest Component Tests (30 tests passing)
+cd web && npm test
+
+# 3. Full Automated E2E Test Suite (FastAPI + Next.js + Playwright)
+./run_e2e_tests.sh
+```
+
+---
+
+## 🔒 Security & Quality Compliance
+
+- **Snyk SAST**: Scanned with zero security vulnerabilities.
+- **Fallow Audit**: Clean code with zero dead exports or unused dependencies.
+- **SSRF Prevention**: Next.js rewrite handlers utilize absolute destination URLs without relying on client-supplied headers.
+
+---
+
+## 📜 License
+
+This project is open-source under the [MIT License](LICENSE).
