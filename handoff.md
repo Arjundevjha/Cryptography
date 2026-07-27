@@ -1,29 +1,24 @@
-# Session Handoff: 3D Museum Artifact Redesign & Fix
+# Session Handoff: 3D Camera Navigation & Spatial Proximity Overhaul
 
 ## Executive Summary
-Resolved a duplicate function declaration issue in `ThreeMuseumScene.tsx` where an old version of `buildHighQualityArtifact` was overriding the new models.
+Overhauled the 3D museum camera navigation system, spatial proximity detection, exhibit camera position vectors, and entrance lobby architectural elements:
 
-Now all display case artifacts render their custom 3D WebGL models cleanly:
-1. **Caesar**: Caesar Concentric Dial Disk (tilted plain/cipher alphabet rings with indicator needle).
-2. **Scytale**: Spartan Scytale Rod with continuous 3D helical parchment ribbon.
-3. **Affine**: Dual-Gear Mathematical Machine ($E(x) = (ax+b) \bmod 26$) with mahogany base and brass/copper gear teeth.
-4. **Vigenère**: Jefferson Disk / Vigenère Multi-Rotor Roll with 9 rotating alphabet disks.
-5. **Playfair**: 5x5 Cryptographic Matrix Grid Board with glowing cyan/magenta digraph pointers and laser connection beam.
-6. **Polybius**: Ancient Greek Watchtower Torch Signalling Fortress with dual stone towers and fire braziers.
-7. **RSA**: Asymmetric Prime Factorization Key Vault with interlocking $p$ & $q$ neon rings and translucent glass padlock.
-8. **AES**: 128-bit State Matrix ShiftRows Diffusion Core with 4x4 offset glowing glass cubes.
-9. **SHA-256**: Merkle Tree Hash Chain Compression Cascade with 4 leaf, 2 branch, and 1 root master hash node.
+1. **Fixed Wing Registration**:
+   - Resolved spatial detection blocking when navigating between corridors by updating wing spatial boundary checking (`wing-classical`, `wing-historical`, `wing-modern`, and `atrium`). Walking between corridors now updates HUD headers and navigation state smoothly.
+2. **Eliminated Room Zooming & Ejection Clipping**:
+   - Repositioned exhibit camera vectors across all 10 exhibit rooms in `museumData.ts` to sit safely inside exhibit room interiors facing artifact pedestals (`Z = Z_{\text{room}} + 3.5`).
+   - Expanded room spatial detection boundary boxes (`|X - X_{\text{room}}| <= 6.8` and $Z \in [Z_{\text{room}} - 5.8, Z_{\text{room}} + 6.2]$).
+   - Decoupled manual WASD walking from automated camera lerp transitions using `isSpatialUpdateRef`, eliminating backward snapping, camera zooming, and clipping ejections when stepping into rooms.
+3. **Removed Floating 3/4 Circular Desk**:
+   - Deleted the floating partial cylinder mesh (`Math.PI * 1.5` arc) standing at position $(0, 0.55, 16)$ in the entrance lobby.
+   - Replaced it with an inlaid brass floor medallion at $(0, 0.02, 16)$, opening up the grand entrance foyer view.
 
 ## Active State of Codebase
-- **Modified File**:
-  - `web/src/components/museum/ThreeMuseumScene.tsx`: Removed duplicate function override; active single `buildHighQualityArtifact` definition.
-- **Artifacts**:
-  - `implementation_plan.md`: Approved implementation plan.
-  - `walkthrough.md`: Complete walkthrough and verification log.
+- **Modified Files**:
+  - `web/src/components/museum/museumData.ts`: Updated camera positions, targets, macro positions, and macro targets for all exhibits to interior room coordinates.
+  - `web/src/components/museum/ThreeMuseumScene.tsx`: Added `isSpatialUpdateRef`, replaced 3/4 circle desk with brass floor medallion, updated spatial proximity detection, and decoupled manual walking from automated lerps.
 
 ## Verification & Status
+- **Next.js Production Build**: `npm run build` compiled successfully (0 errors, 4 static pages generated).
 - **Jest Unit Tests**: 30 / 30 passing (`npm test`).
-- **Pytest**: 231 / 231 passing (`pytest`).
-- **Fallow Audit**: No dead code or unused exports.
-- **Snyk Code Scan**: Passed with 0 security issues.
-- **Git Status**: Clean single file change in `ThreeMuseumScene.tsx`.
+- **Snyk Code Scan**: Passed with 0 security issues (`snyk_code_scan`).

@@ -39,6 +39,9 @@
 - **Radial Spatial Layout**: Space 3D exhibit rooms radially around origin `(0, 0, 0)` with a radius of at least 25-30 units. This prevents adjacent room geometry and backwalls from clipping into each other.
 - **UI & 3D Canvas Z-Indexing**: Render the 3D WebGL canvas as a full-screen background (`z-index: 0`). Wrap HUD overlays in `pointer-events-none` containers and add `pointer-events-auto` strictly to interactive controls to ensure 3D mouse drag events are never blocked.
 - **Artifact Elevation**: Offset physical 3D artifact geometry origins vertically (`y >= 1.5`) relative to pedestals (`y = 0.6`) to prevent Z-fighting and geometry clipping.
+- **Interior Camera Vector Alignment**: Ensure exhibit `cameraPosition` vectors sit strictly inside room spatial boundary boxes (e.g. $Z = Z_{\text{room}} + 3.5$) facing the artifact pedestal. Never place camera selection vectors on or outside threshold boundaries ($Z \ge Z_{\text{room}} + 5.5$) to prevent automatic proximity ejection loops.
+- **Decouple WASD Walking from Camera Lerping**: Track spatial room/wing updates with `isSpatialUpdateRef`. When manual WASD walking changes zones, update active state without triggering `isAnimating = true`. Reserve automated camera lerps exclusively for explicit UI button or 3D raycast click events.
+- **Architectural Floor Medallions**: Use flat inlaid floor geometries (`RingGeometry` + `CircleGeometry` at $Y = 0.02$) rather than floating partial cylinder arcs (`thetaLength < 2*PI`) to prevent unwanted 3/4 circular obstructions in open foyers.
 
 ## 5. UI/UX & Techstack Privacy Standards
 - **No Techstack Exposure**: Never display internal framework, backend, or engine names (e.g. "FastAPI", "Python Engine", "Uvicorn") in user-facing UI labels, headers, or subtext.
