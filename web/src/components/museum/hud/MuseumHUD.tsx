@@ -75,6 +75,8 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         {/* Toggle 2D Mini-Map */}
         <button
           onClick={() => setShowMap(!showMap)}
+          aria-expanded={showMap}
+          aria-label="Toggle 2D museum floorplan map"
           className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all ${
             showMap ? 'bg-amber-400 text-stone-950' : 'bg-stone-900 hover:bg-stone-800 text-amber-400 border border-amber-500/30'
           }`}
@@ -89,6 +91,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
           href="https://github.com/Arjundevjha/Cryptography"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="View repository on GitHub"
           className="px-3.5 py-2.5 rounded-2xl bg-stone-950/85 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-mono flex items-center gap-2 shadow-2xl transition-all"
         >
           <Github className="w-4 h-4 text-stone-300" />
@@ -110,7 +113,8 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
               </div>
               <button
                 onClick={() => setShowMap(false)}
-                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 transition-colors"
+                aria-label="Close museum floorplan map"
+                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
