@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from api.main import app
 import unittest.mock
@@ -31,9 +32,9 @@ def test_affine_decrypt_success():
     assert response.status_code == 200
     assert response.json() == {"plaintext": "attack"}
 
-def test_affine_encrypt_non_coprime():
-    # a_key = 13 (gcd(13, 26) = 13 != 1)
-    response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": 13, "b_key": 5})
+@pytest.mark.parametrize("a_key", [0, 2, 4, 13, 26, 39, 52, -2, -13])
+def test_affine_encrypt_non_coprime(a_key):
+    response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": a_key, "b_key": 5})
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
@@ -43,8 +44,9 @@ def test_affine_encrypt_input_too_long():
     assert response.status_code == 400
     assert "exceeds" in response.json()["detail"].lower()
 
-def test_affine_decrypt_non_coprime():
-    response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": 13, "b_key": 5})
+@pytest.mark.parametrize("a_key", [0, 2, 4, 13, 26, 39, 52, -2, -13])
+def test_affine_decrypt_non_coprime(a_key):
+    response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": a_key, "b_key": 5})
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
@@ -507,6 +509,94 @@ def test_lorenz_api_custom_positions():
     dec = client.post("/api/lorenz/decrypt", json={"ciphertext": ciphertext, "positions": positions})
     assert dec.status_code == 200
     assert dec.json()["plaintext"] == "TOPSECRET"
+
+
+def test_lorenz_api_invalid_positions():
+    positions = [1, 2]  # Should be 12 items
+    enc = client.post("/api/lorenz/encrypt", json={"plaintext": "TOPSECRET", "positions": positions})
+    assert enc.status_code == 400
+    assert "encryption failed" in enc.json()["detail"].lower()
+
+    dec = client.post("/api/lorenz/decrypt", json={"ciphertext": "TOPSECRET", "positions": positions})
+    assert dec.status_code == 400
+    assert "decryption failed" in dec.json()["detail"].lower()
+
+
+def test_lorenz_api_invalid_pins():
+    # Chi pins requires 5 arrays
+    chi_pins = [[1, 0] * 20]
+    enc = client.post("/api/lorenz/encrypt", json={"plaintext": "TEST", "chi_pins": chi_pins})
+    assert enc.status_code == 400
+    assert "encryption failed" in enc.json()["detail"].lower()
+
+
+def test_lorenz_api_value_error_exception():
+    with unittest.mock.patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=ValueError("Test Lorenz ValueError")):
+        resp = client.post("/api/lorenz/encrypt", json={"plaintext": "HELLO"})
+        assert resp.status_code == 400
+        assert "encryption failed: test lorenz valueerror" in resp.json()["detail"].lower()
+
+
+def test_enigma_api_value_error_exception():
+    with unittest.mock.patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=ValueError("Test Enigma ValueError")):
+        resp = client.post("/api/enigma/encipher", json={
+            "plaintext": "HELLO",
+            "rotors": ["I", "II", "III"],
+            "positions": ["A", "A", "A"],
+            "rings": ["A", "A", "A"],
+            "plugboard": []
+        })
+        assert resp.status_code == 400
+        assert "encryption failed: test enigma valueerror" in resp.json()["detail"].lower()
+
+
+# ==========================================
+# CORS ORIGIN VALIDATION TESTS
+# ==========================================
+
+from api.main import is_valid_origin, parse_allowed_origins, DEFAULT_ALLOWED_ORIGINS
+
+def test_is_valid_origin():
+    # Valid origins
+    assert is_valid_origin("http://localhost:3000") is True
+    assert is_valid_origin("http://localhost:3000/") is True
+    assert is_valid_origin("https://example.com") is True
+    assert is_valid_origin("https://sub.domain.example.com:8443") is True
+
+    # Invalid origins
+    assert is_valid_origin("*") is False
+    assert is_valid_origin("http://*") is False
+    assert is_valid_origin("https://*.example.com") is False
+    assert is_valid_origin("ftp://example.com") is False
+    assert is_valid_origin("javascript:alert(1)") is False
+    assert is_valid_origin("http://example.com/path") is False
+    assert is_valid_origin("http://example.com?query=1") is False
+    assert is_valid_origin("http://example.com#fragment") is False
+    assert is_valid_origin("") is False
+    assert is_valid_origin("   ") is False
+    assert is_valid_origin(None) is False
+    assert is_valid_origin(123) is False
+
+def test_parse_allowed_origins():
+    # Unset or empty env string falls back to default allowed origins
+    assert parse_allowed_origins(None) == DEFAULT_ALLOWED_ORIGINS
+    assert parse_allowed_origins("") == DEFAULT_ALLOWED_ORIGINS
+    assert parse_allowed_origins("   ") == DEFAULT_ALLOWED_ORIGINS
+
+    # Valid origins list
+    env_input = "http://localhost:3000, https://app.example.com"
+    assert parse_allowed_origins(env_input) == ["http://localhost:3000", "https://app.example.com"]
+
+    # Trailing slashes stripped and deduplicated
+    env_input = "http://localhost:3000/, http://localhost:3000"
+    assert parse_allowed_origins(env_input) == ["http://localhost:3000"]
+
+    # Filtering out wildcards, invalid schemes, and paths
+    env_input = "*, http://*, https://valid.org, ftp://bad.com, https://domain.com/path"
+    assert parse_allowed_origins(env_input) == ["https://valid.org"]
+
+    # All invalid inputs fall back to default allowed origins
+    assert parse_allowed_origins("*, http://*, ftp://bad.org") == DEFAULT_ALLOWED_ORIGINS
 
 
 

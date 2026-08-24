@@ -79,6 +79,13 @@ describe('Polybius Helper Functions', () => {
     expect(getPolybiusCoords('Z', '')).toEqual({ row: 5, col: 5 });
     expect(getPolybiusCoords('J', '')).toEqual({ row: 2, col: 4 }); // 'J' maps to 'I'
   });
+
+  it('should return null for characters not present in key grid', () => {
+    expect(getPolybiusCoords('1', '')).toBeNull();
+    expect(getPolybiusCoords('!', '')).toBeNull();
+    expect(getPolybiusCoords(' ', '')).toBeNull();
+    expect(getPolybiusCoords('z', 'abcdefghiklmnopqrstuvwxy')).toBeNull(); // custom 24-letter key missing 'z'
+  });
 });
 
 describe('Enigma Step Rotors Function', () => {

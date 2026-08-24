@@ -19,13 +19,13 @@ def encrypt(plaintext: str, diameter: int) -> str:
     padded_text = plaintext + " " * padding_len
 
     num_rows = len(padded_text) // diameter
-    ciphertext = ""
+    ciphertext_chars = []
 
     for col in range(diameter):
         for row in range(num_rows):
-            ciphertext += padded_text[row * diameter + col]
+            ciphertext_chars.append(padded_text[row * diameter + col])
 
-    return ciphertext
+    return "".join(ciphertext_chars)
 
 def decrypt(ciphertext: str, diameter: int) -> str:
     """Decrypt ciphertext using the Scytale cipher.

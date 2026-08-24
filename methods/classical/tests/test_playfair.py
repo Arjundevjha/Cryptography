@@ -155,6 +155,34 @@ def test_decrypt_ignores_invalid_length_pairs():
     res = decrypt("hel", key)
     assert len(res) == 2 # Only processed the first pair
 
+def test_decrypt_odd_length_ciphertext():
+    """Test decrypt behavior with an odd-length ciphertext input."""
+    # "la" decrypts to "pl", and trailing "f" is odd length (length 1 pair) and skipped
+    assert decrypt("laf", "playfair example") == "pl"
+    assert decrypt("a", "playfair example") == ""
+
+def test_decrypt_non_alphabetic_and_whitespace():
+    """Test decrypt strips spaces, numbers, and special characters from ciphertext."""
+    # "l a! 123 f p" -> cleans to "lafp" -> decrypts to "plyf"
+    assert decrypt("l a! 123 f p", "playfair example") == "plyf"
+
+def test_decrypt_uppercase_and_j_replacement():
+    """Test decrypt converts uppercase characters to lowercase and 'J' to 'I'."""
+    # "LA FJ" -> cleans to "lafi" -> 'fi' in "playfair example" grid (0,4) & (1,0) rectangle -> (0,0) 'p' & (1,4) 'm'
+    # "la" -> "pl", "fi" -> "pm"
+    assert decrypt("LA FJ", "playfair example") == "plpm"
+
+def test_decrypt_empty_string():
+    """Test decrypting an empty string or string with no valid alpha characters."""
+    assert decrypt("", "playfair example") == ""
+    assert decrypt("   !@#$% 123 ", "playfair example") == ""
+
+def test_decrypt_complex_key():
+    """Test decryption when key contains spaces, uppercase letters, duplicate characters, and 'j'."""
+    key = "PLAYFAIR Secret JUNGLE Key 123!"
+    ciphertext = encrypt("hello world", key)
+    assert decrypt(ciphertext, key) == "helxloworldx"
+
 def test_pick_keys():
     """Test random key generation."""
     key1 = pick_keys()

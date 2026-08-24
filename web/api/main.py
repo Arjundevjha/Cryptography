@@ -41,14 +41,52 @@ class VercelPathMiddleware:
 app.add_middleware(VercelPathMiddleware)
 
 # CORS Middleware
-allowed_origins = os.getenv(
-    "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
-).split(",")
+from urllib.parse import urlparse
+
+DEFAULT_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+def is_valid_origin(origin: str) -> bool:
+    """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
+    if not isinstance(origin, str):
+        return False
+    origin = origin.strip()
+    if not origin or origin == "*":
+        return False
+    if origin.endswith("/"):
+        origin = origin[:-1]
+    try:
+        parsed = urlparse(origin)
+        if parsed.scheme not in ("http", "https"):
+            return False
+        if not parsed.netloc or "*" in parsed.netloc:
+            return False
+        if parsed.path or parsed.params or parsed.query or parsed.fragment:
+            return False
+        if any(c in parsed.netloc for c in (" ", "\t", "\r", "\n", "<", ">", '"', "'")):
+            return False
+        return True
+    except Exception:
+        return False
+
+def parse_allowed_origins(env_str: str | None) -> list[str]:
+    """Parses and validates CORS_ALLOWED_ORIGINS from environment string."""
+    if not env_str:
+        return DEFAULT_ALLOWED_ORIGINS
+    origins: list[str] = []
+    for item in env_str.split(","):
+        item = item.strip()
+        if item.endswith("/"):
+            item = item[:-1]
+        if is_valid_origin(item):
+            if item not in origins:
+                origins.append(item)
+    return origins if origins else DEFAULT_ALLOWED_ORIGINS
+
+allowed_origins = parse_allowed_origins(os.getenv("CORS_ALLOWED_ORIGINS"))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in allowed_origins if origin.strip()],
+    allow_origins=allowed_origins,
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Accept", "Origin", "X-Requested-With"],
@@ -457,66 +495,74 @@ def validate_enigma_plugboard(plugboard: list[str]) -> None:
 
 @app.post("/api/enigma/encipher")
 def enigma_encipher(data: EnigmaEncipherInput):
-    validate_enigma_rotors(data.rotors)
-    validate_enigma_positions(data.positions)
-    parsed_rings = parse_and_validate_enigma_rings(data.rings)
-    validate_enigma_plugboard(data.plugboard)
+    try:
+        validate_enigma_rotors(data.rotors)
+        validate_enigma_positions(data.positions)
+        parsed_rings = parse_and_validate_enigma_rings(data.rings)
+        validate_enigma_plugboard(data.plugboard)
 
-    # Instantiate Enigma machine components
-    from methods.historical.enigma.rotor import Rotor
-    from methods.historical.enigma.plugboard import Plugboard
-    from methods.historical.enigma.reflector import Reflector
-    from methods.historical.enigma.keyboard import Keyboard
-    from methods.historical.enigma.enigma import Enigma
-    
-    ROTOR_MAP = {
-        "I": ("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"),
-        "II": ("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W"),
-        "III": ("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"),
-        "IV": ("ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"),
-        "V": ("VZBRGITYUPSDNHLXAWMJQOFECK", "Z"),
-        "VI": ("JPGVOUMFYQBENHZRDKASXLICTW", "M"),
-        "VII": ("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z"),
-        "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
-    }
-    
-    REFLECTOR_MAP = {
-        "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
-        "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
-        "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
-        "B_THIN": "ENKQAUYWJICOPBLMDXZVFTHRGS",
-        "C_THIN": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",
-    }
-    
-    reflector_key = data.reflector.upper() if data.reflector else "B"
-    if reflector_key not in REFLECTOR_MAP:
-        raise HTTPException(status_code=400, detail=f"Invalid reflector '{data.reflector}'.")
+        # Instantiate Enigma machine components
+        from methods.historical.enigma.rotor import Rotor
+        from methods.historical.enigma.plugboard import Plugboard
+        from methods.historical.enigma.reflector import Reflector
+        from methods.historical.enigma.keyboard import Keyboard
+        from methods.historical.enigma.enigma import Enigma
 
-    reflector = Reflector(REFLECTOR_MAP[reflector_key])
-    
-    rotors_list = []
-    for r_name in data.rotors:
-        wiring, notch = ROTOR_MAP[r_name]
-        rotors_list.append(Rotor(wiring, notch))
+        ROTOR_MAP = {
+            "I": ("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"),
+            "II": ("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W"),
+            "III": ("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"),
+            "IV": ("ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"),
+            "V": ("VZBRGITYUPSDNHLXAWMJQOFECK", "Z"),
+            "VI": ("JPGVOUMFYQBENHZRDKASXLICTW", "M"),
+            "VII": ("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z"),
+            "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
+        }
+
+        REFLECTOR_MAP = {
+            "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
+            "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+            "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+            "B_THIN": "ENKQAUYWJICOPBLMDXZVFTHRGS",
+            "C_THIN": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",
+        }
+
+        reflector_key = data.reflector.upper() if data.reflector else "B"
+        if reflector_key not in REFLECTOR_MAP:
+            raise HTTPException(status_code=400, detail=f"Invalid reflector '{data.reflector}'.")
+
+        reflector = Reflector(REFLECTOR_MAP[reflector_key])
         
-    plugboard = Plugboard([swap.upper() for swap in data.plugboard])
-    keyboard = Keyboard()
-    
-    enigma_machine = Enigma(reflector, rotors_list, plugboard, keyboard)
-    enigma_machine.set_rings(parsed_rings)
-    
-    initial_key = "".join([pos.upper() for pos in data.positions])
-    enigma_machine.set_key(initial_key)
-    
-    ciphertext_chars = []
-    for char in data.plaintext:
-        if char.isalpha():
-            ciphertext_chars.append(enigma_machine.encipher(char.upper()))
-        else:
-            ciphertext_chars.append(char)
+        rotors_list = []
+        for r_name in data.rotors:
+            wiring, notch = ROTOR_MAP[r_name]
+            rotors_list.append(Rotor(wiring, notch))
             
-    ciphertext = "".join(ciphertext_chars)
-    return {"ciphertext": ciphertext}
+        plugboard = Plugboard([swap.upper() for swap in data.plugboard])
+        keyboard = Keyboard()
+
+        enigma_machine = Enigma(reflector, rotors_list, plugboard, keyboard)
+        enigma_machine.set_rings(parsed_rings)
+
+        initial_key = "".join([pos.upper() for pos in data.positions])
+        enigma_machine.set_key(initial_key)
+
+        ciphertext_chars = []
+        for char in data.plaintext:
+            if char.isalpha():
+                ciphertext_chars.append(enigma_machine.encipher(char.upper()))
+            else:
+                ciphertext_chars.append(char)
+
+        ciphertext = "".join(ciphertext_chars)
+        return {"ciphertext": ciphertext}
+    except HTTPException:
+        raise
+    except (ValueError, KeyError, TypeError, IndexError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Encryption failed: {str(e)}"
+        )
 
 
 @app.post("/api/lorenz/encrypt")
@@ -536,10 +582,10 @@ def lorenz_encrypt(data: LorenzEncryptInput):
         )
         ciphertext = machine.encrypt_text(data.plaintext)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail=f"Encryption failed: {str(e)}"
         )
 
 
@@ -560,10 +606,10 @@ def lorenz_decrypt(data: LorenzDecryptInput):
         )
         plaintext = machine.decrypt_text(data.ciphertext)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail=f"Decryption failed: {str(e)}"
         )
 
 

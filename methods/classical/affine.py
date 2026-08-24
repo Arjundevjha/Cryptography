@@ -33,16 +33,17 @@ def encrypt(plaintext: str, a_key: int, b_key: int) -> str:
     Non-alphabetic characters are preserved.
     """
     _check_coprime(a_key)
-    ciphertext = ""
+    ord_a = ord('a')
+    ciphertext = []
     for char in plaintext:
         if char.isalpha():
             lower_char = char.lower()
-            char_index = ord(lower_char) - ord('a')
+            char_index = ord(lower_char) - ord_a
             encrypted_char_index = (a_key * char_index + b_key) % 26
-            ciphertext += chr(encrypted_char_index + ord('a'))
+            ciphertext.append(chr(encrypted_char_index + ord_a))
         else:
-            ciphertext += char
-    return ciphertext
+            ciphertext.append(char)
+    return "".join(ciphertext)
 
 def decrypt(ciphertext: str, a_key: int, b_key: int) -> str:
     """Decrypt ciphertext using Affine cipher.
@@ -51,17 +52,18 @@ def decrypt(ciphertext: str, a_key: int, b_key: int) -> str:
     Non-alphabetic characters are preserved.
     """
     _check_coprime(a_key)
-    decrypted_text = ""
+    ord_a = ord('a')
+    a_inverse = pow(a_key, -1, 26)
+    decrypted_text = []
     for char in ciphertext:
         if char.isalpha():
             lower_char = char.lower()
-            char_index = ord(lower_char) - ord('a')
-            a_inverse = pow(a_key, -1, 26)
+            char_index = ord(lower_char) - ord_a
             decrypted_char_index = (a_inverse * (char_index - b_key)) % 26
-            decrypted_text += chr(decrypted_char_index + ord('a'))
+            decrypted_text.append(chr(decrypted_char_index + ord_a))
         else:
-            decrypted_text += char
-    return decrypted_text
+            decrypted_text.append(char)
+    return "".join(decrypted_text)
 
 def main():
     """Run an interactive test of the Affine cipher."""
