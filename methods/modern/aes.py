@@ -4,7 +4,6 @@ Reuses the AES block cipher from symmetric.py.
 No external libraries are used.
 """
 
-import os
 import secrets
 
 try:
