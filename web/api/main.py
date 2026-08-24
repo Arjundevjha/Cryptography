@@ -718,7 +718,6 @@ def rsa_encrypt(data: RsaEncryptInput):
         ciphertext_bytes = rsa.encrypt(data.plaintext, pub_key_bytes)
         return {"ciphertext": ciphertext_bytes.hex()}
     except Exception as e:
-        traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
 
