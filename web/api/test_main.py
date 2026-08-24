@@ -410,7 +410,7 @@ def test_rsa_decrypt_exception():
     assert response.status_code == 400
     assert response.json()["detail"] == "Test mock exception"
 
-def test_aes_decrypt_exception():
+def test_aes_decrypt_exception(caplog):
     payload = {
         "ciphertext": "00112233",
         "key": "1234567890123456",
@@ -418,9 +418,24 @@ def test_aes_decrypt_exception():
         "key_format": "text"
     }
     with unittest.mock.patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")):
-        response = client.post("/api/aes/decrypt", json=payload)
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/aes/decrypt", json=payload)
     assert response.status_code == 400
     assert "Mocked decryption error" in response.json()["detail"]
+    assert "AES decryption error" in caplog.text
+
+def test_aes_decrypt_invalid_hex_logging(caplog):
+    payload = {
+        "ciphertext": "InvalidHex!",
+        "key": "1234567890123456",
+        "nonce": "aabbccdd",
+        "key_format": "text"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
+    assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
 
 def test_aes_encrypt_exception():
     payload = {
