@@ -19,7 +19,8 @@ export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDra
         </div>
         <button
           onClick={onClose}
-          className="p-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-400 hover:text-stone-100 hover:bg-stone-800 transition-all"
+          aria-label="Close artifact details"
+          className="p-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-400 hover:text-stone-100 hover:bg-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
         >
           <X className="w-5 h-5" />
         </button>
