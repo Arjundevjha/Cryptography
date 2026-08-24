@@ -1,6 +1,6 @@
 """Vigenere cipher implementation."""
 
-import random
+import secrets
 import string
 
 MODE_ENCRYPT = 'encrypt'
@@ -36,7 +36,7 @@ def _encrypt_decrypt_char(text_char: str, key_char: str, mode: str = MODE_ENCRYP
 
 def pick_keys() -> str:
     """Generate a random 5-letter key."""
-    return ''.join(random.choices(string.ascii_lowercase, k=5))
+    return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(5))
 
 def encrypt(plaintext: str, key: str) -> str:
     """Encrypt plaintext using Vigenère cipher.
