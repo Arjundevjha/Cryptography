@@ -9,10 +9,12 @@ from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+import logging
 from pydantic import BaseModel, Field
 import math
-import traceback
 from methods.classical import affine
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Cryptography Museum API",
@@ -652,7 +654,7 @@ async def aes_decrypt_endpoint(data: AesDecryptInput):
         ciphertext_bytes = bytes.fromhex(data.ciphertext)
         nonce_bytes = bytes.fromhex(data.nonce)
     except ValueError as ve:
-        traceback.print_exc()
+        logger.warning("Invalid hex string provided for ciphertext or nonce")
         raise HTTPException(status_code=400, detail="Ciphertext and nonce must be valid hex strings")
         
     try:
@@ -660,7 +662,7 @@ async def aes_decrypt_endpoint(data: AesDecryptInput):
         plaintext = aes.decrypt(ciphertext_bytes, key_bytes, nonce_bytes)
         return {"plaintext": plaintext}
     except Exception as e:
-        traceback.print_exc()
+        logger.error("AES decryption error: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -718,7 +720,7 @@ def rsa_encrypt(data: RsaEncryptInput):
         ciphertext_bytes = rsa.encrypt(data.plaintext, pub_key_bytes)
         return {"ciphertext": ciphertext_bytes.hex()}
     except Exception as e:
-        traceback.print_exc()
+        logger.error("RSA encryption error: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -731,7 +733,7 @@ def rsa_decrypt(data: RsaDecryptInput):
         plaintext = rsa.decrypt(ciphertext_bytes, priv_key_bytes)
         return {"plaintext": plaintext}
     except Exception as e:
-        traceback.print_exc()
+        logger.error("RSA decryption error: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
