@@ -39,6 +39,19 @@ def test_negative_shift():
     assert encrypt("HELLO", -5) == "CZGGJ"
     assert decrypt("CZGGJ", -5) == "HELLO"
 
+def test_decrypt_negative_shift_boundary():
+    """Test boundary cases for caesar decrypt with negative and multiple-of-26 shifts."""
+    # Negative shift boundary cases: -1, -25, -26, -27, -52
+    assert decrypt("HELLO", -1) == "IFMMP"
+    assert decrypt("HELLO", -25) == "GDKKN"
+    assert decrypt("HELLO", -26) == "HELLO"
+    assert decrypt("HELLO", -27) == "IFMMP"
+    assert decrypt("HELLO", -52) == "HELLO"
+
+    # Verify equivalence of decrypt(text, -shift) and encrypt(text, shift) across negative boundaries
+    for shift in [-1, -25, -26, -27, -50, -100]:
+        assert decrypt("HELLO", shift) == encrypt("HELLO", -shift)
+
 def test_large_shift():
     """Test handling of shifts larger than 26."""
     # A shift of 1000 is equivalent to 1000 % 26 = 12

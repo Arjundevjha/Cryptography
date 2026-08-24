@@ -28,6 +28,10 @@ def _create_grid(key: str) -> list[list[str]]:
     # Create 5x5 grid
     return [grid_chars[i:i+5] for i in range(0, 25, 5)]
 
+def _build_pos_map(grid: list[list[str]]) -> dict[str, tuple[int, int]]:
+    """Build a mapping of character to (row, col) position in the grid."""
+    return {grid[r][c]: (r, c) for r in range(5) for c in range(5)}
+
 def _find_position(grid: list[list[str]], char: str) -> tuple[int, int]:
     """Find row and column of a character in the grid."""
     for r in range(5):
@@ -65,12 +69,16 @@ def pick_keys() -> str:
 def encrypt(plaintext: str, key: str) -> str:
     """Encrypt plaintext using Playfair cipher."""
     grid = _create_grid(key)
+    pos_map = _build_pos_map(grid)
     digraphs = _prepare_text(plaintext)
     ciphertext_chars = []
 
     for pair in digraphs:
-        r1, c1 = _find_position(grid, pair[0])
-        r2, c2 = _find_position(grid, pair[1])
+        try:
+            r1, c1 = pos_map[pair[0]]
+            r2, c2 = pos_map[pair[1]]
+        except KeyError as e:
+            raise ValueError(f"Character {e.args[0]} not found in grid")
 
         if r1 == r2:
             # Same row: shift right
@@ -90,6 +98,7 @@ def encrypt(plaintext: str, key: str) -> str:
 def decrypt(ciphertext: str, key: str) -> str:
     """Decrypt ciphertext using Playfair cipher."""
     grid = _create_grid(key)
+    pos_map = _build_pos_map(grid)
     # Ciphertext is assumed to be valid pairs, but clean it just in case
     ciphertext = ciphertext.lower().replace("j", "i")
     ciphertext = "".join([c for c in ciphertext if c in ALPHABET])
@@ -101,8 +110,11 @@ def decrypt(ciphertext: str, key: str) -> str:
         if len(pair) != DIGRAPH_LEN:
             continue
 
-        r1, c1 = _find_position(grid, pair[0])
-        r2, c2 = _find_position(grid, pair[1])
+        try:
+            r1, c1 = pos_map[pair[0]]
+            r2, c2 = pos_map[pair[1]]
+        except KeyError as e:
+            raise ValueError(f"Character {e.args[0]} not found in grid")
 
         if r1 == r2:
             # Same row: shift left
