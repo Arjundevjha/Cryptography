@@ -39,14 +39,52 @@ class VercelPathMiddleware:
 app.add_middleware(VercelPathMiddleware)
 
 # CORS Middleware
-allowed_origins = os.getenv(
-    "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
-).split(",")
+from urllib.parse import urlparse
+
+DEFAULT_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+def is_valid_origin(origin: str) -> bool:
+    """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
+    if not isinstance(origin, str):
+        return False
+    origin = origin.strip()
+    if not origin or origin == "*":
+        return False
+    if origin.endswith("/"):
+        origin = origin[:-1]
+    try:
+        parsed = urlparse(origin)
+        if parsed.scheme not in ("http", "https"):
+            return False
+        if not parsed.netloc or "*" in parsed.netloc:
+            return False
+        if parsed.path or parsed.params or parsed.query or parsed.fragment:
+            return False
+        if any(c in parsed.netloc for c in (" ", "\t", "\r", "\n", "<", ">", '"', "'")):
+            return False
+        return True
+    except Exception:
+        return False
+
+def parse_allowed_origins(env_str: str | None) -> list[str]:
+    """Parses and validates CORS_ALLOWED_ORIGINS from environment string."""
+    if not env_str:
+        return DEFAULT_ALLOWED_ORIGINS
+    origins: list[str] = []
+    for item in env_str.split(","):
+        item = item.strip()
+        if item.endswith("/"):
+            item = item[:-1]
+        if is_valid_origin(item):
+            if item not in origins:
+                origins.append(item)
+    return origins if origins else DEFAULT_ALLOWED_ORIGINS
+
+allowed_origins = parse_allowed_origins(os.getenv("CORS_ALLOWED_ORIGINS"))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in allowed_origins if origin.strip()],
+    allow_origins=allowed_origins,
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Accept", "Origin", "X-Requested-With"],
