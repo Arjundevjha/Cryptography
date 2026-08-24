@@ -56,6 +56,36 @@ def test_decrypt():
     # With numbers and special characters
     assert decrypt("RIJVS, UYVJN 123!", "KEY") == "HELLO, WORLD 123!"
 
+def test_decrypt_unmatching_length_and_edge_cases():
+
+    # Key longer than ciphertext
+    # decrypt("HI", "VERYLONGKEY"):
+    # H (index 7) shifted back by V (index 21) => (7 - 21 + 26) % 26 = 12 ('M')
+    # I (index 8) shifted back by E (index 4)  => (8 - 4 + 26) % 26 = 4 ('E')
+    assert decrypt("HI", "VERYLONGKEY") == "ME"
+    # Round-trip check:
+    assert decrypt(encrypt("HELLO", "VERYLONGKEY"), "VERYLONGKEY") == "HELLO"
+
+    # Key shorter than ciphertext (repeating key)
+    assert decrypt("LXFOPVEFRNHR", "LEM") == "ATTDLJTBFCDF"
+    assert decrypt(encrypt("ATTACKATDAWN", "LEM"), "LEM") == "ATTACKATDAWN"
+
+    # Single character ciphertext and single character key
+    assert decrypt("B", "K") == "R"
+
+    # Single character ciphertext with multi-character key
+    assert decrypt("B", "KEY") == "R"
+
+    # Empty ciphertext
+    assert decrypt("", "KEY") == ""
+
+    # Spaces-only string
+    assert decrypt("   ", "KEY") == "   "
+
+    # Non-alphabetic / mixed characters with mismatched length key
+    ciphertext = encrypt("HELLO, WORLD 123!", "SUPERLONGKEY")
+    assert decrypt(ciphertext, "SUPERLONGKEY") == "HELLO, WORLD 123!"
+
 def test_encrypt_decrypt_roundtrip():
     plaintext = "The quick brown fox jumps over 13 lazy dogs!"
     key = "SECRET"
