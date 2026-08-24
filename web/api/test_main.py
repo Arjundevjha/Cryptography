@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from api.main import app
 import unittest.mock
@@ -31,9 +32,9 @@ def test_affine_decrypt_success():
     assert response.status_code == 200
     assert response.json() == {"plaintext": "attack"}
 
-def test_affine_encrypt_non_coprime():
-    # a_key = 13 (gcd(13, 26) = 13 != 1)
-    response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": 13, "b_key": 5})
+@pytest.mark.parametrize("a_key", [0, 2, 4, 13, 26, 39, 52, -2, -13])
+def test_affine_encrypt_non_coprime(a_key):
+    response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": a_key, "b_key": 5})
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
@@ -43,8 +44,9 @@ def test_affine_encrypt_input_too_long():
     assert response.status_code == 400
     assert "exceeds" in response.json()["detail"].lower()
 
-def test_affine_decrypt_non_coprime():
-    response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": 13, "b_key": 5})
+@pytest.mark.parametrize("a_key", [0, 2, 4, 13, 26, 39, 52, -2, -13])
+def test_affine_decrypt_non_coprime(a_key):
+    response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": a_key, "b_key": 5})
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
