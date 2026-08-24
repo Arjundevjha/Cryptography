@@ -5,7 +5,6 @@ using manual AES-256 in CBC mode with PKCS7 padding.
 No external libraries are used.
 """
 
-import os
 import secrets
 
 # AES Constants

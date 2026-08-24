@@ -3,7 +3,6 @@
 No external libraries or standard hashlib/hmac libraries are used.
 """
 
-import os
 import secrets
 try:
     from .helpers import hmac_sha256
