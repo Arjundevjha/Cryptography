@@ -670,7 +670,7 @@ def parse_aes_key(key: str, key_format: str = "text") -> bytes:
 
 
 @app.post("/api/aes/encrypt")
-async def aes_encrypt(data: AesEncryptInput):
+def aes_encrypt(data: AesEncryptInput):
     # Parse plaintext
     plaintext = data.plaintext
     if data.plaintext_format == "hex":
@@ -693,7 +693,7 @@ async def aes_encrypt(data: AesEncryptInput):
 
 
 @app.post("/api/aes/decrypt")
-async def aes_decrypt_endpoint(data: AesDecryptInput):
+def aes_decrypt_endpoint(data: AesDecryptInput):
     key_bytes = parse_aes_key(data.key, data.key_format)
     
     try:
@@ -784,7 +784,7 @@ def rsa_decrypt(data: RsaDecryptInput):
 
 
 @app.post("/api/sha256")
-async def sha256_endpoint(data: Sha256Input):
+def sha256_endpoint(data: Sha256Input):
     try:
         from methods.modern.hash_functions import sha256
         hash_val = sha256(data.plaintext)
