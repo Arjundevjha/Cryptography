@@ -53,22 +53,31 @@ def test_decrypt_empty_string():
     """Test decryption with an empty string."""
     assert decrypt("", 5, 8) == ""
 
-def test_check_coprime_valid():
-    # Should not raise exception
-    _check_coprime(5)
+@pytest.mark.parametrize("a_key", [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25, 27, 29, 31, -1, -3, -5])
+def test_check_coprime_valid(a_key):
+    """Test that valid coprime keys do not raise an exception."""
+    _check_coprime(a_key)
 
-def test_check_coprime_invalid():
+INVALID_A_KEYS = [0, 2, 4, 6, 8, 10, 12, 13, 14, 16, 18, 20, 22, 24, 26, 39, 52, -2, -13, -26]
+
+@pytest.mark.parametrize("a_key", INVALID_A_KEYS)
+def test_check_coprime_invalid(a_key):
+    """Test that invalid non-coprime keys raise ValueError in _check_coprime."""
     with pytest.raises(ValueError) as exc:
-        _check_coprime(13)
+        _check_coprime(a_key)
     assert "coprime" in str(exc.value)
 
-def test_encrypt_non_coprime():
+@pytest.mark.parametrize("a_key", INVALID_A_KEYS)
+def test_encrypt_non_coprime(a_key):
+    """Test that encrypt raises ValueError when key 'a' is not coprime to 26."""
     with pytest.raises(ValueError) as exc:
-        encrypt("HELLO", 13, 5)
+        encrypt("HELLO", a_key, 5)
     assert "coprime" in str(exc.value)
 
-def test_decrypt_non_coprime():
+@pytest.mark.parametrize("a_key", INVALID_A_KEYS)
+def test_decrypt_non_coprime(a_key):
+    """Test that decrypt raises ValueError when key 'a' is not coprime to 26."""
     with pytest.raises(ValueError) as exc:
-        decrypt("HELLO", 13, 5)
+        decrypt("HELLO", a_key, 5)
     assert "coprime" in str(exc.value)
 
