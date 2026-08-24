@@ -496,6 +496,45 @@ def test_lorenz_api_custom_positions():
     assert dec.json()["plaintext"] == "TOPSECRET"
 
 
+def test_lorenz_api_invalid_positions():
+    positions = [1, 2]  # Should be 12 items
+    enc = client.post("/api/lorenz/encrypt", json={"plaintext": "TOPSECRET", "positions": positions})
+    assert enc.status_code == 400
+    assert "encryption failed" in enc.json()["detail"].lower()
+
+    dec = client.post("/api/lorenz/decrypt", json={"ciphertext": "TOPSECRET", "positions": positions})
+    assert dec.status_code == 400
+    assert "decryption failed" in dec.json()["detail"].lower()
+
+
+def test_lorenz_api_invalid_pins():
+    # Chi pins requires 5 arrays
+    chi_pins = [[1, 0] * 20]
+    enc = client.post("/api/lorenz/encrypt", json={"plaintext": "TEST", "chi_pins": chi_pins})
+    assert enc.status_code == 400
+    assert "encryption failed" in enc.json()["detail"].lower()
+
+
+def test_lorenz_api_value_error_exception():
+    with unittest.mock.patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=ValueError("Test Lorenz ValueError")):
+        resp = client.post("/api/lorenz/encrypt", json={"plaintext": "HELLO"})
+        assert resp.status_code == 400
+        assert "encryption failed: test lorenz valueerror" in resp.json()["detail"].lower()
+
+
+def test_enigma_api_value_error_exception():
+    with unittest.mock.patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=ValueError("Test Enigma ValueError")):
+        resp = client.post("/api/enigma/encipher", json={
+            "plaintext": "HELLO",
+            "rotors": ["I", "II", "III"],
+            "positions": ["A", "A", "A"],
+            "rings": ["A", "A", "A"],
+            "plugboard": []
+        })
+        assert resp.status_code == 400
+        assert "encryption failed: test enigma valueerror" in resp.json()["detail"].lower()
+
+
 
 
 
