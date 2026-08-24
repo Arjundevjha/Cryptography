@@ -29,7 +29,7 @@ def encrypt(message: str, key: bytes) -> tuple[bytes, bytes]:
     nonce = secrets.token_bytes(NONCE_SIZE)
     plaintext_bytes = message.encode('utf-8')
 
-    ciphertext = b""
+    ciphertext_blocks = []
     counter = 0
 
     for i in range(0, len(plaintext_bytes), BLOCK_SIZE):
@@ -39,9 +39,10 @@ def encrypt(message: str, key: bytes) -> tuple[bytes, bytes]:
         keystream = encrypt_block(counter_block, round_keys)
         # XOR block with keystream
         xor_block = bytes(x ^ y for x, y in zip(block, keystream))
-        ciphertext += xor_block
+        ciphertext_blocks.append(xor_block)
         counter += 1
 
+    ciphertext = b"".join(ciphertext_blocks)
     return ciphertext, nonce
 
 def decrypt(ciphertext: bytes, key: bytes, nonce: bytes) -> str:
@@ -56,7 +57,7 @@ def decrypt(ciphertext: bytes, key: bytes, nonce: bytes) -> str:
         Decrypted plaintext message string
     """
     round_keys = key_expansion(key)
-    decrypted_bytes = b""
+    decrypted_blocks = []
     counter = 0
 
     for i in range(0, len(ciphertext), BLOCK_SIZE):
@@ -64,10 +65,10 @@ def decrypt(ciphertext: bytes, key: bytes, nonce: bytes) -> str:
         counter_block = nonce + counter.to_bytes(4, byteorder='big')
         keystream = encrypt_block(counter_block, round_keys)
         xor_block = bytes(x ^ y for x, y in zip(block, keystream))
-        decrypted_data = xor_block
-        decrypted_bytes += decrypted_data
+        decrypted_blocks.append(xor_block)
         counter += 1
 
+    decrypted_bytes = b"".join(decrypted_blocks)
     return decrypted_bytes.decode('utf-8')
 
 def main():
