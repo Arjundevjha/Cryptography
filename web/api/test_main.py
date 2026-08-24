@@ -415,10 +415,12 @@ def test_aes_decrypt_exception():
         "nonce": "aabbccdd",
         "key_format": "text"
     }
-    with unittest.mock.patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")):
+    with unittest.mock.patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")), \
+         unittest.mock.patch("api.main.logger.error") as mock_log_error:
         response = client.post("/api/aes/decrypt", json=payload)
     assert response.status_code == 400
     assert "Mocked decryption error" in response.json()["detail"]
+    mock_log_error.assert_called_once()
 
 def test_aes_encrypt_exception():
     payload = {
