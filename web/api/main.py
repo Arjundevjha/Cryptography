@@ -506,15 +506,21 @@ def enigma_encipher(data: EnigmaEncipherInput):
     initial_key = "".join([pos.upper() for pos in data.positions])
     enigma_machine.set_key(initial_key)
     
-    ciphertext_chars = []
-    for char in data.plaintext:
-        if char.isalpha():
-            ciphertext_chars.append(enigma_machine.encipher(char.upper()))
-        else:
-            ciphertext_chars.append(char)
-            
-    ciphertext = "".join(ciphertext_chars)
-    return {"ciphertext": ciphertext}
+    try:
+        ciphertext_chars = []
+        for char in data.plaintext:
+            if char.isalpha():
+                ciphertext_chars.append(enigma_machine.encipher(char.upper()))
+            else:
+                ciphertext_chars.append(char)
+
+        ciphertext = "".join(ciphertext_chars)
+        return {"ciphertext": ciphertext}
+    except (ValueError, KeyError, TypeError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Encryption failed: {str(e)}"
+        )
 
 
 @app.post("/api/lorenz/encrypt")
@@ -534,7 +540,7 @@ def lorenz_encrypt(data: LorenzEncryptInput):
         )
         ciphertext = machine.encrypt_text(data.plaintext)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -558,7 +564,7 @@ def lorenz_decrypt(data: LorenzDecryptInput):
         )
         plaintext = machine.decrypt_text(data.ciphertext)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
