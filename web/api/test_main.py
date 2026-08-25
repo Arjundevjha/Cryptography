@@ -437,7 +437,7 @@ def test_aes_decrypt_invalid_hex_logging(caplog):
     assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
     assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
 
-def test_aes_encrypt_exception():
+def test_aes_encrypt_exception(caplog):
     payload = {
         "plaintext": "Secret Message",
         "key": "1234567890123456",
@@ -445,9 +445,11 @@ def test_aes_encrypt_exception():
         "plaintext_format": "text"
     }
     with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
-        response = client.post("/api/aes/encrypt", json=payload)
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
-    assert "Mocked AES encryption error" in response.json()["detail"]
+    assert response.json()["detail"] == "Encryption failed"
+    assert "AES encryption error" in caplog.text
 
 def test_caesar_encrypt_decrypt_success():
     enc = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})

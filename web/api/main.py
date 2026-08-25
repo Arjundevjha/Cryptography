@@ -689,7 +689,8 @@ def aes_encrypt(data: AesEncryptInput):
             "nonce": nonce_bytes.hex()
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error("AES encryption error: %s", e)
+        raise HTTPException(status_code=400, detail="Encryption failed")
 
 
 @app.post("/api/aes/decrypt")
