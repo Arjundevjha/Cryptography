@@ -24,10 +24,20 @@ export function ApiStatusDot() {
     return () => clearInterval(interval);
   }, []);
 
+  const statusMessage =
+    online === true
+      ? 'Cryptographic Server: Online'
+      : online === false
+      ? 'Cryptographic Server: Offline'
+      : 'Cryptographic Server: Connecting...';
+
   return (
     <div
-      className="flex items-center justify-center p-2 rounded-full bg-stone-950/80 backdrop-blur-md border border-stone-800 shadow-lg"
-      title={online === true ? 'Cryptographic Server: Online' : online === false ? 'Cryptographic Server: Offline' : 'Cryptographic Server: Connecting...'}
+      tabIndex={0}
+      role="status"
+      aria-live="polite"
+      className="flex items-center justify-center p-2 rounded-full bg-stone-950/80 backdrop-blur-md border border-stone-800 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+      title={statusMessage}
     >
       <span
         data-testid="api-status-dot"
@@ -39,6 +49,7 @@ export function ApiStatusDot() {
             : 'bg-amber-500 animate-pulse'
         }`}
       />
+      <span className="sr-only">{statusMessage}</span>
     </div>
   );
 }
