@@ -4,7 +4,6 @@ This module provides functionality for generating RSA public/private key pairs
 without external dependencies.
 """
 
-import random
 import secrets
 
 try:
