@@ -1,16 +1,16 @@
-# Graph Report - Cryptography  (2026-08-27)
+# Graph Report - Cryptography  (2026-08-25)
 
 ## Corpus Check
-- 110 files · ~60,262 words
+- 110 files · ~60,261 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1100 nodes · 1934 edges · 64 communities (51 shown, 13 thin omitted)
+- 1099 nodes · 1933 edges · 63 communities (50 shown, 13 thin omitted)
 - Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 157 edges (avg confidence: 0.51)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4b9b8ac9`
+- Built from commit: `c6fed38e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -60,7 +60,6 @@
 - Frontend Root App Layout Settings
 - Jest Frontend Configuration Settings
 - Exhibit Input Form UI Component
-- RsaEncryptInput
 - Next.js Build Config Settings
 - Next.js Environment Typings Directive
 - no_ai_slop.md
@@ -96,19 +95,19 @@
 - **Museum Testing Flow** — test_infra_philosophy, test_ready_coverage, web_quality_log_tracks, web_security_log_scans [INFERRED 0.85]
 - **Cryptography Project Guidelines** — contributing_python_standards, style_guide_no_external_libs, style_guide_file_structure, style_guide_naming_conventions [INFERRED 0.85]
 
-## Communities (64 total, 13 thin omitted)
+## Communities (63 total, 13 thin omitted)
 
 ### Community 0 - "Cryptographic Helpers & Base64 Utilities"
 Cohesion: 0.06
-Nodes (75): b64decode(), b64encode(), ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Compute SHA-256 hash of bytes. (+67 more)
+Nodes (76): b64decode(), b64encode(), ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Compute SHA-256 hash of bytes. (+68 more)
 
 ### Community 1 - "Playfair Cipher Implementation & Benchmarks"
 Cohesion: 0.05
 Nodes (63): _build_pos_map(), _create_grid(), decrypt(), encrypt(), _find_position(), main(), pick_keys(), _prepare_text() (+55 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
-Cohesion: 0.08
-Nodes (50): BaseModel, Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Get current position indices for all 12 wheels., Set manual pin configurations for Chi, Motor, and Psi wheels.          Args:, aes_decrypt_endpoint(), aes_encrypt(), AesDecryptInput (+42 more)
+Cohesion: 0.09
+Nodes (49): BaseModel, Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Set manual pin configurations for Chi, Motor, and Psi wheels.          Args:, aes_decrypt_endpoint(), aes_encrypt(), AesDecryptInput, AesEncryptInput (+41 more)
 
 ### Community 4 - "Frontend App Third-Party Dependencies"
 Cohesion: 0.05
@@ -159,24 +158,24 @@ Cohesion: 0.10
 Nodes (18): Unit tests for Lorenz Wheel class., test_wheel_custom_pins(), test_wheel_init_default(), test_wheel_invalid_pins_length(), test_wheel_invalid_pins_value(), test_wheel_invalid_position(), test_wheel_invalid_size(), test_wheel_step_wrapping() (+10 more)
 
 ### Community 16 - "Vigenere Cipher Core & Helpers"
-Cohesion: 0.17
-Nodes (19): decrypt(), encrypt(), encrypt_with_new_key(), generate_iv(), generate_key(), main(), Generate a random 256-bit (32 bytes) key for AES-256., Generate a random 128-bit (16 bytes) initialization vector. (+11 more)
+Cohesion: 0.15
+Nodes (26): decrypt(), encrypt(), encrypt_with_new_key(), generate_iv(), generate_key(), main(), pkcs7_pad(), pkcs7_unpad() (+18 more)
 
 ### Community 17 - "Museum Frontend Layout & Audio Scenes"
 Cohesion: 0.12
 Nodes (23): Home(), MuseumCanvas, AudioSystem(), AudioSystemProps, ApiStatusDot(), MuseumHUD(), MuseumHUDProps, MuseumCanvas() (+15 more)
 
 ### Community 18 - "Symmetric Encryption Utilities"
-Cohesion: 0.13
-Nodes (18): Modern cryptography methods package., add_round_key(), decrypt_block(), inv_mix_columns(), inv_shift_rows(), inv_sub_bytes(), mul_gf(), Symmetric Encryption Module (AES-256) in pure Python.  This module provides symm (+10 more)
+Cohesion: 0.11
+Nodes (25): add_round_key(), decrypt_block(), encrypt_block(), inv_mix_columns(), inv_shift_rows(), inv_sub_bytes(), mix_columns(), mul_gf() (+17 more)
 
 ### Community 19 - "Scytale Cipher & Classical Init Modules"
 Cohesion: 0.14
 Nodes (20): Classical cryptography methods package., Historical cryptography methods package., decrypt(), encrypt(), main(), pick_keys(), Scytale transposition cipher implementation., Encrypt plaintext using the Scytale cipher.      Pads the plaintext and performs (+12 more)
 
 ### Community 20 - "Enigma Cipher Machine Implementation"
-Cohesion: 0.12
-Nodes (11): Enigma, Set the ring settings for each rotor., Set the initial key/letter position for each rotor., Encipher a single character through the Enigma machine., Enigma machine simulation., Initialize Enigma machine with components.          Args:             re: The Re, Compute the SHA-256 hash of the given data.      Args:         data: The input s, sha256() (+3 more)
+Cohesion: 0.11
+Nodes (13): Enigma, Set the ring settings for each rotor., Set the initial key/letter position for each rotor., Encipher a single character through the Enigma machine., Enigma machine simulation., Initialize Enigma machine with components.          Args:             re: The Re, Compute the SHA-256 hash of the given data.      Args:         data: The input s, sha256() (+5 more)
 
 ### Community 21 - "Lorenz Stepping Controller Engine"
 Cohesion: 0.11
@@ -185,10 +184,6 @@ Nodes (16): Set positions for all 12 wheels.          Args:             position
 ### Community 22 - "Vigenere Cipher Unit Tests"
 Cohesion: 0.14
 Nodes (24): test_decrypt(), test_decrypt_unmatching_length_and_edge_cases(), test_encrypt(), test_encrypt_decrypt_char(), test_encrypt_decrypt_roundtrip(), test_main_custom_key(), test_main_random_key(), test_pad_key() (+16 more)
-
-### Community 23 - "Enigma Keyboard Component Routing"
-Cohesion: 0.20
-Nodes (10): encrypt_block(), mix_columns(), Substitute state bytes using the S-box., Shift state rows to the left by row offsets., Perform GF(2^8) multiplication by 2., Mix the columns of the state matrix., Encrypt a single 16-byte block using AES., shift_rows() (+2 more)
 
 ### Community 24 - "Manual AES CTR Cipher Core"
 Cohesion: 0.16
@@ -215,8 +210,8 @@ Cohesion: 0.25
 Nodes (4): Decrypt a 5-bit vector (identical to encrypt_vector due to XOR reciprocity)., Encrypt or decrypt a single ITA2 character.          Args:             char: Inp, Decrypt a single ITA2 character (identical to encrypt_char)., Encrypt or decrypt a single 5-bit vector using current keystream and step.
 
 ### Community 31 - "AES Key Expansion & S-Box Math"
-Cohesion: 0.22
-Nodes (13): key_expansion(), pkcs7_pad(), pkcs7_unpad(), Apply PKCS7 padding to raw bytes., Remove PKCS7 padding from raw bytes., Expand the AES key into round keys. Supports 16, 24, and 32 byte keys., Test raw block encryption and decryption to ensure no data loss in core AES func, test_key_expansion_invalid_key_length() (+5 more)
+Cohesion: 0.25
+Nodes (8): key_expansion(), Substitute bytes in a 4-byte word using the S-box., Rotate a 4-byte word: shift left by 1 position., Expand the AES key into round keys. Supports 16, 24, and 32 byte keys., rot_word(), sub_word(), test_key_expansion_invalid_key_length(), test_key_expansion_valid_key_lengths()
 
 ### Community 32 - "PlayfairEncryptInput"
 Cohesion: 0.06
@@ -243,16 +238,16 @@ Cohesion: 0.33
 Nodes (6): is_valid_origin(), parse_allowed_origins(), Validates if an origin string is a secure, well-formed HTTP/HTTPS origin., Parses and validates CORS_ALLOWED_ORIGINS from environment string., test_is_valid_origin(), test_parse_allowed_origins()
 
 ## Knowledge Gaps
-- **116 isolated node(s):** `run_e2e_no_install.sh script`, `PYTHONPATH`, `run_e2e_tests.sh script`, `PYTHONPATH`, `run_tests.sh script` (+111 more)
+- **115 isolated node(s):** `run_e2e_no_install.sh script`, `PYTHONPATH`, `run_e2e_tests.sh script`, `PYTHONPATH`, `run_tests.sh script` (+110 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Lorenz` connect `FastAPI Backend Routes & Schema Models` to `Lorenz Text Processing Procedures`, `Lorenz Machine Core Unit Tests`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Interactive CLI Simulation Runner`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `RsaEncryptInput`, `Enigma Cipher Machine Implementation`, `Lorenz Stepping Controller Engine`, `Lorenz Machine Cryptography Vector Math`?**
-  _High betweenness centrality (0.057) - this node is a cross-community bridge._
-- **Why does `Keyboard` connect `PlayfairEncryptInput` to `FastAPI Backend Routes & Schema Models`, `Enigma Reflector Simulator Routing`, `Enigma Cipher Machine Implementation`, `RsaEncryptInput`?**
+- **Why does `Lorenz` connect `FastAPI Backend Routes & Schema Models` to `Lorenz Text Processing Procedures`, `Lorenz Machine Core Unit Tests`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Interactive CLI Simulation Runner`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `Enigma Cipher Machine Implementation`, `Lorenz Stepping Controller Engine`, `Enigma Keyboard Component Routing`, `Lorenz Machine Cryptography Vector Math`?**
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
+- **Why does `Keyboard` connect `PlayfairEncryptInput` to `FastAPI Backend Routes & Schema Models`, `Enigma Reflector Simulator Routing`, `Enigma Cipher Machine Implementation`?**
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Why does `b64encode()` connect `Cryptographic Helpers & Base64 Utilities` to `FastAPI Backend Routes & Schema Models`?**
   _High betweenness centrality (0.037) - this node is a cross-community bridge._

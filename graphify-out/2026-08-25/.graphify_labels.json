@@ -45,7 +45,7 @@
   "43": "Frontend Root App Layout Settings",
   "44": "Jest Frontend Configuration Settings",
   "45": "Exhibit Input Form UI Component",
-  "46": "RsaEncryptInput",
+  "46": "RsaDecryptInput",
   "47": "Frontend Health API Route Handler",
   "48": "Next.js Build Config Settings",
   "49": "Next.js Environment Typings Directive",
@@ -62,5 +62,7 @@
   "60": "UI Interactions Playwright E2E Tests",
   "61": "Modern Ciphers Playwright E2E Tests",
   "62": "E2E User Scenario Playwright Tests",
-  "63": "no_ai_slop.md"
+  "63": "no_ai_slop.md",
+  "64": "RsaKeygenInput",
+  "65": "ScytaleDecryptInput"
 }
