@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CipherExhibit } from '../museumData';
-import { Lock, Unlock, Play, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check } from 'lucide-react';
 
 interface WorkbenchPanelProps {
   exhibit: CipherExhibit;
@@ -14,6 +14,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const [outputText, setOutputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // Cipher specific parameter states
   const [shift, setShift] = useState<number>(exhibit.defaultParams.shift ?? 3);
@@ -39,7 +40,19 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     setInputText('HELLO MUSEUM WORLD');
     setOutputText('');
     setErrorMsg(null);
+    setCopied(false);
   }, [exhibit.id]);
+
+  const handleCopy = async () => {
+    if (!outputText) return;
+    try {
+      await navigator.clipboard.writeText(outputText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback if clipboard API fails
+    }
+  };
 
   const handleRSAKeygen = async () => {
     setLoading(true);
@@ -166,7 +179,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           <button
             data-testid={`encrypt-btn-${exhibit.id}`}
             onClick={() => setMode('encrypt')}
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-all ${
+            aria-pressed={mode === 'encrypt'}
+            className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               mode === 'encrypt' ? 'bg-amber-500 text-stone-950 shadow active' : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -175,7 +189,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           <button
             data-testid={`decrypt-btn-${exhibit.id}`}
             onClick={() => setMode('decrypt')}
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-all ${
+            aria-pressed={mode === 'decrypt'}
+            className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               mode === 'decrypt' ? 'bg-amber-500 text-stone-950 shadow active' : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -519,9 +534,30 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
       {/* Output Container */}
       <div className="mt-4">
-        <label className="block text-xs font-mono text-stone-300 mb-1">
-          {mode === 'encrypt' ? 'CIPHERTEXT RESULT' : 'DECRYPTED PLAINTEXT'}
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-xs font-mono text-stone-300">
+            {mode === 'encrypt' ? 'CIPHERTEXT RESULT' : 'DECRYPTED PLAINTEXT'}
+          </label>
+          {outputText && (
+            <button
+              onClick={handleCopy}
+              aria-label="Copy result to clipboard"
+              className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 text-green-400" />
+                  <span className="text-green-400">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3" />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
         <div
           data-testid={`output-text-${exhibit.id}`}
           className="w-full min-h-[50px] p-3 rounded-lg bg-stone-900 border border-stone-800 text-amber-300 font-mono text-xs break-all select-all"
