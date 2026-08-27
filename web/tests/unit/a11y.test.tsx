@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,30 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders WorkbenchPanel with proper input label association and aria-pressed attributes', () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Label and Input connection
+    const inputLabel = screen.getByLabelText(/plaintext input/i);
+    expect(inputLabel).toBeInTheDocument();
+    expect(inputLabel).toHaveAttribute('id', `workbench-input-${sampleExhibit.id}`);
+
+    // Mode Toggle Buttons ARIA pressed states
+    const encryptBtn = screen.getByTestId(`encrypt-btn-${sampleExhibit.id}`);
+    const decryptBtn = screen.getByTestId(`decrypt-btn-${sampleExhibit.id}`);
+
+    expect(encryptBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(decryptBtn).toHaveAttribute('aria-pressed', 'false');
+
+    // Toggle mode
+    fireEvent.click(decryptBtn);
+    expect(encryptBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(decryptBtn).toHaveAttribute('aria-pressed', 'true');
+
+    // Check updated label
+    const ciphertextLabel = screen.getByLabelText(/ciphertext input/i);
+    expect(ciphertextLabel).toBeInTheDocument();
   });
 });
