@@ -529,7 +529,7 @@ export default function ThreeMuseumScene({
 
       // --- B. AUTOMATIC 3D SPATIAL PROXIMITY ROOM DETECTION ---
       const now = performance.now();
-      if (!isMacroRef.current && now - lastRoomChangeTimeRef.current > 300) {
+      if (!isMacroRef.current && !isAnimatingRef.current && now - lastRoomChangeTimeRef.current > 300) {
         let insideRoomId: string | null = null;
 
         for (const ex of MUSEUM_EXHIBITS) {
