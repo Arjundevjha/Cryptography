@@ -299,6 +299,28 @@ def test_aes_invalid_hex_key():
     assert response.status_code == 400
     assert "invalid hex" in response.json()["detail"].lower()
 
+def test_aes_invalid_key_format():
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "binary",
+        "plaintext_format": "text"
+    }
+    response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert "invalid key format" in response.json()["detail"].lower()
+
+def test_aes_invalid_plaintext_format():
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "invalid"
+    }
+    response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert "invalid plaintext format" in response.json()["detail"].lower()
+
 def test_aes_decrypt_invalid_hex_ciphertext():
     payload = {
         "ciphertext": "InvalidHexFormat!",

@@ -647,6 +647,8 @@ class Sha256Input(BaseModel):
 
 
 def parse_aes_key(key: str, key_format: str = "text") -> bytes:
+    if key_format not in ("text", "hex"):
+        raise HTTPException(status_code=400, detail="Invalid key format")
     if key_format == "hex":
         try:
             key_bytes = bytes.fromhex(key)
@@ -655,7 +657,10 @@ def parse_aes_key(key: str, key_format: str = "text") -> bytes:
     else:
         # Try to parse as hex if length is 64 (32 bytes) or 32 (16 bytes) and only hex characters
         if len(key) in (32, 64) and all(c in "0123456789abcdefABCDEF" for c in key):
-            key_bytes = bytes.fromhex(key)
+            try:
+                key_bytes = bytes.fromhex(key)
+            except ValueError:
+                key_bytes = key.encode('utf-8')
         else:
             key_bytes = key.encode('utf-8')
     
@@ -672,6 +677,8 @@ def parse_aes_key(key: str, key_format: str = "text") -> bytes:
 @app.post("/api/aes/encrypt")
 def aes_encrypt(data: AesEncryptInput):
     # Parse plaintext
+    if data.plaintext_format not in ("text", "hex"):
+        raise HTTPException(status_code=400, detail="Invalid plaintext format")
     plaintext = data.plaintext
     if data.plaintext_format == "hex":
         try:
