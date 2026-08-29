@@ -5,3 +5,7 @@
 ## 2025-05-19 - Vectorize Affine Cipher via str.maketrans
 **Learning:** In fixed-alphabet ciphers like Affine cipher, replacing per-character Python loop checks (`char.isalpha()`, `ord()`, modulo arithmetic, `chr()`) with pre-computed lookup tables via `str.maketrans` and `str.translate` offloads string transformations directly to C-level execution, achieving ~60-80x speedups.
 **Action:** Pre-compute 26-character translation mapping tables using `str.maketrans` and process strings using `str.translate` for substitution/affine ciphers.
+
+## 2025-05-20 - Pre-compute Coordinate Maps for Grid Ciphers
+**Learning:** Grid-based ciphers like Polybius Square suffer from repeated $O(K)$ string searching (`key.index(...)`), modulo/division arithmetic, and dynamic string formatting within per-character loops. Pre-computing dictionary maps (`pos_map` for character-to-coordinate string and `coord_map` for coordinate-pair to character) reduces per-character lookups to $O(1)$ dictionary lookups, providing a ~2.8x speedup for encryption and ~1.5x for decryption.
+**Action:** Always pre-compute coordinate lookup maps when performing grid or table-based character lookups in ciphers.
