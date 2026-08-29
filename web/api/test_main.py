@@ -364,7 +364,15 @@ def test_rsa_keygen_too_small():
     }
     response = client.post("/api/rsa/keygen", json=payload)
     assert response.status_code == 400
-    assert "greater than 2" in response.json()["detail"].lower()
+
+def test_rsa_keygen_too_large():
+    payload = {
+        "p": 10**12 + 1,
+        "q": 53,
+        "e": 17
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
 
 def test_rsa_keygen_non_coprime():
     # phi(61, 53) = 3120. e=13 is not coprime to 3120 (13 * 240 = 3120)

@@ -630,8 +630,8 @@ class AesDecryptInput(BaseModel):
     key_format: str = Field(default="text", description="Key format: 'text' or 'hex'")
 
 class RsaKeygenInput(BaseModel):
-    p: int = Field(..., description="Prime number p")
-    q: int = Field(..., description="Prime number q")
+    p: int = Field(..., gt=2, le=10**12, description="Prime number p (3 <= p <= 10^12)")
+    q: int = Field(..., gt=2, le=10**12, description="Prime number q (3 <= q <= 10^12)")
     e: int = Field(default=65537, description="Public exponent e")
 
 class RsaEncryptInput(BaseModel):
