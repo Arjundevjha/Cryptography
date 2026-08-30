@@ -16,6 +16,10 @@ def test_pad_key():
     assert _pad_key("H3LL0", "key") == "k ey "
     assert _pad_key("ATTACKATDAWN", "LEMON") == "LEMONLEMONLE"
     assert _pad_key("", "KEY") == ""
+    # Key longer than text
+    assert _pad_key("hi", "longkey") == "lo"
+    # Empty key
+    assert _pad_key("hello", "") == ""
 
 
 def test_encrypt_decrypt_char():
@@ -47,6 +51,25 @@ def test_encrypt():
     # With numbers and special characters
     assert encrypt("HELLO, WORLD 123!", "KEY") == "RIJVS, UYVJN 123!"
 
+def test_encrypt_unmatching_length_and_edge_cases():
+    # Key longer than text
+    assert encrypt("HI", "VERYLONGKEY") == "CM"
+    assert encrypt("H", "KEY") == "R"
+
+    # Key shorter than text
+    assert encrypt("ATTACKATDAWN", "LEM") == "LXFLGWLXPLAZ"
+
+    # Empty text or empty key
+    assert encrypt("", "KEY") == ""
+    assert encrypt("HELLO", "") == "HELLO"
+    assert encrypt("", "") == ""
+
+    # Spaces-only string
+    assert encrypt("   ", "KEY") == "   "
+
+    # Single character text and single character key
+    assert encrypt("A", "B") == "B"
+
 def test_decrypt():
     # Standard example
     assert decrypt("LXFOPVEFRNHR", "LEMON") == "ATTACKATDAWN"
@@ -76,8 +99,10 @@ def test_decrypt_unmatching_length_and_edge_cases():
     # Single character ciphertext with multi-character key
     assert decrypt("B", "KEY") == "R"
 
-    # Empty ciphertext
+    # Empty ciphertext or empty key
     assert decrypt("", "KEY") == ""
+    assert decrypt("HELLO", "") == "HELLO"
+    assert decrypt("", "") == ""
 
     # Spaces-only string
     assert decrypt("   ", "KEY") == "   "
