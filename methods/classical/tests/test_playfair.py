@@ -7,6 +7,7 @@ from methods.classical.playfair import (
     encrypt,
     decrypt,
     pick_keys,
+    main,
 )
 
 def test_create_grid_basic():
@@ -197,3 +198,49 @@ def test_pick_keys():
 
     # Two generated keys are extremely unlikely to be the same
     # But since it's random, we just assert valid behavior
+
+def test_encrypt_missing_char_raises_value_error(monkeypatch):
+    """Test encrypt raises ValueError when pos_map lookup raises KeyError."""
+    def mock_pos_map(grid):
+        return {"a": (0, 0)}
+
+    monkeypatch.setattr("methods.classical.playfair._build_pos_map", mock_pos_map)
+    with pytest.raises(ValueError, match="Character b not found in grid"):
+        encrypt("ab", "key")
+
+def test_decrypt_missing_char_raises_value_error(monkeypatch):
+    """Test decrypt raises ValueError when pos_map lookup raises KeyError."""
+    def mock_pos_map(grid):
+        return {"a": (0, 0)}
+
+    monkeypatch.setattr("methods.classical.playfair._build_pos_map", mock_pos_map)
+    with pytest.raises(ValueError, match="Character b not found in grid"):
+        decrypt("ab", "key")
+
+def test_decrypt_empty_and_numeric_keys():
+    """Test decrypt with empty key and numeric/symbol-only keys."""
+    # Empty key uses default alphabet grid order ("la" -> 'l' (2,0) and 'a' (0,0) in same col -> shift up -> 'f' (1,0) and 'v' (4,0))
+    assert decrypt("la", "") == "fv"
+    # Key with no alphabetic characters also uses default alphabet grid order
+    assert decrypt("la", "12345!@#") == "fv"
+
+def test_decrypt_odd_length_various():
+    """Test decrypt handling of various odd-length inputs."""
+    key = "playfair example"
+    # "a" -> 1 char, skipped -> returns ""
+    assert decrypt("a", key) == ""
+    # "abc" -> "ab" ("p" "c" -> swap cols -> "a" "b" in standard grid, but in playfair example grid:
+    # 'a' (0,2), 'b' (2,0) -> 'p' (0,0), 'd' (2,2)) and "c" skipped
+    assert decrypt("abc", key) == "pd"
+    # "abcde" -> "ab" ("pd"), "cd" ("bc"), "e" (skipped)
+    assert decrypt("abcde", key) == "pdbc"
+
+def test_main_interactive(monkeypatch, capsys):
+    """Test main function interactive output."""
+    monkeypatch.setattr("builtins.input", lambda prompt: "hello world")
+    main()
+    captured = capsys.readouterr()
+    assert "Playfair Original Message: hello world" in captured.out
+    assert "Playfair Generated Key:" in captured.out
+    assert "Playfair Encrypted Result:" in captured.out
+    assert "Playfair Decrypted Result:" in captured.out
