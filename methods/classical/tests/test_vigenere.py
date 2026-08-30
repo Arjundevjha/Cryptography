@@ -57,13 +57,13 @@ def test_decrypt():
     assert decrypt("RIJVS, UYVJN 123!", "KEY") == "HELLO, WORLD 123!"
 
 def test_decrypt_unmatching_length_and_edge_cases():
-
+    """Test decrypt when key length does not match ciphertext length, plus edge cases."""
     # Key longer than ciphertext
     # decrypt("HI", "VERYLONGKEY"):
     # H (index 7) shifted back by V (index 21) => (7 - 21 + 26) % 26 = 12 ('M')
     # I (index 8) shifted back by E (index 4)  => (8 - 4 + 26) % 26 = 4 ('E')
     assert decrypt("HI", "VERYLONGKEY") == "ME"
-    # Round-trip check:
+    # Round-trip check with key longer than plaintext:
     assert decrypt(encrypt("HELLO", "VERYLONGKEY"), "VERYLONGKEY") == "HELLO"
 
     # Key shorter than ciphertext (repeating key)
@@ -73,11 +73,13 @@ def test_decrypt_unmatching_length_and_edge_cases():
     # Single character ciphertext and single character key
     assert decrypt("B", "K") == "R"
 
-    # Single character ciphertext with multi-character key
+    # Single character ciphertext with multi-character key (unmatching length)
     assert decrypt("B", "KEY") == "R"
+    assert decrypt("R", "KEY") == "H"
 
-    # Empty ciphertext
+    # Empty ciphertext or empty key
     assert decrypt("", "KEY") == ""
+    assert decrypt("HELLO", "") == "HELLO"
 
     # Spaces-only string
     assert decrypt("   ", "KEY") == "   "
