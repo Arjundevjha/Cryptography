@@ -80,11 +80,13 @@ describe('Polybius Helper Functions', () => {
     expect(getPolybiusCoords('J', '')).toEqual({ row: 2, col: 4 }); // 'J' maps to 'I'
   });
 
-  it('should return null for characters not present in key grid', () => {
+  it('should return null for characters not present in key grid or invalid failure modes', () => {
     expect(getPolybiusCoords('1', '')).toBeNull();
     expect(getPolybiusCoords('!', '')).toBeNull();
     expect(getPolybiusCoords(' ', '')).toBeNull();
+    expect(getPolybiusCoords('#', 'abcdefghiklmnopqrstuvwxyz')).toBeNull();
     expect(getPolybiusCoords('z', 'abcdefghiklmnopqrstuvwxy')).toBeNull(); // custom 24-letter key missing 'z'
+    expect(getPolybiusCoords('a', 'bcdefghiklmnopqrstuvwxyz')).toBeNull(); // custom key missing 'a'
   });
 });
 
