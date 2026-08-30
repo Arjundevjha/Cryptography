@@ -48,8 +48,14 @@ def test_decrypt_negative_shift_boundary():
     assert decrypt("HELLO", -27) == "IFMMP"
     assert decrypt("HELLO", -52) == "HELLO"
 
-    # Verify equivalence of decrypt(text, -shift) and encrypt(text, shift) across negative boundaries
-    for shift in [-1, -25, -26, -27, -50, -100]:
+    # Decrypting negative shift with mixed case and non-alphabetic characters
+    mixed_text = "Caesar Cipher 123! @#"
+    assert decrypt(encrypt(mixed_text, -5), -5) == mixed_text
+    assert decrypt(encrypt(mixed_text, -26), -26) == mixed_text
+    assert decrypt(encrypt(mixed_text, -52), -52) == mixed_text
+
+    # Verify equivalence of decrypt(text, shift) and encrypt(text, -shift) across negative and zero boundaries
+    for shift in [0, -1, -25, -26, -27, -50, -52, -100, -1000]:
         assert decrypt("HELLO", shift) == encrypt("HELLO", -shift)
 
 def test_large_shift():
