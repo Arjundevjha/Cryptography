@@ -159,7 +159,7 @@ def caesar_encrypt(data: CaesarEncryptInput):
         from methods.classical import caesar
         ciphertext = caesar.encrypt(data.plaintext, data.shift)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -171,7 +171,7 @@ def caesar_decrypt(data: CaesarDecryptInput):
         from methods.classical import caesar
         plaintext = caesar.decrypt(data.ciphertext, data.shift)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -188,7 +188,7 @@ def vigenere_encrypt(data: VigenereEncryptInput):
         from methods.classical import vigenere
         ciphertext = vigenere.encrypt(data.plaintext, data.key)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -205,7 +205,7 @@ def vigenere_decrypt(data: VigenereDecryptInput):
         from methods.classical import vigenere
         plaintext = vigenere.decrypt(data.ciphertext, data.key)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -222,7 +222,7 @@ def playfair_encrypt(data: PlayfairEncryptInput):
         from methods.classical import playfair
         ciphertext = playfair.encrypt(data.plaintext, data.key)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -239,7 +239,7 @@ def playfair_decrypt(data: PlayfairDecryptInput):
         from methods.classical import playfair
         plaintext = playfair.decrypt(data.ciphertext, data.key)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -259,7 +259,7 @@ def affine_encrypt(data: AffineEncryptInput):
     try:
         ciphertext = affine.encrypt(data.plaintext, data.a_key, data.b_key)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -277,7 +277,7 @@ def affine_decrypt(data: AffineDecryptInput):
     try:
         plaintext = affine.decrypt(data.ciphertext, data.a_key, data.b_key)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -338,7 +338,7 @@ def scytale_encrypt(data: ScytaleEncryptInput):
         from methods.historical import scytale
         ciphertext = scytale.encrypt(data.plaintext, data.width)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -355,7 +355,7 @@ def scytale_decrypt(data: ScytaleDecryptInput):
         from methods.historical import scytale
         plaintext = scytale.decrypt(data.ciphertext, data.width)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -378,7 +378,7 @@ def polybius_encrypt(data: PolybiusEncryptInput):
         from methods.historical import polybius
         ciphertext = polybius.encrypt(data.plaintext, grid_key)
         return {"ciphertext": ciphertext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -426,7 +426,7 @@ def polybius_decrypt(data: PolybiusDecryptInput):
         from methods.historical import polybius
         plaintext = polybius.decrypt(data.ciphertext, grid_key)
         return {"plaintext": plaintext}
-    except Exception as e:
+    except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -495,41 +495,42 @@ def validate_enigma_plugboard(plugboard: list[str]) -> None:
 
 @app.post("/api/enigma/encipher")
 def enigma_encipher(data: EnigmaEncipherInput):
-    try:
-        validate_enigma_rotors(data.rotors)
-        validate_enigma_positions(data.positions)
-        parsed_rings = parse_and_validate_enigma_rings(data.rings)
-        validate_enigma_plugboard(data.plugboard)
+    """Encipher plaintext using the Enigma cipher machine."""
+    validate_enigma_rotors(data.rotors)
+    validate_enigma_positions(data.positions)
+    parsed_rings = parse_and_validate_enigma_rings(data.rings)
+    validate_enigma_plugboard(data.plugboard)
 
+    ROTOR_MAP = {
+        "I": ("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"),
+        "II": ("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W"),
+        "III": ("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"),
+        "IV": ("ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"),
+        "V": ("VZBRGITYUPSDNHLXAWMJQOFECK", "Z"),
+        "VI": ("JPGVOUMFYQBENHZRDKASXLICTW", "M"),
+        "VII": ("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z"),
+        "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
+    }
+
+    REFLECTOR_MAP = {
+        "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
+        "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+        "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+        "B_THIN": "ENKQAUYWJICOPBLMDXZVFTHRGS",
+        "C_THIN": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",
+    }
+
+    reflector_key = data.reflector.upper() if data.reflector else "B"
+    if reflector_key not in REFLECTOR_MAP:
+        raise HTTPException(status_code=400, detail=f"Invalid reflector '{data.reflector}'.")
+
+    try:
         # Instantiate Enigma machine components
         from methods.historical.enigma.rotor import Rotor
         from methods.historical.enigma.plugboard import Plugboard
         from methods.historical.enigma.reflector import Reflector
         from methods.historical.enigma.keyboard import Keyboard
         from methods.historical.enigma.enigma import Enigma
-
-        ROTOR_MAP = {
-            "I": ("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"),
-            "II": ("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W"),
-            "III": ("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"),
-            "IV": ("ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"),
-            "V": ("VZBRGITYUPSDNHLXAWMJQOFECK", "Z"),
-            "VI": ("JPGVOUMFYQBENHZRDKASXLICTW", "M"),
-            "VII": ("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z"),
-            "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
-        }
-
-        REFLECTOR_MAP = {
-            "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
-            "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
-            "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
-            "B_THIN": "ENKQAUYWJICOPBLMDXZVFTHRGS",
-            "C_THIN": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",
-        }
-
-        reflector_key = data.reflector.upper() if data.reflector else "B"
-        if reflector_key not in REFLECTOR_MAP:
-            raise HTTPException(status_code=400, detail=f"Invalid reflector '{data.reflector}'.")
 
         reflector = Reflector(REFLECTOR_MAP[reflector_key])
         
@@ -556,8 +557,6 @@ def enigma_encipher(data: EnigmaEncipherInput):
 
         ciphertext = "".join(ciphertext_chars)
         return {"ciphertext": ciphertext}
-    except HTTPException:
-        raise
     except (ValueError, KeyError, TypeError, IndexError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

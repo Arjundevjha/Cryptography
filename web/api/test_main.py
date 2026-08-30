@@ -52,14 +52,14 @@ def test_affine_decrypt_non_coprime(a_key):
 
 @unittest.mock.patch("api.main.affine.encrypt")
 def test_affine_encrypt_internal_error(mock_encrypt):
-    mock_encrypt.side_effect = Exception("Test internal error")
+    mock_encrypt.side_effect = ValueError("Test internal error")
     response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": 5, "b_key": 8})
     assert response.status_code == 400
     assert response.json() == {"detail": "Test internal error"}
 
 @unittest.mock.patch("api.main.affine.decrypt")
 def test_affine_decrypt_internal_error(mock_decrypt):
-    mock_decrypt.side_effect = Exception("Test internal error")
+    mock_decrypt.side_effect = ValueError("Test internal error")
     response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": 5, "b_key": 8})
     assert response.status_code == 400
     assert response.json() == {"detail": "Test internal error"}
