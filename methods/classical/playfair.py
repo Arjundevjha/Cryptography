@@ -35,9 +35,8 @@ def _build_pos_map(grid: list[list[str]]) -> dict[str, tuple[int, int]]:
 def _find_position(grid: list[list[str]], char: str) -> tuple[int, int]:
     """Find row and column of a character in the grid."""
     for r in range(5):
-        for c in range(5):
-            if grid[r][c] == char:
-                return r, c
+        if char in grid[r]:
+            return r, grid[r].index(char)
     raise ValueError(f"Character {char} not found in grid")
 
 def _prepare_text(text: str) -> list[str]:
