@@ -246,30 +246,23 @@ def pick_keys() -> tuple[int, int]:
 
 def encrypt(plaintext: str, a_key: int, b_key: int) -> str:
     """Encrypt plaintext using affine cipher: E(x) = (ax + b) mod 26"""
-    ciphertext = ""
-    for char in plaintext:
-        if char.isalpha():
-            char = char.lower()
-            char_index = ord(char) - ord('a')
-            encrypted_index = (a_key * char_index + b_key) % 26
-            ciphertext += chr(encrypted_index + ord('a'))
-        else:
-            ciphertext += char
-    return ciphertext
+    _check_coprime(a_key)
+    a_mod = a_key % 26
+    b_mod = b_key % 26
+    lower = string.ascii_lowercase
+    transformed = "".join(chr((a_mod * i + b_mod) % 26 + 97) for i in range(26))
+    table = str.maketrans(lower + string.ascii_uppercase, transformed + transformed)
+    return plaintext.translate(table)
 
 def decrypt(ciphertext: str, a_key: int, b_key: int) -> str:
     """Decrypt ciphertext using affine cipher: D(x) = a^-1(x - b) mod 26"""
-    plaintext = ""
+    _check_coprime(a_key)
     a_inverse = pow(a_key, -1, 26)
-    for char in ciphertext:
-        if char.isalpha():
-            char = char.lower()
-            char_index = ord(char) - ord('a')
-            decrypted_index = (a_inverse * (char_index - b_key)) % 26
-            plaintext += chr(decrypted_index + ord('a'))
-        else:
-            plaintext += char
-    return plaintext
+    b_mod = b_key % 26
+    lower = string.ascii_lowercase
+    transformed = "".join(chr((a_inverse * (i - b_mod)) % 26 + 97) for i in range(26))
+    table = str.maketrans(lower + string.ascii_uppercase, transformed + transformed)
+    return ciphertext.translate(table)
 
 def main():
     message = input("Please enter a message: ")
