@@ -154,7 +154,7 @@ async def validate_input(data: CipherInput):
     return {"status": "valid", "length": len(data.text)}
 
 @app.post("/api/caesar/encrypt")
-async def caesar_encrypt(data: CaesarEncryptInput):
+def caesar_encrypt(data: CaesarEncryptInput):
     try:
         from methods.classical import caesar
         ciphertext = caesar.encrypt(data.plaintext, data.shift)
@@ -166,7 +166,7 @@ async def caesar_encrypt(data: CaesarEncryptInput):
         )
 
 @app.post("/api/caesar/decrypt")
-async def caesar_decrypt(data: CaesarDecryptInput):
+def caesar_decrypt(data: CaesarDecryptInput):
     try:
         from methods.classical import caesar
         plaintext = caesar.decrypt(data.ciphertext, data.shift)
@@ -178,7 +178,7 @@ async def caesar_decrypt(data: CaesarDecryptInput):
         )
 
 @app.post("/api/vigenere/encrypt")
-async def vigenere_encrypt(data: VigenereEncryptInput):
+def vigenere_encrypt(data: VigenereEncryptInput):
     if not data.key:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -195,7 +195,7 @@ async def vigenere_encrypt(data: VigenereEncryptInput):
         )
 
 @app.post("/api/vigenere/decrypt")
-async def vigenere_decrypt(data: VigenereDecryptInput):
+def vigenere_decrypt(data: VigenereDecryptInput):
     if not data.key:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -212,7 +212,7 @@ async def vigenere_decrypt(data: VigenereDecryptInput):
         )
 
 @app.post("/api/playfair/encrypt")
-async def playfair_encrypt(data: PlayfairEncryptInput):
+def playfair_encrypt(data: PlayfairEncryptInput):
     if not data.key:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -229,7 +229,7 @@ async def playfair_encrypt(data: PlayfairEncryptInput):
         )
 
 @app.post("/api/playfair/decrypt")
-async def playfair_decrypt(data: PlayfairDecryptInput):
+def playfair_decrypt(data: PlayfairDecryptInput):
     if not data.key:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -246,7 +246,7 @@ async def playfair_decrypt(data: PlayfairDecryptInput):
         )
 
 @app.post("/api/affine/encrypt")
-async def affine_encrypt(data: AffineEncryptInput):
+def affine_encrypt(data: AffineEncryptInput):
 
     # Check if a_key is coprime to 26
     # Reduce a_key mod 26 first to handle negative or large values
@@ -266,7 +266,7 @@ async def affine_encrypt(data: AffineEncryptInput):
         )
 
 @app.post("/api/affine/decrypt")
-async def affine_decrypt(data: AffineDecryptInput):
+def affine_decrypt(data: AffineDecryptInput):
     # Check if a_key is coprime to 26
     a_norm = data.a_key % 26
     if math.gcd(a_norm, 26) != 1:
@@ -328,7 +328,7 @@ class LorenzDecryptInput(BaseModel):
 
 
 @app.post("/api/scytale/encrypt")
-async def scytale_encrypt(data: ScytaleEncryptInput):
+def scytale_encrypt(data: ScytaleEncryptInput):
     if data.width < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -345,7 +345,7 @@ async def scytale_encrypt(data: ScytaleEncryptInput):
         )
 
 @app.post("/api/scytale/decrypt")
-async def scytale_decrypt(data: ScytaleDecryptInput):
+def scytale_decrypt(data: ScytaleDecryptInput):
     if data.width < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -362,7 +362,7 @@ async def scytale_decrypt(data: ScytaleDecryptInput):
         )
 
 @app.post("/api/polybius/encrypt")
-async def polybius_encrypt(data: PolybiusEncryptInput):
+def polybius_encrypt(data: PolybiusEncryptInput):
     grid_key = data.key
     if not grid_key:
         grid_key = "abcdefghiklmnopqrstuvwxyz"
@@ -385,7 +385,7 @@ async def polybius_encrypt(data: PolybiusEncryptInput):
         )
 
 @app.post("/api/polybius/decrypt")
-async def polybius_decrypt(data: PolybiusDecryptInput):
+def polybius_decrypt(data: PolybiusDecryptInput):
     grid_key = data.key
     if not grid_key:
         grid_key = "abcdefghiklmnopqrstuvwxyz"
