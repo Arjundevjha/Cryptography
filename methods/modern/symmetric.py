@@ -227,27 +227,28 @@ def encrypt(message: str, key: bytes, iv: bytes) -> bytes:
     """Encrypt a message string using AES-256-CBC with PKCS7 padding."""
     round_keys = key_expansion(key)
     padded_data = pkcs7_pad(message.encode('utf-8'))
-    ciphertext = b""
+    ciphertext_blocks = []
     prev_block = iv
     for i in range(0, len(padded_data), BLOCK_SIZE):
         block = padded_data[i : i + BLOCK_SIZE]
         xor_block = bytes(x ^ y for x, y in zip(block, prev_block))
         enc_block = encrypt_block(xor_block, round_keys)
-        ciphertext += enc_block
+        ciphertext_blocks.append(enc_block)
         prev_block = enc_block
-    return ciphertext
+    return b"".join(ciphertext_blocks)
 
 def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> str:
     """Decrypt ciphertext bytes using AES-256-CBC and remove PKCS7 padding."""
     round_keys = key_expansion(key)
-    decrypted_data = b""
+    decrypted_blocks = []
     prev_block = iv
     for i in range(0, len(ciphertext), BLOCK_SIZE):
         block = ciphertext[i : i + BLOCK_SIZE]
         dec_block = decrypt_block(block, round_keys)
         xor_block = bytes(x ^ y for x, y in zip(dec_block, prev_block))
-        decrypted_data += xor_block
+        decrypted_blocks.append(xor_block)
         prev_block = block
+    decrypted_data = b"".join(decrypted_blocks)
     unpadded_data = pkcs7_unpad(decrypted_data)
     return unpadded_data.decode('utf-8')
 
