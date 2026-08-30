@@ -65,19 +65,19 @@ def test_check_coprime_invalid(a_key):
     """Test that invalid non-coprime keys raise ValueError in _check_coprime."""
     with pytest.raises(ValueError) as exc:
         _check_coprime(a_key)
-    assert "coprime" in str(exc.value)
+    assert f"The key 'a' ({a_key}) must be coprime to 26." in str(exc.value)
 
 @pytest.mark.parametrize("a_key", INVALID_A_KEYS)
 def test_encrypt_non_coprime(a_key):
     """Test that encrypt raises ValueError when key 'a' is not coprime to 26."""
     with pytest.raises(ValueError) as exc:
         encrypt("HELLO", a_key, 5)
-    assert "coprime" in str(exc.value)
+    assert f"The key 'a' ({a_key}) must be coprime to 26." in str(exc.value)
 
 @pytest.mark.parametrize("a_key", INVALID_A_KEYS)
 def test_decrypt_non_coprime(a_key):
     """Test that decrypt raises ValueError when key 'a' is not coprime to 26."""
     with pytest.raises(ValueError) as exc:
         decrypt("HELLO", a_key, 5)
-    assert "coprime" in str(exc.value)
+    assert f"The key 'a' ({a_key}) must be coprime to 26." in str(exc.value)
 
