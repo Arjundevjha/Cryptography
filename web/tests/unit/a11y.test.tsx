@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,13 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders ApiStatusDot with accessible status role and aria-label', () => {
+    render(<ApiStatusDot />);
+
+    const statusDot = screen.getByRole('status');
+    expect(statusDot).toBeInTheDocument();
+    expect(statusDot).toHaveAttribute('aria-label', expect.stringMatching(/cryptographic server/i));
   });
 });
