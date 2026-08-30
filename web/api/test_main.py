@@ -412,25 +412,29 @@ def test_sha256_text():
     assert response.status_code == 200
     assert response.json() == {"hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"}
 
-def test_rsa_encrypt_exception():
+def test_rsa_encrypt_exception(caplog):
     enc_payload = {
         "plaintext": "Secret Message",
         "public_key": "dummy_public_key"
     }
     with unittest.mock.patch("methods.modern.rsa.encrypt", side_effect=Exception("Test mock exception")):
-        response = client.post("/api/rsa/encrypt", json=enc_payload)
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/rsa/encrypt", json=enc_payload)
     assert response.status_code == 400
     assert response.json()["detail"] == "Test mock exception"
+    assert "RSA encryption error" in caplog.text
 
-def test_rsa_decrypt_exception():
+def test_rsa_decrypt_exception(caplog):
     dec_payload = {
         "ciphertext": "00",
         "private_key": "dummy_private_key"
     }
     with unittest.mock.patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
-        response = client.post("/api/rsa/decrypt", json=dec_payload)
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/rsa/decrypt", json=dec_payload)
     assert response.status_code == 400
     assert response.json()["detail"] == "Test mock exception"
+    assert "RSA decryption error" in caplog.text
 
 def test_aes_decrypt_exception(caplog):
     payload = {
