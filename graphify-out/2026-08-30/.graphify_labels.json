@@ -62,12 +62,5 @@
   "60": "UI Interactions Playwright E2E Tests",
   "61": "Modern Ciphers Playwright E2E Tests",
   "62": "E2E User Scenario Playwright Tests",
-  "63": "no_ai_slop.md",
-  "64": "Plugboard",
-  "65": "_prepare_text",
-  "66": "playfair.py",
-  "67": "encrypt",
-  "68": "test_playfair.py",
-  "69": "_find_position",
-  "70": "VercelPathMiddleware"
+  "63": "no_ai_slop.md"
 }

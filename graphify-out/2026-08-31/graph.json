@@ -2384,8 +2384,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_init",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma/__init__.py"
     },
     {
@@ -2395,8 +2395,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_init_rationale_1",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma machine components and simulation package."
     },
     {
@@ -2648,8 +2648,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_main",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 25,
+      "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "enigma/main.py"
     },
     {
@@ -2659,8 +2659,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_main_rationale_1",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 25,
+      "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "main simulation runner for the enigma machine."
     },
     {
@@ -2909,7 +2909,7 @@
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L12",
+      "source_location": "L6",
       "_origin": "ast",
       "id": "methods_historical_enigma_rotor_rotor_init",
       "community": 25,
@@ -2917,32 +2917,10 @@
       "norm_label": ".__init__()"
     },
     {
-      "label": ".left()",
-      "file_type": "code",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rotor_left",
-      "community": 25,
-      "community_name": "Enigma Rotor Mechanics Simulation",
-      "norm_label": ".left()"
-    },
-    {
-      "label": ".right()",
-      "file_type": "code",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rotor_right",
-      "community": 25,
-      "community_name": "Enigma Rotor Mechanics Simulation",
-      "norm_label": ".right()"
-    },
-    {
       "label": ".forward()",
       "file_type": "code",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L36",
+      "source_location": "L12",
       "_origin": "ast",
       "id": "methods_historical_enigma_rotor_rotor_forward",
       "community": 25,
@@ -2953,7 +2931,7 @@
       "label": ".backwards()",
       "file_type": "code",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L41",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "methods_historical_enigma_rotor_rotor_backwards",
       "community": 25,
@@ -2964,7 +2942,7 @@
       "label": ".rotate()",
       "file_type": "code",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L47",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "methods_historical_enigma_rotor_rotor_rotate",
       "community": 25,
@@ -2975,7 +2953,7 @@
       "label": ".rotate_to_letter()",
       "file_type": "code",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L54",
+      "source_location": "L32",
       "_origin": "ast",
       "id": "methods_historical_enigma_rotor_rotor_rotate_to_letter",
       "community": 25,
@@ -2986,7 +2964,7 @@
       "label": ".set_ring()",
       "file_type": "code",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L59",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "methods_historical_enigma_rotor_rotor_set_ring",
       "community": 25,
@@ -3005,7 +2983,7 @@
       "norm_label": "rotor component for enigma machine."
     },
     {
-      "label": "Rotor simulator representing a rotating scrambled wheel.      BOLT OPTIMIZATION:",
+      "label": "Rotor simulator representing a rotating scrambled wheel.",
       "file_type": "rationale",
       "source_file": "methods/historical/enigma/rotor.py",
       "source_location": "L4",
@@ -3013,48 +2991,26 @@
       "id": "methods_historical_enigma_rotor_rationale_4",
       "community": 25,
       "community_name": "Enigma Rotor Mechanics Simulation",
-      "norm_label": "rotor simulator representing a rotating scrambled wheel.      bolt optimization:"
+      "norm_label": "rotor simulator representing a rotating scrambled wheel."
     },
     {
       "label": "Initialize the rotor with a wiring permutation and turnover notch.",
       "file_type": "rationale",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L13",
+      "source_location": "L7",
       "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_13",
+      "id": "methods_historical_enigma_rotor_rationale_7",
       "community": 25,
       "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "initialize the rotor with a wiring permutation and turnover notch."
     },
     {
-      "label": "Dynamically build left alphabet state for backward compatibility.",
-      "file_type": "rationale",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L26",
-      "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_26",
-      "community": 25,
-      "community_name": "Enigma Rotor Mechanics Simulation",
-      "norm_label": "dynamically build left alphabet state for backward compatibility."
-    },
-    {
-      "label": "Dynamically build right wiring state for backward compatibility.",
-      "file_type": "rationale",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L32",
-      "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_32",
-      "community": 25,
-      "community_name": "Enigma Rotor Mechanics Simulation",
-      "norm_label": "dynamically build right wiring state for backward compatibility."
-    },
-    {
       "label": "Pass the signal forward from right side to left side of the rotor.",
       "file_type": "rationale",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L37",
+      "source_location": "L13",
       "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_37",
+      "id": "methods_historical_enigma_rotor_rationale_13",
       "community": 25,
       "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "pass the signal forward from right side to left side of the rotor."
@@ -3063,9 +3019,9 @@
       "label": "Pass the signal backwards from left side to right side of the rotor.",
       "file_type": "rationale",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L42",
+      "source_location": "L18",
       "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_42",
+      "id": "methods_historical_enigma_rotor_rationale_18",
       "community": 25,
       "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "pass the signal backwards from left side to right side of the rotor."
@@ -3074,9 +3030,9 @@
       "label": "Rotate the rotor n steps forward or backward.",
       "file_type": "rationale",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L48",
+      "source_location": "L23",
       "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_48",
+      "id": "methods_historical_enigma_rotor_rationale_23",
       "community": 25,
       "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "rotate the rotor n steps forward or backward."
@@ -3085,9 +3041,9 @@
       "label": "Rotate the rotor until the specified letter is at the top position.",
       "file_type": "rationale",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L55",
+      "source_location": "L33",
       "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_55",
+      "id": "methods_historical_enigma_rotor_rationale_33",
       "community": 25,
       "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "rotate the rotor until the specified letter is at the top position."
@@ -3096,9 +3052,9 @@
       "label": "Set the ring offset for the rotor, adjusting notch and wiring.",
       "file_type": "rationale",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L60",
+      "source_location": "L38",
       "_origin": "ast",
-      "id": "methods_historical_enigma_rotor_rationale_60",
+      "id": "methods_historical_enigma_rotor_rationale_38",
       "community": 25,
       "community_name": "Enigma Rotor Mechanics Simulation",
       "norm_label": "set the ring offset for the rotor, adjusting notch and wiring."
@@ -3858,8 +3814,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_get_positions",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 46,
+      "community_name": "RsaEncryptInput",
       "norm_label": ".get_positions()"
     },
     {
@@ -4001,8 +3957,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_60",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 46,
+      "community_name": "RsaEncryptInput",
       "norm_label": "get current position indices for all 12 wheels."
     },
     {
@@ -5464,8 +5420,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern/__init__.py"
     },
     {
@@ -5475,8 +5431,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init_rationale_1",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern cryptography methods package."
     },
     {
@@ -5827,8 +5783,8 @@
       "source_location": "L295",
       "_origin": "ast",
       "id": "methods_modern_hash_functions_sha256",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "sha256()"
     },
     {
@@ -6003,8 +5959,8 @@
       "source_location": "L296",
       "_origin": "ast",
       "id": "methods_modern_hash_functions_rationale_296",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "compute the sha-256 hash of the given data.      args:         data: the input s"
     },
     {
@@ -6663,8 +6619,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "methods_modern_symmetric_sub_word",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "sub_word()"
     },
     {
@@ -6674,8 +6630,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rot_word",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "rot_word()"
     },
     {
@@ -6707,8 +6663,8 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "methods_modern_symmetric_sub_bytes",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "sub_bytes()"
     },
     {
@@ -6729,8 +6685,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "methods_modern_symmetric_shift_rows",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "shift_rows()"
     },
     {
@@ -6751,8 +6707,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "methods_modern_symmetric_xtime",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "xtime()"
     },
     {
@@ -6773,8 +6729,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "methods_modern_symmetric_mix_columns",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "mix_columns()"
     },
     {
@@ -6795,8 +6751,8 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "methods_modern_symmetric_encrypt_block",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "encrypt_block()"
     },
     {
@@ -6817,8 +6773,8 @@
       "source_location": "L203",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_pad",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "pkcs7_pad()"
     },
     {
@@ -6828,8 +6784,8 @@
       "source_location": "L208",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_unpad",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "pkcs7_unpad()"
     },
     {
@@ -6916,8 +6872,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_59",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "substitute bytes in a 4-byte word using the s-box."
     },
     {
@@ -6927,8 +6883,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_63",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "rotate a 4-byte word: shift left by 1 position."
     },
     {
@@ -6960,8 +6916,8 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_103",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "substitute state bytes using the s-box."
     },
     {
@@ -6982,8 +6938,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_111",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "shift state rows to the left by row offsets."
     },
     {
@@ -7004,8 +6960,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_129",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "perform gf(2^8) multiplication by 2."
     },
     {
@@ -7026,8 +6982,8 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_148",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "mix the columns of the state matrix."
     },
     {
@@ -7048,8 +7004,8 @@
       "source_location": "L174",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_174",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "encrypt a single 16-byte block using aes."
     },
     {
@@ -7070,8 +7026,8 @@
       "source_location": "L204",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_204",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "apply pkcs7 padding to raw bytes."
     },
     {
@@ -7081,8 +7037,8 @@
       "source_location": "L209",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_209",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "remove pkcs7 padding from raw bytes."
     },
     {
@@ -7906,8 +7862,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "test_symmetric.py"
     },
     {
@@ -7917,8 +7873,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_padding",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "test_pkcs7_padding()"
     },
     {
@@ -7928,8 +7884,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_bytes",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "test_pkcs7_unpad_invalid_bytes()"
     },
     {
@@ -7939,8 +7895,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_value",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "test_pkcs7_unpad_invalid_value()"
     },
     {
@@ -8005,8 +7961,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_single_block_encryption_decryption",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "test_single_block_encryption_decryption()"
     },
     {
@@ -8060,8 +8016,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_92",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 31,
+      "community_name": "AES Key Expansion & S-Box Math",
       "norm_label": "test raw block encryption and decryption to ensure no data loss in core aes func"
     },
     {
@@ -8412,8 +8368,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware",
-      "community": 70,
-      "community_name": "VercelPathMiddleware",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "vercelpathmiddleware"
     },
     {
@@ -8423,8 +8379,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware_init",
-      "community": 70,
-      "community_name": "VercelPathMiddleware",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": ".__init__()"
     },
     {
@@ -8434,8 +8390,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware_call",
-      "community": 70,
-      "community_name": "VercelPathMiddleware",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": ".__call__()"
     },
     {
@@ -8764,8 +8720,8 @@
       "source_location": "L307",
       "_origin": "ast",
       "id": "web_api_main_enigmaencipherinput",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "enigmaencipherinput"
     },
     {
@@ -8841,8 +8797,8 @@
       "source_location": "L435",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_rotors",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "validate_enigma_rotors()"
     },
     {
@@ -8852,8 +8808,8 @@
       "source_location": "L447",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_positions",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "validate_enigma_positions()"
     },
     {
@@ -8863,8 +8819,8 @@
       "source_location": "L455",
       "_origin": "ast",
       "id": "web_api_main_parse_and_validate_enigma_rings",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "parse_and_validate_enigma_rings()"
     },
     {
@@ -8874,8 +8830,8 @@
       "source_location": "L484",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_plugboard",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "validate_enigma_plugboard()"
     },
     {
@@ -8885,8 +8841,8 @@
       "source_location": "L497",
       "_origin": "ast",
       "id": "web_api_main_enigma_encipher",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "enigma_encipher()"
     },
     {
@@ -8973,8 +8929,8 @@
       "source_location": "L644",
       "_origin": "ast",
       "id": "web_api_main_sha256input",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "sha256input"
     },
     {
@@ -9050,8 +9006,8 @@
       "source_location": "L794",
       "_origin": "ast",
       "id": "web_api_main_sha256_endpoint",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "sha256_endpoint()"
     },
     {
@@ -9083,8 +9039,8 @@
       "source_location": "L498",
       "_origin": "ast",
       "id": "web_api_main_rationale_498",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "encipher plaintext using the enigma cipher machine."
     },
     {
@@ -11924,17 +11880,6 @@
       "community": 41,
       "community_name": "FastAPI Request Validation Handler",
       "norm_label": "2025-05-20 - pre-compute coordinate maps for grid ciphers"
-    },
-    {
-      "label": "2025-05-21 - Optimize Enigma Rotor State Transitions with Modular Offset Arithmetic",
-      "file_type": "document",
-      "source_file": ".Jules/bolt.md",
-      "source_location": "L17",
-      "_origin": "ast",
-      "id": "jules_bolt_2025_05_21_optimize_enigma_rotor_state_transitions_with_modular_offset_arithmetic",
-      "community": 41,
-      "community_name": "FastAPI Request Validation Handler",
-      "norm_label": "2025-05-21 - optimize enigma rotor state transitions with modular offset arithmetic"
     },
     {
       "label": "palette.md",
@@ -19166,7 +19111,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L41",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor",
@@ -19177,7 +19122,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L36",
+      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor",
@@ -19188,7 +19133,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L12",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor",
@@ -19199,29 +19144,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L25",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rotor",
-      "target": "methods_historical_enigma_rotor_rotor_left",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L31",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rotor",
-      "target": "methods_historical_enigma_rotor_rotor_right",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L47",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor",
@@ -19232,7 +19155,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L54",
+      "source_location": "L32",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor",
@@ -19243,7 +19166,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L59",
+      "source_location": "L37",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor",
@@ -19651,10 +19574,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L13",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_13",
+      "source": "methods_historical_enigma_rotor_rationale_7",
       "target": "methods_historical_enigma_rotor_rotor_init",
       "confidence_score": 1.0
     },
@@ -19662,32 +19585,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L26",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_26",
-      "target": "methods_historical_enigma_rotor_rotor_left",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L32",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_32",
-      "target": "methods_historical_enigma_rotor_rotor_right",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L37",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_37",
+      "source": "methods_historical_enigma_rotor_rationale_13",
       "target": "methods_historical_enigma_rotor_rotor_forward",
       "confidence_score": 1.0
     },
@@ -19695,10 +19596,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L42",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_42",
+      "source": "methods_historical_enigma_rotor_rationale_18",
       "target": "methods_historical_enigma_rotor_rotor_backwards",
       "confidence_score": 1.0
     },
@@ -19706,10 +19607,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L48",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_48",
+      "source": "methods_historical_enigma_rotor_rationale_23",
       "target": "methods_historical_enigma_rotor_rotor_rotate",
       "confidence_score": 1.0
     },
@@ -19718,7 +19619,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L57",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor_rotate_to_letter",
@@ -19730,7 +19631,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L62",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_enigma_rotor_rotor_set_ring",
@@ -19741,10 +19642,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L55",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_55",
+      "source": "methods_historical_enigma_rotor_rationale_33",
       "target": "methods_historical_enigma_rotor_rotor_rotate_to_letter",
       "confidence_score": 1.0
     },
@@ -19752,10 +19653,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/enigma/rotor.py",
-      "source_location": "L60",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_enigma_rotor_rationale_60",
+      "source": "methods_historical_enigma_rotor_rationale_38",
       "target": "methods_historical_enigma_rotor_rotor_set_ring",
       "confidence_score": 1.0
     },
@@ -34492,17 +34393,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".Jules/bolt.md",
-      "source_location": "L17",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "jules_bolt",
-      "target": "jules_bolt_2025_05_21_optimize_enigma_rotor_state_transitions_with_modular_offset_arithmetic",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": ".Jules/palette.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -34944,5 +34834,5 @@
       "source_file": "STYLE_GUIDE.md"
     }
   ],
-  "built_at_commit": "f3f5af3235513b80d16edf05ce43a6f7d5a04946"
+  "built_at_commit": "60f8a3d85985135f90a03d3e21ad21046b4e10b9"
 }
