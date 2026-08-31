@@ -476,7 +476,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
             <button
               onClick={() => setLorenzPositions(Array(12).fill(0))}
-              className="w-full py-1 rounded bg-stone-900 hover:bg-stone-800 text-stone-400 text-[10px] font-mono flex items-center justify-center gap-1 border border-stone-800"
+              aria-label="Reset all wheel positions to 0"
+              className="w-full py-1 rounded bg-stone-900 hover:bg-stone-800 text-stone-400 text-[10px] font-mono flex items-center justify-center gap-1 border border-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
             >
               <RefreshCw className="w-3 h-3" /> Reset Positions to 0
             </button>

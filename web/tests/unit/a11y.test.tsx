@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,17 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders Lorenz Workbench reset button with accessible aria-label and resets wheel positions', () => {
+    const lorenzExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'lorenz') || sampleExhibit;
+    render(<WorkbenchPanel exhibit={lorenzExhibit} />);
+
+    const resetButton = screen.getByRole('button', { name: /reset all wheel positions to 0/i });
+    expect(resetButton).toBeInTheDocument();
+
+    fireEvent.click(resetButton);
+    const hiddenPosInput = screen.getByTestId('param-positions-lorenz');
+    expect(hiddenPosInput).toHaveValue('0,0,0,0,0,0,0,0,0,0,0,0');
   });
 });
