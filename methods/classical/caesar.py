@@ -1,11 +1,11 @@
 """Caesar cipher implementation."""
 
-import random
+import secrets
 import string
 
 def pick_keys() -> int:
     """Generate a random shift key for Caesar cipher (1-25)."""
-    return random.randint(1, 25)
+    return secrets.randbelow(25) + 1
 
 def encrypt(plaintext: str, shift: int) -> str:
     """Encrypt plaintext using Caesar cipher.
