@@ -421,7 +421,7 @@ def test_rsa_encrypt_exception(caplog):
         with caplog.at_level("ERROR"):
             response = client.post("/api/rsa/encrypt", json=enc_payload)
     assert response.status_code == 400
-    assert response.json()["detail"] == "Test mock exception"
+    assert response.json()["detail"] == "Encryption failed"
     assert "RSA encryption error" in caplog.text
 
 def test_rsa_decrypt_exception(caplog):
@@ -433,7 +433,7 @@ def test_rsa_decrypt_exception(caplog):
         with caplog.at_level("ERROR"):
             response = client.post("/api/rsa/decrypt", json=dec_payload)
     assert response.status_code == 400
-    assert response.json()["detail"] == "Test mock exception"
+    assert response.json()["detail"] == "Decryption failed"
     assert "RSA decryption error" in caplog.text
 
 def test_aes_decrypt_exception(caplog):
@@ -447,8 +447,17 @@ def test_aes_decrypt_exception(caplog):
         with caplog.at_level("ERROR"):
             response = client.post("/api/aes/decrypt", json=payload)
     assert response.status_code == 400
-    assert "Mocked decryption error" in response.json()["detail"]
+    assert response.json()["detail"] == "Decryption failed"
     assert "AES decryption error" in caplog.text
+
+def test_sha256_exception(caplog):
+    payload = {"plaintext": "hello"}
+    with unittest.mock.patch("methods.modern.hash_functions.sha256", side_effect=Exception("Mocked SHA256 error")):
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/sha256", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Hashing failed"
+    assert "SHA256 error" in caplog.text
 
 def test_aes_decrypt_invalid_hex_logging(caplog):
     payload = {

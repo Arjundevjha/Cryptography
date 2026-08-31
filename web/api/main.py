@@ -716,7 +716,7 @@ def aes_decrypt_endpoint(data: AesDecryptInput):
         return {"plaintext": plaintext}
     except Exception as e:
         logger.error("AES decryption error: %s", e)
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="Decryption failed")
 
 
 @app.post("/api/rsa/keygen")
@@ -774,7 +774,7 @@ def rsa_encrypt(data: RsaEncryptInput):
         return {"ciphertext": ciphertext_bytes.hex()}
     except Exception as e:
         logger.error("RSA encryption error: %s", e)
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="Encryption failed")
 
 
 @app.post("/api/rsa/decrypt")
@@ -787,7 +787,7 @@ def rsa_decrypt(data: RsaDecryptInput):
         return {"plaintext": plaintext}
     except Exception as e:
         logger.error("RSA decryption error: %s", e)
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="Decryption failed")
 
 
 @app.post("/api/sha256")
@@ -797,6 +797,7 @@ def sha256_endpoint(data: Sha256Input):
         hash_val = sha256(data.plaintext)
         return {"hash": hash_val}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error("SHA256 error: %s", e)
+        raise HTTPException(status_code=400, detail="Hashing failed")
 
 
