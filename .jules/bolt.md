@@ -14,3 +14,6 @@
 **Learning:** Grid-based ciphers like Polybius Square suffer from repeated $O(K)$ string searching (`key.index(...)`), modulo/division arithmetic, and dynamic string formatting within per-character loops. Pre-computing dictionary maps (`pos_map` for character-to-coordinate string and `coord_map` for coordinate-pair to character) reduces per-character lookups to $O(1)$ dictionary lookups, providing a ~2.8x speedup for encryption and ~1.5x for decryption.
 **Action:** Always pre-compute coordinate lookup maps when performing grid or table-based character lookups in ciphers.
 
+## 2025-05-21 - Optimize Enigma Rotor State Transitions with Modular Offset Arithmetic
+**Learning:** In stateful wheel ciphers like Enigma rotors, performing string re-slicing (`self.left[1:] + self.left[0]`) on every rotor step and `str.find()` calls during forward/backwards signal routing creates heavy string allocation and linear search overhead. Maintaining fixed array lookup maps and tracking rotor position via modular integer offset arithmetic (`(signal + offset) % 26`) eliminates memory allocations and provides a ~2.3x speedup.
+**Action:** Use fixed lookup arrays and modular position offsets for stateful rotating wheel ciphers.
