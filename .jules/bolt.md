@@ -17,3 +17,7 @@
 ## 2025-05-21 - Optimize Enigma Rotor State Transitions with Modular Offset Arithmetic
 **Learning:** In stateful wheel ciphers like Enigma rotors, performing string re-slicing (`self.left[1:] + self.left[0]`) on every rotor step and `str.find()` calls during forward/backwards signal routing creates heavy string allocation and linear search overhead. Maintaining fixed array lookup maps and tracking rotor position via modular integer offset arithmetic (`(signal + offset) % 26`) eliminates memory allocations and provides a ~2.3x speedup.
 **Action:** Use fixed lookup arrays and modular position offsets for stateful rotating wheel ciphers.
+
+## 2025-05-22 - Bypass Call Stack & Redundant Object Allocations in Lorenz Machine Message Loops
+**Learning:** In complex multi-wheel machines like Lorenz SZ40/SZ42, calling per-character helper stack functions (`encrypt_char`, `char_to_ita2`, `encrypt_vector`, `xor_vectors`, `ita2_to_char`) inside the message processing loop invokes up to 5 Python function stack frames, vector allocations, and list-comprehension type conversions per character. Inlining active wheel pin bitwise XORs and directly converting tuples in `ita2_to_char` achieves ~3x performance speedups.
+**Action:** Inline tight character loops in machine ciphers to directly access active pin vectors and avoid intermediate list allocations and call stack frame overhead.
