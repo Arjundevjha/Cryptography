@@ -1,16 +1,16 @@
-# Graph Report - Cryptography  (2026-09-01)
+# Graph Report - Cryptography  (2026-08-31)
 
 ## Corpus Check
-- 110 files · ~61,661 words
+- 110 files · ~61,797 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1123 nodes · 1963 edges · 71 communities (58 shown, 13 thin omitted)
+- 1121 nodes · 1962 edges · 71 communities (58 shown, 13 thin omitted)
 - Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 157 edges (avg confidence: 0.51)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2fe4988e`
+- Built from commit: `f3f5af32`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -114,8 +114,8 @@ Cohesion: 0.09
 Nodes (22): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext., Test decrypt converts uppercase characters to lowercase and 'J' to 'I'. (+14 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
-Cohesion: 0.09
-Nodes (48): BaseModel, Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Compute the SHA-256 hash of the given data.      Args:         data: The input s, sha256(), aes_decrypt_endpoint(), aes_encrypt(), AesDecryptInput (+40 more)
+Cohesion: 0.10
+Nodes (45): BaseModel, Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Get current position indices for all 12 wheels., aes_decrypt_endpoint(), aes_encrypt(), AesDecryptInput, AesEncryptInput (+37 more)
 
 ### Community 4 - "Frontend App Third-Party Dependencies"
 Cohesion: 0.05
@@ -146,8 +146,8 @@ Cohesion: 0.06
 Nodes (31): dom, dom.iterable, esnext, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts, node_modules, playwright.config.ts (+23 more)
 
 ### Community 11 - "Polybius Square Cipher Implementation"
-Cohesion: 0.10
-Nodes (29): decrypt(), encrypt(), main(), pick_keys(), Polybius Square cipher implementation., Encrypt plaintext using the Polybius Square cipher.      Maps each letter to a t, Decrypt ciphertext using the Polybius Square cipher.      Parses two-digit coord, Run an interactive test of the Polybius Square cipher. (+21 more)
+Cohesion: 0.09
+Nodes (31): Historical cryptography methods package., decrypt(), encrypt(), main(), pick_keys(), Polybius Square cipher implementation., Encrypt plaintext using the Polybius Square cipher.      Maps each letter to a t, Decrypt ciphertext using the Polybius Square cipher.      Parses two-digit coord (+23 more)
 
 ### Community 12 - "HMAC and Digital Signature Utilities"
 Cohesion: 0.14
@@ -178,8 +178,8 @@ Cohesion: 0.11
 Nodes (25): add_round_key(), decrypt_block(), encrypt_block(), inv_mix_columns(), inv_shift_rows(), inv_sub_bytes(), mix_columns(), mul_gf() (+17 more)
 
 ### Community 19 - "Scytale Cipher & Classical Init Modules"
-Cohesion: 0.14
-Nodes (20): Classical cryptography methods package., Historical cryptography methods package., decrypt(), encrypt(), main(), pick_keys(), Scytale transposition cipher implementation., Encrypt plaintext using the Scytale cipher.      Pads the plaintext and performs (+12 more)
+Cohesion: 0.21
+Nodes (17): decrypt(), encrypt(), main(), pick_keys(), Scytale transposition cipher implementation., Encrypt plaintext using the Scytale cipher.      Pads the plaintext and performs, Decrypt ciphertext using the Scytale cipher.      Reverses the column-wise trans, Run an interactive test of the Scytale cipher. (+9 more)
 
 ### Community 20 - "Enigma Cipher Machine Implementation"
 Cohesion: 0.12
@@ -190,8 +190,8 @@ Cohesion: 0.11
 Nodes (16): Set positions for all 12 wheels.          Args:             positions: Dict cont, Manages the 12 Lorenz pinwheels and their stepping drive rules., Initialize stepping controller with 12 Lorenz wheels.          Args:, Get current 5-bit vector from the 5 Chi wheels., Get current 5-bit vector from the 5 Psi wheels., Generate current 5-bit keystream vector K = Chi ^ Psi., Advance wheels according to Lorenz stepping rules for next character:          1, Get current position indices for all 12 wheels.          Returns:             Di (+8 more)
 
 ### Community 22 - "Vigenere Cipher Unit Tests"
-Cohesion: 0.14
-Nodes (25): test_decrypt(), test_decrypt_unmatching_length_and_edge_cases(), test_encrypt(), test_encrypt_decrypt_char(), test_encrypt_decrypt_roundtrip(), test_encrypt_unmatching_length_and_edge_cases(), test_main_custom_key(), test_main_random_key() (+17 more)
+Cohesion: 0.13
+Nodes (26): Classical cryptography methods package., test_decrypt(), test_decrypt_unmatching_length_and_edge_cases(), test_encrypt(), test_encrypt_decrypt_char(), test_encrypt_decrypt_roundtrip(), test_encrypt_unmatching_length_and_edge_cases(), test_main_custom_key() (+18 more)
 
 ### Community 23 - "Enigma Keyboard Component Routing"
 Cohesion: 0.29
@@ -207,7 +207,7 @@ Nodes (18): Rotor component for Enigma machine., Initialize the rotor with a wir
 
 ### Community 27 - "Enigma Reflector Simulator Routing"
 Cohesion: 0.12
-Nodes (15): Main simulation runner for the Enigma machine., Reflector component for Enigma machine., Reflect a signal back through the rotors., Get the current reflector wiring mapping., Reflector simulator for reversing signal direction in Enigma., Initialize the reflector with standard and custom wiring mapping., Reflector, Test the reflecting logic of the Reflector. (+7 more)
+Nodes (15): Enigma machine components and simulation package., Reflector component for Enigma machine., Reflect a signal back through the rotors., Get the current reflector wiring mapping., Reflector simulator for reversing signal direction in Enigma., Initialize the reflector with standard and custom wiring mapping., Reflector, Test the reflecting logic of the Reflector. (+7 more)
 
 ### Community 28 - "Frontend TypeScript Cipher Adapters"
 Cohesion: 0.23
@@ -250,12 +250,12 @@ Cohesion: 0.33
 Nodes (6): is_valid_origin(), parse_allowed_origins(), Validates if an origin string is a secure, well-formed HTTP/HTTPS origin., Parses and validates CORS_ALLOWED_ORIGINS from environment string., test_is_valid_origin(), test_parse_allowed_origins()
 
 ### Community 41 - "FastAPI Request Validation Handler"
-Cohesion: 0.29
-Nodes (6): 2025-05-18 - Vectorize Vigenère Cipher Operations, 2025-05-19 - Vectorize Affine Cipher via str.maketrans, 2025-05-20 - Pre-compute Coordinate Maps for Grid Ciphers, 2025-05-20 - Vectorize Scytale Cipher Transposition via Strided Slicing, 2025-05-21 - Optimize Enigma Rotor State Transitions with Modular Offset Arithmetic, 2025-05-22 - Bypass Call Stack & Redundant Object Allocations in Lorenz Machine Message Loops
+Cohesion: 0.33
+Nodes (5): 2025-05-18 - Vectorize Vigenère Cipher Operations, 2025-05-19 - Vectorize Affine Cipher via str.maketrans, 2025-05-20 - Pre-compute Coordinate Maps for Grid Ciphers, 2025-05-20 - Vectorize Scytale Cipher Transposition via Strided Slicing, 2025-05-21 - Optimize Enigma Rotor State Transitions with Modular Offset Arithmetic
 
 ### Community 64 - "Plugboard"
-Cohesion: 0.13
-Nodes (13): Enigma machine components and simulation package., Plugboard, Plugboard component for Enigma machine., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Initialize the plugboard wiring based on pair mappings., Test plugboard with a single pair. (+5 more)
+Cohesion: 0.11
+Nodes (17): Main simulation runner for the Enigma machine., Plugboard, Plugboard component for Enigma machine., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Initialize the plugboard wiring based on pair mappings., Test plugboard with a single pair. (+9 more)
 
 ### Community 65 - "_prepare_text"
 Cohesion: 0.14
@@ -278,7 +278,7 @@ Cohesion: 0.33
 Nodes (6): _find_position(), Find row and column of a character in the grid., Test finding a character's row and column in the grid., Test ValueError is raised if character is missing., test_find_position(), test_find_position_missing_char()
 
 ## Knowledge Gaps
-- **120 isolated node(s):** `run_e2e_no_install.sh script`, `PYTHONPATH`, `run_e2e_tests.sh script`, `PYTHONPATH`, `run_tests.sh script` (+115 more)
+- **119 isolated node(s):** `run_e2e_no_install.sh script`, `PYTHONPATH`, `run_e2e_tests.sh script`, `PYTHONPATH`, `run_tests.sh script` (+114 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -287,9 +287,9 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Wheel` connect `Lorenz Wheels Components Testing` to `FastAPI Backend Routes & Schema Models`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Stepping Controller Engine`, `Baudot ITA2 Lorenz Code Conversions`?**
   _High betweenness centrality (0.049) - this node is a cross-community bridge._
-- **Why does `sha256()` connect `FastAPI Backend Routes & Schema Models` to `Manual Hash Function Implementations`?**
+- **Why does `sha256()` connect `Plugboard` to `FastAPI Backend Routes & Schema Models`, `Manual Hash Function Implementations`?**
   _High betweenness centrality (0.048) - this node is a cross-community bridge._
-- **Why does `Lorenz` connect `FastAPI Backend Routes & Schema Models` to `Lorenz Text Processing Procedures`, `Lorenz Machine Core Unit Tests`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Interactive CLI Simulation Runner`, `VercelPathMiddleware`, `RsaEncryptInput`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `Lorenz Stepping Controller Engine`, `Enigma Keyboard Component Routing`, `Lorenz Machine Cryptography Vector Math`?**
+- **Why does `Lorenz` connect `FastAPI Backend Routes & Schema Models` to `Plugboard`, `Lorenz Text Processing Procedures`, `Lorenz Machine Core Unit Tests`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Interactive CLI Simulation Runner`, `VercelPathMiddleware`, `RsaEncryptInput`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `Lorenz Stepping Controller Engine`, `Enigma Keyboard Component Routing`, `Lorenz Machine Cryptography Vector Math`?**
   _High betweenness centrality (0.046) - this node is a cross-community bridge._
 - **Are the 25 inferred relationships involving `Lorenz` (e.g. with `SteppingController` and `Wheel`) actually correct?**
   _`Lorenz` has 25 INFERRED edges - model-reasoned connections that need verification._
