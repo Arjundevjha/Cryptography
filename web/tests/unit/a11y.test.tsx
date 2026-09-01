@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,19 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders WorkbenchPanel with label-associated input textarea and aria-busy state on execute button', () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Check accessible textarea associated with label
+    const textarea = screen.getByRole('textbox', { name: /plaintext input/i });
+    expect(textarea).toBeInTheDocument();
+    expect(textarea).toHaveAttribute('id', `input-${sampleExhibit.id}`);
+
+    // Check execute button has aria-busy attribute
+    const executeButton = screen.getByRole('button', { name: /execute encrypt/i });
+    expect(executeButton).toBeInTheDocument();
+    expect(executeButton).toHaveAttribute('aria-busy', 'false');
   });
 });
