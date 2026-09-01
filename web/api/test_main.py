@@ -51,18 +51,22 @@ def test_affine_decrypt_non_coprime(a_key):
     assert "coprime" in response.json()["detail"].lower()
 
 @unittest.mock.patch("api.main.affine.encrypt")
-def test_affine_encrypt_internal_error(mock_encrypt):
-    mock_encrypt.side_effect = ValueError("Test internal error")
-    response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": 5, "b_key": 8})
+def test_affine_encrypt_internal_error(mock_encrypt, caplog):
+    mock_encrypt.side_effect = RuntimeError("Test internal error")
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/affine/encrypt", json={"plaintext": "HELLO", "a_key": 5, "b_key": 8})
     assert response.status_code == 400
-    assert response.json() == {"detail": "Test internal error"}
+    assert response.json() == {"detail": "Encryption failed"}
+    assert "Affine encryption error" in caplog.text
 
 @unittest.mock.patch("api.main.affine.decrypt")
-def test_affine_decrypt_internal_error(mock_decrypt):
-    mock_decrypt.side_effect = ValueError("Test internal error")
-    response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": 5, "b_key": 8})
+def test_affine_decrypt_internal_error(mock_decrypt, caplog):
+    mock_decrypt.side_effect = RuntimeError("Test internal error")
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/affine/decrypt", json={"ciphertext": "HELLO", "a_key": 5, "b_key": 8})
     assert response.status_code == 400
-    assert response.json() == {"detail": "Test internal error"}
+    assert response.json() == {"detail": "Decryption failed"}
+    assert "Affine decryption error" in caplog.text
 
 
 
@@ -567,24 +571,28 @@ def test_lorenz_api_invalid_pins():
     assert "encryption failed" in enc.json()["detail"].lower()
 
 
-def test_lorenz_api_value_error_exception():
-    with unittest.mock.patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=ValueError("Test Lorenz ValueError")):
-        resp = client.post("/api/lorenz/encrypt", json={"plaintext": "HELLO"})
+def test_lorenz_api_runtime_error_exception(caplog):
+    with unittest.mock.patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=RuntimeError("Test Lorenz RuntimeError")):
+        with caplog.at_level("ERROR"):
+            resp = client.post("/api/lorenz/encrypt", json={"plaintext": "HELLO"})
         assert resp.status_code == 400
-        assert "encryption failed: test lorenz valueerror" in resp.json()["detail"].lower()
+        assert resp.json() == {"detail": "Encryption failed"}
+        assert "Lorenz encryption error" in caplog.text
 
 
-def test_enigma_api_value_error_exception():
-    with unittest.mock.patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=ValueError("Test Enigma ValueError")):
-        resp = client.post("/api/enigma/encipher", json={
-            "plaintext": "HELLO",
-            "rotors": ["I", "II", "III"],
-            "positions": ["A", "A", "A"],
-            "rings": ["A", "A", "A"],
-            "plugboard": []
-        })
+def test_enigma_api_runtime_error_exception(caplog):
+    with unittest.mock.patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=RuntimeError("Test Enigma RuntimeError")):
+        with caplog.at_level("ERROR"):
+            resp = client.post("/api/enigma/encipher", json={
+                "plaintext": "HELLO",
+                "rotors": ["I", "II", "III"],
+                "positions": ["A", "A", "A"],
+                "rings": ["A", "A", "A"],
+                "plugboard": []
+            })
         assert resp.status_code == 400
-        assert "encryption failed: test enigma valueerror" in resp.json()["detail"].lower()
+        assert resp.json() == {"detail": "Encryption failed"}
+        assert "Enigma encryption error" in caplog.text
 
 
 # ==========================================
