@@ -1,7 +1,7 @@
-# Graph Report - Cryptography  (2026-09-02)
+# Graph Report - Cryptography  (2026-09-01)
 
 ## Corpus Check
-- 110 files · ~61,888 words
+- 110 files · ~61,661 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c317c8b8`
+- Built from commit: `2fe4988e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -114,8 +114,8 @@ Cohesion: 0.09
 Nodes (22): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext., Test decrypt converts uppercase characters to lowercase and 'J' to 'I'. (+14 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
-Cohesion: 0.10
-Nodes (45): BaseModel, Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Get current position indices for all 12 wheels., aes_decrypt_endpoint(), aes_encrypt(), AesDecryptInput, AesEncryptInput (+37 more)
+Cohesion: 0.09
+Nodes (48): BaseModel, Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Compute the SHA-256 hash of the given data.      Args:         data: The input s, sha256(), aes_decrypt_endpoint(), aes_encrypt(), AesDecryptInput (+40 more)
 
 ### Community 4 - "Frontend App Third-Party Dependencies"
 Cohesion: 0.05
@@ -207,11 +207,11 @@ Nodes (18): Rotor component for Enigma machine., Initialize the rotor with a wir
 
 ### Community 27 - "Enigma Reflector Simulator Routing"
 Cohesion: 0.12
-Nodes (15): Enigma machine components and simulation package., Reflector component for Enigma machine., Reflect a signal back through the rotors., Get the current reflector wiring mapping., Reflector simulator for reversing signal direction in Enigma., Initialize the reflector with standard and custom wiring mapping., Reflector, Test the reflecting logic of the Reflector. (+7 more)
+Nodes (15): Main simulation runner for the Enigma machine., Reflector component for Enigma machine., Reflect a signal back through the rotors., Get the current reflector wiring mapping., Reflector simulator for reversing signal direction in Enigma., Initialize the reflector with standard and custom wiring mapping., Reflector, Test the reflecting logic of the Reflector. (+7 more)
 
 ### Community 28 - "Frontend TypeScript Cipher Adapters"
 Cohesion: 0.23
-Nodes (17): caesarDecrypt(), caesarEncrypt(), cleanPolybiusKey(), enigmaStepRotors(), generatePlayfairGrid(), getPolybiusCoords(), isPrimeTypeScript(), playfairDecrypt() (+9 more)
+Nodes (17): caesarDecrypt(), caesarEncrypt(), cleanPolybiusKey(), enigmaStepRotors(), generatePlayfairGrid(), getPolybiusCoords(), isPrimeTypeScript(), padVigenereKey() (+9 more)
 
 ### Community 29 - "Frontend UI Build Entrypoints"
 Cohesion: 0.12
@@ -254,8 +254,8 @@ Cohesion: 0.29
 Nodes (6): 2025-05-18 - Vectorize Vigenère Cipher Operations, 2025-05-19 - Vectorize Affine Cipher via str.maketrans, 2025-05-20 - Pre-compute Coordinate Maps for Grid Ciphers, 2025-05-20 - Vectorize Scytale Cipher Transposition via Strided Slicing, 2025-05-21 - Optimize Enigma Rotor State Transitions with Modular Offset Arithmetic, 2025-05-22 - Bypass Call Stack & Redundant Object Allocations in Lorenz Machine Message Loops
 
 ### Community 64 - "Plugboard"
-Cohesion: 0.11
-Nodes (17): Main simulation runner for the Enigma machine., Plugboard, Plugboard component for Enigma machine., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Initialize the plugboard wiring based on pair mappings., Test plugboard with a single pair. (+9 more)
+Cohesion: 0.13
+Nodes (13): Enigma machine components and simulation package., Plugboard, Plugboard component for Enigma machine., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Initialize the plugboard wiring based on pair mappings., Test plugboard with a single pair. (+5 more)
 
 ### Community 65 - "_prepare_text"
 Cohesion: 0.14
@@ -287,9 +287,9 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Wheel` connect `Lorenz Wheels Components Testing` to `FastAPI Backend Routes & Schema Models`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Stepping Controller Engine`, `Baudot ITA2 Lorenz Code Conversions`?**
   _High betweenness centrality (0.049) - this node is a cross-community bridge._
-- **Why does `sha256()` connect `Plugboard` to `FastAPI Backend Routes & Schema Models`, `Manual Hash Function Implementations`?**
+- **Why does `sha256()` connect `FastAPI Backend Routes & Schema Models` to `Manual Hash Function Implementations`?**
   _High betweenness centrality (0.048) - this node is a cross-community bridge._
-- **Why does `Lorenz` connect `FastAPI Backend Routes & Schema Models` to `Plugboard`, `Lorenz Text Processing Procedures`, `Lorenz Machine Core Unit Tests`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Interactive CLI Simulation Runner`, `VercelPathMiddleware`, `RsaEncryptInput`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `Lorenz Stepping Controller Engine`, `Enigma Keyboard Component Routing`, `Lorenz Machine Cryptography Vector Math`?**
+- **Why does `Lorenz` connect `FastAPI Backend Routes & Schema Models` to `Lorenz Text Processing Procedures`, `Lorenz Machine Core Unit Tests`, `Lorenz Machine Pinwheels Initialization`, `Lorenz Interactive CLI Simulation Runner`, `VercelPathMiddleware`, `RsaEncryptInput`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `Lorenz Stepping Controller Engine`, `Enigma Keyboard Component Routing`, `Lorenz Machine Cryptography Vector Math`?**
   _High betweenness centrality (0.046) - this node is a cross-community bridge._
 - **Are the 25 inferred relationships involving `Lorenz` (e.g. with `SteppingController` and `Wheel`) actually correct?**
   _`Lorenz` has 25 INFERRED edges - model-reasoned connections that need verification._
