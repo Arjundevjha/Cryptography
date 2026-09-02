@@ -159,10 +159,13 @@ def caesar_encrypt(data: CaesarEncryptInput):
         from methods.classical import caesar
         ciphertext = caesar.encrypt(data.plaintext, data.shift)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Caesar encryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Encryption failed"
         )
 
 @app.post("/api/caesar/decrypt")
@@ -171,10 +174,13 @@ def caesar_decrypt(data: CaesarDecryptInput):
         from methods.classical import caesar
         plaintext = caesar.decrypt(data.ciphertext, data.shift)
         return {"plaintext": plaintext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Caesar decryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Decryption failed"
         )
 
 @app.post("/api/vigenere/encrypt")
@@ -188,10 +194,13 @@ def vigenere_encrypt(data: VigenereEncryptInput):
         from methods.classical import vigenere
         ciphertext = vigenere.encrypt(data.plaintext, data.key)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Vigenere encryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Encryption failed"
         )
 
 @app.post("/api/vigenere/decrypt")
@@ -205,10 +214,13 @@ def vigenere_decrypt(data: VigenereDecryptInput):
         from methods.classical import vigenere
         plaintext = vigenere.decrypt(data.ciphertext, data.key)
         return {"plaintext": plaintext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Vigenere decryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Decryption failed"
         )
 
 @app.post("/api/playfair/encrypt")
@@ -222,10 +234,13 @@ def playfair_encrypt(data: PlayfairEncryptInput):
         from methods.classical import playfair
         ciphertext = playfair.encrypt(data.plaintext, data.key)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Playfair encryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Encryption failed"
         )
 
 @app.post("/api/playfair/decrypt")
@@ -239,10 +254,13 @@ def playfair_decrypt(data: PlayfairDecryptInput):
         from methods.classical import playfair
         plaintext = playfair.decrypt(data.ciphertext, data.key)
         return {"plaintext": plaintext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Playfair decryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Decryption failed"
         )
 
 @app.post("/api/affine/encrypt")
@@ -259,10 +277,13 @@ def affine_encrypt(data: AffineEncryptInput):
     try:
         ciphertext = affine.encrypt(data.plaintext, data.a_key, data.b_key)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Affine encryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Encryption failed"
         )
 
 @app.post("/api/affine/decrypt")
@@ -277,10 +298,13 @@ def affine_decrypt(data: AffineDecryptInput):
     try:
         plaintext = affine.decrypt(data.ciphertext, data.a_key, data.b_key)
         return {"plaintext": plaintext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Affine decryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Decryption failed"
         )
 
 
@@ -338,10 +362,13 @@ def scytale_encrypt(data: ScytaleEncryptInput):
         from methods.historical import scytale
         ciphertext = scytale.encrypt(data.plaintext, data.width)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Scytale encryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Encryption failed"
         )
 
 @app.post("/api/scytale/decrypt")
@@ -355,10 +382,13 @@ def scytale_decrypt(data: ScytaleDecryptInput):
         from methods.historical import scytale
         plaintext = scytale.decrypt(data.ciphertext, data.width)
         return {"plaintext": plaintext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Scytale decryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Decryption failed"
         )
 
 @app.post("/api/polybius/encrypt")
@@ -378,10 +408,13 @@ def polybius_encrypt(data: PolybiusEncryptInput):
         from methods.historical import polybius
         ciphertext = polybius.encrypt(data.plaintext, grid_key)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Polybius encryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Encryption failed"
         )
 
 @app.post("/api/polybius/decrypt")
@@ -426,10 +459,13 @@ def polybius_decrypt(data: PolybiusDecryptInput):
         from methods.historical import polybius
         plaintext = polybius.decrypt(data.ciphertext, grid_key)
         return {"plaintext": plaintext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Polybius decryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Decryption failed"
         )
 
 def validate_enigma_rotors(rotors: list[str]) -> None:
@@ -557,10 +593,13 @@ def enigma_encipher(data: EnigmaEncipherInput):
 
         ciphertext = "".join(ciphertext_chars)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Enigma encryption error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Encryption failed: {str(e)}"
+            detail="Encryption failed"
         )
 
 
@@ -581,10 +620,16 @@ def lorenz_encrypt(data: LorenzEncryptInput):
         )
         ciphertext = machine.encrypt_text(data.plaintext)
         return {"ciphertext": ciphertext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Encryption failed: {str(e)}"
+            detail=f"Encryption failed: {str(ve)}"
+        )
+    except Exception as e:
+        logger.error("Lorenz encryption error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Encryption failed"
         )
 
 
@@ -605,10 +650,16 @@ def lorenz_decrypt(data: LorenzDecryptInput):
         )
         plaintext = machine.decrypt_text(data.ciphertext)
         return {"plaintext": plaintext}
-    except (ValueError, KeyError, TypeError, IndexError) as e:
+    except ValueError as ve:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Decryption failed: {str(e)}"
+            detail=f"Decryption failed: {str(ve)}"
+        )
+    except Exception as e:
+        logger.error("Lorenz decryption error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Decryption failed"
         )
 
 
