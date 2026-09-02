@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,40 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders AudioSystem toggle button with dynamic accessible aria-label', () => {
+    render(<AudioSystem currentView="atrium" />);
+
+    const audioBtn = screen.getByRole('button', { name: /unmute spatial audio/i });
+    expect(audioBtn).toBeInTheDocument();
+
+    fireEvent.click(audioBtn);
+
+    const mutedAudioBtn = screen.getByRole('button', { name: /mute spatial audio/i });
+    expect(mutedAudioBtn).toBeInTheDocument();
+  });
+
+  it('allows keyboard interaction (Enter key) on 2D map floorplan room markers', () => {
+    const handleSelectRoom = jest.fn();
+    render(
+      <MuseumHUD
+        currentView="atrium"
+        isMacro={false}
+        onSelectRoom={handleSelectRoom}
+        onReturnToFoyer={jest.fn()}
+      />
+    );
+
+    // Open map
+    fireEvent.click(screen.getByRole('button', { name: /toggle 2d museum floorplan map/i }));
+
+    // Find first exhibit room marker button
+    const caesarMarker = screen.getByRole('button', { name: /fly camera to caesar cipher/i });
+    expect(caesarMarker).toBeInTheDocument();
+
+    // Trigger via Enter key press
+    fireEvent.keyDown(caesarMarker, { key: 'Enter', code: 'Enter' });
+    expect(handleSelectRoom).toHaveBeenCalledWith('caesar');
   });
 });
