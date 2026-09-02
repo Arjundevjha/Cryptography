@@ -113,11 +113,11 @@ class CipherInput(BaseModel):
 
 class CaesarEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    shift: int = Field(..., description="Shift amount (0-25)")
+    shift: int = Field(..., ge=-100000, le=100000, description="Shift amount (0-25)")
 
 class CaesarDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
-    shift: int = Field(..., description="Shift amount (0-25)")
+    shift: int = Field(..., ge=-100000, le=100000, description="Shift amount (0-25)")
 
 class VigenereEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
@@ -137,13 +137,13 @@ class PlayfairDecryptInput(BaseModel):
 
 class AffineEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    a_key: int = Field(..., description="Key a (must be coprime to 26)")
-    b_key: int = Field(..., description="Key b")
+    a_key: int = Field(..., ge=-100000, le=100000, description="Key a (must be coprime to 26)")
+    b_key: int = Field(..., ge=-100000, le=100000, description="Key b")
 
 class AffineDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
-    a_key: int = Field(..., description="Key a (must be coprime to 26)")
-    b_key: int = Field(..., description="Key b")
+    a_key: int = Field(..., ge=-100000, le=100000, description="Key a (must be coprime to 26)")
+    b_key: int = Field(..., ge=-100000, le=100000, description="Key b")
 
 @app.get("/api/health")
 async def health_check():
@@ -314,41 +314,41 @@ def affine_decrypt(data: AffineDecryptInput):
 
 class ScytaleEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    width: int = Field(..., description="Cylinder width (diameter)")
+    width: int = Field(..., gt=0, le=10000, description="Cylinder width (diameter)")
 
 class ScytaleDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
-    width: int = Field(..., description="Cylinder width (diameter)")
+    width: int = Field(..., gt=0, le=10000, description="Cylinder width (diameter)")
 
 class PolybiusEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    key: str = Field(default=None, description="Polybius grid key (25 letters)")
+    key: str = Field(default=None, max_length=500, description="Polybius grid key (25 letters)")
 
 class PolybiusDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
-    key: str = Field(default=None, description="Polybius grid key (25 letters)")
+    key: str = Field(default=None, max_length=500, description="Polybius grid key (25 letters)")
 
 class EnigmaEncipherInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The message to encipher")
-    rotors: list[str] = Field(..., description="Rotors like ['I', 'II', 'III']")
-    positions: list[str] = Field(..., description="Positions like ['A', 'A', 'A']")
-    rings: list[str] = Field(..., description="Rings like ['A', 'A', 'A'] or ['1', '1', '1']")
-    plugboard: list[str] = Field(default=[], description="Plugboard swaps like ['AB', 'CD']")
-    reflector: str = Field(default="B", description="Reflector selection (A, B, C, B_THIN, C_THIN)")
+    rotors: list[str] = Field(..., max_length=3, description="Rotors like ['I', 'II', 'III']")
+    positions: list[str] = Field(..., max_length=3, description="Positions like ['A', 'A', 'A']")
+    rings: list[str] = Field(..., max_length=3, description="Rings like ['A', 'A', 'A'] or ['1', '1', '1']")
+    plugboard: list[str] = Field(default=[], max_length=13, description="Plugboard swaps like ['AB', 'CD']")
+    reflector: str = Field(default="B", max_length=10, description="Reflector selection (A, B, C, B_THIN, C_THIN)")
 
 class LorenzEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    positions: list[int] = Field(default=[], description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
-    chi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Chi wheels")
-    motor_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 2 Motor wheels")
-    psi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Psi wheels")
+    positions: list[int] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[list[int]] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
 
 class LorenzDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
-    positions: list[int] = Field(default=[], description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
-    chi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Chi wheels")
-    motor_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 2 Motor wheels")
-    psi_pins: list[list[int]] = Field(default=[], description="Custom pin state arrays for 5 Psi wheels")
+    positions: list[int] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[list[int]] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
 
 
 @app.post("/api/scytale/encrypt")
@@ -680,9 +680,9 @@ class AesDecryptInput(BaseModel):
     key_format: str = Field(default="text", description="Key format: 'text' or 'hex'")
 
 class RsaKeygenInput(BaseModel):
-    p: int = Field(..., description="Prime number p")
-    q: int = Field(..., description="Prime number q")
-    e: int = Field(default=65537, description="Public exponent e")
+    p: int = Field(..., gt=0, lt=2**2048, description="Prime number p")
+    q: int = Field(..., gt=0, lt=2**2048, description="Prime number q")
+    e: int = Field(default=65537, gt=0, lt=2**2048, description="Public exponent e")
 
 class RsaEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
