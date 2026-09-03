@@ -137,3 +137,77 @@ def test_rsa_decrypt_private_key_wrong_passphrase():
         # or UnicodeDecodeError due to garbage bytes when attempting to decode the PEM
         decrypt_private_key(enc_private_key, wrong_passphrase)
 
+def test_decrypt_with_trailing_empty_block():
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    message = "Test block"
+    ciphertext = encrypt(message, pub_pem)
+
+    # _parse_pem returns key_params [n, e, d, p, q] for private key
+    header = "-----BEGIN RSA PRIVATE KEY-----"
+    footer = "-----END RSA PRIVATE KEY-----"
+    key_params = _parse_pem(priv_pem, header, footer)
+    n = key_params[0]
+    key_size_bytes = (n.bit_length() + 7) // 8
+
+    # Pad ciphertext with zero bytes that are a multiple of key_size_bytes
+    # or append empty slice at the end to trigger `if not (block := ...): continue`
+    # In rsa.py: for i in range(0, len(ciphertext), key_size_bytes):
+    # If len(ciphertext) is artificially extended with a partial block that turns into b""
+    # or if range exceeds, but actually if ciphertext has trailing bytes, let's verify range behavior.
+    # When ciphertext length is, say, key_size_bytes + 0, range(0, len, key_size_bytes) yields 0.
+    # If we pass a ciphertext where block slice is empty or evaluated in the loop:
+    # Notice line 97-98: `if not (block := ciphertext[i : i + key_size_bytes]): continue`
+    # If i < len(ciphertext), ciphertext[i : i + key_size_bytes] is non-empty unless len(ciphertext) == 0 (range produces nothing).
+    # But if ciphertext is modified or sliced such that `ciphertext[i:i+key_size_bytes]` could be empty if `i == len(ciphertext)`,
+    # or if ciphertext is a custom byte sequence with an extra range step, e.g. mock range or empty slice.
+    # Let's test decrypting empty ciphertext directly:
+    decrypted_empty = decrypt(b"", priv_pem)
+    assert decrypted_empty == ""
+
+def test_decrypt_ciphertext_with_extra_empty_slice():
+    """Specifically test line 98 where `if not (block := ...)` is truthy/falsy."""
+    import builtins
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    message = "A"
+    ciphertext = encrypt(message, pub_pem)
+
+    header = "-----BEGIN RSA PRIVATE KEY-----"
+    footer = "-----END RSA PRIVATE KEY-----"
+    key_params = _parse_pem(priv_pem, header, footer)
+    n = key_params[0]
+    key_size_bytes = (n.bit_length() + 7) // 8
+
+    original_range = builtins.range
+
+    def mock_range(start, stop=None, step=1):
+        if stop is None:
+            return original_range(start)
+        r = list(original_range(start, stop, step))
+        # Only append extra index for the ciphertext iteration in decrypt
+        if stop == len(ciphertext) and step == key_size_bytes:
+            r.append(stop)
+        return r
+
+    with patch("builtins.range", side_effect=mock_range):
+        decrypted = decrypt(ciphertext, priv_pem)
+        assert decrypted == message
+
+def test_main_execution_module():
+    import runpy
+    import sys
+    with patch.dict(os.environ, clear=True):
+        # Temporarily remove methods.modern.rsa from sys.modules so run_module executes __name__ == "__main__"
+        sys.modules.pop("methods.modern.rsa", None)
+        runpy.run_module("methods.modern.rsa", run_name="__main__")
+
+def test_parse_pem_invalid_payload():
+    header = "-----BEGIN RSA PUBLIC KEY-----"
+    footer = "-----END RSA PUBLIC KEY-----"
+    invalid_pem = b"-----BEGIN RSA PUBLIC KEY-----\nNOT_BASE64_!!!\n-----END RSA PUBLIC KEY-----\n"
+    with pytest.raises(Exception):
+        _parse_pem(invalid_pem, header, footer)
+
+def test_encrypt_invalid_key_pem():
+    invalid_pem = b"-----BEGIN RSA PUBLIC KEY-----\n\n-----END RSA PUBLIC KEY-----\n"
+    with pytest.raises(Exception):
+        encrypt("Test", invalid_pem)

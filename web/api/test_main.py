@@ -1,7 +1,16 @@
+from unittest.mock import patch
+import unittest.mock
 import pytest
 from fastapi.testclient import TestClient
-from api.main import app
-import unittest.mock
+from fastapi import HTTPException
+from api.main import (
+    app,
+    validate_enigma_rotors,
+    DEFAULT_ALLOWED_ORIGINS,
+    is_valid_origin,
+    parse_allowed_origins,
+    parse_aes_key,
+)
 
 client = TestClient(app)
 
@@ -50,7 +59,7 @@ def test_affine_decrypt_non_coprime(a_key):
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
-@unittest.mock.patch("api.main.affine.encrypt")
+@patch("api.main.affine.encrypt")
 def test_affine_encrypt_internal_error(mock_encrypt, caplog):
     mock_encrypt.side_effect = RuntimeError("Test internal error")
     with caplog.at_level("ERROR"):
@@ -59,7 +68,7 @@ def test_affine_encrypt_internal_error(mock_encrypt, caplog):
     assert response.json() == {"detail": "Encryption failed"}
     assert "Affine encryption error" in caplog.text
 
-@unittest.mock.patch("api.main.affine.decrypt")
+@patch("api.main.affine.decrypt")
 def test_affine_decrypt_internal_error(mock_decrypt, caplog):
     mock_decrypt.side_effect = RuntimeError("Test internal error")
     with caplog.at_level("ERROR"):
@@ -157,16 +166,68 @@ def test_enigma_reciprocity():
     assert response2.status_code == 200
     assert response2.json()["ciphertext"] == "HELLO"
 
-def test_enigma_duplicate_rotors():
+@pytest.mark.parametrize("rotors", [
+    ["I", "II", "III"],
+    ["IV", "V", "VI"],
+    ["VII", "VIII", "I"],
+    ["II", "IV", "VIII"],
+])
+def test_validate_enigma_rotors_valid(rotors):
+    validate_enigma_rotors(rotors)
+
+@pytest.mark.parametrize("rotors", [
+    [],
+    ["I"],
+    ["I", "II"],
+    ["I", "II", "III", "IV"],
+])
+def test_validate_enigma_rotors_invalid_count(rotors):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Exactly 3 rotors must be specified."
+
+@pytest.mark.parametrize("rotors", [
+    ["I", "I", "II"],
+    ["I", "I", "I"],
+    ["V", "III", "V"],
+    ["VIII", "VIII", "I"],
+])
+def test_validate_enigma_rotors_duplicate_rotors(rotors):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Duplicate rotors are not allowed."
+
+@pytest.mark.parametrize("rotors,invalid_rotor", [
+    (["i", "II", "III"], "i"),
+    (["IX", "II", "III"], "IX"),
+    (["I", "X", "III"], "X"),
+    (["INVALID", "II", "III"], "INVALID"),
+    (["1", "2", "3"], "1"),
+    (["", "II", "III"], ""),
+])
+def test_validate_enigma_rotors_invalid_rotor_type(rotors, invalid_rotor):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == f"Invalid rotor '{invalid_rotor}'."
+
+@pytest.mark.parametrize("rotors,expected_error", [
+    (["I", "II"], "exactly 3 rotors"),
+    (["I", "I", "II"], "duplicate rotors"),
+    (["INVALID", "II", "III"], "invalid rotor"),
+])
+def test_enigma_api_rotors_validation(rotors, expected_error):
     response = client.post("/api/enigma/encipher", json={
         "plaintext": "HELLO",
-        "rotors": ["I", "I", "II"],
+        "rotors": rotors,
         "positions": ["A", "A", "A"],
         "rings": ["A", "A", "A"],
         "plugboard": []
     })
     assert response.status_code == 400
-    assert "duplicate" in response.json()["detail"].lower()
+    assert expected_error in response.json()["detail"].lower()
 
 def test_enigma_invalid_plugboard_character():
     response = client.post("/api/enigma/encipher", json={
@@ -345,6 +406,17 @@ def test_aes_invalid_plaintext_format():
     assert response.status_code == 400
     assert "invalid plaintext format" in response.json()["detail"].lower()
 
+def test_aes_encrypt_invalid_hex_plaintext():
+    payload = {
+        "plaintext": "InvalidHex!",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "hex"
+    }
+    response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert "invalid hex plaintext" in response.json()["detail"].lower()
+
 def test_aes_decrypt_invalid_hex_ciphertext():
     payload = {
         "ciphertext": "InvalidHexFormat!",
@@ -441,7 +513,7 @@ def test_rsa_encrypt_exception(caplog):
         "plaintext": "Secret Message",
         "public_key": "dummy_public_key"
     }
-    with unittest.mock.patch("methods.modern.rsa.encrypt", side_effect=Exception("Test mock exception")):
+    with patch("methods.modern.rsa.encrypt", side_effect=Exception("Test mock exception")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/rsa/encrypt", json=enc_payload)
     assert response.status_code == 400
@@ -453,12 +525,26 @@ def test_rsa_decrypt_exception(caplog):
         "ciphertext": "00",
         "private_key": "dummy_private_key"
     }
-    with unittest.mock.patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
+    with patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/rsa/decrypt", json=dec_payload)
     assert response.status_code == 400
     assert response.json()["detail"] == "Decryption failed"
     assert "RSA decryption error" in caplog.text
+
+def test_aes_encrypt_exception(caplog):
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "text"
+    }
+    with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Encryption failed"
+    assert "AES encryption error" in caplog.text
 
 def test_aes_decrypt_exception(caplog):
     payload = {
@@ -467,7 +553,7 @@ def test_aes_decrypt_exception(caplog):
         "nonce": "aabbccdd",
         "key_format": "text"
     }
-    with unittest.mock.patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")):
+    with patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/aes/decrypt", json=payload)
     assert response.status_code == 400
@@ -476,7 +562,7 @@ def test_aes_decrypt_exception(caplog):
 
 def test_sha256_exception(caplog):
     payload = {"plaintext": "hello"}
-    with unittest.mock.patch("methods.modern.hash_functions.sha256", side_effect=Exception("Mocked SHA256 error")):
+    with patch("methods.modern.hash_functions.sha256", side_effect=Exception("Mocked SHA256 error")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/sha256", json=payload)
     assert response.status_code == 400
@@ -496,19 +582,7 @@ def test_aes_decrypt_invalid_hex_logging(caplog):
     assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
     assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
 
-def test_aes_encrypt_exception(caplog):
-    payload = {
-        "plaintext": "Secret Message",
-        "key": "1234567890123456",
-        "key_format": "text",
-        "plaintext_format": "text"
-    }
-    with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
-        with caplog.at_level("ERROR"):
-            response = client.post("/api/aes/encrypt", json=payload)
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Encryption failed"
-    assert "AES encryption error" in caplog.text
+
 
 def test_caesar_encrypt_decrypt_success():
     enc = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
@@ -517,6 +591,38 @@ def test_caesar_encrypt_decrypt_success():
     dec = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
     assert dec.status_code == 200
     assert dec.json() == {"plaintext": "HELLO"}
+
+@unittest.mock.patch("methods.classical.caesar.encrypt")
+def test_caesar_encrypt_value_error(mock_encrypt):
+    mock_encrypt.side_effect = ValueError("Invalid shift value")
+    response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid shift value"
+
+@unittest.mock.patch("methods.classical.caesar.encrypt")
+def test_caesar_encrypt_internal_error(mock_encrypt, caplog):
+    mock_encrypt.side_effect = RuntimeError("Test internal encryption error")
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Encryption failed"}
+    assert "Caesar encryption error" in caplog.text
+
+@unittest.mock.patch("methods.classical.caesar.decrypt")
+def test_caesar_decrypt_value_error(mock_decrypt):
+    mock_decrypt.side_effect = ValueError("Invalid shift value")
+    response = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid shift value"
+
+@unittest.mock.patch("methods.classical.caesar.decrypt")
+def test_caesar_decrypt_internal_error(mock_decrypt, caplog):
+    mock_decrypt.side_effect = RuntimeError("Test internal decryption error")
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Decryption failed"}
+    assert "Caesar decryption error" in caplog.text
 
 def test_vigenere_encrypt_decrypt_success():
     enc = client.post("/api/vigenere/encrypt", json={"plaintext": "ATTACKATDAWN", "key": "LEMON"})
@@ -592,7 +698,7 @@ def test_lorenz_api_invalid_pins():
 
 
 def test_lorenz_api_runtime_error_exception(caplog):
-    with unittest.mock.patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=RuntimeError("Test Lorenz RuntimeError")):
+    with patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=RuntimeError("Test Lorenz RuntimeError")):
         with caplog.at_level("ERROR"):
             resp = client.post("/api/lorenz/encrypt", json={"plaintext": "HELLO"})
         assert resp.status_code == 400
@@ -601,7 +707,7 @@ def test_lorenz_api_runtime_error_exception(caplog):
 
 
 def test_enigma_api_runtime_error_exception(caplog):
-    with unittest.mock.patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=RuntimeError("Test Enigma RuntimeError")):
+    with patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=RuntimeError("Test Enigma RuntimeError")):
         with caplog.at_level("ERROR"):
             resp = client.post("/api/enigma/encipher", json={
                 "plaintext": "HELLO",
@@ -619,28 +725,63 @@ def test_enigma_api_runtime_error_exception(caplog):
 # CORS ORIGIN VALIDATION TESTS
 # ==========================================
 
-from api.main import is_valid_origin, parse_allowed_origins, DEFAULT_ALLOWED_ORIGINS, parse_aes_key
+@pytest.mark.parametrize("origin", [
+    "http://localhost:3000",
+    "http://localhost:3000/",
+    "https://example.com",
+    "https://sub.domain.example.com:8443",
+    "http://127.0.0.1:8080",
+    "http://192.168.1.1",
+    "https://[::1]:8080",
+    "  http://example.com  ",
+])
+def test_is_valid_origin_valid_cases(origin):
+    assert is_valid_origin(origin) is True
 
-def test_is_valid_origin():
-    # Valid origins
-    assert is_valid_origin("http://localhost:3000") is True
-    assert is_valid_origin("http://localhost:3000/") is True
-    assert is_valid_origin("https://example.com") is True
-    assert is_valid_origin("https://sub.domain.example.com:8443") is True
+@pytest.mark.parametrize("origin", [
+    "*",
+    "http://*",
+    "https://*.example.com",
+    "ftp://example.com",
+    "ws://example.com",
+    "wss://example.com",
+    "javascript:alert(1)",
+    "http://example.com/path",
+    "http://example.com?query=1",
+    "http://example.com#fragment",
+    "http://example.com;matrix=1",
+    "http://",
+    "https://",
+    "http://example.com:badport",
+    "http://example com",
+    "http://example\tcom",
+    "http://example\ncom",
+    "http://example\rcom",
+    'http://example"com',
+    "http://example'com",
+    "http://example<com",
+    "http://example>com",
+    "",
+    "   ",
+    None,
+    123,
+    [],
+    {},
+    True,
+    "http://[:::1]",
+])
+def test_is_valid_origin_invalid_cases(origin):
+    assert is_valid_origin(origin) is False
 
-    # Invalid origins
-    assert is_valid_origin("*") is False
-    assert is_valid_origin("http://*") is False
-    assert is_valid_origin("https://*.example.com") is False
-    assert is_valid_origin("ftp://example.com") is False
-    assert is_valid_origin("javascript:alert(1)") is False
-    assert is_valid_origin("http://example.com/path") is False
-    assert is_valid_origin("http://example.com?query=1") is False
-    assert is_valid_origin("http://example.com#fragment") is False
-    assert is_valid_origin("") is False
-    assert is_valid_origin("   ") is False
-    assert is_valid_origin(None) is False
-    assert is_valid_origin(123) is False
+def test_is_valid_origin_exception_handling():
+    with unittest.mock.patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
+        assert is_valid_origin("https://example.com") is False
+
+def test_is_valid_origin_unexpected_exception(caplog):
+    with unittest.mock.patch("api.main.urlparse", side_effect=RuntimeError("Unexpected urlparse error")):
+        with caplog.at_level("WARNING"):
+            assert is_valid_origin("http://localhost:3000") is False
+    assert "Unexpected error validating origin" in caplog.text
 
 def test_parse_allowed_origins():
     # Unset or empty env string falls back to default allowed origins
