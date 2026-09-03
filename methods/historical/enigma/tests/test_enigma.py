@@ -1,5 +1,3 @@
-import pytest
-import copy
 from methods.historical.enigma.keyboard import Keyboard
 from methods.historical.enigma.rotor import Rotor
 from methods.historical.enigma.plugboard import Plugboard
