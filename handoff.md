@@ -1,24 +1,72 @@
-# Session Handoff: PR Triage & Clearing Lifecycle Completion
+# Session Handoff: Cryptography Founding Fathers Monuments
 
 ## Executive Summary
-Completed automated review, standards enforcement, conflict resolution, test verification, and lifecycle management for all open Pull Requests in the repository.
+Completed the architectural design, 3D modeling, interactive curatorial tooling, and spatial placement for the three foundational pioneers of cryptography in the **Grand Entrance Rotunda** of the 3D Cryptography Museum:
 
-1. **Closed Rejected PRs (1 Total in Latest Batch)**:
-   - [#122](https://github.com/Arjundevjha/Cryptography/pull/122): Closed due to inclusion of extraneous lockfile (`web/pnpm-lock.yaml`) violating repository package management standards (`npm` with `package-lock.json`). Deleted remote branch `palette/workbench-a11y-enhancement-11855217774271465785`.
+1. **Centerpiece Removal & Unobstructed Sightlines**:
+   - Removed the generic torus (`TorusGeometry`) and sphere (`SphereGeometry`) centerpiece and dais at `(0, 2.5, 5)` so that visitors immediately see the Founding Fathers upon entering the museum at `(0, 2.5, 20)`.
 
-2. **Merged Approved PRs (2 Total in Latest Batch)**:
-   - [#123](https://github.com/Arjundevjha/Cryptography/pull/123): Mitigated information leakage (CWE-209) across cipher API endpoints (`web/api/main.py` and `web/api/test_main.py`) by replacing raw exception details with sanitized generic error responses on classical and historical cipher endpoints while retaining specific validation errors and server-side logging. Deleted remote branch `sentinel/sanitize-api-error-responses-17871757288327807729`.
-   - [#124](https://github.com/Arjundevjha/Cryptography/pull/124): Vectorized TypeScript Vigenère cipher transformations (`vigenereEncrypt`, `vigenereDecrypt`) in `web/app/utils/ciphers.ts` using pre-calculated key shifts, numeric ASCII comparison, and single-pass array join (~2.6x speedup). Deleted remote branch `bolt-vectorize-ts-vigenere-150430534093233753`.
+2. **The Three Founding Fathers of Cryptography**:
+   - **Al-Kindi (c. 801–873)** — *The Father of Cryptanalysis*:
+     - *Citation*: "Known as the father of cryptanalysis. In the 9th century, he authored A Manuscript on Deciphering Cryptographic Messages, introducing frequency analysis. He proved that monoalphabetic substitution ciphers could be systematically broken using letter distribution statistics."
+     - *3D Sculpture*: Classical Islamic Golden Age polymath in Carrara marble robes, bronze kufiya turban and beard, holding an unfurled frequency manuscript scroll and reed stylus, crowned by an amber frequency histogram glyph.
+     - *Position*: `[-8.5, 0, 7.5]`, guiding towards the Classical Ciphers Wing.
+   - **Claude Shannon (1916–2001)** — *The Architect of Mathematical Cryptography*:
+     - *Citation*: "The architect of mathematical cryptography. His 1949 landmark paper, Communication Theory of Secrecy Systems, established the rigorous mathematical foundation of cryptography, defined information theory, and proved the absolute secrecy of the one-time pad."
+     - *3D Sculpture*: Mid-century scholar figure in dark bronze silhouette with tailored suit and gold tie, standing beside a bronze easel inscribed with $H(X) = -\sum p_i \log_2 p_i$, beneath a floating cyan entropy spiral.
+     - *Position*: `[0, 0, 4.0]`, center position of honor leading to Historical Systems Wing.
+   - **Whitfield Diffie & Martin Hellman (with Ralph Merkle)** — *Founders of Public-Key Cryptography*:
+     - *Citation*: "Their 1976 paper, New Directions in Cryptography, introduced public-key cryptography and the Diffie–Hellman key exchange. They solved the ancient 'key distribution problem'—allowing two parties to establish a shared secret over an insecure channel without meeting beforehand. (Ralph Merkle is often recognized alongside them for independently conceptualizing public-key agreements via Merkle’s Puzzles)."
+     - *3D Sculpture*: Twin bronze figures joining hands overhead to form a golden key arch, with a central crystalline pedestal holding Ralph Merkle's refractive puzzle dodecahedron with an illuminated golden core, beneath a floating interlocking key rings glyph.
+     - *Position*: `[8.5, 0, 7.5]`, guiding towards the Modern Cryptography Wing.
 
-## Historical PR Triage Summary (Earlier Batches)
-- **Closed Rejected / Redundant PRs (22 Total)**: [#66](https://github.com/Arjundevjha/Cryptography/pull/66), [#68](https://github.com/Arjundevjha/Cryptography/pull/68), [#69](https://github.com/Arjundevjha/Cryptography/pull/69), [#70](https://github.com/Arjundevjha/Cryptography/pull/70), [#75](https://github.com/Arjundevjha/Cryptography/pull/75), [#77](https://github.com/Arjundevjha/Cryptography/pull/77), [#78](https://github.com/Arjundevjha/Cryptography/pull/78), [#79](https://github.com/Arjundevjha/Cryptography/pull/79), [#83](https://github.com/Arjundevjha/Cryptography/pull/83), [#86](https://github.com/Arjundevjha/Cryptography/pull/86), [#87](https://github.com/Arjundevjha/Cryptography/pull/87), [#92](https://github.com/Arjundevjha/Cryptography/pull/92), [#96](https://github.com/Arjundevjha/Cryptography/pull/96), [#98](https://github.com/Arjundevjha/Cryptography/pull/98), [#99](https://github.com/Arjundevjha/Cryptography/pull/99), [#100](https://github.com/Arjundevjha/Cryptography/pull/100), [#101](https://github.com/Arjundevjha/Cryptography/pull/101), [#102](https://github.com/Arjundevjha/Cryptography/pull/102), [#104](https://github.com/Arjundevjha/Cryptography/pull/104), [#109](https://github.com/Arjundevjha/Cryptography/pull/109), [#118](https://github.com/Arjundevjha/Cryptography/pull/118), [#121](https://github.com/Arjundevjha/Cryptography/pull/121).
-- **Previously Merged PRs (42 Total)**: [#58](https://github.com/Arjundevjha/Cryptography/pull/58), [#59](https://github.com/Arjundevjha/Cryptography/pull/59), [#60](https://github.com/Arjundevjha/Cryptography/pull/60), [#61](https://github.com/Arjundevjha/Cryptography/pull/61), [#62](https://github.com/Arjundevjha/Cryptography/pull/62), [#63](https://github.com/Arjundevjha/Cryptography/pull/63), [#64](https://github.com/Arjundevjha/Cryptography/pull/64), [#65](https://github.com/Arjundevjha/Cryptography/pull/65), [#67](https://github.com/Arjundevjha/Cryptography/pull/67), [#71](https://github.com/Arjundevjha/Cryptography/pull/71), [#72](https://github.com/Arjundevjha/Cryptography/pull/72), [#73](https://github.com/Arjundevjha/Cryptography/pull/73), [#74](https://github.com/Arjundevjha/Cryptography/pull/74), [#76](https://github.com/Arjundevjha/Cryptography/pull/76), [#80](https://github.com/Arjundevjha/Cryptography/pull/80), [#81](https://github.com/Arjundevjha/Cryptography/pull/81), [#82](https://github.com/Arjundevjha/Cryptography/pull/82), [#84](https://github.com/Arjundevjha/Cryptography/pull/84), [#85](https://github.com/Arjundevjha/Cryptography/pull/85), [#88](https://github.com/Arjundevjha/Cryptography/pull/88), [#89](https://github.com/Arjundevjha/Cryptography/pull/89), [#90](https://github.com/Arjundevjha/Cryptography/pull/90), [#91](https://github.com/Arjundevjha/Cryptography/pull/91), [#93](https://github.com/Arjundevjha/Cryptography/pull/93), [#94](https://github.com/Arjundevjha/Cryptography/pull/94), [#95](https://github.com/Arjundevjha/Cryptography/pull/95), [#97](https://github.com/Arjundevjha/Cryptography/pull/97), [#103](https://github.com/Arjundevjha/Cryptography/pull/103), [#105](https://github.com/Arjundevjha/Cryptography/pull/105), [#106](https://github.com/Arjundevjha/Cryptography/pull/106), [#107](https://github.com/Arjundevjha/Cryptography/pull/107), [#108](https://github.com/Arjundevjha/Cryptography/pull/108), [#110](https://github.com/Arjundevjha/Cryptography/pull/110), [#111](https://github.com/Arjundevjha/Cryptography/pull/111), [#112](https://github.com/Arjundevjha/Cryptography/pull/112), [#113](https://github.com/Arjundevjha/Cryptography/pull/113), [#114](https://github.com/Arjundevjha/Cryptography/pull/114), [#115](https://github.com/Arjundevjha/Cryptography/pull/115), [#116](https://github.com/Arjundevjha/Cryptography/pull/116), [#117](https://github.com/Arjundevjha/Cryptography/pull/117), [#119](https://github.com/Arjundevjha/Cryptography/pull/119), [#120](https://github.com/Arjundevjha/Cryptography/pull/120).
+3. **Interactive Curatorial Drawer & Demonstration Tools (`StatueCuratorialDrawer.tsx`)**:
+   - Accessible dialog with dual tabs: *Historical Curation* and *Interactive Pioneer Lab*.
+   - **Al-Kindi**: Real-time frequency analysis histogram and Caesar shift tester.
+   - **Claude Shannon**: Shannon entropy calculator and One-Time Pad stream simulator proving perfect secrecy ($H(M|C) = H(M)$).
+   - **Diffie, Hellman & Merkle**: Interactive modular arithmetic key exchange simulator ($g^a \bmod p, g^b \bmod p \to g^{ab} \bmod p$) with Ralph Merkle's Puzzles explainer.
+
+4. **HUD & 2D Floorplan Map Integration & Spatial Proximity Fix**:
+   - Prominent Founding Fathers cards in the Grand Entrance Lobby overlay in `MuseumCanvas.tsx`.
+   - Clickable golden diamond markers on the SVG 2D floorplan map in `MuseumHUD.tsx`.
+   - Smooth camera transitions, eye-level viewing, and automatic spatial proximity retention.
+   - **Fixed Premature Inspection Exit Bug**:
+     - *Root Cause*: The automated 3D spatial proximity loop in `ThreeMuseumScene.tsx` was running unconditionally (even when stationary) with a hardcoded proximity threshold (`<= 3.5m`) that was smaller than the camera viewing distance (`3.7m - 4.0m`). Within ~300ms of clicking a pioneer card at the bottom to inspect, the loop incorrectly classified the camera as being in the atrium and fired `onSelectRoom('atrium')`, ejecting the user back to the lobby.
+     - *Resolution*:
+       1. Gated automatic proximity detection strictly to active WASD/Arrow key movement (`isWalking`). Standing still or inspecting exhibits/statues will never trigger room transitions.
+       2. Expanded the statue viewing perimeter to `6.5m` during intentional walking.
+       3. Added a 1.5s grace period timestamp (`lastRoomChangeTimeRef.current = now + 1500`) upon programmatic room selection.
+       4. Blocked 3D scene background clicks from interrupting macro display case inspection.
+       5. Wired `onCaseClickRef` to detect 3D clicks on the display case glass cylinder.
+
+5. **Statuary Visual Quality Overhaul & Anatomical 3D Head Scans**:
+   - *Problem*: Initial procedural mannequins constructed from spheres and boxes looked like glossy toy robots or balloon mannequins.
+   - *Solution*: Upgraded monuments into classical museum statuary herms/busts:
+     - **3D Scanned Human Anatomy**: Preloaded and integrated high-resolution (9,279-vertex) 3D anatomical head scans (`LeePerrySmith.glb`, CC-BY 3.0) via `GLTFLoader` with client-side preload and fallback protection.
+     - **Sculpted Herm Torsos**: Created `buildSculptedHermTorso` featuring anatomically curved shoulders, deltoids, and tapered chest joining classical lathe-turned Grecian marble socles (`buildClassicalSocle`).
+     - **Authentic Pioneer Historical Accessories**:
+       - *Al-Kindi*: Imperial Abbasid turban crowning the head, neat tapered beard under chin, unrolled 9th-century frequency analysis papyrus scroll on a carved mahogany *Rihal* lectern, and golden *Qalam* reed pen.
+       - *Claude Shannon*: Tailored V-lapel jacket and tie clip, delicate golden wireframe spectacles resting on the eye bridge, Bell Labs drafting easel with Information Entropy $H(X)$ and Perfect Secrecy blackboard, and electromechanical relay.
+       - *Diffie & Hellman (with Ralph Merkle)*: Twin classical bronze busts flanking Ralph Merkle's refractive crystal puzzle dodecahedron on an obsidian altar, golden private key and platinum public key on velvet cushions, beneath the soaring Golden Keyhole Triumphal Arch of Asymmetry.
+     - **Rotunda Key Lighting & Natural PBR Finishes**:
+       - Replaced harsh 10.0 spotlights with soft 3.8 directional portrait key lights targeted directly at the busts.
+       - Antique honed Carrara marble (`0xdfdad2, roughness: 0.42`) and Florentine patinated cast bronze (`0x8a623c, metalness: 0.78, roughness: 0.36`) eliminating specular glare and plastic shine.
+     - **Camera Offsetting for Curatorial Drawer**:
+       - Shifted inspection camera vectors to center the statues within the visible left 60% of the viewport when the curatorial drawer opens on the right.
 
 ## Active State of Codebase
-- **Zero Open PRs**: `gh pr list` confirms 0 open PRs remaining.
-- **Pruned Branches**: Deleted remote branches for all closed and merged PRs.
 - **Python Test Suite**: 344 / 344 tests passing (`pytest` 100% pass rate).
-- **Frontend Unit Tests**: 33 / 33 tests passing (`npm test`).
-- **Next.js Production Build**: Compiled successfully in 1338ms (`npm run build`).
-- **Snyk Security Scan**: 0 issues detected (`snyk_code_scan`).
-- **Graphify Knowledge Graph**: Rebuilt and updated (1123 nodes, 1963 edges, 71 communities).
+- **Frontend Unit Tests**: 38 / 38 tests passing (`npm test`, 100% pass rate).
+- **Next.js Production Build**: Compiled successfully in 1062ms (`npm run build`).
+- **Visual Verification**: Captured and verified screenshots across full rotunda view and all three close-ups (`rotunda_final.png`, `shannon_v6.png`, `diffie_v6.png`, `alkindi_v6.png`).
+- **Zero Console Errors / Warnings**: Clean TypeScript compilation with Turbopack.
+
+## File Map of Changes
+- `web/public/models/LeePerrySmith.glb`: High-resolution 3D scanned head geometry for classical statuary portrait busts (CC-BY 3.0).
+- `web/src/components/museum/museumData.ts`: Added `CryptographicStatue` interface, `MUSEUM_STATUES` specifications, and framed camera coordinates.
+- `web/src/components/museum/ThreeMuseumScene.tsx`: Added `loadScannedBust`, `createPortraitHead`, `buildSculptedHermTorso`, `buildClassicalSocle`, portrait key lights, and historical exhibit props.
+- `web/src/components/museum/workbench/StatueCuratorialDrawer.tsx`: Created accessible curatorial drawer with interactive labs for all three pioneer groups.
+- `web/src/components/museum/MuseumCanvas.tsx`: Streamlined lobby overlay to `bottom-4` for clear central sightlines.
+- `web/src/components/museum/hud/MuseumHUD.tsx`: Added clickable SVG markers in the 2D floorplan map.
+- `web/tests/unit/statues.test.tsx`: Comprehensive unit test suite covering data integrity, a11y labels, and calculations.
+

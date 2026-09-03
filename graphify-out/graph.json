@@ -1251,8 +1251,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair",
-      "community": 68,
-      "community_name": "test_playfair.py",
+      "community": 1,
+      "community_name": "Playfair Cipher Implementation & Benchmarks",
       "norm_label": "test_playfair.py"
     },
     {
@@ -1394,8 +1394,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_test_decrypt_same_row",
-      "community": 68,
-      "community_name": "test_playfair.py",
+      "community": 1,
+      "community_name": "Playfair Cipher Implementation & Benchmarks",
       "norm_label": "test_decrypt_same_row()"
     },
     {
@@ -1702,8 +1702,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_rationale_115",
-      "community": 68,
-      "community_name": "test_playfair.py",
+      "community": 1,
+      "community_name": "Playfair Cipher Implementation & Benchmarks",
       "norm_label": "test decrypting digraphs where characters share a row."
     },
     {
@@ -2384,8 +2384,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_init",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma/__init__.py"
     },
     {
@@ -2395,8 +2395,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_init_rationale_1",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma machine components and simulation package."
     },
     {
@@ -2648,8 +2648,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_main",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "enigma/main.py"
     },
     {
@@ -2659,8 +2659,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_main_rationale_1",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "main simulation runner for the enigma machine."
     },
     {
@@ -3869,8 +3869,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_set_pins",
-      "community": 46,
-      "community_name": "RsaEncryptInput",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": ".set_pins()"
     },
     {
@@ -4012,8 +4012,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_69",
-      "community": 46,
-      "community_name": "RsaEncryptInput",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": "set manual pin configurations for chi, motor, and psi wheels.          args:"
     },
     {
@@ -5464,8 +5464,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern/__init__.py"
     },
     {
@@ -5475,8 +5475,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init_rationale_1",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern cryptography methods package."
     },
     {
@@ -5827,8 +5827,8 @@
       "source_location": "L295",
       "_origin": "ast",
       "id": "methods_modern_hash_functions_sha256",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "sha256()"
     },
     {
@@ -6003,8 +6003,8 @@
       "source_location": "L296",
       "_origin": "ast",
       "id": "methods_modern_hash_functions_rationale_296",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "compute the sha-256 hash of the given data.      args:         data: the input s"
     },
     {
@@ -6663,8 +6663,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "methods_modern_symmetric_sub_word",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "sub_word()"
     },
     {
@@ -6674,8 +6674,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rot_word",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "rot_word()"
     },
     {
@@ -6685,8 +6685,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "methods_modern_symmetric_key_expansion",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "key_expansion()"
     },
     {
@@ -6707,8 +6707,8 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "methods_modern_symmetric_sub_bytes",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "sub_bytes()"
     },
     {
@@ -6729,8 +6729,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "methods_modern_symmetric_shift_rows",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "shift_rows()"
     },
     {
@@ -6751,8 +6751,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "methods_modern_symmetric_xtime",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "xtime()"
     },
     {
@@ -6773,8 +6773,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "methods_modern_symmetric_mix_columns",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "mix_columns()"
     },
     {
@@ -6795,8 +6795,8 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "methods_modern_symmetric_encrypt_block",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "encrypt_block()"
     },
     {
@@ -6817,8 +6817,8 @@
       "source_location": "L203",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_pad",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "pkcs7_pad()"
     },
     {
@@ -6828,8 +6828,8 @@
       "source_location": "L208",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_unpad",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "pkcs7_unpad()"
     },
     {
@@ -6916,8 +6916,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_59",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "substitute bytes in a 4-byte word using the s-box."
     },
     {
@@ -6927,8 +6927,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_63",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "rotate a 4-byte word: shift left by 1 position."
     },
     {
@@ -6938,8 +6938,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_67",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "expand the aes key into round keys. supports 16, 24, and 32 byte keys."
     },
     {
@@ -6960,8 +6960,8 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_103",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "substitute state bytes using the s-box."
     },
     {
@@ -6982,8 +6982,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_111",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "shift state rows to the left by row offsets."
     },
     {
@@ -7004,8 +7004,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_129",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "perform gf(2^8) multiplication by 2."
     },
     {
@@ -7026,8 +7026,8 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_148",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "mix the columns of the state matrix."
     },
     {
@@ -7048,8 +7048,8 @@
       "source_location": "L174",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_174",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 71,
+      "community_name": "mix_columns",
       "norm_label": "encrypt a single 16-byte block using aes."
     },
     {
@@ -7070,8 +7070,8 @@
       "source_location": "L204",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_204",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "apply pkcs7 padding to raw bytes."
     },
     {
@@ -7081,8 +7081,8 @@
       "source_location": "L209",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_209",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "remove pkcs7 padding from raw bytes."
     },
     {
@@ -7906,8 +7906,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test_symmetric.py"
     },
     {
@@ -7917,8 +7917,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_padding",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test_pkcs7_padding()"
     },
     {
@@ -7928,8 +7928,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_bytes",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test_pkcs7_unpad_invalid_bytes()"
     },
     {
@@ -7939,8 +7939,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_value",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test_pkcs7_unpad_invalid_value()"
     },
     {
@@ -8005,8 +8005,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_single_block_encryption_decryption",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test_single_block_encryption_decryption()"
     },
     {
@@ -8016,8 +8016,8 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_key_expansion_invalid_key_length",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test_key_expansion_invalid_key_length()"
     },
     {
@@ -8027,8 +8027,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_key_expansion_valid_key_lengths",
-      "community": 31,
-      "community_name": "AES Key Expansion & S-Box Math",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test_key_expansion_valid_key_lengths()"
     },
     {
@@ -8060,8 +8060,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_92",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "test raw block encryption and decryption to ensure no data loss in core aes func"
     },
     {
@@ -8412,8 +8412,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware",
-      "community": 70,
-      "community_name": "VercelPathMiddleware",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "vercelpathmiddleware"
     },
     {
@@ -8423,8 +8423,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware_init",
-      "community": 70,
-      "community_name": "VercelPathMiddleware",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": ".__init__()"
     },
     {
@@ -8434,8 +8434,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware_call",
-      "community": 70,
-      "community_name": "VercelPathMiddleware",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": ".__call__()"
     },
     {
@@ -8764,8 +8764,8 @@
       "source_location": "L331",
       "_origin": "ast",
       "id": "web_api_main_enigmaencipherinput",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigmaencipherinput"
     },
     {
@@ -8841,8 +8841,8 @@
       "source_location": "L471",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_rotors",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "validate_enigma_rotors()"
     },
     {
@@ -8852,8 +8852,8 @@
       "source_location": "L483",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_positions",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "validate_enigma_positions()"
     },
     {
@@ -8863,8 +8863,8 @@
       "source_location": "L491",
       "_origin": "ast",
       "id": "web_api_main_parse_and_validate_enigma_rings",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "parse_and_validate_enigma_rings()"
     },
     {
@@ -8874,8 +8874,8 @@
       "source_location": "L520",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_plugboard",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "validate_enigma_plugboard()"
     },
     {
@@ -8885,8 +8885,8 @@
       "source_location": "L533",
       "_origin": "ast",
       "id": "web_api_main_enigma_encipher",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma_encipher()"
     },
     {
@@ -8973,8 +8973,8 @@
       "source_location": "L695",
       "_origin": "ast",
       "id": "web_api_main_sha256input",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "sha256input"
     },
     {
@@ -9050,8 +9050,8 @@
       "source_location": "L845",
       "_origin": "ast",
       "id": "web_api_main_sha256_endpoint",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "sha256_endpoint()"
     },
     {
@@ -9083,8 +9083,8 @@
       "source_location": "L534",
       "_origin": "ast",
       "id": "web_api_main_rationale_534",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "encipher plaintext using the enigma cipher machine."
     },
     {
@@ -11126,7 +11126,7 @@
       "label": "MuseumCanvas()",
       "file_type": "code",
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L12",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "web_src_components_museum_museumcanvas_museumcanvas",
       "community": 17,
@@ -11148,7 +11148,7 @@
       "label": "ThreeMuseumSceneProps",
       "file_type": "code",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "web_src_components_museum_threemuseumscene_threemuseumsceneprops",
       "community": 17,
@@ -11159,7 +11159,7 @@
       "label": "textureCache",
       "file_type": "code",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L15",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "web_src_components_museum_threemuseumscene_texturecache",
       "community": 17,
@@ -11167,10 +11167,32 @@
       "norm_label": "texturecache"
     },
     {
+      "label": "bustCallbacks",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_bustcallbacks",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "bustcallbacks"
+    },
+    {
+      "label": "loadScannedBust()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_loadscannedbust",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "loadscannedbust()"
+    },
+    {
       "label": "ThreeMuseumScene()",
       "file_type": "code",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L17",
+      "source_location": "L70",
       "_origin": "ast",
       "id": "web_src_components_museum_threemuseumscene_threemuseumscene",
       "community": 17,
@@ -11181,7 +11203,7 @@
       "label": "getPortalBannerTexture()",
       "file_type": "code",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L683",
+      "source_location": "L825",
       "_origin": "ast",
       "id": "web_src_components_museum_threemuseumscene_getportalbannertexture",
       "community": 17,
@@ -11192,7 +11214,7 @@
       "label": "getSignboardTexture()",
       "file_type": "code",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L711",
+      "source_location": "L853",
       "_origin": "ast",
       "id": "web_src_components_museum_threemuseumscene_getsignboardtexture",
       "community": 17,
@@ -11203,7 +11225,7 @@
       "label": "getPlaqueTexture()",
       "file_type": "code",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L744",
+      "source_location": "L886",
       "_origin": "ast",
       "id": "web_src_components_museum_threemuseumscene_getplaquetexture",
       "community": 17,
@@ -11211,10 +11233,87 @@
       "norm_label": "getplaquetexture()"
     },
     {
+      "label": "getStatuePlaqueTexture()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L918",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_getstatueplaquetexture",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "getstatueplaquetexture()"
+    },
+    {
+      "label": "getAlKindiScrollTexture()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L963",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_getalkindiscrolltexture",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "getalkindiscrolltexture()"
+    },
+    {
+      "label": "getShannonChalkboardTexture()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1039",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_getshannonchalkboardtexture",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "getshannonchalkboardtexture()"
+    },
+    {
+      "label": "buildClassicalSocle()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1094",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_buildclassicalsocle",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "buildclassicalsocle()"
+    },
+    {
+      "label": "createPortraitHead()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1110",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_createportraithead",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "createportraithead()"
+    },
+    {
+      "label": "buildSculptedHermTorso()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1133",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_buildsculptedhermtorso",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "buildsculptedhermtorso()"
+    },
+    {
+      "label": "buildStatueMonument()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1168",
+      "_origin": "ast",
+      "id": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "buildstatuemonument()"
+    },
+    {
       "label": "buildHighQualityArtifact()",
       "file_type": "code",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L779",
+      "source_location": "L1945",
       "_origin": "ast",
       "id": "web_src_components_museum_threemuseumscene_buildhighqualityartifact",
       "community": 17,
@@ -11332,6 +11431,28 @@
       "norm_label": "museum_exhibits"
     },
     {
+      "label": "CryptographicStatue",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/museumData.ts",
+      "source_location": "L332",
+      "_origin": "ast",
+      "id": "web_src_components_museum_museumdata_cryptographicstatue",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "cryptographicstatue"
+    },
+    {
+      "label": "MUSEUM_STATUES",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/museumData.ts",
+      "source_location": "L353",
+      "_origin": "ast",
+      "id": "web_src_components_museum_museumdata_museum_statues",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "museum_statues"
+    },
+    {
       "label": "ArtifactMetadataDrawer.tsx",
       "file_type": "code",
       "source_file": "web/src/components/museum/workbench/ArtifactMetadataDrawer.tsx",
@@ -11363,6 +11484,39 @@
       "community": 17,
       "community_name": "Museum Frontend Layout & Audio Scenes",
       "norm_label": "artifactmetadatadrawer()"
+    },
+    {
+      "label": "StatueCuratorialDrawer.tsx",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "web_src_components_museum_workbench_statuecuratorialdrawer",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "statuecuratorialdrawer.tsx"
+    },
+    {
+      "label": "StatueCuratorialDrawerProps",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "web_src_components_museum_workbench_statuecuratorialdrawer_statuecuratorialdrawerprops",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "statuecuratorialdrawerprops"
+    },
+    {
+      "label": "StatueCuratorialDrawer()",
+      "file_type": "code",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "web_src_components_museum_workbench_statuecuratorialdrawer_statuecuratorialdrawer",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "statuecuratorialdrawer()"
     },
     {
       "label": "WorkbenchPanel.tsx",
@@ -11528,6 +11682,17 @@
       "community": 28,
       "community_name": "Frontend TypeScript Cipher Adapters",
       "norm_label": "ciphers.test.ts"
+    },
+    {
+      "label": "statues.test.tsx",
+      "file_type": "code",
+      "source_file": "web/tests/unit/statues.test.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "web_tests_unit_statues_test",
+      "community": 17,
+      "community_name": "Museum Frontend Layout & Audio Scenes",
+      "norm_label": "statues.test.tsx"
     },
     {
       "label": "tsconfig.json",
@@ -33359,7 +33524,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas",
@@ -33371,7 +33536,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas",
@@ -33406,7 +33571,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas",
@@ -33435,6 +33600,18 @@
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas",
       "target": "web_src_components_museum_museumdata_museum_exhibits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/MuseumCanvas.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_museumcanvas",
+      "target": "web_src_components_museum_museumdata_museum_statues",
       "confidence_score": 1.0
     },
     {
@@ -33502,6 +33679,30 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_museumcanvas",
+      "target": "web_src_components_museum_workbench_statuecuratorialdrawer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/MuseumCanvas.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_museumcanvas",
+      "target": "web_src_components_museum_workbench_statuecuratorialdrawer_statuecuratorialdrawer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/MuseumCanvas.tsx",
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
@@ -33527,7 +33728,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas_museumcanvas",
@@ -33539,7 +33740,19 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L22",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_museumcanvas_museumcanvas",
+      "target": "web_src_components_museum_museumdata_museum_statues"
+    },
+    {
+      "relation": "references",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/museum/MuseumCanvas.tsx",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas_museumcanvas",
@@ -33550,7 +33763,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33562,7 +33775,19 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L6",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_museumdata_cryptographicstatue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33574,7 +33799,19 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L6",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_museumdata_museum_statues",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33585,7 +33822,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L779",
+      "source_location": "L1094",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_buildclassicalsocle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1945",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33596,7 +33844,62 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L744",
+      "source_location": "L1133",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_buildsculptedhermtorso",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1168",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_bustcallbacks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1110",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_createportraithead",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L963",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_getalkindiscrolltexture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L886",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33607,7 +33910,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L683",
+      "source_location": "L825",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33618,7 +33921,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L711",
+      "source_location": "L1039",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_getshannonchalkboardtexture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L853",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33629,7 +33943,29 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L15",
+      "source_location": "L918",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_getstatueplaquetexture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_loadscannedbust",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33640,7 +33976,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L17",
+      "source_location": "L70",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
@@ -33651,11 +33987,23 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene",
       "target": "web_src_components_museum_threemuseumscene_threemuseumsceneprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L500",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_loadscannedbust",
       "confidence_score": 1.0
     },
     {
@@ -33664,7 +34012,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L319",
+      "source_location": "L380",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
@@ -33676,7 +34024,19 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L651",
+      "source_location": "L317",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
+      "target": "web_src_components_museum_museumdata_museum_statues"
+    },
+    {
+      "relation": "references",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L787",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
@@ -33687,7 +34047,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L427",
+      "source_location": "L489",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
@@ -33699,7 +34059,19 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L394",
+      "source_location": "L323",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
+      "target": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L455",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
@@ -33711,7 +34083,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L303",
+      "source_location": "L364",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
@@ -33723,11 +34095,83 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
-      "source_location": "L370",
+      "source_location": "L431",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_threemuseumscene_threemuseumscene",
       "target": "web_src_components_museum_threemuseumscene_getsignboardtexture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1334",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "target": "web_src_components_museum_threemuseumscene_getstatueplaquetexture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1500",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "target": "web_src_components_museum_threemuseumscene_getalkindiscrolltexture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1635",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "target": "web_src_components_museum_threemuseumscene_getshannonchalkboardtexture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1418",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "target": "web_src_components_museum_threemuseumscene_buildclassicalsocle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1444",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "target": "web_src_components_museum_threemuseumscene_createportraithead",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/ThreeMuseumScene.tsx",
+      "source_location": "L1423",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_threemuseumscene_buildstatuemonument",
+      "target": "web_src_components_museum_threemuseumscene_buildsculptedhermtorso",
       "confidence_score": 1.0
     },
     {
@@ -33820,6 +34264,18 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_hud_museumhud",
+      "target": "web_src_components_museum_museumdata_museum_statues",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/hud/MuseumHUD.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_hud_museumhud",
       "target": "web_src_components_museum_museumdata_museum_wings",
       "confidence_score": 1.0
     },
@@ -33836,6 +34292,18 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/statues.test.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_statues_test",
+      "target": "web_src_components_museum_hud_museumhud",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -33846,6 +34314,18 @@
       "_origin": "ast",
       "source": "web_src_components_museum_hud_museumhud_museumhud",
       "target": "web_src_components_museum_museumdata_museum_exhibits"
+    },
+    {
+      "relation": "references",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/museum/hud/MuseumHUD.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_hud_museumhud_museumhud",
+      "target": "web_src_components_museum_museumdata_museum_statues"
     },
     {
       "relation": "references",
@@ -33872,6 +34352,18 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/statues.test.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_statues_test",
+      "target": "web_src_components_museum_hud_museumhud_museumhud",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/museumData.ts",
@@ -33886,11 +34378,33 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/museumData.ts",
+      "source_location": "L332",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_museumdata",
+      "target": "web_src_components_museum_museumdata_cryptographicstatue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/museumData.ts",
       "source_location": "L60",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumdata",
       "target": "web_src_components_museum_museumdata_museum_exhibits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/museumData.ts",
+      "source_location": "L353",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_museumdata",
+      "target": "web_src_components_museum_museumdata_museum_statues",
       "confidence_score": 1.0
     },
     {
@@ -33931,6 +34445,18 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_workbench_statuecuratorialdrawer",
+      "target": "web_src_components_museum_museumdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/workbench/WorkbenchPanel.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -33948,6 +34474,18 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_tests_unit_a11y_test",
+      "target": "web_src_components_museum_museumdata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/statues.test.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_statues_test",
       "target": "web_src_components_museum_museumdata",
       "confidence_score": 1.0
     },
@@ -34012,6 +34550,42 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_workbench_statuecuratorialdrawer",
+      "target": "web_src_components_museum_museumdata_cryptographicstatue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_workbench_statuecuratorialdrawer_statuecuratorialdrawerprops",
+      "target": "web_src_components_museum_museumdata_cryptographicstatue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/statues.test.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_statues_test",
+      "target": "web_src_components_museum_museumdata_museum_statues",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/src/components/museum/workbench/ArtifactMetadataDrawer.tsx",
@@ -34055,6 +34629,52 @@
       "_origin": "ast",
       "source": "web_tests_unit_a11y_test",
       "target": "web_src_components_museum_workbench_artifactmetadatadrawer_artifactmetadatadrawer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_workbench_statuecuratorialdrawer",
+      "target": "web_src_components_museum_workbench_statuecuratorialdrawer_statuecuratorialdrawer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_src_components_museum_workbench_statuecuratorialdrawer",
+      "target": "web_src_components_museum_workbench_statuecuratorialdrawer_statuecuratorialdrawerprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/statues.test.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_statues_test",
+      "target": "web_src_components_museum_workbench_statuecuratorialdrawer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/statues.test.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_statues_test",
+      "target": "web_src_components_museum_workbench_statuecuratorialdrawer_statuecuratorialdrawer",
       "confidence_score": 1.0
     },
     {
@@ -34976,5 +35596,5 @@
       "source_file": "STYLE_GUIDE.md"
     }
   ],
-  "built_at_commit": "c317c8b8998764b52a6c9235cf0d9a7144f47337"
+  "built_at_commit": "027b3630bd6257aa71e783de9615caa93baf5d8f"
 }

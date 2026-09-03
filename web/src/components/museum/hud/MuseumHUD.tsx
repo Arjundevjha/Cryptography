@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ApiStatusDot } from './ApiStatusDot';
 import { Github, Home, Compass, Map, X, Sparkles, Navigation } from 'lucide-react';
-import { MUSEUM_EXHIBITS, MUSEUM_WINGS } from '../museumData';
+import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from '../museumData';
 
 interface MuseumHUDProps {
   currentView: string;
@@ -16,9 +16,11 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
   const [showMap, setShowMap] = useState(false);
   const activeExhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
+  const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
 
   const getSubtext = () => {
     if (currentView === 'atrium') return 'Grand Entrance Lobby';
+    if (activeStatue) return `Pioneer Monument • ${activeStatue.name} (${activeStatue.lifespan})`;
     if (activeWing) return activeWing.name;
     if (activeExhibit) return `${activeExhibit.wing} • ${activeExhibit.name}`;
     return '3D Museum Gallery';
@@ -218,6 +220,61 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                   );
                 })}
 
+                {/* Founding Fathers Statue Markers in Lobby */}
+                {MUSEUM_STATUES.map((statue) => {
+                  let sx = 400;
+                  let sy = 330;
+                  if (statue.id === 'statue-alkindi') {
+                    sx = 340;
+                    sy = 335;
+                  } else if (statue.id === 'statue-shannon') {
+                    sx = 400;
+                    sy = 325;
+                  } else if (statue.id === 'statue-diffie-hellman') {
+                    sx = 460;
+                    sy = 335;
+                  }
+
+                  const isActive = currentView === statue.id;
+
+                  return (
+                    <g
+                      key={statue.id}
+                      onClick={() => {
+                        onSelectRoom(statue.id);
+                        setShowMap(false);
+                      }}
+                      className="cursor-pointer group"
+                    >
+                      <rect
+                        x={sx - (isActive ? 7 : 5)}
+                        y={sy - (isActive ? 7 : 5)}
+                        width={isActive ? 14 : 10}
+                        height={isActive ? 14 : 10}
+                        transform={`rotate(45 ${sx} ${sy})`}
+                        fill={isActive ? '#f59e0b' : '#d97706'}
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                        className="transition-all group-hover:scale-125"
+                      />
+                      {isActive && (
+                        <circle cx={sx} cy={sy} r="14" fill="none" stroke="#f59e0b" strokeWidth="1.5" className="animate-ping" />
+                      )}
+                      <text
+                        x={sx}
+                        y={sy + 14}
+                        fill={isActive ? '#f59e0b' : '#fbbf24'}
+                        fontSize="8"
+                        fontFamily="monospace"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
+                        {statue.name.split(' ')[0]}
+                      </text>
+                    </g>
+                  );
+                })}
+
                 {/* Lobby Point */}
                 <g
                   onClick={() => {
@@ -228,15 +285,25 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                 >
                   <circle
                     cx="400"
-                    cy="345"
-                    r={currentView === 'atrium' ? "10" : "7"}
+                    cy="365"
+                    r={currentView === 'atrium' ? "8" : "6"}
                     fill={currentView === 'atrium' ? "#f59e0b" : "#334155"}
                     stroke="#ffffff"
-                    strokeWidth="2"
+                    strokeWidth="1.5"
                   />
                   {currentView === 'atrium' && (
-                    <circle cx="400" cy="345" r="18" fill="none" stroke="#f59e0b" strokeWidth="1.5" className="animate-ping" />
+                    <circle cx="400" cy="365" r="14" fill="none" stroke="#f59e0b" strokeWidth="1.5" className="animate-ping" />
                   )}
+                  <text
+                    x="400"
+                    y="376"
+                    fill={currentView === 'atrium' ? "#f59e0b" : "#94a3b8"}
+                    fontSize="7"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                  >
+                    ENTRANCE
+                  </text>
                 </g>
               </svg>
             </div>
