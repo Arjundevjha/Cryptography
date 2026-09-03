@@ -185,9 +185,12 @@ export function validateRsaParams(p: number, q: number, e: number): { isValid: b
   if (q <= 2 || !isPrimeTypeScript(q)) {
     return { isValid: false, error: 'q must be a prime greater than 2' };
   }
+  if (p === q) {
+    return { isValid: false, error: 'p and q must be distinct' };
+  }
   const phi = (p - 1) * (q - 1);
-  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
-  if (gcd(e, phi) !== 1) {
+  const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b));
+  if (e <= 1 || gcd(e, phi) !== 1) {
     return { isValid: false, error: 'e must be coprime to phi' };
   }
   return { isValid: true };

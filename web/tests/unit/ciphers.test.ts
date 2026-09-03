@@ -120,14 +120,51 @@ describe('AES Key Validation', () => {
 describe('RSA Params Validation', () => {
   it('should validate valid prime parameters and coprime e', () => {
     expect(validateRsaParams(61, 53, 17)).toEqual({ isValid: true });
+    expect(validateRsaParams(3, 5, 3)).toEqual({ isValid: true });
   });
 
-  it('should reject non-prime parameters', () => {
-    expect(validateRsaParams(4, 53, 17).isValid).toBe(false);
+  it('should reject non-prime p or p <= 2', () => {
+    const res1 = validateRsaParams(2, 53, 17);
+    expect(res1.isValid).toBe(false);
+    expect(res1.error).toBe('p must be a prime greater than 2');
+
+    const res2 = validateRsaParams(4, 53, 17);
+    expect(res2.isValid).toBe(false);
+    expect(res2.error).toBe('p must be a prime greater than 2');
+
+    const res3 = validateRsaParams(-5, 53, 17);
+    expect(res3.isValid).toBe(false);
+    expect(res3.error).toBe('p must be a prime greater than 2');
   });
 
-  it('should reject non-coprime e', () => {
-    expect(validateRsaParams(61, 53, 13).isValid).toBe(false);
+  it('should reject non-prime q or q <= 2', () => {
+    const res1 = validateRsaParams(61, 2, 17);
+    expect(res1.isValid).toBe(false);
+    expect(res1.error).toBe('q must be a prime greater than 2');
+
+    const res2 = validateRsaParams(61, 15, 17);
+    expect(res2.isValid).toBe(false);
+    expect(res2.error).toBe('q must be a prime greater than 2');
+  });
+
+  it('should reject when p and q are equal', () => {
+    const res = validateRsaParams(61, 61, 17);
+    expect(res.isValid).toBe(false);
+    expect(res.error).toBe('p and q must be distinct');
+  });
+
+  it('should reject non-coprime e or e <= 1', () => {
+    const res1 = validateRsaParams(61, 53, 13); // gcd(13, 3120) = 13 != 1
+    expect(res1.isValid).toBe(false);
+    expect(res1.error).toBe('e must be coprime to phi');
+
+    const res2 = validateRsaParams(61, 53, 1);
+    expect(res2.isValid).toBe(false);
+    expect(res2.error).toBe('e must be coprime to phi');
+
+    const res3 = validateRsaParams(61, 53, 0);
+    expect(res3.isValid).toBe(false);
+    expect(res3.error).toBe('e must be coprime to phi');
   });
 });
 
