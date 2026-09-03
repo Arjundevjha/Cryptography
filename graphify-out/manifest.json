@@ -370,8 +370,8 @@
     "semantic_hash": "c08d092e4b0e0230e08e00605779b4aa"
   },
   "web/next-env.d.ts": {
-    "mtime": 1788398508.8193672,
-    "ast_hash": "2a74d3909800ca5467fa83b0ab4a4890",
+    "mtime": 1788398546.0597875,
+    "ast_hash": "d0f8375ae1199dc7acd3977fc33b78b8",
     "semantic_hash": ""
   },
   "web/next.config.js": {
@@ -510,8 +510,8 @@
     "semantic_hash": "1c06ba7292961575b45102f00433ce1c"
   },
   "handoff.md": {
-    "mtime": 1788395672.2491586,
-    "ast_hash": "0b78ae1f59709b59d61787bd4b39af6d",
+    "mtime": 1788445132.7158647,
+    "ast_hash": "e60cba80e9c360b19c876703176b142c",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
