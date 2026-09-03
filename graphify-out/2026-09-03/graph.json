@@ -41,8 +41,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_init",
-      "community": 19,
-      "community_name": "Scytale Cipher & Classical Init Modules",
+      "community": 11,
+      "community_name": "Polybius Square Cipher Implementation",
       "norm_label": "methods/__init__.py"
     },
     {
@@ -52,8 +52,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_init_rationale_1",
-      "community": 19,
-      "community_name": "Scytale Cipher & Classical Init Modules",
+      "community": 11,
+      "community_name": "Polybius Square Cipher Implementation",
       "norm_label": "cryptography methods package  this package contains various cryptographic algori"
     },
     {
@@ -63,8 +63,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_classical_init",
-      "community": 19,
-      "community_name": "Scytale Cipher & Classical Init Modules",
+      "community": 22,
+      "community_name": "Vigenere Cipher Unit Tests",
       "norm_label": "classical/__init__.py"
     },
     {
@@ -74,8 +74,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_classical_init_rationale_1",
-      "community": 19,
-      "community_name": "Scytale Cipher & Classical Init Modules",
+      "community": 22,
+      "community_name": "Vigenere Cipher Unit Tests",
       "norm_label": "classical cryptography methods package."
     },
     {
@@ -2362,8 +2362,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_init",
-      "community": 19,
-      "community_name": "Scytale Cipher & Classical Init Modules",
+      "community": 11,
+      "community_name": "Polybius Square Cipher Implementation",
       "norm_label": "historical/__init__.py"
     },
     {
@@ -2373,8 +2373,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_init_rationale_1",
-      "community": 19,
-      "community_name": "Scytale Cipher & Classical Init Modules",
+      "community": 11,
+      "community_name": "Polybius Square Cipher Implementation",
       "norm_label": "historical cryptography methods package."
     },
     {
@@ -2406,8 +2406,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_enigma",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma.py"
     },
     {
@@ -2472,8 +2472,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_enigma_rationale_1",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma machine class representing the whole machine assembly."
     },
     {
@@ -2648,8 +2648,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_main",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "enigma/main.py"
     },
     {
@@ -2659,8 +2659,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_main_rationale_1",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "main simulation runner for the enigma machine."
     },
     {
@@ -3858,8 +3858,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_get_positions",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": ".get_positions()"
     },
     {
@@ -3869,8 +3869,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_set_pins",
-      "community": 34,
-      "community_name": "Lorenz Text Processing Procedures",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": ".set_pins()"
     },
     {
@@ -4001,8 +4001,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_60",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "get current position indices for all 12 wheels."
     },
     {
@@ -4012,8 +4012,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_69",
-      "community": 34,
-      "community_name": "Lorenz Text Processing Procedures",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "set manual pin configurations for chi, motor, and psi wheels.          args:"
     },
     {
@@ -5464,8 +5464,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "modern/__init__.py"
     },
     {
@@ -5475,8 +5475,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init_rationale_1",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "modern cryptography methods package."
     },
     {
@@ -6663,8 +6663,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "methods_modern_symmetric_sub_word",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "sub_word()"
     },
     {
@@ -6674,8 +6674,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rot_word",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "rot_word()"
     },
     {
@@ -6707,8 +6707,8 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "methods_modern_symmetric_sub_bytes",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "sub_bytes()"
     },
     {
@@ -6729,8 +6729,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "methods_modern_symmetric_shift_rows",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "shift_rows()"
     },
     {
@@ -6751,8 +6751,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "methods_modern_symmetric_xtime",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "xtime()"
     },
     {
@@ -6770,18 +6770,18 @@
       "label": "mix_columns()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L147",
+      "source_location": "L157",
       "_origin": "ast",
       "id": "methods_modern_symmetric_mix_columns",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "mix_columns()"
     },
     {
       "label": "inv_mix_columns()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L158",
+      "source_location": "L169",
       "_origin": "ast",
       "id": "methods_modern_symmetric_inv_mix_columns",
       "community": 18,
@@ -6792,18 +6792,18 @@
       "label": "encrypt_block()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L173",
+      "source_location": "L181",
       "_origin": "ast",
       "id": "methods_modern_symmetric_encrypt_block",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "encrypt_block()"
     },
     {
       "label": "decrypt_block()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L188",
+      "source_location": "L196",
       "_origin": "ast",
       "id": "methods_modern_symmetric_decrypt_block",
       "community": 18,
@@ -6814,29 +6814,29 @@
       "label": "pkcs7_pad()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L203",
+      "source_location": "L211",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_pad",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "pkcs7_pad()"
     },
     {
       "label": "pkcs7_unpad()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L208",
+      "source_location": "L216",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_unpad",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "pkcs7_unpad()"
     },
     {
       "label": "generate_key()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L218",
+      "source_location": "L226",
       "_origin": "ast",
       "id": "methods_modern_symmetric_generate_key",
       "community": 16,
@@ -6847,7 +6847,7 @@
       "label": "generate_iv()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L222",
+      "source_location": "L230",
       "_origin": "ast",
       "id": "methods_modern_symmetric_generate_iv",
       "community": 16,
@@ -6858,7 +6858,7 @@
       "label": "encrypt()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L226",
+      "source_location": "L234",
       "_origin": "ast",
       "id": "methods_modern_symmetric_encrypt",
       "community": 16,
@@ -6869,7 +6869,7 @@
       "label": "decrypt()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L240",
+      "source_location": "L248",
       "_origin": "ast",
       "id": "methods_modern_symmetric_decrypt",
       "community": 16,
@@ -6880,7 +6880,7 @@
       "label": "encrypt_with_new_key()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L255",
+      "source_location": "L263",
       "_origin": "ast",
       "id": "methods_modern_symmetric_encrypt_with_new_key",
       "community": 16,
@@ -6891,7 +6891,7 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L262",
+      "source_location": "L270",
       "_origin": "ast",
       "id": "methods_modern_symmetric_main",
       "community": 16,
@@ -6916,8 +6916,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_59",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "substitute bytes in a 4-byte word using the s-box."
     },
     {
@@ -6927,8 +6927,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_63",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 23,
+      "community_name": "Enigma Keyboard Component Routing",
       "norm_label": "rotate a 4-byte word: shift left by 1 position."
     },
     {
@@ -6960,8 +6960,8 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_103",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "substitute state bytes using the s-box."
     },
     {
@@ -6982,8 +6982,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_111",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "shift state rows to the left by row offsets."
     },
     {
@@ -7004,8 +7004,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_129",
-      "community": 71,
-      "community_name": "mix_columns",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "perform gf(2^8) multiplication by 2."
     },
     {
@@ -7020,45 +7020,45 @@
       "norm_label": "perform gf(2^8) multiplication of two bytes."
     },
     {
-      "label": "Mix the columns of the state matrix.",
+      "label": "Mix the columns of the state matrix using precomputed GF(2^8) multiplication tab",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L148",
+      "source_location": "L158",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_148",
-      "community": 71,
-      "community_name": "mix_columns",
-      "norm_label": "mix the columns of the state matrix."
-    },
-    {
-      "label": "Mix the columns of the state matrix using inverse coefficients.",
-      "file_type": "rationale",
-      "source_file": "methods/modern/symmetric.py",
-      "source_location": "L159",
-      "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_159",
+      "id": "methods_modern_symmetric_rationale_158",
       "community": 18,
       "community_name": "Symmetric Encryption Utilities",
-      "norm_label": "mix the columns of the state matrix using inverse coefficients."
+      "norm_label": "mix the columns of the state matrix using precomputed gf(2^8) multiplication tab"
+    },
+    {
+      "label": "Mix the columns of the state matrix using precomputed inverse GF(2^8) multiplica",
+      "file_type": "rationale",
+      "source_file": "methods/modern/symmetric.py",
+      "source_location": "L170",
+      "_origin": "ast",
+      "id": "methods_modern_symmetric_rationale_170",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
+      "norm_label": "mix the columns of the state matrix using precomputed inverse gf(2^8) multiplica"
     },
     {
       "label": "Encrypt a single 16-byte block using AES.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L174",
+      "source_location": "L182",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_174",
-      "community": 71,
-      "community_name": "mix_columns",
+      "id": "methods_modern_symmetric_rationale_182",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "encrypt a single 16-byte block using aes."
     },
     {
       "label": "Decrypt a single 16-byte block using AES.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L189",
+      "source_location": "L197",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_189",
+      "id": "methods_modern_symmetric_rationale_197",
       "community": 18,
       "community_name": "Symmetric Encryption Utilities",
       "norm_label": "decrypt a single 16-byte block using aes."
@@ -7067,31 +7067,31 @@
       "label": "Apply PKCS7 padding to raw bytes.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L204",
+      "source_location": "L212",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_204",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "id": "methods_modern_symmetric_rationale_212",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "apply pkcs7 padding to raw bytes."
     },
     {
       "label": "Remove PKCS7 padding from raw bytes.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L209",
+      "source_location": "L217",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_209",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "id": "methods_modern_symmetric_rationale_217",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "remove pkcs7 padding from raw bytes."
     },
     {
       "label": "Generate a random 256-bit (32 bytes) key for AES-256.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L219",
+      "source_location": "L227",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_219",
+      "id": "methods_modern_symmetric_rationale_227",
       "community": 16,
       "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "generate a random 256-bit (32 bytes) key for aes-256."
@@ -7100,9 +7100,9 @@
       "label": "Generate a random 128-bit (16 bytes) initialization vector.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L223",
+      "source_location": "L231",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_223",
+      "id": "methods_modern_symmetric_rationale_231",
       "community": 16,
       "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "generate a random 128-bit (16 bytes) initialization vector."
@@ -7111,9 +7111,9 @@
       "label": "Encrypt a message string using AES-256-CBC with PKCS7 padding.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L227",
+      "source_location": "L235",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_227",
+      "id": "methods_modern_symmetric_rationale_235",
       "community": 16,
       "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "encrypt a message string using aes-256-cbc with pkcs7 padding."
@@ -7122,9 +7122,9 @@
       "label": "Decrypt ciphertext bytes using AES-256-CBC and remove PKCS7 padding.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L241",
+      "source_location": "L249",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_241",
+      "id": "methods_modern_symmetric_rationale_249",
       "community": 16,
       "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "decrypt ciphertext bytes using aes-256-cbc and remove pkcs7 padding."
@@ -7133,9 +7133,9 @@
       "label": "Encrypt a message with a newly generated key and IV.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L256",
+      "source_location": "L264",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_256",
+      "id": "methods_modern_symmetric_rationale_264",
       "community": 16,
       "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "encrypt a message with a newly generated key and iv."
@@ -7144,9 +7144,9 @@
       "label": "Run symmetric encryption and decryption test.",
       "file_type": "rationale",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L263",
+      "source_location": "L271",
       "_origin": "ast",
-      "id": "methods_modern_symmetric_rationale_263",
+      "id": "methods_modern_symmetric_rationale_271",
       "community": 16,
       "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "run symmetric encryption and decryption test."
@@ -7906,8 +7906,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_symmetric.py"
     },
     {
@@ -7917,8 +7917,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_padding",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_pkcs7_padding()"
     },
     {
@@ -7928,8 +7928,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_bytes",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_pkcs7_unpad_invalid_bytes()"
     },
     {
@@ -7939,8 +7939,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_value",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_pkcs7_unpad_invalid_value()"
     },
     {
@@ -8005,8 +8005,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_single_block_encryption_decryption",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_single_block_encryption_decryption()"
     },
     {
@@ -8060,8 +8060,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_92",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test raw block encryption and decryption to ensure no data loss in core aes func"
     },
     {
@@ -8412,8 +8412,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "vercelpathmiddleware"
     },
     {
@@ -8423,8 +8423,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware_init",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": ".__init__()"
     },
     {
@@ -8434,8 +8434,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "web_api_main_vercelpathmiddleware_call",
-      "community": 27,
-      "community_name": "Enigma Reflector Simulator Routing",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": ".__call__()"
     },
     {
@@ -8467,8 +8467,8 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "web_api_main_validation_exception_handler",
-      "community": 33,
-      "community_name": "Enigma Rotor Ring Rotation Math",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "validation_exception_handler()"
     },
     {
@@ -8478,8 +8478,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "request",
-      "community": 33,
-      "community_name": "Enigma Rotor Ring Rotation Math",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "request"
     },
     {
@@ -8489,8 +8489,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "requestvalidationerror",
-      "community": 33,
-      "community_name": "Enigma Rotor Ring Rotation Math",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "requestvalidationerror"
     },
     {
@@ -8764,8 +8764,8 @@
       "source_location": "L331",
       "_origin": "ast",
       "id": "web_api_main_enigmaencipherinput",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "enigmaencipherinput"
     },
     {
@@ -8841,8 +8841,8 @@
       "source_location": "L471",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_rotors",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "validate_enigma_rotors()"
     },
     {
@@ -8852,8 +8852,8 @@
       "source_location": "L483",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_positions",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "validate_enigma_positions()"
     },
     {
@@ -8863,8 +8863,8 @@
       "source_location": "L491",
       "_origin": "ast",
       "id": "web_api_main_parse_and_validate_enigma_rings",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "parse_and_validate_enigma_rings()"
     },
     {
@@ -8874,8 +8874,8 @@
       "source_location": "L520",
       "_origin": "ast",
       "id": "web_api_main_validate_enigma_plugboard",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "validate_enigma_plugboard()"
     },
     {
@@ -8885,8 +8885,8 @@
       "source_location": "L533",
       "_origin": "ast",
       "id": "web_api_main_enigma_encipher",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "enigma_encipher()"
     },
     {
@@ -9083,8 +9083,8 @@
       "source_location": "L534",
       "_origin": "ast",
       "id": "web_api_main_rationale_534",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 27,
+      "community_name": "Enigma Reflector Simulator Routing",
       "norm_label": "encipher plaintext using the enigma cipher machine."
     },
     {
@@ -9735,6 +9735,50 @@
       "community": 38,
       "community_name": "is_valid_origin",
       "norm_label": "test_parse_allowed_origins()"
+    },
+    {
+      "label": "test_rsa_keygen_excessive_prime_bound()",
+      "file_type": "code",
+      "source_file": "web/api/test_main.py",
+      "source_location": "L651",
+      "_origin": "ast",
+      "id": "web_api_test_main_test_rsa_keygen_excessive_prime_bound",
+      "community": 3,
+      "community_name": "FastAPI Endpoint Unit Tests",
+      "norm_label": "test_rsa_keygen_excessive_prime_bound()"
+    },
+    {
+      "label": "test_enigma_encipher_oversized_plugboard()",
+      "file_type": "code",
+      "source_file": "web/api/test_main.py",
+      "source_location": "L660",
+      "_origin": "ast",
+      "id": "web_api_test_main_test_enigma_encipher_oversized_plugboard",
+      "community": 3,
+      "community_name": "FastAPI Endpoint Unit Tests",
+      "norm_label": "test_enigma_encipher_oversized_plugboard()"
+    },
+    {
+      "label": "test_lorenz_encrypt_oversized_positions()",
+      "file_type": "code",
+      "source_file": "web/api/test_main.py",
+      "source_location": "L671",
+      "_origin": "ast",
+      "id": "web_api_test_main_test_lorenz_encrypt_oversized_positions",
+      "community": 3,
+      "community_name": "FastAPI Endpoint Unit Tests",
+      "norm_label": "test_lorenz_encrypt_oversized_positions()"
+    },
+    {
+      "label": "test_scytale_encrypt_excessive_width()",
+      "file_type": "code",
+      "source_file": "web/api/test_main.py",
+      "source_location": "L679",
+      "_origin": "ast",
+      "id": "web_api_test_main_test_scytale_encrypt_excessive_width",
+      "community": 3,
+      "community_name": "FastAPI Endpoint Unit Tests",
+      "norm_label": "test_scytale_encrypt_excessive_width()"
     },
     {
       "label": "route.ts",
@@ -12124,6 +12168,17 @@
       "norm_label": "2025-05-22 - bypass call stack & redundant object allocations in lorenz machine message loops"
     },
     {
+      "label": "2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns",
+      "file_type": "document",
+      "source_file": ".Jules/bolt.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "jules_bolt_2025_05_23_pre_compute_galois_field_gf_2_8_multiplication_tables_for_aes_mixcolumns",
+      "community": 41,
+      "community_name": "FastAPI Request Validation Handler",
+      "norm_label": "2025-05-23 - pre-compute galois field gf(2^8) multiplication tables for aes mixcolumns"
+    },
+    {
       "label": "palette.md",
       "file_type": "document",
       "source_file": ".Jules/palette.md",
@@ -12155,6 +12210,28 @@
       "community": 26,
       "community_name": "Enigma Plugboard Component Routing",
       "norm_label": "2025-05-18 - icon-only buttons accessibility"
+    },
+    {
+      "label": "sentinel.md",
+      "file_type": "document",
+      "source_file": ".Jules/sentinel.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "jules_sentinel",
+      "community": 33,
+      "community_name": "Enigma Rotor Ring Rotation Math",
+      "norm_label": "sentinel.md"
+    },
+    {
+      "label": "2026-06-16 - Unrestricted Resource Allocation in Pydantic Input Schemas",
+      "file_type": "document",
+      "source_file": ".Jules/sentinel.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "jules_sentinel_2026_06_16_unrestricted_resource_allocation_in_pydantic_input_schemas",
+      "community": 33,
+      "community_name": "Enigma Rotor Ring Rotation Math",
+      "norm_label": "2026-06-16 - unrestricted resource allocation in pydantic input schemas"
     },
     {
       "label": "no_ai_slop.md",
@@ -27705,7 +27782,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L240",
+      "source_location": "L248",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27716,7 +27793,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L188",
+      "source_location": "L196",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27727,7 +27804,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L226",
+      "source_location": "L234",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27738,7 +27815,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L173",
+      "source_location": "L181",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27749,7 +27826,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L255",
+      "source_location": "L263",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27760,7 +27837,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L222",
+      "source_location": "L230",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27771,7 +27848,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L218",
+      "source_location": "L226",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27782,7 +27859,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L158",
+      "source_location": "L169",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27826,7 +27903,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L262",
+      "source_location": "L270",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27837,7 +27914,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L147",
+      "source_location": "L157",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27859,7 +27936,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L203",
+      "source_location": "L211",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -27870,7 +27947,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L208",
+      "source_location": "L216",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric",
@@ -28006,7 +28083,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L242",
+      "source_location": "L250",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_decrypt",
@@ -28018,7 +28095,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L228",
+      "source_location": "L236",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt",
@@ -28089,7 +28166,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L192",
+      "source_location": "L200",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_decrypt_block",
@@ -28101,7 +28178,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L177",
+      "source_location": "L185",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt_block",
@@ -28124,7 +28201,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L179",
+      "source_location": "L187",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt_block",
@@ -28147,7 +28224,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L194",
+      "source_location": "L202",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_decrypt_block",
@@ -28170,7 +28247,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L180",
+      "source_location": "L188",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt_block",
@@ -28193,7 +28270,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L193",
+      "source_location": "L201",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_decrypt_block",
@@ -28212,18 +28289,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/modern/symmetric.py",
-      "source_location": "L152",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_modern_symmetric_mix_columns",
-      "target": "methods_modern_symmetric_xtime",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
@@ -28232,18 +28297,6 @@
       "_origin": "ast",
       "source": "methods_modern_symmetric_rationale_129",
       "target": "methods_modern_symmetric_xtime",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/modern/symmetric.py",
-      "source_location": "L163",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_modern_symmetric_inv_mix_columns",
-      "target": "methods_modern_symmetric_mul_gf",
       "confidence_score": 1.0
     },
     {
@@ -28262,7 +28315,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L181",
+      "source_location": "L189",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt_block",
@@ -28273,10 +28326,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L148",
+      "source_location": "L158",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_148",
+      "source": "methods_modern_symmetric_rationale_158",
       "target": "methods_modern_symmetric_mix_columns",
       "confidence_score": 1.0
     },
@@ -28285,7 +28338,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L197",
+      "source_location": "L205",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_decrypt_block",
@@ -28296,10 +28349,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L159",
+      "source_location": "L170",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_159",
+      "source": "methods_modern_symmetric_rationale_170",
       "target": "methods_modern_symmetric_inv_mix_columns",
       "confidence_score": 1.0
     },
@@ -28308,7 +28361,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L235",
+      "source_location": "L243",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt",
@@ -28319,10 +28372,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L174",
+      "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_174",
+      "source": "methods_modern_symmetric_rationale_182",
       "target": "methods_modern_symmetric_encrypt_block",
       "confidence_score": 1.0
     },
@@ -28355,7 +28408,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L247",
+      "source_location": "L255",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_decrypt",
@@ -28366,10 +28419,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L189",
+      "source_location": "L197",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_189",
+      "source": "methods_modern_symmetric_rationale_197",
       "target": "methods_modern_symmetric_decrypt_block",
       "confidence_score": 1.0
     },
@@ -28402,7 +28455,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L229",
+      "source_location": "L237",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt",
@@ -28413,10 +28466,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L204",
+      "source_location": "L212",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_204",
+      "source": "methods_modern_symmetric_rationale_212",
       "target": "methods_modern_symmetric_pkcs7_pad",
       "confidence_score": 1.0
     },
@@ -28449,7 +28502,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L252",
+      "source_location": "L260",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_decrypt",
@@ -28460,10 +28513,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L209",
+      "source_location": "L217",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_209",
+      "source": "methods_modern_symmetric_rationale_217",
       "target": "methods_modern_symmetric_pkcs7_unpad",
       "confidence_score": 1.0
     },
@@ -28520,7 +28573,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L257",
+      "source_location": "L265",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt_with_new_key",
@@ -28532,7 +28585,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L265",
+      "source_location": "L273",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_main",
@@ -28543,10 +28596,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L219",
+      "source_location": "L227",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_219",
+      "source": "methods_modern_symmetric_rationale_227",
       "target": "methods_modern_symmetric_generate_key",
       "confidence_score": 1.0
     },
@@ -28603,7 +28656,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L258",
+      "source_location": "L266",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt_with_new_key",
@@ -28615,7 +28668,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L266",
+      "source_location": "L274",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_main",
@@ -28626,10 +28679,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L223",
+      "source_location": "L231",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_223",
+      "source": "methods_modern_symmetric_rationale_231",
       "target": "methods_modern_symmetric_generate_iv",
       "confidence_score": 1.0
     },
@@ -28674,7 +28727,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L259",
+      "source_location": "L267",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_encrypt_with_new_key",
@@ -28686,7 +28739,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L267",
+      "source_location": "L275",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_main",
@@ -28697,10 +28750,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L227",
+      "source_location": "L235",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_227",
+      "source": "methods_modern_symmetric_rationale_235",
       "target": "methods_modern_symmetric_encrypt",
       "confidence_score": 1.0
     },
@@ -28769,7 +28822,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L269",
+      "source_location": "L277",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_symmetric_main",
@@ -28780,10 +28833,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L241",
+      "source_location": "L249",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_241",
+      "source": "methods_modern_symmetric_rationale_249",
       "target": "methods_modern_symmetric_decrypt",
       "confidence_score": 1.0
     },
@@ -28863,10 +28916,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L256",
+      "source_location": "L264",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_256",
+      "source": "methods_modern_symmetric_rationale_264",
       "target": "methods_modern_symmetric_encrypt_with_new_key",
       "confidence_score": 1.0
     },
@@ -28898,10 +28951,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/symmetric.py",
-      "source_location": "L263",
+      "source_location": "L271",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_symmetric_rationale_263",
+      "source": "methods_modern_symmetric_rationale_271",
       "target": "methods_modern_symmetric_main",
       "confidence_score": 1.0
     },
@@ -31538,6 +31591,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/test_main.py",
+      "source_location": "L660",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_test_main",
+      "target": "web_api_test_main_test_enigma_encipher_oversized_plugboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/test_main.py",
       "source_location": "L128",
       "weight": 1.0,
       "_origin": "ast",
@@ -31653,6 +31717,17 @@
       "_origin": "ast",
       "source": "web_api_test_main",
       "target": "web_api_test_main_test_lorenz_api_runtime_error_exception",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/test_main.py",
+      "source_location": "L671",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_test_main",
+      "target": "web_api_test_main_test_lorenz_encrypt_oversized_positions",
       "confidence_score": 1.0
     },
     {
@@ -31780,6 +31855,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/test_main.py",
+      "source_location": "L651",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_test_main",
+      "target": "web_api_test_main_test_rsa_keygen_excessive_prime_bound",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/test_main.py",
       "source_location": "L373",
       "weight": 1.0,
       "_origin": "ast",
@@ -31829,6 +31915,17 @@
       "_origin": "ast",
       "source": "web_api_test_main",
       "target": "web_api_test_main_test_scytale_decrypt_success",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/test_main.py",
+      "source_location": "L679",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_test_main",
+      "target": "web_api_test_main_test_scytale_encrypt_excessive_width",
       "confidence_score": 1.0
     },
     {
@@ -35155,6 +35252,17 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": ".Jules/bolt.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "jules_bolt",
+      "target": "jules_bolt_2025_05_23_pre_compute_galois_field_gf_2_8_multiplication_tables_for_aes_mixcolumns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": ".Jules/palette.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -35172,6 +35280,17 @@
       "_origin": "ast",
       "source": "jules_palette_palette_s_journal_critical_ux_accessibility_learnings",
       "target": "jules_palette_2025_05_18_icon_only_buttons_accessibility",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".Jules/sentinel.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "jules_sentinel",
+      "target": "jules_sentinel_2026_06_16_unrestricted_resource_allocation_in_pydantic_input_schemas",
       "confidence_score": 1.0
     },
     {
@@ -35596,5 +35715,5 @@
       "source_file": "STYLE_GUIDE.md"
     }
   ],
-  "built_at_commit": "027b3630bd6257aa71e783de9615caa93baf5d8f"
+  "built_at_commit": "ef0458edeea0e9f88d6f1f3eb64ac0e25950b85a"
 }

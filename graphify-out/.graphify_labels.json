@@ -45,6 +45,7 @@
   "43": "Frontend Root App Layout Settings",
   "44": "Jest Frontend Configuration Settings",
   "45": "Exhibit Input Form UI Component",
+  "46": "validate_enigma_rotors",
   "47": "Frontend Health API Route Handler",
   "48": "Next.js Build Config Settings",
   "49": "Next.js Environment Typings Directive",
@@ -67,5 +68,8 @@
   "66": "playfair.py",
   "67": "encrypt",
   "68": "test_playfair.py",
-  "69": "_find_position"
+  "69": "_find_position",
+  "70": "keypair.py",
+  "71": "validation_exception_handler",
+  "72": "PolybiusDecryptInput"
 }
