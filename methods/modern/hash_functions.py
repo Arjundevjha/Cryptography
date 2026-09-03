@@ -291,6 +291,61 @@ MD5_G_INDEXES = [
 ]
 
 
+def _sha256_pad(data: str) -> bytearray:
+    """Pad the input string according to SHA-256 specification."""
+    b_data = bytearray(data.encode('utf-8'))
+    orig_len_bits = (len(b_data) * 8) & 0xffffffffffffffff
+    b_data.append(0x80)
+    pad_len = (PADDING_TARGET_56 - len(b_data)) % PADDING_MOD_64
+    b_data.extend(b'\x00' * pad_len)
+    b_data.extend(orig_len_bits.to_bytes(8, 'big'))
+    return b_data
+
+
+def _sha256_compress_block(h_state: List[int], block_bytes: bytes) -> None:
+    """Process a single 64-byte block to update the SHA-256 hash state in place."""
+    w_words = [0] * 64
+    for j in range(16):
+        w_words[j] = int.from_bytes(block_bytes[j * 4 : (j + 1) * 4], 'big')
+    for j in range(16, 64):
+        s0 = (
+            _rotr32(w_words[j - 15], 7)
+            ^ _rotr32(w_words[j - 15], 18)
+            ^ (w_words[j - 15] >> 3)
+        )
+        s1 = (
+            _rotr32(w_words[j - 2], 17)
+            ^ _rotr32(w_words[j - 2], 19)
+            ^ (w_words[j - 2] >> 10)
+        )
+        w_words[j] = (w_words[j - 16] + s0 + w_words[j - 7] + s1) & 0xffffffff
+
+    state = list(h_state)
+    for j in range(64):
+        t1 = (
+            state[7]
+            + (_rotr32(state[4], 6) ^ _rotr32(state[4], 11) ^ _rotr32(state[4], 25))
+            + ((state[4] & state[5]) ^ (((~state[4]) & 0xffffffff) & state[6]))
+            + SHA256_K[j]
+            + w_words[j]
+        ) & 0xffffffff
+        t2 = (
+            (_rotr32(state[0], 2) ^ _rotr32(state[0], 13) ^ _rotr32(state[0], 22))
+            + ((state[0] & state[1]) ^ (state[0] & state[2]) ^ (state[1] & state[2]))
+        ) & 0xffffffff
+        state[7] = state[6]
+        state[6] = state[5]
+        state[5] = state[4]
+        state[4] = (state[3] + t1) & 0xffffffff
+        state[3] = state[2]
+        state[2] = state[1]
+        state[1] = state[0]
+        state[0] = (t1 + t2) & 0xffffffff
+
+    for i in range(8):
+        h_state[i] = (h_state[i] + state[i]) & 0xffffffff
+
+
 # --- Hash Algorithms ---
 def sha256(data: str) -> str:
     """
@@ -302,64 +357,13 @@ def sha256(data: str) -> str:
     Returns:
         SHA-256 hash as hexadecimal string
     """
-    b_data = bytearray(data.encode('utf-8'))
-    orig_len_bits = (len(b_data) * 8) & 0xffffffffffffffff
-    b_data.append(0x80)
-    pad_len = (PADDING_TARGET_56 - len(b_data)) % PADDING_MOD_64
-    b_data.extend(b'\x00' * pad_len)
-    b_data.extend(orig_len_bits.to_bytes(8, 'big'))
-
+    b_data = _sha256_pad(data)
     h_state = list(SHA256_H_INIT)
 
     for offset in range(0, len(b_data), PADDING_MOD_64):
-        w_words = [0] * 64
-        for j in range(16):
-            w_words[j] = int.from_bytes(b_data[offset + j * 4 : offset + (j + 1) * 4], 'big')
-        for j in range(16, 64):
-            s0 = (
-                _rotr32(w_words[j - 15], 7)
-                ^ _rotr32(w_words[j - 15], 18)
-                ^ (w_words[j - 15] >> 3)
-            )
-            s1 = (
-                _rotr32(w_words[j - 2], 17)
-                ^ _rotr32(w_words[j - 2], 19)
-                ^ (w_words[j - 2] >> 10)
-            )
-            w_words[j] = (w_words[j - 16] + s0 + w_words[j - 7] + s1) & 0xffffffff
+        _sha256_compress_block(h_state, b_data[offset : offset + PADDING_MOD_64])
 
-        state = list(h_state)
-        for j in range(64):
-            t1 = (
-                state[7]
-                + (_rotr32(state[4], 6) ^ _rotr32(state[4], 11) ^ _rotr32(state[4], 25))
-                + ((state[4] & state[5]) ^ (((~state[4]) & 0xffffffff) & state[6]))
-                + SHA256_K[j]
-                + w_words[j]
-            ) & 0xffffffff
-            t2 = (
-                (_rotr32(state[0], 2) ^ _rotr32(state[0], 13) ^ _rotr32(state[0], 22))
-                + ((state[0] & state[1]) ^ (state[0] & state[2]) ^ (state[1] & state[2]))
-            ) & 0xffffffff
-            state[7] = state[6]
-            state[6] = state[5]
-            state[5] = state[4]
-            state[4] = (state[3] + t1) & 0xffffffff
-            state[3] = state[2]
-            state[2] = state[1]
-            state[1] = state[0]
-            state[0] = (t1 + t2) & 0xffffffff
-
-        h_state[0] = (h_state[0] + state[0]) & 0xffffffff
-        h_state[1] = (h_state[1] + state[1]) & 0xffffffff
-        h_state[2] = (h_state[2] + state[2]) & 0xffffffff
-        h_state[3] = (h_state[3] + state[3]) & 0xffffffff
-        h_state[4] = (h_state[4] + state[4]) & 0xffffffff
-        h_state[5] = (h_state[5] + state[5]) & 0xffffffff
-        h_state[6] = (h_state[6] + state[6]) & 0xffffffff
-        h_state[7] = (h_state[7] + state[7]) & 0xffffffff
-
-    return b_data[:0].join(val.to_bytes(4, 'big') for val in h_state).hex()
+    return b"".join(val.to_bytes(4, 'big') for val in h_state).hex()
 
 
 def md5(data: str) -> str:
