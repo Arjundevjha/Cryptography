@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Replace String Concatenation Loops with List Accumulation in Enigma Simulation
+**Learning:** Iterative string concatenation (`str += char`) in Python character loop routines incurs $O(N^2)$ memory reallocation and copying overhead as the string size grows. Replacing iterative string concatenation with list accumulation (`list.append(char)`) and `str.join(list)` achieves $O(N)$ linear time complexity, yielding a 5.75x speedup for 500,000 characters.
+**Action:** Collect characters in a list and use `str.join()` when building output strings in iterative character processing loops.

@@ -39,7 +39,8 @@ ENIGMA.set_key("CAT")
 # encipher a message
 message = input("Enter the message to encipher: ").upper()
 message = message.replace(" ", "").replace(",", "").replace(".", "")
-cipher_text = ""
+cipher_chars = []
 for letter in message:
-    cipher_text = cipher_text + ENIGMA.encipher(letter)
+    cipher_chars.append(ENIGMA.encipher(letter))
+cipher_text = "".join(cipher_chars)
 print(cipher_text)
