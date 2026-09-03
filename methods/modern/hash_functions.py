@@ -427,7 +427,10 @@ def sha1(data: str) -> str:
     """
     Compute the SHA-1 hash of the given data.
 
-    Note: SHA-1 is deprecated for security-sensitive applications.
+    WARNING: SHA-1 is cryptographically broken and vulnerable to collision attacks
+    (e.g., SHAttered). It MUST NOT be used for digital signatures, password hashing,
+    or any security-critical applications. This pure Python implementation is provided
+    strictly for educational and historical purposes.
 
     Args:
         data: The input string to hash
@@ -435,6 +438,12 @@ def sha1(data: str) -> str:
     Returns:
         SHA-1 hash as hexadecimal string
     """
+    warnings.warn(
+        "SHA-1 is cryptographically weak and vulnerable to collision attacks. "
+        "Do not use SHA-1 for security-sensitive operations.",
+        UserWarning,
+        stacklevel=2,
+    )
     b_data = bytearray(data.encode('utf-8'))
     orig_len_bits = (len(b_data) * 8) & 0xffffffffffffffff
     b_data.append(0x80)

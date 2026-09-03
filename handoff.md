@@ -43,4 +43,12 @@ Completed automated review, standards enforcement, conflict resolution, test ver
 1. Monitor CI / deployment builds on Vercel.
 2. Continue expanding interactive museum exhibits and cryptographic demonstration tooling.
 
+## Recent Learnings & Guardrails Added
+- Persisted 3D WebGL museum stability invariants into global skill `~/.gemini/config/skills/threejs-webgl-museum/SKILL.md` and workspace rules `.agents/AGENTS.md`:
+  - Spatial proximity transitions gated strictly to active WASD walking (`isWalking`).
+  - Next.js Turbopack GLTF loading reliability (`fetch` + `arrayBuffer` + `loader.parse`).
+  - Deterministic scanned asset preloading prior to `buildScene`.
+  - Classical statuary herm architecture (turned Grecian socles, deltoid torsos, anatomical 3D scans).
+  - Curatorial drawer lateral camera offsetting.
+
 

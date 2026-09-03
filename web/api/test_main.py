@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
-from api.main import app
+from api.main import app, validate_enigma_rotors
+from fastapi import HTTPException
 import unittest.mock
 
 client = TestClient(app)
@@ -157,16 +158,68 @@ def test_enigma_reciprocity():
     assert response2.status_code == 200
     assert response2.json()["ciphertext"] == "HELLO"
 
-def test_enigma_duplicate_rotors():
+@pytest.mark.parametrize("rotors", [
+    ["I", "II", "III"],
+    ["IV", "V", "VI"],
+    ["VII", "VIII", "I"],
+    ["II", "IV", "VIII"],
+])
+def test_validate_enigma_rotors_valid(rotors):
+    validate_enigma_rotors(rotors)
+
+@pytest.mark.parametrize("rotors", [
+    [],
+    ["I"],
+    ["I", "II"],
+    ["I", "II", "III", "IV"],
+])
+def test_validate_enigma_rotors_invalid_count(rotors):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Exactly 3 rotors must be specified."
+
+@pytest.mark.parametrize("rotors", [
+    ["I", "I", "II"],
+    ["I", "I", "I"],
+    ["V", "III", "V"],
+    ["VIII", "VIII", "I"],
+])
+def test_validate_enigma_rotors_duplicate_rotors(rotors):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Duplicate rotors are not allowed."
+
+@pytest.mark.parametrize("rotors,invalid_rotor", [
+    (["i", "II", "III"], "i"),
+    (["IX", "II", "III"], "IX"),
+    (["I", "X", "III"], "X"),
+    (["INVALID", "II", "III"], "INVALID"),
+    (["1", "2", "3"], "1"),
+    (["", "II", "III"], ""),
+])
+def test_validate_enigma_rotors_invalid_rotor_type(rotors, invalid_rotor):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == f"Invalid rotor '{invalid_rotor}'."
+
+@pytest.mark.parametrize("rotors,expected_error", [
+    (["I", "II"], "exactly 3 rotors"),
+    (["I", "I", "II"], "duplicate rotors"),
+    (["INVALID", "II", "III"], "invalid rotor"),
+])
+def test_enigma_api_rotors_validation(rotors, expected_error):
     response = client.post("/api/enigma/encipher", json={
         "plaintext": "HELLO",
-        "rotors": ["I", "I", "II"],
+        "rotors": rotors,
         "positions": ["A", "A", "A"],
         "rings": ["A", "A", "A"],
         "plugboard": []
     })
     assert response.status_code == 400
-    assert "duplicate" in response.json()["detail"].lower()
+    assert expected_error in response.json()["detail"].lower()
 
 def test_enigma_invalid_plugboard_character():
     response = client.post("/api/enigma/encipher", json={
@@ -601,26 +654,56 @@ def test_enigma_api_runtime_error_exception(caplog):
 
 from api.main import is_valid_origin, parse_allowed_origins, DEFAULT_ALLOWED_ORIGINS
 
-def test_is_valid_origin():
-    # Valid origins
-    assert is_valid_origin("http://localhost:3000") is True
-    assert is_valid_origin("http://localhost:3000/") is True
-    assert is_valid_origin("https://example.com") is True
-    assert is_valid_origin("https://sub.domain.example.com:8443") is True
+@pytest.mark.parametrize("origin", [
+    "http://localhost:3000",
+    "http://localhost:3000/",
+    "https://example.com",
+    "https://sub.domain.example.com:8443",
+    "http://127.0.0.1:8080",
+    "http://192.168.1.1",
+    "https://[::1]:8080",
+    "  http://example.com  ",
+])
+def test_is_valid_origin_valid_cases(origin):
+    assert is_valid_origin(origin) is True
 
-    # Invalid origins
-    assert is_valid_origin("*") is False
-    assert is_valid_origin("http://*") is False
-    assert is_valid_origin("https://*.example.com") is False
-    assert is_valid_origin("ftp://example.com") is False
-    assert is_valid_origin("javascript:alert(1)") is False
-    assert is_valid_origin("http://example.com/path") is False
-    assert is_valid_origin("http://example.com?query=1") is False
-    assert is_valid_origin("http://example.com#fragment") is False
-    assert is_valid_origin("") is False
-    assert is_valid_origin("   ") is False
-    assert is_valid_origin(None) is False
-    assert is_valid_origin(123) is False
+@pytest.mark.parametrize("origin", [
+    "*",
+    "http://*",
+    "https://*.example.com",
+    "ftp://example.com",
+    "ws://example.com",
+    "wss://example.com",
+    "javascript:alert(1)",
+    "http://example.com/path",
+    "http://example.com?query=1",
+    "http://example.com#fragment",
+    "http://example.com;matrix=1",
+    "http://",
+    "https://",
+    "http://example.com:badport",
+    "http://example com",
+    "http://example\tcom",
+    "http://example\ncom",
+    "http://example\rcom",
+    'http://example"com',
+    "http://example'com",
+    "http://example<com",
+    "http://example>com",
+    "",
+    "   ",
+    None,
+    123,
+    [],
+    {},
+    True,
+])
+def test_is_valid_origin_invalid_cases(origin):
+    assert is_valid_origin(origin) is False
+
+def test_is_valid_origin_exception_handling():
+    with unittest.mock.patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
+        assert is_valid_origin("https://example.com") is False
 
 def test_parse_allowed_origins():
     # Unset or empty env string falls back to default allowed origins
