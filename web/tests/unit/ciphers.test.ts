@@ -144,20 +144,64 @@ describe('SHA-256 Padding helper', () => {
   });
 });
 
-describe('Playfair Cipher', () => {
-  it('should generate a correct 5x5 Playfair grid without duplicate letters and with J mapped to I', () => {
+describe('generatePlayfairGrid', () => {
+  it('should return standard 25-letter Playfair alphabet for empty key', () => {
+    const grid = generatePlayfairGrid('');
+    expect(grid).toHaveLength(25);
+    expect(grid.join('')).toBe('abcdefghiklmnopqrstuvwxyz');
+  });
+
+  it('should deduplicate key letters and fill remaining alphabet', () => {
     const grid = generatePlayfairGrid('playfair example');
-    // 'playfair example' -> 'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm' (mapping 'j' to 'i')
-    // and then appending remaining letters of the 25-letter alphabet:
-    // 'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's', 't', 'u', 'v', 'w', 'z'
     const expected = [
       'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm',
       'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's',
       't', 'u', 'v', 'w', 'z'
     ];
+    expect(grid).toHaveLength(25);
     expect(grid).toEqual(expected);
   });
 
+  it('should convert J and j to I', () => {
+    const grid = generatePlayfairGrid('JUNGLE');
+    // 'jungle' -> 'i', 'u', 'n', 'g', 'l', 'e'
+    expect(grid.slice(0, 6)).toEqual(['i', 'u', 'n', 'g', 'l', 'e']);
+    expect(grid).not.toContain('j');
+    expect(grid).toHaveLength(25);
+  });
+
+  it('should strip out non-alphabetic characters (numbers, spaces, punctuation)', () => {
+    const gridWithNumbers = generatePlayfairGrid('KEY 123! @#$');
+    const gridCleanKey = generatePlayfairGrid('key');
+    expect(gridWithNumbers).toEqual(gridCleanKey);
+  });
+
+  it('should handle keys with repeated single characters correctly', () => {
+    const grid = generatePlayfairGrid('AAAAA');
+    expect(grid[0]).toBe('a');
+    expect(new Set(grid).size).toBe(25);
+  });
+
+  it('should process full alphabet sentence key properly', () => {
+    const grid = generatePlayfairGrid('The quick brown fox jumps over the lazy dog');
+    expect(grid).toHaveLength(25);
+    expect(grid).not.toContain('j');
+    expect(new Set(grid).size).toBe(25);
+  });
+
+  it('should satisfy all Playfair grid invariants', () => {
+    const keys = ['', 'SECRET', 'CRYPTOGRAPHY', '12345', 'jijiji', 'ZYZYZY'];
+    for (const k of keys) {
+      const g = generatePlayfairGrid(k);
+      expect(g).toHaveLength(25);
+      expect(g).not.toContain('j');
+      expect(new Set(g).size).toBe(25);
+      expect(g.every((char) => /^[a-z]$/.test(char))).toBe(true);
+    }
+  });
+});
+
+describe('Playfair Cipher', () => {
   it('should encrypt and decrypt text correctly', () => {
     const key = 'playfair example';
     
