@@ -654,26 +654,56 @@ def test_enigma_api_runtime_error_exception(caplog):
 
 from api.main import is_valid_origin, parse_allowed_origins, DEFAULT_ALLOWED_ORIGINS
 
-def test_is_valid_origin():
-    # Valid origins
-    assert is_valid_origin("http://localhost:3000") is True
-    assert is_valid_origin("http://localhost:3000/") is True
-    assert is_valid_origin("https://example.com") is True
-    assert is_valid_origin("https://sub.domain.example.com:8443") is True
+@pytest.mark.parametrize("origin", [
+    "http://localhost:3000",
+    "http://localhost:3000/",
+    "https://example.com",
+    "https://sub.domain.example.com:8443",
+    "http://127.0.0.1:8080",
+    "http://192.168.1.1",
+    "https://[::1]:8080",
+    "  http://example.com  ",
+])
+def test_is_valid_origin_valid_cases(origin):
+    assert is_valid_origin(origin) is True
 
-    # Invalid origins
-    assert is_valid_origin("*") is False
-    assert is_valid_origin("http://*") is False
-    assert is_valid_origin("https://*.example.com") is False
-    assert is_valid_origin("ftp://example.com") is False
-    assert is_valid_origin("javascript:alert(1)") is False
-    assert is_valid_origin("http://example.com/path") is False
-    assert is_valid_origin("http://example.com?query=1") is False
-    assert is_valid_origin("http://example.com#fragment") is False
-    assert is_valid_origin("") is False
-    assert is_valid_origin("   ") is False
-    assert is_valid_origin(None) is False
-    assert is_valid_origin(123) is False
+@pytest.mark.parametrize("origin", [
+    "*",
+    "http://*",
+    "https://*.example.com",
+    "ftp://example.com",
+    "ws://example.com",
+    "wss://example.com",
+    "javascript:alert(1)",
+    "http://example.com/path",
+    "http://example.com?query=1",
+    "http://example.com#fragment",
+    "http://example.com;matrix=1",
+    "http://",
+    "https://",
+    "http://example.com:badport",
+    "http://example com",
+    "http://example\tcom",
+    "http://example\ncom",
+    "http://example\rcom",
+    'http://example"com',
+    "http://example'com",
+    "http://example<com",
+    "http://example>com",
+    "",
+    "   ",
+    None,
+    123,
+    [],
+    {},
+    True,
+])
+def test_is_valid_origin_invalid_cases(origin):
+    assert is_valid_origin(origin) is False
+
+def test_is_valid_origin_exception_handling():
+    with unittest.mock.patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
+        assert is_valid_origin("https://example.com") is False
 
 def test_parse_allowed_origins():
     # Unset or empty env string falls back to default allowed origins
