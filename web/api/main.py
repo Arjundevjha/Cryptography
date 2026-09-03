@@ -65,7 +65,10 @@ def is_valid_origin(origin: str) -> bool:
         if any(c in parsed.netloc for c in (" ", "\t", "\r", "\n", "<", ">", '"', "'")):
             return False
         return True
-    except Exception:
+    except ValueError:
+        return False
+    except Exception as e:
+        logger.warning("Unexpected error validating origin '%s': %s", origin, e)
         return False
 
 def parse_allowed_origins(env_str: str | None) -> list[str]:

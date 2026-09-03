@@ -621,6 +621,14 @@ def test_is_valid_origin():
     assert is_valid_origin("   ") is False
     assert is_valid_origin(None) is False
     assert is_valid_origin(123) is False
+    # Malformed IPv6 address in netloc raises ValueError in urlparse
+    assert is_valid_origin("http://[:::1]") is False
+
+def test_is_valid_origin_unexpected_exception(caplog):
+    with unittest.mock.patch("api.main.urlparse", side_effect=RuntimeError("Unexpected urlparse error")):
+        with caplog.at_level("WARNING"):
+            assert is_valid_origin("http://localhost:3000") is False
+    assert "Unexpected error validating origin" in caplog.text
 
 def test_parse_allowed_origins():
     # Unset or empty env string falls back to default allowed origins
