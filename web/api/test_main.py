@@ -644,6 +644,47 @@ def test_parse_allowed_origins():
     assert parse_allowed_origins("*, http://*, ftp://bad.org") == DEFAULT_ALLOWED_ORIGINS
 
 
+# ==========================================
+# INPUT BOUNDS & DOS MITIGATION TESTS
+# ==========================================
+
+def test_rsa_keygen_excessive_prime_bound():
+    payload = {
+        "p": 2**2048 + 1,
+        "q": 53,
+        "e": 17
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+
+def test_enigma_encipher_oversized_plugboard():
+    payload = {
+        "plaintext": "HELLO",
+        "rotors": ["I", "II", "III"],
+        "positions": ["A", "A", "A"],
+        "rings": ["A", "A", "A"],
+        "plugboard": ["AB"] * 15
+    }
+    response = client.post("/api/enigma/encipher", json=payload)
+    assert response.status_code == 400
+
+def test_lorenz_encrypt_oversized_positions():
+    payload = {
+        "plaintext": "HELLO",
+        "positions": [1] * 15
+    }
+    response = client.post("/api/lorenz/encrypt", json=payload)
+    assert response.status_code == 400
+
+def test_scytale_encrypt_excessive_width():
+    payload = {
+        "plaintext": "HELLO",
+        "width": 10001
+    }
+    response = client.post("/api/scytale/encrypt", json=payload)
+    assert response.status_code == 400
+
+
 
 
 
