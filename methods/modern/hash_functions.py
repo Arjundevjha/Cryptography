@@ -367,7 +367,8 @@ def md5(data: str) -> str:
     """
     Compute the MD5 hash of the given data.
 
-    Note: MD5 is cryptographically broken and should not be used for security.
+    WARNING: MD5 is cryptographically broken due to severe collision vulnerabilities.
+    It should not be used for security-sensitive applications or cryptographic verification.
 
     Args:
         data: The input string to hash
@@ -375,11 +376,17 @@ def md5(data: str) -> str:
     Returns:
         MD5 hash as hexadecimal string
     """
+    warnings.warn(
+        "MD5 is cryptographically broken and should not be used for security purposes.",
+        UserWarning,
+        stacklevel=2,
+    )
     b_data = bytearray(data.encode('utf-8'))
+    orig_len_bits = (len(b_data) * 8) & 0xffffffffffffffff
     b_data.append(0x80)
     pad_len = (PADDING_TARGET_56 - len(b_data)) % PADDING_MOD_64
     b_data.extend(b'\x00' * pad_len)
-    b_data.extend(((len(b_data) - 1) * 8).to_bytes(8, 'little'))
+    b_data.extend(orig_len_bits.to_bytes(8, 'little'))
 
     a_state, b_state, c_state, d_state = 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476
 
