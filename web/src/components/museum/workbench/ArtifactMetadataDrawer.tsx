@@ -10,7 +10,11 @@ interface ArtifactMetadataDrawerProps {
 
 export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDrawerProps) {
   return (
-    <div className="fixed top-0 right-0 h-full w-80 md:w-96 bg-stone-950/90 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-40 text-stone-100 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300">
+    <div
+      role="dialog"
+      aria-label={`Curatorial details for ${exhibit.name}`}
+      className="fixed top-0 right-0 h-full w-80 md:w-96 bg-stone-950/90 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-40 text-stone-100 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300"
+    >
       {/* Drawer Header */}
       <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-800">
         <div>
@@ -29,7 +33,7 @@ export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDra
       {/* Return from Macro View button */}
       <button
         onClick={onClose}
-        className="w-full mb-6 py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:bg-amber-500/20 transition-all"
+        className="w-full mb-6 py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:bg-amber-500/20 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
       >
         <ZoomOut className="w-4 h-4" /> Exit Macro Close-up View
       </button>
