@@ -468,24 +468,46 @@ def polybius_decrypt(data: PolybiusDecryptInput):
             detail="Decryption failed"
         )
 
+ENIGMA_ROTOR_MAP = {
+    "I": ("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"),
+    "II": ("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W"),
+    "III": ("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"),
+    "IV": ("ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"),
+    "V": ("VZBRGITYUPSDNHLXAWMJQOFECK", "Z"),
+    "VI": ("JPGVOUMFYQBENHZRDKASXLICTW", "M"),
+    "VII": ("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z"),
+    "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M"),
+}
+
+ENIGMA_REFLECTOR_MAP = {
+    "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
+    "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+    "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+    "B_THIN": "ENKQAUYWJICOPBLMDXZVFTHRGS",
+    "C_THIN": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",
+}
+
+
 def validate_enigma_rotors(rotors: list[str]) -> None:
     if len(rotors) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 rotors must be specified.")
     if len(set(rotors)) != 3:
         raise HTTPException(status_code=400, detail="Duplicate rotors are not allowed.")
     
-    allowed_rotors = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII"}
+    allowed_rotors = set(ENIGMA_ROTOR_MAP.keys())
     for r in rotors:
         if r not in allowed_rotors:
             raise HTTPException(status_code=400, detail=f"Invalid rotor '{r}'.")
 
 
-def validate_enigma_positions(positions: list[str]) -> None:
+def parse_enigma_positions(positions: list[str]) -> str:
+    """Validates and returns rotor positions as a key string."""
     if len(positions) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 rotor positions must be specified.")
     for pos in positions:
         if len(pos) != 1 or not pos.isalpha():
             raise HTTPException(status_code=400, detail="Rotor positions must be single letters.")
+    return "".join([pos.upper() for pos in positions])
 
 
 def parse_and_validate_enigma_rings(rings: list[str]) -> list[int]:
@@ -529,70 +551,51 @@ def validate_enigma_plugboard(plugboard: list[str]) -> None:
             seen_chars.add(char)
 
 
+def get_enigma_reflector_wiring(reflector_name: str | None) -> str:
+    """Retrieves and validates reflector wiring for the given reflector name."""
+    reflector_key = reflector_name.upper() if reflector_name else "B"
+    if reflector_key not in ENIGMA_REFLECTOR_MAP:
+        raise HTTPException(status_code=400, detail=f"Invalid reflector '{reflector_name}'.")
+    return ENIGMA_REFLECTOR_MAP[reflector_key]
+
+
+def build_enigma_machine(data: EnigmaEncipherInput):
+    """Validates parameters and builds an Enigma machine instance."""
+    validate_enigma_rotors(data.rotors)
+    initial_key = parse_enigma_positions(data.positions)
+    parsed_rings = parse_and_validate_enigma_rings(data.rings)
+    validate_enigma_plugboard(data.plugboard)
+    reflector_wiring = get_enigma_reflector_wiring(data.reflector)
+
+    from methods.historical.enigma.rotor import Rotor
+    from methods.historical.enigma.plugboard import Plugboard
+    from methods.historical.enigma.reflector import Reflector
+    from methods.historical.enigma.keyboard import Keyboard
+    from methods.historical.enigma.enigma import Enigma
+
+    reflector = Reflector(reflector_wiring)
+    rotors_list = [Rotor(*ENIGMA_ROTOR_MAP[r_name]) for r_name in data.rotors]
+    plugboard = Plugboard([swap.upper() for swap in data.plugboard])
+    keyboard = Keyboard()
+
+    enigma_machine = Enigma(reflector, rotors_list, plugboard, keyboard)
+    enigma_machine.set_rings(parsed_rings)
+    enigma_machine.set_key(initial_key)
+    return enigma_machine
+
+
 @app.post("/api/enigma/encipher")
 def enigma_encipher(data: EnigmaEncipherInput):
     """Encipher plaintext using the Enigma cipher machine."""
-    validate_enigma_rotors(data.rotors)
-    validate_enigma_positions(data.positions)
-    parsed_rings = parse_and_validate_enigma_rings(data.rings)
-    validate_enigma_plugboard(data.plugboard)
-
-    ROTOR_MAP = {
-        "I": ("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"),
-        "II": ("AJDKSIRUXBLHWTMCQGZNPYFVOE", "W"),
-        "III": ("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"),
-        "IV": ("ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"),
-        "V": ("VZBRGITYUPSDNHLXAWMJQOFECK", "Z"),
-        "VI": ("JPGVOUMFYQBENHZRDKASXLICTW", "M"),
-        "VII": ("NZJHGRCXMYSWBOUFAIVLPEKQDT", "Z"),
-        "VIII": ("FKQHTLXOCBJSPDZRAMEWNIUYGV", "M")
-    }
-
-    REFLECTOR_MAP = {
-        "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
-        "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
-        "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
-        "B_THIN": "ENKQAUYWJICOPBLMDXZVFTHRGS",
-        "C_THIN": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",
-    }
-
-    reflector_key = data.reflector.upper() if data.reflector else "B"
-    if reflector_key not in REFLECTOR_MAP:
-        raise HTTPException(status_code=400, detail=f"Invalid reflector '{data.reflector}'.")
-
     try:
-        # Instantiate Enigma machine components
-        from methods.historical.enigma.rotor import Rotor
-        from methods.historical.enigma.plugboard import Plugboard
-        from methods.historical.enigma.reflector import Reflector
-        from methods.historical.enigma.keyboard import Keyboard
-        from methods.historical.enigma.enigma import Enigma
-
-        reflector = Reflector(REFLECTOR_MAP[reflector_key])
-        
-        rotors_list = []
-        for r_name in data.rotors:
-            wiring, notch = ROTOR_MAP[r_name]
-            rotors_list.append(Rotor(wiring, notch))
-            
-        plugboard = Plugboard([swap.upper() for swap in data.plugboard])
-        keyboard = Keyboard()
-
-        enigma_machine = Enigma(reflector, rotors_list, plugboard, keyboard)
-        enigma_machine.set_rings(parsed_rings)
-
-        initial_key = "".join([pos.upper() for pos in data.positions])
-        enigma_machine.set_key(initial_key)
-
-        ciphertext_chars = []
-        for char in data.plaintext:
-            if char.isalpha():
-                ciphertext_chars.append(enigma_machine.encipher(char.upper()))
-            else:
-                ciphertext_chars.append(char)
-
-        ciphertext = "".join(ciphertext_chars)
-        return {"ciphertext": ciphertext}
+        enigma_machine = build_enigma_machine(data)
+        ciphertext_chars = [
+            enigma_machine.encipher(char.upper()) if char.isalpha() else char
+            for char in data.plaintext
+        ]
+        return {"ciphertext": "".join(ciphertext_chars)}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     except Exception as e:
