@@ -702,6 +702,7 @@ def test_is_valid_origin_valid_cases(origin):
     [],
     {},
     True,
+    "http://[:::1]",
 ])
 def test_is_valid_origin_invalid_cases(origin):
     assert is_valid_origin(origin) is False
@@ -709,6 +710,12 @@ def test_is_valid_origin_invalid_cases(origin):
 def test_is_valid_origin_exception_handling():
     with unittest.mock.patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
         assert is_valid_origin("https://example.com") is False
+
+def test_is_valid_origin_unexpected_exception(caplog):
+    with unittest.mock.patch("api.main.urlparse", side_effect=RuntimeError("Unexpected urlparse error")):
+        with caplog.at_level("WARNING"):
+            assert is_valid_origin("http://localhost:3000") is False
+    assert "Unexpected error validating origin" in caplog.text
 
 def test_parse_allowed_origins():
     # Unset or empty env string falls back to default allowed origins

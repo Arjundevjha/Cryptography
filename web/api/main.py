@@ -66,6 +66,12 @@ def is_valid_origin(origin: str) -> bool:
             return False
         netloc = parsed.netloc
         if netloc.startswith("[") and "]" in netloc:
+            ipv6_str = netloc[1:netloc.index("]")]
+            import ipaddress
+            try:
+                ipaddress.ip_address(ipv6_str)
+            except ValueError:
+                return False
             netloc = netloc.split("]")[-1]
         if ":" in netloc:
             port_str = netloc.split(":")[-1]
@@ -73,7 +79,10 @@ def is_valid_origin(origin: str) -> bool:
                 if not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
                     return False
         return True
-    except Exception:
+    except ValueError:
+        return False
+    except Exception as e:
+        logger.warning("Unexpected error validating origin '%s': %s", origin, e)
         return False
 
 def parse_allowed_origins(env_str: str | None) -> list[str]:
