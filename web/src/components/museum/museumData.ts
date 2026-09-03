@@ -328,3 +328,103 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     defaultParams: {},
   },
 ];
+
+export interface CryptographicStatue {
+  id: string;
+  name: string;
+  lifespan: string;
+  title: string;
+  landmarkPaper: string;
+  description: string;
+  historicalSignificance: string;
+  coreBreakthrough: string;
+  keyContributions: string[];
+  associatedWing: string;
+  position: [number, number, number];
+  cameraPosition: [number, number, number];
+  cameraTarget: [number, number, number];
+  rotationY: number;
+  accentColor: number;
+  accentHex: string;
+  plaqueSummary: string;
+  interactiveDemoType: 'frequency-analysis' | 'information-entropy' | 'key-exchange';
+}
+
+export const MUSEUM_STATUES: CryptographicStatue[] = [
+  {
+    id: 'statue-alkindi',
+    name: 'Al-Kindi',
+    lifespan: 'c. 801–873',
+    title: 'The Father of Cryptanalysis',
+    landmarkPaper: 'A Manuscript on Deciphering Cryptographic Messages (Risalah fi Istikhraj al-Mu\'amma)',
+    description: 'Known as the father of cryptanalysis. In the 9th century, he authored A Manuscript on Deciphering Cryptographic Messages, introducing frequency analysis. He proved that monoalphabetic substitution ciphers could be systematically broken using letter distribution statistics.',
+    historicalSignificance: 'During the Islamic Golden Age in Baghdad\'s House of Wisdom (Bayt al-Hikmah), Al-Kindi pioneered the mathematical analysis of language. By observing that specific letters appear with predictable statistical regularity in natural language, he turned cryptography from an art of intuition into a rigorous empirical science.',
+    coreBreakthrough: 'Statistical Frequency Analysis: Establishing that counting letter occurrences enables the deterministic decryption of monoalphabetic substitution ciphers without knowing the secret key.',
+    keyContributions: [
+      'Invention of cryptographic frequency analysis',
+      'Author of the earliest known cryptanalysis treatise',
+      'Pioneered statistical techniques in linguistics and decoding',
+      'Proved monoalphabetic substitution ciphers are fundamentally insecure',
+    ],
+    associatedWing: 'Classical Ciphers Wing',
+    position: [-8.5, 0, 7.5],
+    cameraPosition: [-7.4, 2.4, 11.2],
+    cameraTarget: [-8.5, 2.3, 7.5],
+    rotationY: 0.25,
+    accentColor: 0xd97706,
+    accentHex: '#d97706',
+    plaqueSummary: 'Father of Cryptanalysis • Author of the 9th Century Treatise on Deciphering Messages',
+    interactiveDemoType: 'frequency-analysis',
+  },
+  {
+    id: 'statue-shannon',
+    name: 'Claude Shannon',
+    lifespan: '1916–2001',
+    title: 'The Architect of Mathematical Cryptography',
+    landmarkPaper: 'Communication Theory of Secrecy Systems (1949)',
+    description: 'The architect of mathematical cryptography. His 1949 landmark paper, Communication Theory of Secrecy Systems, established the rigorous mathematical foundation of cryptography, defined information theory, and proved the absolute secrecy of the one-time pad.',
+    historicalSignificance: 'Working at Bell Labs and advising during World War II on secure wartime communications, Shannon revolutionized computer science and telecommunications. He formalized the concept of entropy H(X) as the measure of information uncertainty, and proved that unconditional secrecy requires key entropy at least equal to message entropy.',
+    coreBreakthrough: 'Mathematical Proof of Perfect Secrecy: H(M|C) = H(M), proving that the Vernam One-Time Pad is impenetrable to infinite computing power if the key is truly random, never reused, and as long as the plaintext.',
+    keyContributions: [
+      'Established Information Theory and mathematical secrecy',
+      'Proved unconditional mathematical security of the One-Time Pad',
+      'Defined entropy, redundancy, and equivocation in cipher design',
+      'Introduced the core principles of Confusion and Diffusion',
+    ],
+    associatedWing: 'Historical Systems Wing',
+    position: [0, 0, 4.0],
+    cameraPosition: [1.1, 2.4, 8.2],
+    cameraTarget: [0, 2.3, 4.0],
+    rotationY: 0,
+    accentColor: 0x0284c7,
+    accentHex: '#0284c7',
+    plaqueSummary: 'Architect of Mathematical Cryptography • Founder of Information Theory',
+    interactiveDemoType: 'information-entropy',
+  },
+  {
+    id: 'statue-diffie-hellman',
+    name: 'Whitfield Diffie & Martin Hellman',
+    lifespan: 'Diffie (1944– ) & Hellman (1945– ) [with Ralph Merkle (1952– )]',
+    title: 'Pioneers of Public-Key Cryptography',
+    landmarkPaper: 'New Directions in Cryptography (1976)',
+    description: 'Their 1976 paper, New Directions in Cryptography, introduced public-key cryptography and the Diffie–Hellman key exchange. They solved the ancient "key distribution problem"—allowing two parties to establish a shared secret over an insecure channel without meeting beforehand. (Ralph Merkle is often recognized alongside them for independently conceptualizing public-key agreements via Merkle’s Puzzles).',
+    historicalSignificance: 'For millennia, secure communication required pre-sharing secret keys in person or via trusted couriers. Diffie, Hellman, and Merkle broke this paradigm using one-way trapdoor mathematical functions, creating the bedrock for modern internet encryption, TLS/HTTPS, and e-commerce.',
+    coreBreakthrough: 'Asymmetric Key Exchange: Using modular exponentiation (g^a mod p and g^b mod p) to calculate a shared secret g^(ab) mod p over an eavesdropped public network without exposing private keys.',
+    keyContributions: [
+      'Invented Public-Key (Asymmetric) Cryptography',
+      'Devised the Diffie-Hellman Key Exchange algorithm',
+      'Solved the millennia-old Key Distribution Problem',
+      'Merkle\'s Puzzles: Earliest independent conceptualization of public-key exchange',
+    ],
+    associatedWing: 'Modern Cryptography Wing',
+    position: [8.5, 0, 7.5],
+    cameraPosition: [9.6, 2.4, 11.2],
+    cameraTarget: [8.5, 2.3, 7.5],
+    rotationY: -0.25,
+    accentColor: 0x9333ea,
+    accentHex: '#9333ea',
+    plaqueSummary: 'Pioneers of Public-Key Cryptography • Diffie-Hellman Key Exchange & Merkle\'s Puzzles',
+    interactiveDemoType: 'key-exchange',
+  },
+];
+
