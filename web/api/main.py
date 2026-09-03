@@ -73,12 +73,14 @@ def parse_allowed_origins(env_str: str | None) -> list[str]:
     if not env_str:
         return DEFAULT_ALLOWED_ORIGINS
     origins: list[str] = []
+    seen: set[str] = set()
     for item in env_str.split(","):
         item = item.strip()
         if item.endswith("/"):
             item = item[:-1]
         if is_valid_origin(item):
-            if item not in origins:
+            if item not in seen:
+                seen.add(item)
                 origins.append(item)
     return origins if origins else DEFAULT_ALLOWED_ORIGINS
 
