@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
-from api.main import app
+from api.main import app, validate_enigma_rotors
+from fastapi import HTTPException
 import unittest.mock
 
 client = TestClient(app)
@@ -157,16 +158,68 @@ def test_enigma_reciprocity():
     assert response2.status_code == 200
     assert response2.json()["ciphertext"] == "HELLO"
 
-def test_enigma_duplicate_rotors():
+@pytest.mark.parametrize("rotors", [
+    ["I", "II", "III"],
+    ["IV", "V", "VI"],
+    ["VII", "VIII", "I"],
+    ["II", "IV", "VIII"],
+])
+def test_validate_enigma_rotors_valid(rotors):
+    validate_enigma_rotors(rotors)
+
+@pytest.mark.parametrize("rotors", [
+    [],
+    ["I"],
+    ["I", "II"],
+    ["I", "II", "III", "IV"],
+])
+def test_validate_enigma_rotors_invalid_count(rotors):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Exactly 3 rotors must be specified."
+
+@pytest.mark.parametrize("rotors", [
+    ["I", "I", "II"],
+    ["I", "I", "I"],
+    ["V", "III", "V"],
+    ["VIII", "VIII", "I"],
+])
+def test_validate_enigma_rotors_duplicate_rotors(rotors):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Duplicate rotors are not allowed."
+
+@pytest.mark.parametrize("rotors,invalid_rotor", [
+    (["i", "II", "III"], "i"),
+    (["IX", "II", "III"], "IX"),
+    (["I", "X", "III"], "X"),
+    (["INVALID", "II", "III"], "INVALID"),
+    (["1", "2", "3"], "1"),
+    (["", "II", "III"], ""),
+])
+def test_validate_enigma_rotors_invalid_rotor_type(rotors, invalid_rotor):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(rotors)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == f"Invalid rotor '{invalid_rotor}'."
+
+@pytest.mark.parametrize("rotors,expected_error", [
+    (["I", "II"], "exactly 3 rotors"),
+    (["I", "I", "II"], "duplicate rotors"),
+    (["INVALID", "II", "III"], "invalid rotor"),
+])
+def test_enigma_api_rotors_validation(rotors, expected_error):
     response = client.post("/api/enigma/encipher", json={
         "plaintext": "HELLO",
-        "rotors": ["I", "I", "II"],
+        "rotors": rotors,
         "positions": ["A", "A", "A"],
         "rings": ["A", "A", "A"],
         "plugboard": []
     })
     assert response.status_code == 400
-    assert "duplicate" in response.json()["detail"].lower()
+    assert expected_error in response.json()["detail"].lower()
 
 def test_enigma_invalid_plugboard_character():
     response = client.post("/api/enigma/encipher", json={
