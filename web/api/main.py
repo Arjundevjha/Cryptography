@@ -54,6 +54,8 @@ def is_valid_origin(origin: str) -> bool:
         return False
     if origin.endswith("/"):
         origin = origin[:-1]
+    if any(c in origin for c in (" ", "\t", "\r", "\n", "<", ">", '"', "'", ";", "@")):
+        return False
     try:
         parsed = urlparse(origin)
         if parsed.scheme not in ("http", "https"):
@@ -62,8 +64,14 @@ def is_valid_origin(origin: str) -> bool:
             return False
         if parsed.path or parsed.params or parsed.query or parsed.fragment:
             return False
-        if any(c in parsed.netloc for c in (" ", "\t", "\r", "\n", "<", ">", '"', "'")):
-            return False
+        netloc = parsed.netloc
+        if netloc.startswith("[") and "]" in netloc:
+            netloc = netloc.split("]")[-1]
+        if ":" in netloc:
+            port_str = netloc.split(":")[-1]
+            if port_str:
+                if not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
+                    return False
         return True
     except Exception:
         return False

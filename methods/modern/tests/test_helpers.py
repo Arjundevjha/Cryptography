@@ -4,14 +4,76 @@ from methods.modern.helpers import (
     sha256, hmac_sha256
 )
 
-def test_b64encode():
-    assert b64encode(b'') == ""
-    assert b64encode(b'f') == "Zg=="
-    assert b64encode(b'fo') == "Zm8="
-    assert b64encode(b'foo') == "Zm9v"
-    assert b64encode(b'foob') == "Zm9vYg=="
-    assert b64encode(b'fooba') == "Zm9vYmE="
-    assert b64encode(b'foobar') == "Zm9vYmFy"
+import base64
+import pytest
+
+
+def test_b64encode_rfc_vectors():
+    """Test Base64 encoding against standard RFC 4648 test vectors."""
+    assert b64encode(b"") == ""
+    assert b64encode(b"f") == "Zg=="
+    assert b64encode(b"fo") == "Zm8="
+    assert b64encode(b"foo") == "Zm9v"
+    assert b64encode(b"foob") == "Zm9vYg=="
+    assert b64encode(b"fooba") == "Zm9vYmE="
+    assert b64encode(b"foobar") == "Zm9vYmFy"
+
+
+def test_b64encode_padding_cases():
+    """Test Base64 encoding padding rules (0, 1, and 2 '=' padding characters)."""
+    # 3 bytes -> no padding
+    encoded_no_pad = b64encode(b"ABC")
+    assert len(encoded_no_pad) % 4 == 0
+    assert not encoded_no_pad.endswith("=")
+
+    # 2 bytes -> 1 padding char '='
+    encoded_one_pad = b64encode(b"AB")
+    assert len(encoded_one_pad) % 4 == 0
+    assert encoded_one_pad.endswith("=") and not encoded_one_pad.endswith("==")
+
+    # 1 byte -> 2 padding chars '=='
+    encoded_two_pad = b64encode(b"A")
+    assert len(encoded_two_pad) % 4 == 0
+    assert encoded_two_pad.endswith("==")
+
+
+def test_b64encode_binary_and_edge_values():
+    """Test Base64 encoding with extreme binary values (0x00, 0xFF, full byte ranges)."""
+    assert b64encode(b"\x00") == "AA=="
+    assert b64encode(b"\x00\x00") == "AAA="
+    assert b64encode(b"\x00\x00\x00") == "AAAA"
+
+    assert b64encode(b"\xff") == "/w=="
+    assert b64encode(b"\xff\xff") == "//8="
+    assert b64encode(b"\xff\xff\xff") == "////"
+
+    # All bytes 0x00 through 0xFF
+    all_bytes = bytes(range(256))
+    expected = base64.b64encode(all_bytes).decode("utf-8")
+    assert b64encode(all_bytes) == expected
+
+
+@pytest.mark.parametrize("length", range(0, 65))
+def test_b64encode_stdlib_parity(length: int):
+    """Verify b64encode matches standard library base64.b64encode for various payload lengths."""
+    data = bytes((i * 37) % 256 for i in range(length))
+    expected = base64.b64encode(data).decode("utf-8")
+    assert b64encode(data) == expected
+
+
+def test_b64encode_roundtrip():
+    """Test roundtrip encoding and decoding for various byte payloads."""
+    payloads = [
+        b"",
+        b"Hello, World!",
+        b"\x00\x01\x02\x03\x04\x05",
+        bytes(range(256)),
+        b"Digital Signature Helper Base64 Test Data" * 10,
+    ]
+    for payload in payloads:
+        encoded = b64encode(payload)
+        decoded = b64decode(encoded)
+        assert decoded == payload
 
 def test_b64decode():
     assert b64decode("") == b""
