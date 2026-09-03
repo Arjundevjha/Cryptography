@@ -68,25 +68,80 @@ describe('Vigenere Cipher Adapter', () => {
 });
 
 describe('Polybius Helper Functions', () => {
-  it('should clean polybius key by replacing j with i and lowercasing', () => {
-    expect(cleanPolybiusKey('ABCDEFGHJKLMNOPQRSTUVWXYZ')).toBe('abcdefghiklmnopqrstuvwxyz');
-    expect(cleanPolybiusKey('')).toBe('abcdefghiklmnopqrstuvwxyz');
+  describe('cleanPolybiusKey', () => {
+    it('should clean polybius key by replacing j with i and lowercasing', () => {
+      expect(cleanPolybiusKey('ABCDEFGHJKLMNOPQRSTUVWXYZ')).toBe('abcdefghiklmnopqrstuvwxyz');
+      expect(cleanPolybiusKey('')).toBe('abcdefghiklmnopqrstuvwxyz');
+      expect(cleanPolybiusKey('   ')).toBe('abcdefghiklmnopqrstuvwxyz');
+      expect(cleanPolybiusKey('JuLiEt')).toBe('iuliet');
+    });
   });
 
-  it('should return correct coordinates for letters in standard grid', () => {
-    expect(getPolybiusCoords('A', '')).toEqual({ row: 1, col: 1 });
-    expect(getPolybiusCoords('L', '')).toEqual({ row: 3, col: 1 });
-    expect(getPolybiusCoords('Z', '')).toEqual({ row: 5, col: 5 });
-    expect(getPolybiusCoords('J', '')).toEqual({ row: 2, col: 4 }); // 'J' maps to 'I'
-  });
+  describe('getPolybiusCoords', () => {
+    it('should return correct coordinates for letters in standard grid (both upper and lower case)', () => {
+      // First position (row 1, col 1)
+      expect(getPolybiusCoords('A', '')).toEqual({ row: 1, col: 1 });
+      expect(getPolybiusCoords('a', '')).toEqual({ row: 1, col: 1 });
 
-  it('should return null for characters not present in key grid or invalid failure modes', () => {
-    expect(getPolybiusCoords('1', '')).toBeNull();
-    expect(getPolybiusCoords('!', '')).toBeNull();
-    expect(getPolybiusCoords(' ', '')).toBeNull();
-    expect(getPolybiusCoords('#', 'abcdefghiklmnopqrstuvwxyz')).toBeNull();
-    expect(getPolybiusCoords('z', 'abcdefghiklmnopqrstuvwxy')).toBeNull(); // custom 24-letter key missing 'z'
-    expect(getPolybiusCoords('a', 'bcdefghiklmnopqrstuvwxyz')).toBeNull(); // custom key missing 'a'
+      // End of row 1 (row 1, col 5)
+      expect(getPolybiusCoords('e', '')).toEqual({ row: 1, col: 5 });
+
+      // Start of row 2 (row 2, col 1)
+      expect(getPolybiusCoords('f', '')).toEqual({ row: 2, col: 1 });
+
+      // Middle grid position
+      expect(getPolybiusCoords('L', '')).toEqual({ row: 3, col: 1 });
+      expect(getPolybiusCoords('m', '')).toEqual({ row: 3, col: 2 });
+
+      // Last position (row 5, col 5)
+      expect(getPolybiusCoords('Z', '')).toEqual({ row: 5, col: 5 });
+      expect(getPolybiusCoords('z', '')).toEqual({ row: 5, col: 5 });
+    });
+
+    it('should treat J and I as equivalent, returning the same coordinates', () => {
+      const iCoords = getPolybiusCoords('I', '');
+      const jCoords = getPolybiusCoords('J', '');
+      expect(iCoords).toEqual({ row: 2, col: 4 });
+      expect(jCoords).toEqual({ row: 2, col: 4 });
+      expect(getPolybiusCoords('i', '')).toEqual(getPolybiusCoords('j', ''));
+    });
+
+    it('should calculate correct coordinates when a custom key is provided', () => {
+      // Custom 25-letter key starting with "keyword"
+      const customKey = 'keywordabcfghilmnpqstuvxz';
+      // 'k' should be at (row 1, col 1)
+      expect(getPolybiusCoords('k', customKey)).toEqual({ row: 1, col: 1 });
+      expect(getPolybiusCoords('e', customKey)).toEqual({ row: 1, col: 2 });
+      expect(getPolybiusCoords('y', customKey)).toEqual({ row: 1, col: 3 });
+      expect(getPolybiusCoords('w', customKey)).toEqual({ row: 1, col: 4 });
+      expect(getPolybiusCoords('o', customKey)).toEqual({ row: 1, col: 5 });
+      expect(getPolybiusCoords('r', customKey)).toEqual({ row: 2, col: 1 });
+      expect(getPolybiusCoords('d', customKey)).toEqual({ row: 2, col: 2 });
+    });
+
+    it('should handle custom keys containing uppercase letters and J', () => {
+      const customKeyWithJ = 'KEYWORDJABCFGHILMNPQSTUVXZ';
+      // 'J' is converted to 'I' in cleanPolybiusKey, index 7 -> row 2, col 3
+      expect(getPolybiusCoords('j', customKeyWithJ)).toEqual({ row: 2, col: 3 });
+      expect(getPolybiusCoords('i', customKeyWithJ)).toEqual({ row: 2, col: 3 });
+    });
+
+    it('should return null for empty input or multi-character inputs', () => {
+      expect(getPolybiusCoords('', '')).toBeNull();
+      expect(getPolybiusCoords('AB', '')).toBeNull();
+      expect(getPolybiusCoords('hello', '')).toBeNull();
+    });
+
+    it('should return null for non-alphabetic characters and characters not present in grid', () => {
+      expect(getPolybiusCoords('1', '')).toBeNull();
+      expect(getPolybiusCoords('!', '')).toBeNull();
+      expect(getPolybiusCoords(' ', '')).toBeNull();
+      expect(getPolybiusCoords('\t', '')).toBeNull();
+      expect(getPolybiusCoords('\n', '')).toBeNull();
+      expect(getPolybiusCoords('#', 'abcdefghiklmnopqrstuvwxyz')).toBeNull();
+      expect(getPolybiusCoords('z', 'abcdefghiklmnopqrstuvwxy')).toBeNull(); // 24-letter key missing 'z'
+      expect(getPolybiusCoords('a', 'bcdefghiklmnopqrstuvwxyz')).toBeNull(); // key missing 'a'
+    });
   });
 });
 
