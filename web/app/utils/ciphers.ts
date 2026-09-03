@@ -97,6 +97,7 @@ export function cleanPolybiusKey(key: string): string {
  * Get Polybius coordinates for a character.
  */
 export function getPolybiusCoords(char: string, key: string): { row: number; col: number } | null {
+  if (!char || char.length !== 1) return null;
   const cleanKey = cleanPolybiusKey(key);
   const charClean = char.toLowerCase().replace(/j/g, "i");
   const idx = cleanKey.indexOf(charClean);
