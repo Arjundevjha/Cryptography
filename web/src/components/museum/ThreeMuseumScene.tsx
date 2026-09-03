@@ -3,7 +3,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { MUSEUM_EXHIBITS, MUSEUM_WINGS } from './museumData';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES, CryptographicStatue } from './museumData';
 
 interface ThreeMuseumSceneProps {
   currentView: string;
@@ -13,6 +14,58 @@ interface ThreeMuseumSceneProps {
 }
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
+
+let sharedBustGeometry: THREE.BufferGeometry | null = null;
+let isBustLoading = false;
+const bustCallbacks: Array<() => void> = [];
+
+function loadScannedBust(onReady?: () => void) {
+  if (sharedBustGeometry) {
+    if (onReady) onReady();
+    return;
+  }
+  if (onReady) bustCallbacks.push(onReady);
+  if (isBustLoading || typeof window === 'undefined') return;
+  isBustLoading = true;
+
+  fetch('/models/LeePerrySmith.glb')
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.arrayBuffer();
+    })
+    .then((buffer) => {
+      const loader = new GLTFLoader();
+      loader.parse(
+        buffer,
+        '',
+        (gltf) => {
+          gltf.scene.traverse((child) => {
+            if ((child as THREE.Mesh).isMesh && !sharedBustGeometry) {
+              const mesh = child as THREE.Mesh;
+              sharedBustGeometry = mesh.geometry.clone();
+              sharedBustGeometry.center();
+              sharedBustGeometry.computeVertexNormals();
+            }
+          });
+          isBustLoading = false;
+          bustCallbacks.forEach((cb) => cb());
+          bustCallbacks.length = 0;
+        },
+        (err) => {
+          console.error('[loadScannedBust] Parse error:', err);
+          isBustLoading = false;
+        }
+      );
+    })
+    .catch((err) => {
+      console.warn('[loadScannedBust] Could not load 3D scanned bust, falling back to procedural sculpture:', err);
+      isBustLoading = false;
+    });
+}
+
+if (typeof window !== 'undefined') {
+  loadScannedBust();
+}
 
 export default function ThreeMuseumScene({
   currentView,
@@ -28,6 +81,7 @@ export default function ThreeMuseumScene({
   const animIdRef = useRef<number>(0);
   const rotatingArtifactsRef = useRef<THREE.Object3D[]>([]);
   const floatingMarkersRef = useRef<THREE.Object3D[]>([]);
+  const statueGlyphsRef = useRef<THREE.Object3D[]>([]);
 
   // Keyboard WASD state
   const keysPressedRef = useRef<{ [key: string]: boolean }>({});
@@ -41,6 +95,7 @@ export default function ThreeMuseumScene({
   const isMacroRef = useRef(isMacro);
   const currentViewRef = useRef(currentView);
   const onSelectRoomRef = useRef(onSelectRoom);
+  const onCaseClickRef = useRef(onCaseClick);
   const initializedRef = useRef(false);
 
   // Build the full 3D scene once
@@ -148,6 +203,13 @@ export default function ThreeMuseumScene({
     lobbyChandelier.position.set(0, 10, 10);
     scene.add(lobbyChandelier);
 
+    // Dedicated Rotunda Portrait Key Light (Illuminates Founding Fathers statues from the front)
+    const rotundaKeyLight = new THREE.DirectionalLight(0xfffbeb, 2.6);
+    rotundaKeyLight.position.set(0, 14, 24);
+    rotundaKeyLight.target.position.set(0, 2.5, 6);
+    scene.add(rotundaKeyLight);
+    scene.add(rotundaKeyLight.target);
+
     const classicalLight = new THREE.PointLight(0x38bdf8, 6.0, 70);
     classicalLight.position.set(-45, 10, -40);
     scene.add(classicalLight);
@@ -247,23 +309,22 @@ export default function ThreeMuseumScene({
     medallionInner.position.set(0, 0.018, 16);
     scene.add(medallionInner);
 
-    const daisGeo = new THREE.CylinderGeometry(5.5, 6.0, 0.6, 64);
-    const daisMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.1 });
-    const dais = new THREE.Mesh(daisGeo, daisMat);
-    dais.position.set(0, 0.3, 5);
-    dais.receiveShadow = true;
-    scene.add(dais);
+    // ============================
+    // 8.5. GRAND ROTUNDA OF CRYPTOGRAPHIC PIONEERS (FOUNDING FATHERS)
+    // ============================
+    const statueGlyphs: THREE.Object3D[] = [];
 
-    const monumentGeo = new THREE.TorusGeometry(1.8, 0.25, 32, 64);
-    const monument = new THREE.Mesh(monumentGeo, goldMat);
-    monument.position.set(0, 2.5, 5);
-    scene.add(monument);
+    MUSEUM_STATUES.forEach((statue) => {
+      const statueGroup = new THREE.Group();
+      statueGroup.position.set(...statue.position);
+      statueGroup.rotation.y = statue.rotationY;
+      statueGroup.userData = { statueId: statue.id };
 
-    const coreGeo = new THREE.SphereGeometry(0.8, 32, 32);
-    const coreMat = new THREE.MeshPhysicalMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.8, roughness: 0.1 });
-    const core = new THREE.Mesh(coreGeo, coreMat);
-    core.position.set(0, 2.5, 5);
-    scene.add(core);
+      buildStatueMonument(statue, statueGroup, statueGlyphs);
+      scene.add(statueGroup);
+    });
+
+    statueGlyphsRef.current = statueGlyphs;
 
     // ============================
     // 9. GRAND WING PORTALS & BANNERS
@@ -409,6 +470,7 @@ export default function ThreeMuseumScene({
       const glassGeo = new THREE.CylinderGeometry(1.1, 1.1, 2.2, 48);
       const glass = new THREE.Mesh(glassGeo, glassMat);
       glass.position.set(0, 2.3, 0);
+      glass.userData = { isDisplayCase: true, exhibitId: exhibit.id };
       roomGroup.add(glass);
 
       // Exhibit Spotlight
@@ -434,6 +496,26 @@ export default function ThreeMuseumScene({
     rotatingArtifactsRef.current = rotatingArtifacts;
     floatingMarkersRef.current = floatingMarkers;
 
+    // Preload & dynamically upgrade portrait busts with 3D scanned anatomy
+    loadScannedBust(() => {
+      const geo = sharedBustGeometry;
+      if (!scene || !geo) return;
+      scene.traverse((obj) => {
+        if (obj.userData?.isPortraitHead && ((obj as any).isGroup || obj instanceof THREE.Group || obj.type === 'Group')) {
+          const mat = obj.userData.material;
+          const s = obj.userData.scale || 0.088;
+          while (obj.children.length > 0) {
+            obj.remove(obj.children[0]);
+          }
+          const mesh = new THREE.Mesh(geo, mat);
+          mesh.scale.setScalar(s);
+          mesh.rotation.y = 0;
+          mesh.castShadow = true;
+          obj.add(mesh);
+        }
+      });
+    });
+
     // ============================
     // 11. RAYCASTING INTERACTION
     // ============================
@@ -450,6 +532,9 @@ export default function ThreeMuseumScene({
       const dy = e.clientY - mouseDownPos.y;
       if (Math.hypot(dx, dy) > 6) return;
 
+      // In macro inspection mode, ignore background 3D clicks so inspection is not interrupted
+      if (isMacroRef.current) return;
+
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -462,13 +547,30 @@ export default function ThreeMuseumScene({
         while (obj && obj.parent && obj.parent !== scene) {
           if (obj.userData?.wingId) {
             isSpatialUpdateRef.current = false;
+            lastRoomChangeTimeRef.current = performance.now() + 1500;
             onSelectRoomRef.current(obj.userData.wingId);
+            return;
+          }
+          if (obj.userData?.statueId) {
+            const clickedStatueId = obj.userData.statueId;
+            if (clickedStatueId !== currentViewRef.current) {
+              isSpatialUpdateRef.current = false;
+              lastRoomChangeTimeRef.current = performance.now() + 1500;
+              onSelectRoomRef.current(clickedStatueId);
+            }
+            return;
+          }
+          if (obj.userData?.isDisplayCase && obj.userData.exhibitId === currentViewRef.current) {
+            if (onCaseClickRef.current) {
+              onCaseClickRef.current(obj.userData.exhibitId);
+            }
             return;
           }
           if (obj.userData?.exhibitId) {
             const clickedExhibitId = obj.userData.exhibitId;
             if (clickedExhibitId !== currentViewRef.current) {
               isSpatialUpdateRef.current = false;
+              lastRoomChangeTimeRef.current = performance.now() + 1500;
               onSelectRoomRef.current(clickedExhibitId);
             }
             return;
@@ -492,8 +594,12 @@ export default function ThreeMuseumScene({
       // --- A. WASD & ARROW KEYS FIRST-PERSON EYE-LEVEL WALKING CONTROL ---
       const walkSpeed = 16.0 * delta;
       const keys = keysPressedRef.current;
+      const isWalking = !!(
+        keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD'] ||
+        keys['ArrowUp'] || keys['ArrowDown'] || keys['ArrowLeft'] || keys['ArrowRight']
+      );
 
-      if (keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD'] || keys['ArrowUp'] || keys['ArrowDown'] || keys['ArrowLeft'] || keys['ArrowRight']) {
+      if (isWalking) {
         const forward = new THREE.Vector3();
         camera.getWorldDirection(forward);
         forward.y = 0; // Lock movement horizontally on marble floor
@@ -528,9 +634,21 @@ export default function ThreeMuseumScene({
       controls.target.copy(camera.position).addScaledVector(currentDir, 0.2);
 
       // --- B. AUTOMATIC 3D SPATIAL PROXIMITY ROOM DETECTION ---
+      // CRITICAL: Only evaluate spatial room changes when the user is ACTUALLY walking with WASD!
       const now = performance.now();
-      if (!isMacroRef.current && !isAnimatingRef.current && now - lastRoomChangeTimeRef.current > 300) {
+      if (isWalking && !isMacroRef.current && !isAnimatingRef.current && now > lastRoomChangeTimeRef.current) {
         let insideRoomId: string | null = null;
+
+        if (currentViewRef.current.startsWith('statue-')) {
+          const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentViewRef.current);
+          if (activeStatue) {
+            const [sx, , sz] = activeStatue.position;
+            // Retain statue view within 6.5m viewing perimeter
+            if (Math.hypot(camera.position.x - sx, camera.position.z - sz) <= 6.5) {
+              insideRoomId = activeStatue.id;
+            }
+          }
+        }
 
         for (const ex of MUSEUM_EXHIBITS) {
           const [exX, , exZ] = ex.position;
@@ -543,7 +661,7 @@ export default function ThreeMuseumScene({
 
         if (insideRoomId) {
           if (insideRoomId !== currentViewRef.current) {
-            lastRoomChangeTimeRef.current = now;
+            lastRoomChangeTimeRef.current = now + 500;
             isSpatialUpdateRef.current = true;
             onSelectRoomRef.current(insideRoomId);
           }
@@ -555,7 +673,7 @@ export default function ThreeMuseumScene({
           else if (camera.position.z < -10) targetArea = 'wing-historical';
 
           if (targetArea !== currentViewRef.current) {
-            lastRoomChangeTimeRef.current = now;
+            lastRoomChangeTimeRef.current = now + 500;
             isSpatialUpdateRef.current = true;
             onSelectRoomRef.current(targetArea);
           }
@@ -575,16 +693,20 @@ export default function ThreeMuseumScene({
         marker.position.y = marker.userData.baseY + Math.sin(time * 0.003 + idx * 0.5) * 0.25;
       });
 
-      // Animate centerpiece monument
-      monument.rotation.y += delta * 0.5;
-      monument.rotation.x += delta * 0.2;
+      // Animate statue floating holographic glyphs
+      statueGlyphsRef.current.forEach((glyph, idx) => {
+        glyph.rotation.y += delta * 1.2;
+        glyph.position.y = (glyph.userData.baseY || 4.3) + Math.sin(time * 0.003 + idx * 1.2) * 0.15;
+      });
 
       // Smooth camera lerp during button room selection jumps
       if (isAnimatingRef.current) {
         camera.position.lerp(targetCamPos.current, Math.min(delta * 7.0, 0.22));
-        const viewDir = new THREE.Vector3();
-        camera.getWorldDirection(viewDir);
-        controls.target.copy(camera.position).addScaledVector(viewDir, 0.2);
+        const lookDir = targetLookAt.current.clone().sub(camera.position).normalize();
+        if (lookDir.lengthSq() > 0.001) {
+          controls.target.copy(camera.position).addScaledVector(lookDir, 0.2);
+          camera.lookAt(targetLookAt.current);
+        }
 
         if (camera.position.distanceTo(targetCamPos.current) < 0.05) {
           isAnimatingRef.current = false;
@@ -627,8 +749,20 @@ export default function ThreeMuseumScene({
   }, []);
 
   useEffect(() => {
-    const cleanup = buildScene();
+    let cleanup: (() => void) | undefined;
+    let built = false;
+    const triggerBuild = () => {
+      if (built) return;
+      built = true;
+      cleanup = buildScene();
+    };
+
+    // Load scanned bust, with graceful fallback timer for test environments
+    loadScannedBust(triggerBuild);
+    const fallbackTimer = setTimeout(triggerBuild, 300);
+
     return () => {
+      clearTimeout(fallbackTimer);
       if (cleanup) cleanup();
     };
   }, [buildScene]);
@@ -638,6 +772,8 @@ export default function ThreeMuseumScene({
     isMacroRef.current = isMacro;
     currentViewRef.current = currentView;
     onSelectRoomRef.current = onSelectRoom;
+    onCaseClickRef.current = onCaseClick;
+    lastRoomChangeTimeRef.current = performance.now() + 1500; // 1.5s grace period on programmatic selection
     if (isSpatialUpdateRef.current) {
       isSpatialUpdateRef.current = false;
     } else {
@@ -652,6 +788,12 @@ export default function ThreeMuseumScene({
       if (wing) {
         targetCamPos.current.set(wing.cameraPosition[0], 2.5, wing.cameraPosition[2]);
         targetLookAt.current.set(wing.cameraTarget[0], 2.5, wing.cameraTarget[2]);
+      }
+    } else if (currentView.startsWith('statue-')) {
+      const statue = MUSEUM_STATUES.find((s) => s.id === currentView);
+      if (statue) {
+        targetCamPos.current.set(...statue.cameraPosition);
+        targetLookAt.current.set(...statue.cameraTarget);
       }
     } else {
       const exhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
@@ -771,6 +913,1030 @@ function getPlaqueTexture(title: string, subtitle: string): THREE.CanvasTexture 
   const texture = new THREE.CanvasTexture(canvas);
   textureCache.set(key, texture);
   return texture;
+}
+
+function getStatuePlaqueTexture(name: string, lifespan: string, title: string): THREE.CanvasTexture {
+  const key = `statue_plaque_${name}`;
+  if (textureCache.has(key)) return textureCache.get(key)!;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#1c1917';
+    ctx.fillRect(0, 0, 512, 256);
+
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#d97706';
+    ctx.strokeRect(8, 8, 496, 240);
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeRect(16, 16, 480, 224);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 20px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('FOUNDING FATHER OF CRYPTOGRAPHY', 256, 48);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.fillText(name.toUpperCase(), 256, 108);
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 22px monospace';
+    ctx.fillText(lifespan, 256, 150);
+
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = 'italic 18px sans-serif';
+    ctx.fillText(title, 256, 195);
+
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(156, 215, 200, 3);
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  textureCache.set(key, texture);
+  return texture;
+}
+
+function getAlKindiScrollTexture(): THREE.CanvasTexture {
+  const key = 'scroll_alkindi_texture';
+  if (textureCache.has(key)) return textureCache.get(key)!;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#fef3c7';
+    ctx.fillRect(0, 0, 512, 512);
+
+    ctx.fillStyle = '#fde68a';
+    for (let i = 0; i < 200; i++) {
+      ctx.fillRect(Math.random() * 512, Math.random() * 512, Math.random() * 8, Math.random() * 8);
+    }
+
+    ctx.strokeStyle = '#92400e';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(16, 16, 480, 480);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(24, 24, 464, 464);
+
+    ctx.fillStyle = '#78350f';
+    ctx.font = 'bold 24px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('رسالة في استخراج المعمى', 256, 60);
+
+    ctx.font = 'bold 18px monospace';
+    ctx.fillText('A MANUSCRIPT ON DECIPHERING', 256, 95);
+    ctx.fillText('CRYPTOGRAPHIC MESSAGES (9th c.)', 256, 120);
+
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(50, 360);
+    ctx.lineTo(460, 360);
+    ctx.stroke();
+
+    const sampleFrequencies = [
+      { l: 'ا', h: 180 },
+      { l: 'ل', h: 160 },
+      { l: 'م', h: 120 },
+      { l: 'و', h: 110 },
+      { l: 'ي', h: 100 },
+      { l: 'ن', h: 90 },
+      { l: 'ر', h: 80 },
+      { l: 'ت', h: 70 },
+      { l: 'ب', h: 60 },
+      { l: 'ه', h: 50 },
+    ];
+
+    sampleFrequencies.forEach((item, idx) => {
+      const x = 65 + idx * 39;
+      const barH = item.h;
+      ctx.fillStyle = '#d97706';
+      ctx.fillRect(x, 360 - barH, 26, barH);
+      ctx.strokeStyle = '#78350f';
+      ctx.strokeRect(x, 360 - barH, 26, barH);
+
+      ctx.fillStyle = '#451a03';
+      ctx.font = 'bold 20px serif';
+      ctx.fillText(item.l, x + 13, 390);
+    });
+
+    ctx.font = 'italic 16px serif';
+    ctx.fillStyle = '#92400e';
+    ctx.fillText('Letter Distribution Analysis • Monoalphabetic Decryption', 256, 440);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  textureCache.set(key, texture);
+  return texture;
+}
+
+function getShannonChalkboardTexture(): THREE.CanvasTexture {
+  const key = 'shannon_chalkboard_texture';
+  if (textureCache.has(key)) return textureCache.get(key)!;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, 512, 512);
+
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(10, 10, 492, 492);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 20px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('BELL TELEPHONE LABORATORIES (1949)', 256, 55);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 26px monospace';
+    ctx.fillText('INFORMATION ENTROPY', 256, 110);
+
+    ctx.fillStyle = '#fde047';
+    ctx.font = 'bold 36px serif';
+    ctx.fillText('H(X) = - Σ p(x) log₂ p(x)', 256, 175);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 22px monospace';
+    ctx.fillText('SHANNON’S PERFECT SECRECY THEOREM:', 256, 250);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 32px serif';
+    ctx.fillText('H(M | C) = H(M)', 256, 305);
+
+    ctx.fillStyle = '#a5f3fc';
+    ctx.font = '18px monospace';
+    ctx.fillText('P(M = m | C = c) = P(M = m)', 256, 350);
+
+    ctx.fillStyle = '#f97316';
+    ctx.font = 'bold 20px monospace';
+    ctx.fillText('ONE-TIME PAD VERNAM CIPHER:', 256, 410);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 22px monospace';
+    ctx.fillText('C = M ⊕ K  (Unconditional Security)', 256, 450);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  textureCache.set(key, texture);
+  return texture;
+}
+
+function buildClassicalSocle(radius: number, height: number, material: THREE.Material): THREE.Mesh {
+  const points = [
+    new THREE.Vector2(radius, 0),
+    new THREE.Vector2(radius, height * 0.15),
+    new THREE.Vector2(radius * 0.88, height * 0.25),
+    new THREE.Vector2(radius * 0.58, height * 0.55),
+    new THREE.Vector2(radius * 0.52, height * 0.8),
+    new THREE.Vector2(radius * 0.72, height * 0.92),
+    new THREE.Vector2(radius * 0.78, height),
+  ];
+  const geo = new THREE.LatheGeometry(points, 48);
+  const mesh = new THREE.Mesh(geo, material);
+  mesh.castShadow = true;
+  return mesh;
+}
+
+function createPortraitHead(material: THREE.Material, scale: number = 0.088): THREE.Object3D {
+  if (sharedBustGeometry) {
+    const mesh = new THREE.Mesh(sharedBustGeometry, material);
+    mesh.scale.setScalar(scale);
+    mesh.rotation.y = 0;
+    mesh.castShadow = true;
+    mesh.userData = { isPortraitHead: true, material, scale };
+    return mesh;
+  }
+  const group = new THREE.Group();
+  group.userData = { isPortraitHead: true, material, scale };
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.19, 32, 32), material);
+  head.scale.set(0.92, 1.08, 0.98);
+  head.castShadow = true;
+  group.add(head);
+
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.038, 0.11, 12), material);
+  nose.position.set(0, -0.01, 0.19);
+  nose.rotation.x = Math.PI / 2;
+  group.add(nose);
+  return group;
+}
+
+function buildSculptedHermTorso(
+  width: number,
+  height: number,
+  depth: number,
+  material: THREE.Material
+): THREE.Group {
+  const torso = new THREE.Group();
+
+  // Tapered chest
+  const chest = new THREE.Mesh(
+    new THREE.CylinderGeometry(width * 0.44, width * 0.32, height, 32),
+    material
+  );
+  chest.position.set(0, height / 2 + 0.34, 0);
+  chest.scale.set(1.15, 1, (depth / width) * 1.5);
+  chest.castShadow = true;
+  torso.add(chest);
+
+  // Left rounded anatomical shoulder
+  const sL = new THREE.Mesh(new THREE.SphereGeometry(width * 0.22, 24, 24), material);
+  sL.position.set(-width * 0.36, height * 0.84 + 0.34, 0);
+  sL.scale.set(1.1, 0.82, (depth / width) * 1.6);
+  sL.castShadow = true;
+  torso.add(sL);
+
+  // Right rounded anatomical shoulder
+  const sR = new THREE.Mesh(new THREE.SphereGeometry(width * 0.22, 24, 24), material);
+  sR.position.set(width * 0.36, height * 0.84 + 0.34, 0);
+  sR.scale.set(1.1, 0.82, (depth / width) * 1.6);
+  sR.castShadow = true;
+  torso.add(sR);
+
+  return torso;
+}
+
+function buildStatueMonument(
+  statue: CryptographicStatue,
+  group: THREE.Group,
+  statueGlyphs: THREE.Object3D[]
+) {
+  // Rich Classical & Sculptural PBR Materials
+  const carraraMarble = new THREE.MeshPhysicalMaterial({
+    color: 0xfafaf9,
+    roughness: 0.15,
+    metalness: 0.05,
+    clearcoat: 0.65,
+    clearcoatRoughness: 0.12,
+  });
+
+  const belgianBlackGranite = new THREE.MeshStandardMaterial({
+    color: 0x18181b,
+    roughness: 0.22,
+    metalness: 0.35,
+  });
+
+  const florentineBronze = new THREE.MeshPhysicalMaterial({
+    color: 0x5a3e28,
+    metalness: 0.88,
+    roughness: 0.26,
+    clearcoat: 0.5,
+    clearcoatRoughness: 0.18,
+  });
+
+  const darkWoolBronze = new THREE.MeshPhysicalMaterial({
+    color: 0x27272a,
+    metalness: 0.72,
+    roughness: 0.32,
+    clearcoat: 0.35,
+  });
+
+  const gildedGold = new THREE.MeshPhysicalMaterial({
+    color: 0xf59e0b,
+    metalness: 0.95,
+    roughness: 0.14,
+    clearcoat: 0.75,
+    clearcoatRoughness: 0.08,
+  });
+
+  const antiqueGold = new THREE.MeshStandardMaterial({
+    color: 0xd97706,
+    metalness: 0.9,
+    roughness: 0.2,
+  });
+
+  // ==========================================
+  // 1. INLAID FLOOR MEDALLION & STARBURST
+  // ==========================================
+  const medallionRingGeo = new THREE.RingGeometry(2.3, 2.7, 64);
+  const medallionRingMat = new THREE.MeshStandardMaterial({
+    color: 0xd97706,
+    metalness: 0.92,
+    roughness: 0.15,
+    side: THREE.DoubleSide,
+  });
+  const medallionRing = new THREE.Mesh(medallionRingGeo, medallionRingMat);
+  medallionRing.rotation.x = -Math.PI / 2;
+  medallionRing.position.set(0, 0.02, 0);
+  group.add(medallionRing);
+
+  const medallionInnerGeo = new THREE.CircleGeometry(2.28, 64);
+  const medallionInnerMat = new THREE.MeshStandardMaterial({
+    color: 0x09090b,
+    roughness: 0.25,
+    metalness: 0.2,
+    side: THREE.DoubleSide,
+  });
+  const medallionInner = new THREE.Mesh(medallionInnerGeo, medallionInnerMat);
+  medallionInner.rotation.x = -Math.PI / 2;
+  medallionInner.position.set(0, 0.018, 0);
+  group.add(medallionInner);
+
+  // 8 Inlaid Brass Starburst Inlay Lines
+  for (let i = 0; i < 8; i++) {
+    const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.002, 2.1), medallionRingMat);
+    spoke.rotation.y = (i * Math.PI) / 8;
+    spoke.position.set(0, 0.019, 0);
+    group.add(spoke);
+  }
+
+  // ==========================================
+  // 2. ARCHITECTURAL FLUTED PEDESTAL
+  // ==========================================
+  const isTwin = statue.id === 'statue-diffie-hellman';
+  const plinthWidth = isTwin ? 3.0 : 2.2;
+  const plinthDepth = isTwin ? 1.8 : 2.2;
+
+  // Stepped Belgian Black Marble Base Plinth
+  const plinthGeo = new THREE.BoxGeometry(plinthWidth, 0.32, plinthDepth);
+  const plinth = new THREE.Mesh(plinthGeo, belgianBlackGranite);
+  plinth.position.set(0, 0.16, 0);
+  plinth.receiveShadow = true;
+  group.add(plinth);
+
+  // Gilded Gold Sub-Base Molding
+  const subBaseGeo = new THREE.BoxGeometry(plinthWidth - 0.2, 0.08, plinthDepth - 0.2);
+  const subBase = new THREE.Mesh(subBaseGeo, gildedGold);
+  subBase.position.set(0, 0.36, 0);
+  group.add(subBase);
+
+  // Fluted Grecian Column Shaft
+  if (isTwin) {
+    // Twin Monument Wide Marble Plinth with Classical Pilasters
+    const colGeo = new THREE.BoxGeometry(2.55, 1.18, 1.35);
+    const col = new THREE.Mesh(colGeo, carraraMarble);
+    col.position.set(0, 0.99, 0);
+    col.receiveShadow = true;
+    group.add(col);
+
+    // Front & Back Fluted Pilaster Reliefs
+    [-1.05, -0.65, 0.65, 1.05].forEach((px) => {
+      const pilaster = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.18, 0.05), carraraMarble);
+      pilaster.position.set(px, 0.99, 0.68);
+      group.add(pilaster);
+      const pilasterBack = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.18, 0.05), carraraMarble);
+      pilasterBack.position.set(px, 0.99, -0.68);
+      group.add(pilasterBack);
+    });
+  } else {
+    // Single Monument Fluted Circular Column Shaft
+    const colGeo = new THREE.CylinderGeometry(0.78, 0.86, 1.18, 32);
+    const col = new THREE.Mesh(colGeo, carraraMarble);
+    col.position.set(0, 0.99, 0);
+    col.receiveShadow = true;
+    group.add(col);
+
+    // Base Torus Molding
+    const baseTorus = new THREE.Mesh(new THREE.TorusGeometry(0.86, 0.055, 16, 48), carraraMarble);
+    baseTorus.rotation.x = Math.PI / 2;
+    baseTorus.position.set(0, 0.43, 0);
+    group.add(baseTorus);
+
+    // Neck Torus Molding
+    const neckTorus = new THREE.Mesh(new THREE.TorusGeometry(0.79, 0.045, 16, 48), carraraMarble);
+    neckTorus.rotation.x = Math.PI / 2;
+    neckTorus.position.set(0, 1.55, 0);
+    group.add(neckTorus);
+
+    // 16 Vertical Fluted Relief Ribs
+    for (let i = 0; i < 16; i++) {
+      const angle = (i * Math.PI) / 8;
+      const fx = Math.cos(angle) * 0.82;
+      const fz = Math.sin(angle) * 0.82;
+      const flute = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 1.14, 12), carraraMarble);
+      flute.position.set(fx, 0.99, fz);
+      group.add(flute);
+    }
+  }
+
+  // Capital Cornice with Egg-and-Dart Gold Rim
+  const capWidth = isTwin ? 2.75 : 1.95;
+  const capDepth = isTwin ? 1.55 : 1.95;
+  const capital = new THREE.Mesh(new THREE.BoxGeometry(capWidth, 0.16, capDepth), carraraMarble);
+  capital.position.set(0, 1.66, 0);
+  capital.receiveShadow = true;
+  group.add(capital);
+
+  const capGoldRim = new THREE.Mesh(new THREE.BoxGeometry(capWidth + 0.04, 0.03, capDepth + 0.04), gildedGold);
+  capGoldRim.position.set(0, 1.73, 0);
+  group.add(capGoldRim);
+
+  // Heavy Cast Brass Plaque with Hex Rivets
+  const plaqueTex = getStatuePlaqueTexture(statue.name, statue.lifespan, statue.title);
+  const plaqueMat = new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.2, metalness: 0.5 });
+  const plaqueWidth = isTwin ? 1.7 : 1.15;
+  const plaqueZ = isTwin ? 0.71 : 0.85;
+  const plaqueMesh = new THREE.Mesh(new THREE.BoxGeometry(plaqueWidth, 0.56, 0.04), plaqueMat);
+  plaqueMesh.position.set(0, 0.99, plaqueZ);
+  plaqueMesh.userData = { statueId: statue.id };
+  group.add(plaqueMesh);
+
+  // 4 Corner Gold Mounting Rivets
+  const rivetGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.025, 8);
+  const rxOffset = plaqueWidth / 2 - 0.06;
+  const ryOffset = 0.22;
+  [
+    [-rxOffset, ryOffset],
+    [rxOffset, ryOffset],
+    [-rxOffset, -ryOffset],
+    [rxOffset, -ryOffset],
+  ].forEach(([rx, ry]) => {
+    const rivet = new THREE.Mesh(rivetGeo, gildedGold);
+    rivet.rotation.x = Math.PI / 2;
+    rivet.position.set(rx, 0.99 + ry, plaqueZ + 0.025);
+    group.add(rivet);
+  });
+
+  // Dedicated Soft Upward Point Light from Pedestal
+  const upLight = new THREE.PointLight(0xffedd5, 1.4, 4.5);
+  upLight.position.set(0, 1.8, 0.5);
+  group.add(upLight);
+
+  // Dedicated Overhead Warm Spotlight targeted at the portrait bust
+  const spot = new THREE.SpotLight(0xfffbeb, 3.8);
+  spot.position.set(0, 7.5, 2.8);
+  spot.angle = 0.62;
+  spot.penumbra = 0.5;
+  const bustSpotTarget = new THREE.Object3D();
+  bustSpotTarget.position.set(0, 2.5, 0);
+  group.add(bustSpotTarget);
+  spot.target = bustSpotTarget;
+  group.add(spot);
+
+  // ==========================================
+  // 3. CLASSICAL MUSEUM STATUARY BUSTS & EXHIBITS
+  // ==========================================
+  const statuaryMarble = new THREE.MeshPhysicalMaterial({
+    color: 0xdfdad2, // Natural warm antique Roman marble with subtle surface depth
+    roughness: 0.42, // Honed satin stone finish (eliminating specular glare blowout)
+    metalness: 0.02,
+    clearcoat: 0.12,
+    clearcoatRoughness: 0.35,
+  });
+
+  const museumBronze = new THREE.MeshStandardMaterial({
+    color: 0x8a623c, // Rich Florentine bronze patina with warm highlights
+    metalness: 0.78,
+    roughness: 0.36,
+  });
+
+  const darkGranite = new THREE.MeshStandardMaterial({
+    color: 0x18181b,
+    roughness: 0.3,
+    metalness: 0.25,
+  });
+
+  const mahoganyWood = new THREE.MeshStandardMaterial({
+    color: 0x3f1d10,
+    roughness: 0.4,
+    metalness: 0.05,
+  });
+
+  const velvetCushionMat = new THREE.MeshStandardMaterial({
+    color: 0x4c0519,
+    roughness: 0.85,
+    metalness: 0.05,
+  });
+
+  if (statue.id === 'statue-alkindi') {
+    // ===================================================
+    // AL-KINDI: THE FATHER OF CRYPTANALYSIS (CLASSICAL MARBLE BUST & LECTERN)
+    // ===================================================
+    const alkindiGroup = new THREE.Group();
+    alkindiGroup.position.set(0, 1.74, 0);
+
+    // 1. Classical Turned Carrara Marble Socle
+    const socle = buildClassicalSocle(0.36, 0.38, statuaryMarble);
+    socle.position.set(0, 0, 0);
+    alkindiGroup.add(socle);
+
+    // 2. Sculpted Draped Herm (Anatomically contoured chest and draped robes)
+    const hermTorso = buildSculptedHermTorso(0.72, 0.48, 0.38, statuaryMarble);
+    alkindiGroup.add(hermTorso);
+
+    // Sculpted Diagonal Robe Fold across the chest
+    const chestDrape = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.07, 16, 32, Math.PI * 0.8), statuaryMarble);
+    chestDrape.position.set(-0.05, 0.64, 0.14);
+    chestDrape.rotation.z = -Math.PI / 4;
+    alkindiGroup.add(chestDrape);
+
+    // Gilded Gold Embroidered Zari Lapel Border
+    const zariLeft = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.48, 0.02), gildedGold);
+    zariLeft.position.set(-0.16, 0.62, 0.2);
+    zariLeft.rotation.z = 0.15;
+    alkindiGroup.add(zariLeft);
+
+    const zariRight = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.48, 0.02), gildedGold);
+    zariRight.position.set(0.16, 0.62, 0.2);
+    zariRight.rotation.z = -0.15;
+    alkindiGroup.add(zariRight);
+
+    // 3. Dignified Portrait Head of Al-Kindi (Anatomical 3D Scanned Sculpture)
+    const head = createPortraitHead(statuaryMarble, 0.092);
+    head.position.set(0, 1.14, 0.02);
+    alkindiGroup.add(head);
+
+    // Sculpted Arabian Scholar Beard (Neat tapered beard under chin)
+    const chinBeard = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.16, 16), statuaryMarble);
+    chinBeard.position.set(0, 0.98, 0.12);
+    chinBeard.rotation.x = -Math.PI / 10;
+    alkindiGroup.add(chinBeard);
+
+    const mustache = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.012, 12, 24, Math.PI), statuaryMarble);
+    mustache.position.set(0, 1.12, 0.21);
+    mustache.rotation.z = Math.PI;
+    alkindiGroup.add(mustache);
+
+    // 4. Imperial Abbasid Turban (Crowning the head above the brow)
+    const turban1 = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.055, 16, 32), statuaryMarble);
+    turban1.rotation.x = Math.PI / 2;
+    turban1.position.set(0, 1.32, 0.01);
+    alkindiGroup.add(turban1);
+
+    const turban2 = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.048, 16, 32), statuaryMarble);
+    turban2.rotation.x = Math.PI / 2 + 0.18;
+    turban2.position.set(0, 1.38, 0);
+    alkindiGroup.add(turban2);
+
+    const turbanDome = new THREE.Mesh(new THREE.SphereGeometry(0.15, 32, 16), statuaryMarble);
+    turbanDome.position.set(0, 1.42, 0);
+    alkindiGroup.add(turbanDome);
+
+    // Trailing Sash Tail (Tailasan) draped down over left shoulder
+    const tailasan = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.44, 8, 16), statuaryMarble);
+    tailasan.position.set(-0.24, 1.06, -0.04);
+    tailasan.rotation.z = 0.2;
+    alkindiGroup.add(tailasan);
+
+    // 6. Historic Artifact: Carved Mahogany Manuscript Stand (Rihal) with Manuscript
+    const lecternGroup = new THREE.Group();
+    lecternGroup.position.set(-0.62, 0, 0.15);
+    lecternGroup.rotation.y = Math.PI / 5;
+
+    // Carved Mahogany Lectern Stand
+    const rihalPost = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.72, 12), mahoganyWood);
+    rihalPost.position.set(0, 0.36, 0);
+    lecternGroup.add(rihalPost);
+
+    const rihalBase = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.06, 0.35), mahoganyWood);
+    rihalBase.position.set(0, 0.03, 0);
+    lecternGroup.add(rihalBase);
+
+    const rihalDesk = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.45, 0.03), mahoganyWood);
+    rihalDesk.position.set(0, 0.74, 0);
+    rihalDesk.rotation.x = -Math.PI / 4;
+    lecternGroup.add(rihalDesk);
+
+    // Unrolled Parchment Manuscript displaying Frequency Analysis Chart
+    const scrollTex = getAlKindiScrollTexture();
+    const parchmentMat = new THREE.MeshStandardMaterial({
+      map: scrollTex,
+      roughness: 0.5,
+      side: THREE.DoubleSide,
+    });
+    const manuscript = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.4), parchmentMat);
+    manuscript.position.set(0, 0.75, 0.02);
+    manuscript.rotation.x = -Math.PI / 4;
+    lecternGroup.add(manuscript);
+
+    // Hand-Carved Golden Qalam (Reed Pen) resting on the desk
+    const qalam = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.005, 0.24, 8), gildedGold);
+    qalam.position.set(0.18, 0.72, 0.1);
+    qalam.rotation.z = Math.PI / 3;
+    lecternGroup.add(qalam);
+
+    alkindiGroup.add(lecternGroup);
+
+    // 7. Floating Celestial Astrolabe Glyph with Frequency Bars
+    const glyphGroup = new THREE.Group();
+    glyphGroup.position.set(0, 4.35, 0);
+    glyphGroup.userData = { baseY: 4.35 };
+
+    const astrolabe = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.032, 16, 48), gildedGold);
+    glyphGroup.add(astrolabe);
+
+    const innerRing = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.022, 16, 32), antiqueGold);
+    innerRing.rotation.y = Math.PI / 2;
+    glyphGroup.add(innerRing);
+
+    const barHeights = [0.15, 0.38, 0.25, 0.52, 0.32, 0.18];
+    const barMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.8,
+    });
+    barHeights.forEach((h, bIdx) => {
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.06, h, 0.06), barMat);
+      bar.position.set(-0.25 + bIdx * 0.1, h / 2 - 0.15, 0);
+      glyphGroup.add(bar);
+    });
+
+    group.add(glyphGroup);
+    statueGlyphs.push(glyphGroup);
+
+    group.add(alkindiGroup);
+
+  } else if (statue.id === 'statue-shannon') {
+    // ===================================================
+    // CLAUDE SHANNON: MATHEMATICAL CRYPTOGRAPHY (CLASSICAL BRONZE BUST & BELL LABS CHALKBOARD)
+    // ===================================================
+    const shannonGroup = new THREE.Group();
+    shannonGroup.position.set(0, 1.74, 0);
+
+    // 1. Classical Turned Dark Granite Socle with Gold Rim
+    const socle = buildClassicalSocle(0.35, 0.38, darkGranite);
+    socle.position.set(0, 0, 0);
+    shannonGroup.add(socle);
+
+    const goldSocleRim = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.02, 16, 32), gildedGold);
+    goldSocleRim.rotation.x = Math.PI / 2;
+    goldSocleRim.position.set(0, 0.36, 0);
+    shannonGroup.add(goldSocleRim);
+
+    // 2. Tailored Academic Suit Herm (Anatomically contoured chest in Cast Museum Bronze)
+    const suitTorso = buildSculptedHermTorso(0.7, 0.48, 0.36, museumBronze);
+    shannonGroup.add(suitTorso);
+
+    // Sculpted V-Lapels
+    [-0.13, 0.13].forEach((lx) => {
+      const lapel = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.42, 0.03), museumBronze);
+      lapel.position.set(lx, 0.65, 0.19);
+      lapel.rotation.z = (lx > 0 ? -1 : 1) * 0.22;
+      shannonGroup.add(lapel);
+    });
+
+    // White Shirt Collar & Silk Tie with Gold Tie Clip
+    const shirt = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.2, 0.02), statuaryMarble);
+    shirt.position.set(0, 0.74, 0.19);
+    shannonGroup.add(shirt);
+
+    const tie = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.36, 0.025), museumBronze);
+    tie.position.set(0, 0.58, 0.2);
+    shannonGroup.add(tie);
+
+    const tieClip = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.02, 0.035), gildedGold);
+    tieClip.position.set(0, 0.64, 0.21);
+    shannonGroup.add(tieClip);
+
+    // 3. Thoughtful Portrait Head of Claude Shannon (Anatomical 3D Scanned Bronze)
+    const head = createPortraitHead(museumBronze, 0.092);
+    head.position.set(0, 1.14, 0.02);
+    shannonGroup.add(head);
+
+    // Gold Wireframe Scholarly Spectacles (Resting on eye bridge)
+    const glassesGroup = new THREE.Group();
+    glassesGroup.position.set(0, 1.25, 0.22);
+
+    const rim1 = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.0035, 12, 24), gildedGold);
+    rim1.position.set(-0.046, 0, 0);
+    glassesGroup.add(rim1);
+
+    const rim2 = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.0035, 12, 24), gildedGold);
+    rim2.position.set(0.046, 0, 0);
+    glassesGroup.add(rim2);
+
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.004, 0.004), gildedGold);
+    glassesGroup.add(bridge);
+
+    shannonGroup.add(glassesGroup);
+
+    // 5. Historic Display: Bell Labs Drafting Easel & Framed Chalkboard
+    const easelGroup = new THREE.Group();
+    easelGroup.position.set(0.68, 0, 0.1);
+    easelGroup.rotation.y = -Math.PI / 6;
+
+    // Bronze Tripod Easel
+    const legGeo = new THREE.CylinderGeometry(0.022, 0.022, 1.8, 12);
+    const flLeg = new THREE.Mesh(legGeo, museumBronze);
+    flLeg.position.set(-0.35, 0.9, 0.15);
+    flLeg.rotation.z = 0.18;
+    easelGroup.add(flLeg);
+
+    const frLeg = new THREE.Mesh(legGeo, museumBronze);
+    frLeg.position.set(0.35, 0.9, 0.15);
+    frLeg.rotation.z = -0.18;
+    easelGroup.add(frLeg);
+
+    const bkLeg = new THREE.Mesh(legGeo, museumBronze);
+    bkLeg.position.set(0, 0.9, -0.32);
+    bkLeg.rotation.x = -0.25;
+    easelGroup.add(bkLeg);
+
+    // Framed Slate Blackboard with Shannon's Entropy Formula
+    const boardTex = getShannonChalkboardTexture();
+    const boardMat = new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.35 });
+    const blackboard = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.74, 0.04), boardMat);
+    blackboard.position.set(0, 1.25, 0.1);
+    blackboard.rotation.x = -0.12;
+    easelGroup.add(blackboard);
+
+    const frameGold = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.78, 0.035), gildedGold);
+    frameGold.position.set(0, 1.25, 0.08);
+    frameGold.rotation.x = -0.12;
+    easelGroup.add(frameGold);
+
+    shannonGroup.add(easelGroup);
+
+    // 6. Electromechanical Relay & Perforated Ticker-Tape Ribbon
+    const relayBox = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.12, 0.18), darkGranite);
+    relayBox.position.set(-0.48, 0.06, 0.15);
+    shannonGroup.add(relayBox);
+
+    const tapeCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-0.48, 0.14, 0.15),
+      new THREE.Vector3(-0.42, 0.28, 0.28),
+      new THREE.Vector3(-0.35, 0.18, 0.4),
+      new THREE.Vector3(-0.25, 0.02, 0.35),
+    ]);
+    const tape = new THREE.Mesh(
+      new THREE.TubeGeometry(tapeCurve, 24, 0.03, 8, false),
+      new THREE.MeshStandardMaterial({ color: 0xfef08a, roughness: 0.6 })
+    );
+    shannonGroup.add(tape);
+
+    // 7. Floating Celestial Double-Helix Entropy Spiral
+    const glyphGroup = new THREE.Group();
+    glyphGroup.position.set(0, 4.35, 0);
+    glyphGroup.userData = { baseY: 4.35 };
+
+    const spiral = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(0.26, 0.055, 96, 24, 2, 3),
+      new THREE.MeshStandardMaterial({
+        color: 0x0284c7,
+        emissive: 0x0369a1,
+        emissiveIntensity: 0.8,
+        roughness: 0.1,
+        metalness: 0.8,
+      })
+    );
+    glyphGroup.add(spiral);
+
+    for (let b = 0; b < 4; b++) {
+      const bitAngle = (b * Math.PI) / 2;
+      const bitMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.04, 16, 16),
+        new THREE.MeshStandardMaterial({
+          color: 0x38bdf8,
+          emissive: 0x0284c7,
+          emissiveIntensity: 1.0,
+        })
+      );
+      bitMesh.position.set(Math.cos(bitAngle) * 0.42, Math.sin(bitAngle * 2) * 0.15, Math.sin(bitAngle) * 0.42);
+      glyphGroup.add(bitMesh);
+    }
+
+    group.add(glyphGroup);
+    statueGlyphs.push(glyphGroup);
+
+    group.add(shannonGroup);
+
+  } else {
+    // ===================================================
+    // WHITFIELD DIFFIE & MARTIN HELLMAN (WITH RALPH MERKLE)
+    // ===================================================
+    const twinGroup = new THREE.Group();
+    twinGroup.position.set(0, 1.74, 0);
+
+    // ---------------------------------------------
+    // LEFT BUST: WHITFIELD DIFFIE (X = -0.85)
+    // ---------------------------------------------
+    const diffieGroup = new THREE.Group();
+    diffieGroup.position.set(-0.85, 0, 0);
+
+    const diffieSocle = buildClassicalSocle(0.34, 0.38, statuaryMarble);
+    diffieGroup.add(diffieSocle);
+
+    const diffieTorso = buildSculptedHermTorso(0.68, 0.48, 0.36, museumBronze);
+    diffieGroup.add(diffieTorso);
+
+    const diffieHead = createPortraitHead(museumBronze, 0.088);
+    diffieHead.position.set(0, 1.14, 0.02);
+    diffieGroup.add(diffieHead);
+
+    // Flowing Shoulder-Length Wavy Hair Locks
+    const dHairL = new THREE.Mesh(
+      new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3([
+          new THREE.Vector3(-0.14, 1.25, 0.02),
+          new THREE.Vector3(-0.22, 1.05, 0.04),
+          new THREE.Vector3(-0.18, 0.78, -0.02),
+        ]),
+        16,
+        0.05,
+        8,
+        false
+      ),
+      museumBronze
+    );
+    diffieGroup.add(dHairL);
+
+    const dHairR = new THREE.Mesh(
+      new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3([
+          new THREE.Vector3(0.14, 1.25, 0.02),
+          new THREE.Vector3(0.22, 1.05, 0.04),
+          new THREE.Vector3(0.18, 0.78, -0.02),
+        ]),
+        16,
+        0.05,
+        8,
+        false
+      ),
+      museumBronze
+    );
+    diffieGroup.add(dHairR);
+
+    // Velvet Cushion & Golden Private Key Scepter on Plinth
+    const cushionL = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.06, 0.22), velvetCushionMat);
+    cushionL.position.set(0, 0.03, 0.28);
+    diffieGroup.add(cushionL);
+
+    const privKeyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.28, 12), gildedGold);
+    privKeyShaft.rotation.z = Math.PI / 2;
+    privKeyShaft.position.set(0, 0.08, 0.28);
+    diffieGroup.add(privKeyShaft);
+
+    const privKeyBow = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.012, 12, 24), gildedGold);
+    privKeyBow.position.set(-0.16, 0.08, 0.28);
+    diffieGroup.add(privKeyBow);
+
+    twinGroup.add(diffieGroup);
+
+    // ---------------------------------------------
+    // RIGHT BUST: MARTIN HELLMAN (X = +0.85)
+    // ---------------------------------------------
+    const hellmanGroup = new THREE.Group();
+    hellmanGroup.position.set(0.85, 0, 0);
+
+    const hellmanSocle = buildClassicalSocle(0.34, 0.38, statuaryMarble);
+    hellmanGroup.add(hellmanSocle);
+
+    const hellmanTorso = buildSculptedHermTorso(0.68, 0.48, 0.36, museumBronze);
+    hellmanGroup.add(hellmanTorso);
+
+    const hTie = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.36, 0.025), gildedGold);
+    hTie.position.set(0, 0.58, 0.19);
+    hellmanGroup.add(hTie);
+
+    const hellmanHead = createPortraitHead(museumBronze, 0.088);
+    hellmanHead.position.set(0, 1.14, 0.02);
+    hellmanGroup.add(hellmanHead);
+
+    // Velvet Cushion & Platinum Public Key Scepter on Plinth
+    const cushionR = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.06, 0.22), velvetCushionMat);
+    cushionR.position.set(0, 0.03, 0.28);
+    hellmanGroup.add(cushionR);
+
+    const pubKeyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.28, 12), statuaryMarble);
+    pubKeyShaft.rotation.z = Math.PI / 2;
+    pubKeyShaft.position.set(0, 0.08, 0.28);
+    hellmanGroup.add(pubKeyShaft);
+
+    const pubKeyBow = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.012, 12, 24), statuaryMarble);
+    pubKeyBow.position.set(0.16, 0.08, 0.28);
+    hellmanGroup.add(pubKeyBow);
+
+    twinGroup.add(hellmanGroup);
+
+    // ---------------------------------------------
+    // CENTER: RALPH MERKLE'S PUZZLE ALTAR
+    // ---------------------------------------------
+    const merkleGroup = new THREE.Group();
+    merkleGroup.position.set(0, 0, 0.08);
+
+    const merkleBase = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.14, 0.52), darkGranite);
+    merkleBase.position.set(0, 0.07, 0);
+    merkleGroup.add(merkleBase);
+
+    const merkleShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.72, 24), darkGranite);
+    merkleShaft.position.set(0, 0.5, 0);
+    merkleGroup.add(merkleShaft);
+
+    const merkleCap = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.22, 0.08, 24), gildedGold);
+    merkleCap.position.set(0, 0.9, 0);
+    merkleGroup.add(merkleCap);
+
+    // Dial Ring with Degree Ticks
+    const dialRing = new THREE.Mesh(new THREE.RingGeometry(0.16, 0.24, 32), antiqueGold);
+    dialRing.rotation.x = -Math.PI / 2;
+    dialRing.position.set(0, 0.945, 0);
+    merkleGroup.add(dialRing);
+
+    // Ralph Merkle's Faceted Refractive Puzzle Polyhedron
+    const puzzlePoly = new THREE.Mesh(
+      new THREE.DodecahedronGeometry(0.2),
+      new THREE.MeshPhysicalMaterial({
+        color: 0x38bdf8,
+        transmission: 0.94,
+        roughness: 0.04,
+        ior: 1.6,
+        clearcoat: 1.0,
+      })
+    );
+    puzzlePoly.position.set(0, 1.2, 0);
+    merkleGroup.add(puzzlePoly);
+
+    // Glowing Golden Key Artifact Core with Internal Light
+    const coreKey = new THREE.Mesh(
+      new THREE.SphereGeometry(0.07, 16, 16),
+      new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        emissive: 0xd97706,
+        emissiveIntensity: 1.2,
+      })
+    );
+    coreKey.position.set(0, 1.2, 0);
+    merkleGroup.add(coreKey);
+
+    const coreLight = new THREE.PointLight(0xf59e0b, 2.8, 3.5);
+    coreLight.position.set(0, 1.2, 0);
+    merkleGroup.add(coreLight);
+
+    // Orbiting Brass Gimbal Rings
+    const gimbal1 = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.014, 12, 32), gildedGold);
+    gimbal1.position.set(0, 1.2, 0);
+    gimbal1.rotation.x = Math.PI / 4;
+    merkleGroup.add(gimbal1);
+
+    const gimbal2 = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.014, 12, 32), antiqueGold);
+    gimbal2.position.set(0, 1.2, 0);
+    gimbal2.rotation.y = Math.PI / 4;
+    merkleGroup.add(gimbal2);
+
+    twinGroup.add(merkleGroup);
+
+    // ---------------------------------------------
+    // TRIUMPHAL GOLDEN KEYHOLE ARCH OVERHEAD
+    // ---------------------------------------------
+    const archGroup = new THREE.Group();
+    archGroup.position.set(0, 0, -0.22);
+
+    [-1.28, 1.28].forEach((ax) => {
+      const archCol = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.075, 2.0, 16), gildedGold);
+      archCol.position.set(ax, 1.0, 0);
+      archGroup.add(archCol);
+      const colBase = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.08, 16), gildedGold);
+      colBase.position.set(ax, 0.04, 0);
+      archGroup.add(colBase);
+      const colCap = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.08, 0.08, 16), gildedGold);
+      colCap.position.set(ax, 1.96, 0);
+      archGroup.add(colCap);
+    });
+
+    const archBar = new THREE.Mesh(new THREE.TorusGeometry(1.28, 0.05, 16, 48, Math.PI), gildedGold);
+    archBar.position.set(0, 1.96, 0);
+    archGroup.add(archBar);
+
+    const medallion = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.04, 24), gildedGold);
+    medallion.rotation.x = Math.PI / 2;
+    medallion.position.set(0, 3.24, 0);
+    archGroup.add(medallion);
+
+    twinGroup.add(archGroup);
+
+    // ---------------------------------------------
+    // FLOATING HOLOGRAM: INTERLOCKING PUBLIC/PRIVATE KEY RINGS
+    // ---------------------------------------------
+    const glyphGroup = new THREE.Group();
+    glyphGroup.position.set(0, 4.35, 0);
+    glyphGroup.userData = { baseY: 4.35 };
+
+    const pubRing = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.04, 16, 32), gildedGold);
+    glyphGroup.add(pubRing);
+
+    const privRing = new THREE.Mesh(
+      new THREE.TorusGeometry(0.26, 0.04, 16, 32),
+      new THREE.MeshStandardMaterial({
+        color: 0x9333ea,
+        emissive: 0x7e22ce,
+        emissiveIntensity: 0.7,
+      })
+    );
+    privRing.rotation.y = Math.PI / 2;
+    glyphGroup.add(privRing);
+
+    const lockBody = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.06), gildedGold);
+    glyphGroup.add(lockBody);
+
+    group.add(glyphGroup);
+    statueGlyphs.push(glyphGroup);
+
+    group.add(twinGroup);
+  }
+
+  // Ensure all descendants know their statueId for raycast clicks
+  group.traverse((child) => {
+    child.userData = { statueId: statue.id };
+  });
 }
 
 // ===================================================

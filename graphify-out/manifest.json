@@ -370,8 +370,8 @@
     "semantic_hash": "c08d092e4b0e0230e08e00605779b4aa"
   },
   "web/next-env.d.ts": {
-    "mtime": 1788310746.7057426,
-    "ast_hash": "d0f8375ae1199dc7acd3977fc33b78b8",
+    "mtime": 1788315960.7193995,
+    "ast_hash": "2a74d3909800ca5467fa83b0ab4a4890",
     "semantic_hash": ""
   },
   "web/next.config.js": {
@@ -400,13 +400,13 @@
     "semantic_hash": "3cc48a421488ac503923507e22c65f3f"
   },
   "web/src/components/museum/MuseumCanvas.tsx": {
-    "mtime": 1785057132.3130672,
-    "ast_hash": "bccfb994b38550b89d9e049505f31a22",
+    "mtime": 1788316198.3592267,
+    "ast_hash": "88c11fb17972c8bfbe80aa16526f4ccc",
     "semantic_hash": ""
   },
   "web/src/components/museum/ThreeMuseumScene.tsx": {
-    "mtime": 1787896120.9042275,
-    "ast_hash": "cc2e50008da61bf5ccc7ab2d657339fb",
+    "mtime": 1788322986.984502,
+    "ast_hash": "0857604275348c2c44b19c6fbb414619",
     "semantic_hash": ""
   },
   "web/src/components/museum/hud/ApiStatusDot.tsx": {
@@ -415,13 +415,13 @@
     "semantic_hash": "885804207ed654084f41d675f817cabb"
   },
   "web/src/components/museum/hud/MuseumHUD.tsx": {
-    "mtime": 1787615196.8508706,
-    "ast_hash": "cd4bd3a8d33d321bef65622bd4d617e9",
+    "mtime": 1788314889.666053,
+    "ast_hash": "6312d4156fb75128f806928397260772",
     "semantic_hash": ""
   },
   "web/src/components/museum/museumData.ts": {
-    "mtime": 1785118969.94626,
-    "ast_hash": "a6e87ef892cb1150445523582380eb85",
+    "mtime": 1788318900.9332075,
+    "ast_hash": "031a452c2b4bb864220a45b497190c79",
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/ArtifactMetadataDrawer.tsx": {
@@ -510,8 +510,8 @@
     "semantic_hash": "1c06ba7292961575b45102f00433ce1c"
   },
   "handoff.md": {
-    "mtime": 1788245255.694311,
-    "ast_hash": "87e59ed7f771c6f44bc32207b96365a7",
+    "mtime": 1788323069.7151139,
+    "ast_hash": "0b78ae1f59709b59d61787bd4b39af6d",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
@@ -552,6 +552,126 @@
   ".Jules/palette.md": {
     "mtime": 1787615196.850157,
     "ast_hash": "c9d57a09890f275949f3ba1950a23967",
+    "semantic_hash": ""
+  },
+  "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx": {
+    "mtime": 1788314781.9115093,
+    "ast_hash": "855d53b01daf4832dad64a4ab9dab8be",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/statues.test.tsx": {
+    "mtime": 1788314922.2521167,
+    "ast_hash": "88eb37c3950982d7b61d6ec143822731",
+    "semantic_hash": ""
+  },
+  "alkindi_close.png": {
+    "mtime": 1788317000.30024,
+    "ast_hash": "8e757eeb5ac7198cf7130316f669340b",
+    "semantic_hash": ""
+  },
+  "alkindi_final.png": {
+    "mtime": 1788322930.3007088,
+    "ast_hash": "fc3843ab5eb805062b23b5bfb5596a22",
+    "semantic_hash": ""
+  },
+  "alkindi_v2.png": {
+    "mtime": 1788322344.4963107,
+    "ast_hash": "df6d86d9e3f6e96d8684b5bce4b86167",
+    "semantic_hash": ""
+  },
+  "alkindi_v4.png": {
+    "mtime": 1788322638.8921735,
+    "ast_hash": "bd54db22e1d40ee5930845a97e5eff54",
+    "semantic_hash": ""
+  },
+  "alkindi_v5.png": {
+    "mtime": 1788322844.6702356,
+    "ast_hash": "2aadae955bb864729b59aede45f73518",
+    "semantic_hash": ""
+  },
+  "alkindi_v6.png": {
+    "mtime": 1788323053.2067032,
+    "ast_hash": "1de915bf0972e89284b60a901fb8942a",
+    "semantic_hash": ""
+  },
+  "diffie_final.png": {
+    "mtime": 1788322964.9450314,
+    "ast_hash": "98d635d093da553057915c77189a0671",
+    "semantic_hash": ""
+  },
+  "diffie_v2.png": {
+    "mtime": 1788322378.9719653,
+    "ast_hash": "6b55830fede2df832f1bfda9ab72c5c6",
+    "semantic_hash": ""
+  },
+  "diffie_v4.png": {
+    "mtime": 1788322654.3375294,
+    "ast_hash": "0d9140e9d27e7686eec057165c99cfaf",
+    "semantic_hash": ""
+  },
+  "diffie_v5.png": {
+    "mtime": 1788322859.4066703,
+    "ast_hash": "c517a4c229cf8e01ff2a925cadc3f119",
+    "semantic_hash": ""
+  },
+  "diffie_v6.png": {
+    "mtime": 1788323035.191927,
+    "ast_hash": "1069fe13b3fcc2fdf2e9e805dd986c86",
+    "semantic_hash": ""
+  },
+  "rotunda_busts.png": {
+    "mtime": 1788316877.9954095,
+    "ast_hash": "16d47e33e426d0e7faea69ab5fd194ee",
+    "semantic_hash": ""
+  },
+  "rotunda_final.png": {
+    "mtime": 1788322912.5736835,
+    "ast_hash": "65b79ac8ded31de391b1ba9ec322a1b6",
+    "semantic_hash": ""
+  },
+  "rotunda_full.png": {
+    "mtime": 1788316425.146893,
+    "ast_hash": "37e3fd28e49c8d99453f87f4edfe885b",
+    "semantic_hash": ""
+  },
+  "shannon_close.png": {
+    "mtime": 1788317088.9404247,
+    "ast_hash": "7c73d502c60075aef0912c06f794efec",
+    "semantic_hash": ""
+  },
+  "shannon_final.png": {
+    "mtime": 1788322946.777586,
+    "ast_hash": "8ec7775e6636569fbc0e04c00d23dc6a",
+    "semantic_hash": ""
+  },
+  "shannon_scanned.png": {
+    "mtime": 1788322774.7085664,
+    "ast_hash": "f906a3ae81c38421323ce2a2ff1e74f0",
+    "semantic_hash": ""
+  },
+  "shannon_v2.png": {
+    "mtime": 1788322359.2248325,
+    "ast_hash": "071dc7b48a38d3c9eae84f6fa048845f",
+    "semantic_hash": ""
+  },
+  "shannon_v3.png": {
+    "mtime": 1788322450.589178,
+    "ast_hash": "ea5edcd084ff940c5005e4e448f2968f",
+    "semantic_hash": ""
+  },
+  "shannon_v4.png": {
+    "mtime": 1788322621.3125756,
+    "ast_hash": "6ebedfb1f37c1053e6be131b36f5e28d",
+    "semantic_hash": ""
+  },
+  "shannon_v5.png": {
+    "mtime": 1788322827.166842,
+    "ast_hash": "0d0c4b0bab87c0cf88a15de48245b497",
+    "semantic_hash": ""
+  },
+  "shannon_v6.png": {
+    "mtime": 1788323015.6050816,
+    "ast_hash": "cb545ee7bc2563a54333de47e4c113fd",
     "semantic_hash": ""
   }
 }

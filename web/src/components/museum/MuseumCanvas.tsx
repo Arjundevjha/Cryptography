@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import ThreeMuseumScene from './ThreeMuseumScene';
-import { MUSEUM_EXHIBITS, MUSEUM_WINGS } from './museumData';
+import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from './museumData';
 import { MuseumHUD } from './hud/MuseumHUD';
 import { WorkbenchPanel } from './workbench/WorkbenchPanel';
 import { ArtifactMetadataDrawer } from './workbench/ArtifactMetadataDrawer';
+import { StatueCuratorialDrawer } from './workbench/StatueCuratorialDrawer';
 import { AudioSystem } from './AudioSystem';
 import { BookOpen, History, ShieldAlert, ZoomIn, ZoomOut, ArrowRight, Sparkles, Eye, Compass } from 'lucide-react';
 
@@ -20,6 +21,7 @@ export function MuseumCanvas() {
 
   const activeExhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
+  const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
 
   const handleSelectRoom = useCallback((roomId: string) => {
     setCurrentView(roomId);
@@ -58,29 +60,36 @@ export function MuseumCanvas() {
 
       {/* === LOBBY EXHIBIT SELECTION CARDS === */}
       {currentView === 'atrium' && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-20 w-full max-w-5xl px-4 pointer-events-none">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-full max-w-4xl px-4 pointer-events-none">
           <div className="pointer-events-auto">
-            <div className="text-center mb-4">
-              <div className="inline-block px-6 py-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-amber-400/30 shadow-xl">
-                <h2 className="text-lg font-extrabold font-mono text-amber-700 tracking-widest uppercase flex items-center justify-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-500" /> GRAND ENTRANCE LOBBY
-                </h2>
-                <p className="text-xs text-stone-500 mt-0.5">
-                  Select a wing portal or click an exhibit room to begin exploration
-                </p>
+            <div className="flex items-center justify-between px-3.5 py-1.5 mb-2 rounded-xl bg-stone-950/80 backdrop-blur-md border border-amber-500/30 text-stone-300">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                <span className="text-[11px] font-extrabold font-mono text-amber-300 tracking-wider uppercase">
+                  Grand Entrance Rotunda • Founding Fathers Monuments
+                </span>
               </div>
+              <span className="text-[10px] font-mono text-stone-400">Click a monument or 3D statue to inspect</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-              {MUSEUM_WINGS.map((wing) => (
+            {/* Founding Fathers of Cryptography Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {MUSEUM_STATUES.map((statue) => (
                 <button
-                  key={wing.id}
-                  onClick={() => handleSelectRoom(wing.id)}
-                  className="p-3 rounded-2xl bg-white/90 backdrop-blur-md hover:bg-white border border-amber-400/40 hover:border-amber-500 shadow-md hover:shadow-xl transition-all text-left group"
+                  key={statue.id}
+                  onClick={() => handleSelectRoom(statue.id)}
+                  className="p-2.5 rounded-xl bg-stone-950/85 backdrop-blur-md hover:bg-stone-900 border border-amber-500/40 hover:border-amber-400 shadow-lg hover:shadow-amber-500/20 transition-all text-left group"
                 >
-                  <div className="text-[10px] font-mono text-amber-600 font-bold uppercase tracking-wider">{wing.category} WING</div>
-                  <div className="text-sm font-extrabold text-stone-900 group-hover:text-amber-600 transition-colors">{wing.name}</div>
-                  <div className="text-[10px] text-stone-500 mt-1 line-clamp-1">{wing.description}</div>
+                  <div className="flex items-center justify-between text-[9px] font-mono text-amber-400 font-bold uppercase tracking-wider">
+                    <span>PIONEER MONUMENT</span>
+                    <span>{statue.lifespan.split('–')[0]}</span>
+                  </div>
+                  <div className="text-xs font-black text-stone-100 group-hover:text-amber-300 transition-colors mt-0.5 line-clamp-1">
+                    {statue.name}
+                  </div>
+                  <div className="text-[10px] text-stone-400 font-serif italic line-clamp-1">
+                    {statue.title}
+                  </div>
                 </button>
               ))}
             </div>
@@ -171,6 +180,15 @@ export function MuseumCanvas() {
         <div className="fixed top-24 right-4 z-20 pointer-events-auto">
           <WorkbenchPanel exhibit={activeExhibit} />
         </div>
+      )}
+
+      {/* === STATUE CURATORIAL & INTERACTIVE DRAWER === */}
+      {activeStatue && (
+        <StatueCuratorialDrawer
+          statue={activeStatue}
+          onClose={handleReturnToFoyer}
+          onSelectWing={handleSelectRoom}
+        />
       )}
 
       {/* === AUDIO SYSTEM (Spatial Ambient & Synth Audio) === */}
