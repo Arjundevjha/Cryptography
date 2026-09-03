@@ -42,6 +42,9 @@
 - **Interior Camera Vector Alignment**: Ensure exhibit `cameraPosition` vectors sit strictly inside room spatial boundary boxes (e.g. $Z = Z_{\text{room}} + 3.5$) facing the artifact pedestal. Never place camera selection vectors on or outside threshold boundaries ($Z \ge Z_{\text{room}} + 5.5$) to prevent automatic proximity ejection loops.
 - **Decouple WASD Walking from Camera Lerping**: Track spatial room/wing updates with `isSpatialUpdateRef`. When manual WASD walking changes zones, update active state without triggering `isAnimating = true`. Reserve automated camera lerps exclusively for explicit UI button or 3D raycast click events.
 - **Architectural Floor Medallions**: Use flat inlaid floor geometries (`RingGeometry` + `CircleGeometry` at $Y = 0.02$) rather than floating partial cylinder arcs (`thetaLength < 2*PI`) to prevent unwanted 3/4 circular obstructions in open foyers.
+- **Gate Spatial Proximity to Active Walking**: Never trigger automatic proximity room transitions when the user is stationary or inspecting exhibits. Gate proximity detection strictly to active WASD/Arrow key movement (`isWalking`) and apply a 1.5s grace period upon programmatic room selection to prevent premature inspection kick-outs.
+- **Reliable Next.js GLTF Loading**: Always load GLTF binary assets via native `fetch()` -> `res.arrayBuffer()` -> `loader.parse()` rather than `loader.load()` to prevent Turbopack/Next.js client-side hanging. Always check `child.isMesh` and `(child as any).isGroup` instead of `instanceof`.
+- **Drawer Viewport Centering**: When an exhibit triggers a side panel or curatorial drawer, offset camera vectors to frame the artifact or statue in the visible left 60% of the viewport.
 
 ## 5. UI/UX & Techstack Privacy Standards
 - **No Techstack Exposure**: Never display internal framework, backend, or engine names (e.g. "FastAPI", "Python Engine", "Uvicorn") in user-facing UI labels, headers, or subtext.
