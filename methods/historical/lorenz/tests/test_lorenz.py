@@ -2,7 +2,6 @@
 
 import pytest
 from methods.historical.lorenz.lorenz import Lorenz
-from methods.historical.lorenz.converter import char_to_ita2, xor_vectors
 
 
 def test_lorenz_basic_reciprocity():
