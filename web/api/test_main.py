@@ -498,6 +498,38 @@ def test_caesar_encrypt_decrypt_success():
     assert dec.status_code == 200
     assert dec.json() == {"plaintext": "HELLO"}
 
+@unittest.mock.patch("methods.classical.caesar.encrypt")
+def test_caesar_encrypt_value_error(mock_encrypt):
+    mock_encrypt.side_effect = ValueError("Invalid shift value")
+    response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid shift value"
+
+@unittest.mock.patch("methods.classical.caesar.encrypt")
+def test_caesar_encrypt_internal_error(mock_encrypt, caplog):
+    mock_encrypt.side_effect = RuntimeError("Test internal encryption error")
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Encryption failed"}
+    assert "Caesar encryption error" in caplog.text
+
+@unittest.mock.patch("methods.classical.caesar.decrypt")
+def test_caesar_decrypt_value_error(mock_decrypt):
+    mock_decrypt.side_effect = ValueError("Invalid shift value")
+    response = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid shift value"
+
+@unittest.mock.patch("methods.classical.caesar.decrypt")
+def test_caesar_decrypt_internal_error(mock_decrypt, caplog):
+    mock_decrypt.side_effect = RuntimeError("Test internal decryption error")
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Decryption failed"}
+    assert "Caesar decryption error" in caplog.text
+
 def test_vigenere_encrypt_decrypt_success():
     enc = client.post("/api/vigenere/encrypt", json={"plaintext": "ATTACKATDAWN", "key": "LEMON"})
     assert enc.status_code == 200
