@@ -9,6 +9,7 @@ from api.main import (
     DEFAULT_ALLOWED_ORIGINS,
     is_valid_origin,
     parse_allowed_origins,
+    parse_aes_key,
 )
 
 client = TestClient(app)
@@ -269,6 +270,26 @@ def test_enigma_encipher_with_reflectors():
 # ==========================================
 # MODERN CIPHER TESTS
 # ==========================================
+
+def test_parse_aes_key_lengths():
+    # 16-byte text key should remain exactly 16 bytes (no key repetition)
+    key_16 = parse_aes_key("123456789012345G", "text")
+    assert len(key_16) == 16
+    assert key_16 == b"123456789012345G"
+
+    # 32-byte text key should remain exactly 32 bytes
+    key_32 = parse_aes_key("1234567890123456123456789012345Z", "text")
+    assert len(key_32) == 32
+    assert key_32 == b"1234567890123456123456789012345Z"
+
+    # 64-hex character key should parse to 32 bytes
+    hex_key_32 = parse_aes_key("0123456789abcdef" * 4, "hex")
+    assert len(hex_key_32) == 32
+
+    # Invalid key length (e.g. 10 bytes) should raise HTTP 400
+    with pytest.raises(Exception) as exc_info:
+        parse_aes_key("short_key", "text")
+    assert exc_info.value.status_code == 400
 
 def test_aes_encrypt_decrypt_16_byte_key():
     # Test AES-128 (16-byte key)

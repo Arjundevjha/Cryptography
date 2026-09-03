@@ -737,10 +737,6 @@ def parse_aes_key(key: str, key_format: str = "text") -> bytes:
     if len(key_bytes) not in (16, 32):
         raise HTTPException(status_code=400, detail="Key must be 16 or 32 bytes (or 32 or 64 hex characters)")
     
-    # Repeat a 16-byte key to make it 32 bytes for AES-256 CTR
-    if len(key_bytes) == 16:
-        key_bytes = key_bytes * 2
-        
     return key_bytes
 
 
