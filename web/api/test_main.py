@@ -1,8 +1,15 @@
+from unittest.mock import patch
+import unittest.mock
 import pytest
 from fastapi.testclient import TestClient
-from api.main import app, validate_enigma_rotors
 from fastapi import HTTPException
-import unittest.mock
+from api.main import (
+    app,
+    validate_enigma_rotors,
+    DEFAULT_ALLOWED_ORIGINS,
+    is_valid_origin,
+    parse_allowed_origins,
+)
 
 client = TestClient(app)
 
@@ -51,7 +58,7 @@ def test_affine_decrypt_non_coprime(a_key):
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
-@unittest.mock.patch("api.main.affine.encrypt")
+@patch("api.main.affine.encrypt")
 def test_affine_encrypt_internal_error(mock_encrypt, caplog):
     mock_encrypt.side_effect = RuntimeError("Test internal error")
     with caplog.at_level("ERROR"):
@@ -60,7 +67,7 @@ def test_affine_encrypt_internal_error(mock_encrypt, caplog):
     assert response.json() == {"detail": "Encryption failed"}
     assert "Affine encryption error" in caplog.text
 
-@unittest.mock.patch("api.main.affine.decrypt")
+@patch("api.main.affine.decrypt")
 def test_affine_decrypt_internal_error(mock_decrypt, caplog):
     mock_decrypt.side_effect = RuntimeError("Test internal error")
     with caplog.at_level("ERROR"):
@@ -474,7 +481,7 @@ def test_rsa_encrypt_exception(caplog):
         "plaintext": "Secret Message",
         "public_key": "dummy_public_key"
     }
-    with unittest.mock.patch("methods.modern.rsa.encrypt", side_effect=Exception("Test mock exception")):
+    with patch("methods.modern.rsa.encrypt", side_effect=Exception("Test mock exception")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/rsa/encrypt", json=enc_payload)
     assert response.status_code == 400
@@ -486,7 +493,7 @@ def test_rsa_decrypt_exception(caplog):
         "ciphertext": "00",
         "private_key": "dummy_private_key"
     }
-    with unittest.mock.patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
+    with patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/rsa/decrypt", json=dec_payload)
     assert response.status_code == 400
@@ -500,7 +507,7 @@ def test_aes_decrypt_exception(caplog):
         "nonce": "aabbccdd",
         "key_format": "text"
     }
-    with unittest.mock.patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")):
+    with patch("methods.modern.aes.decrypt", side_effect=Exception("Mocked decryption error")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/aes/decrypt", json=payload)
     assert response.status_code == 400
@@ -509,7 +516,7 @@ def test_aes_decrypt_exception(caplog):
 
 def test_sha256_exception(caplog):
     payload = {"plaintext": "hello"}
-    with unittest.mock.patch("methods.modern.hash_functions.sha256", side_effect=Exception("Mocked SHA256 error")):
+    with patch("methods.modern.hash_functions.sha256", side_effect=Exception("Mocked SHA256 error")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/sha256", json=payload)
     assert response.status_code == 400
@@ -536,7 +543,7 @@ def test_aes_encrypt_exception(caplog):
         "key_format": "text",
         "plaintext_format": "text"
     }
-    with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+    with patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
@@ -625,7 +632,7 @@ def test_lorenz_api_invalid_pins():
 
 
 def test_lorenz_api_runtime_error_exception(caplog):
-    with unittest.mock.patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=RuntimeError("Test Lorenz RuntimeError")):
+    with patch("methods.historical.lorenz.Lorenz.encrypt_text", side_effect=RuntimeError("Test Lorenz RuntimeError")):
         with caplog.at_level("ERROR"):
             resp = client.post("/api/lorenz/encrypt", json={"plaintext": "HELLO"})
         assert resp.status_code == 400
@@ -634,7 +641,7 @@ def test_lorenz_api_runtime_error_exception(caplog):
 
 
 def test_enigma_api_runtime_error_exception(caplog):
-    with unittest.mock.patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=RuntimeError("Test Enigma RuntimeError")):
+    with patch("methods.historical.enigma.enigma.Enigma.encipher", side_effect=RuntimeError("Test Enigma RuntimeError")):
         with caplog.at_level("ERROR"):
             resp = client.post("/api/enigma/encipher", json={
                 "plaintext": "HELLO",
@@ -651,8 +658,6 @@ def test_enigma_api_runtime_error_exception(caplog):
 # ==========================================
 # CORS ORIGIN VALIDATION TESTS
 # ==========================================
-
-from api.main import is_valid_origin, parse_allowed_origins, DEFAULT_ALLOWED_ORIGINS
 
 @pytest.mark.parametrize("origin", [
     "http://localhost:3000",
