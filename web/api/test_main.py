@@ -385,6 +385,17 @@ def test_aes_invalid_plaintext_format():
     assert response.status_code == 400
     assert "invalid plaintext format" in response.json()["detail"].lower()
 
+def test_aes_encrypt_invalid_hex_plaintext():
+    payload = {
+        "plaintext": "InvalidHex!",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "hex"
+    }
+    response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert "invalid hex plaintext" in response.json()["detail"].lower()
+
 def test_aes_decrypt_invalid_hex_ciphertext():
     payload = {
         "ciphertext": "InvalidHexFormat!",
@@ -500,6 +511,20 @@ def test_rsa_decrypt_exception(caplog):
     assert response.json()["detail"] == "Decryption failed"
     assert "RSA decryption error" in caplog.text
 
+def test_aes_encrypt_exception(caplog):
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "text"
+    }
+    with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Encryption failed"
+    assert "AES encryption error" in caplog.text
+
 def test_aes_decrypt_exception(caplog):
     payload = {
         "ciphertext": "00112233",
@@ -536,19 +561,7 @@ def test_aes_decrypt_invalid_hex_logging(caplog):
     assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
     assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
 
-def test_aes_encrypt_exception(caplog):
-    payload = {
-        "plaintext": "Secret Message",
-        "key": "1234567890123456",
-        "key_format": "text",
-        "plaintext_format": "text"
-    }
-    with patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
-        with caplog.at_level("ERROR"):
-            response = client.post("/api/aes/encrypt", json=payload)
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Encryption failed"
-    assert "AES encryption error" in caplog.text
+
 
 def test_caesar_encrypt_decrypt_success():
     enc = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
