@@ -845,6 +845,42 @@ def test_scytale_encrypt_excessive_width():
     response = client.post("/api/scytale/encrypt", json=payload)
     assert response.status_code == 400
 
+def test_enigma_encipher_oversized_element_string():
+    payload = {
+        "plaintext": "HELLO",
+        "rotors": ["I" * 20, "II", "III"],
+        "positions": ["A", "A", "A"],
+        "rings": ["A", "A", "A"],
+        "plugboard": []
+    }
+    response = client.post("/api/enigma/encipher", json=payload)
+    assert response.status_code == 400
+
+def test_lorenz_encrypt_oversized_nested_pins():
+    payload = {
+        "plaintext": "HELLO",
+        "chi_pins": [[1] * 100]
+    }
+    response = client.post("/api/lorenz/encrypt", json=payload)
+    assert response.status_code == 400
+
+def test_lorenz_encrypt_out_of_bounds_position():
+    payload = {
+        "plaintext": "HELLO",
+        "positions": [100000] * 12
+    }
+    response = client.post("/api/lorenz/encrypt", json=payload)
+    assert response.status_code == 400
+
+def test_aes_encrypt_oversized_format():
+    payload = {
+        "plaintext": "HELLO",
+        "key": "1234567890123456",
+        "key_format": "text" * 10
+    }
+    response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+
 
 
 
