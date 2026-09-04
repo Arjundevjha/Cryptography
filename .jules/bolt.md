@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Pre-compute ASCII Index Lookup Array & Vectorize Base64 Byte Streams
+**Learning:** In custom Base64 string decoding, performing `BASE64_CHARS.index(char)` incurs $O(64)$ linear string searches on every character, and processing input using per-chunk slicing (`str[i:i+4]`) creates heavy string allocation overhead. Pre-computing a 256-element ASCII lookup array at module level combined with C-speed strided bytes slicing (`data[0::3]`, `data[0::4]`) and `zip()` iteration achieves ~1.8x - 2.0x speedups for Base64 encoding and decoding.
+**Action:** Pre-compute ASCII-to-index lookup arrays for character decoding, and use strided bytes slicing with `zip()` for chunk-based byte stream transformations.
