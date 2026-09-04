@@ -42,7 +42,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         {currentView !== 'atrium' && (
           <button
             onClick={onReturnToFoyer}
-            className="px-3.5 py-2.5 rounded-2xl bg-amber-500/90 hover:bg-amber-400 text-stone-950 font-mono text-xs font-bold flex items-center gap-2 shadow-lg transition-all"
+            className="px-3.5 py-2.5 rounded-2xl bg-amber-500/90 hover:bg-amber-400 text-stone-950 font-mono text-xs font-bold flex items-center gap-2 shadow-lg transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           >
             <Home className="w-4 h-4" /> Lobby Entrance
           </button>
@@ -53,7 +53,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex items-center gap-1.5 p-1.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/20 shadow-2xl">
         <button
           onClick={onReturnToFoyer}
-          className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             currentView === 'atrium' ? 'bg-amber-500 text-stone-950 shadow font-bold' : 'text-stone-300 hover:text-stone-100'
           }`}
         >
@@ -64,7 +64,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
           <button
             key={wing.id}
             onClick={() => onSelectRoom(wing.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               currentView === wing.id ? 'bg-amber-500 text-stone-950 shadow font-bold' : 'text-stone-300 hover:text-stone-100'
             }`}
           >
@@ -79,7 +79,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
           onClick={() => setShowMap(!showMap)}
           aria-expanded={showMap}
           aria-label="Toggle 2D museum floorplan map"
-          className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             showMap ? 'bg-amber-400 text-stone-950' : 'bg-stone-900 hover:bg-stone-800 text-amber-400 border border-amber-500/30'
           }`}
         >
