@@ -211,3 +211,80 @@ def test_encrypt_invalid_key_pem():
     invalid_pem = b"-----BEGIN RSA PUBLIC KEY-----\n\n-----END RSA PUBLIC KEY-----\n"
     with pytest.raises(Exception):
         encrypt("Test", invalid_pem)
+
+def test_encrypt_decrypt_unicode_and_symbols():
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    message = "Bonjour 🇫🇷 🎉 密码 Key 🔑 \n\t\x00 RSA!"
+    ciphertext = encrypt(message, pub_pem)
+
+    assert isinstance(ciphertext, bytes)
+    assert len(ciphertext) > 0
+
+    decrypted_message = decrypt(ciphertext, priv_pem)
+    assert decrypted_message == message
+
+def test_fallback_imports_functionality():
+    """Verify encrypt and decrypt function correctly under fallback import conditions."""
+    import sys
+    import builtins
+    from importlib import reload
+    import methods.modern.rsa as rsa_module
+
+    original_import = builtins.__import__
+
+    def mocked_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if level > 0 and name in ('symmetric', 'helpers', 'keypair'):
+            raise ImportError(f"Mocked relative ImportError for {name}")
+        return original_import(name, globals, locals, fromlist, level)
+
+    with patch("builtins.__import__", side_effect=mocked_import):
+        sys.path.insert(0, 'methods/modern')
+        try:
+            reload(rsa_module)
+            pub, priv = rsa_module.generate_keypair(key_size=512)
+            msg = "Testing fallback imports"
+            ct = rsa_module.encrypt(msg, pub)
+            dt = rsa_module.decrypt(ct, priv)
+            assert dt == msg
+        finally:
+            sys.path.pop(0)
+            reload(rsa_module)
+
+def test_parse_pem_non_integer_payload():
+    import base64
+    header = "-----BEGIN RSA PUBLIC KEY-----"
+    footer = "-----END RSA PUBLIC KEY-----"
+    # Base64 string that decodes to non-colon-separated integer text
+    encoded = base64.b64encode(b"not:integer:values").decode('utf-8')
+    invalid_pem = f"{header}\n{encoded}\n{footer}".encode('utf-8')
+
+    with pytest.raises(ValueError):
+        _parse_pem(invalid_pem, header, footer)
+
+def test_decrypt_private_key_short_payload():
+    import base64
+    header = "-----BEGIN ENCRYPTED RSA PRIVATE KEY-----"
+    footer = "-----END ENCRYPTED RSA PRIVATE KEY-----"
+    # Payload base64-decodes to fewer than IV_SIZE (16 bytes)
+    encoded = base64.b64encode(b"short").decode('utf-8')
+    invalid_pem = f"{header}\n{encoded}\n{footer}".encode('utf-8')
+
+    with pytest.raises(Exception):
+        decrypt_private_key(invalid_pem, b"passphrase")
+
+def test_decrypt_invalid_utf8_sequence():
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    header = "-----BEGIN RSA PRIVATE KEY-----"
+    footer = "-----END RSA PRIVATE KEY-----"
+    key_params = _parse_pem(priv_pem, header, footer)
+    n = key_params[0]
+    e = key_params[1]
+    key_size_bytes = (n.bit_length() + 7) // 8
+
+    # Craft invalid single-byte UTF-8 value 0xFF (255)
+    invalid_utf8_byte = 0xFF
+    c = pow(invalid_utf8_byte, e, n)
+    corrupted_ciphertext = c.to_bytes(key_size_bytes, byteorder='big')
+
+    with pytest.raises(UnicodeDecodeError):
+        decrypt(corrupted_ciphertext, priv_pem)
