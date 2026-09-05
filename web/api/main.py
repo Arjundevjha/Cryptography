@@ -716,7 +716,15 @@ class Sha256Input(BaseModel):
     plaintext: str = Field("", max_length=500, description="The plaintext to hash")
 
 
+import hashlib
+
+
 def parse_aes_key(key: str, key_format: str = "text") -> bytes:
+    """Parses and validates AES key material (16-byte or 32-byte).
+
+    If a 16-byte key is provided, derives a secure 32-byte key using PBKDF2
+    to prevent key repetition vulnerabilities in AES-256 CTR mode.
+    """
     if key_format not in ("text", "hex"):
         raise HTTPException(status_code=400, detail="Invalid key format")
     if key_format == "hex":
@@ -736,6 +744,10 @@ def parse_aes_key(key: str, key_format: str = "text") -> bytes:
     
     if len(key_bytes) not in (16, 32):
         raise HTTPException(status_code=400, detail="Key must be 16 or 32 bytes (or 32 or 64 hex characters)")
+
+    # Use PBKDF2-HMAC-SHA256 to expand 16-byte keys securely instead of simple key repetition
+    if len(key_bytes) == 16:
+        key_bytes = hashlib.pbkdf2_hmac('sha256', key_bytes, b"AES-256-CTR-KDF-SALT", 10000, dklen=32)
     
     return key_bytes
 
