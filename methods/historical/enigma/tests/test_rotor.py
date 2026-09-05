@@ -1,4 +1,3 @@
-import pytest
 from methods.historical.enigma.rotor import Rotor
 
 def test_rotor_initialization():

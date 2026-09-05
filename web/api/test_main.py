@@ -1,11 +1,14 @@
 from unittest.mock import patch
-import unittest.mock
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import HTTPException
 from api.main import (
     app,
     validate_enigma_rotors,
+    parse_enigma_positions,
+    parse_and_validate_enigma_rings,
+    validate_enigma_plugboard,
+    get_enigma_reflector_wiring,
     DEFAULT_ALLOWED_ORIGINS,
     is_valid_origin,
     parse_allowed_origins,
@@ -171,6 +174,9 @@ def test_enigma_reciprocity():
     ["IV", "V", "VI"],
     ["VII", "VIII", "I"],
     ["II", "IV", "VIII"],
+    ["VIII", "VII", "VI"],
+    ["III", "I", "V"],
+    ["VI", "IV", "II"],
 ])
 def test_validate_enigma_rotors_valid(rotors):
     validate_enigma_rotors(rotors)
@@ -206,6 +212,12 @@ def test_validate_enigma_rotors_duplicate_rotors(rotors):
     (["INVALID", "II", "III"], "INVALID"),
     (["1", "2", "3"], "1"),
     (["", "II", "III"], ""),
+    ([" I ", "II", "III"], " I "),
+    (["I", " II", "III"], " II"),
+    (["I", "II", "III "], "III "),
+    (["I!", "II", "III"], "I!"),
+    (["B", "II", "III"], "B"),
+    (["0", "II", "III"], "0"),
 ])
 def test_validate_enigma_rotors_invalid_rotor_type(rotors, invalid_rotor):
     with pytest.raises(HTTPException) as exc_info:
@@ -213,10 +225,28 @@ def test_validate_enigma_rotors_invalid_rotor_type(rotors, invalid_rotor):
     assert exc_info.value.status_code == 400
     assert exc_info.value.detail == f"Invalid rotor '{invalid_rotor}'."
 
+def test_validate_enigma_rotors_error_precedence():
+    # 1. Count check priority over duplicates
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(["I", "I"])
+    assert exc_info.value.detail == "Exactly 3 rotors must be specified."
+
+    # 2. Count check priority over invalid rotor
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(["INVALID"])
+    assert exc_info.value.detail == "Exactly 3 rotors must be specified."
+
+    # 3. Duplicate check priority over invalid rotor type
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_rotors(["INVALID", "INVALID", "I"])
+    assert exc_info.value.detail == "Duplicate rotors are not allowed."
+
 @pytest.mark.parametrize("rotors,expected_error", [
     (["I", "II"], "exactly 3 rotors"),
     (["I", "I", "II"], "duplicate rotors"),
     (["INVALID", "II", "III"], "invalid rotor"),
+    (["i", "ii", "iii"], "invalid rotor 'i'"),
+    (["I ", "II", "III"], "invalid rotor 'i '"),
 ])
 def test_enigma_api_rotors_validation(rotors, expected_error):
     response = client.post("/api/enigma/encipher", json={
@@ -228,6 +258,130 @@ def test_enigma_api_rotors_validation(rotors, expected_error):
     })
     assert response.status_code == 400
     assert expected_error in response.json()["detail"].lower()
+
+
+# ==========================================
+# ENIGMA HELPER VALIDATION UNIT TESTS
+# ==========================================
+
+def test_parse_enigma_positions_valid():
+    assert parse_enigma_positions(["A", "B", "C"]) == "ABC"
+    assert parse_enigma_positions(["x", "y", "z"]) == "XYZ"
+
+@pytest.mark.parametrize("positions", [
+    [],
+    ["A"],
+    ["A", "B"],
+    ["A", "B", "C", "D"],
+])
+def test_parse_enigma_positions_invalid_count(positions):
+    with pytest.raises(HTTPException) as exc_info:
+        parse_enigma_positions(positions)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Exactly 3 rotor positions must be specified."
+
+@pytest.mark.parametrize("positions", [
+    ["AB", "C", "D"],
+    ["1", "B", "C"],
+    ["!", "B", "C"],
+    ["", "B", "C"],
+])
+def test_parse_enigma_positions_invalid_characters(positions):
+    with pytest.raises(HTTPException) as exc_info:
+        parse_enigma_positions(positions)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Rotor positions must be single letters."
+
+
+def test_parse_and_validate_enigma_rings_valid():
+    # Ints 1-26
+    assert parse_and_validate_enigma_rings([1, 13, 26]) == [1, 13, 26]
+    # String digits 1-26
+    assert parse_and_validate_enigma_rings(["1", "13", "26"]) == [1, 13, 26]
+    assert parse_and_validate_enigma_rings([" 1 ", " 13 ", " 26 "]) == [1, 13, 26]
+    # Single letters A-Z / a-z
+    assert parse_and_validate_enigma_rings(["A", "M", "Z"]) == [1, 13, 26]
+    assert parse_and_validate_enigma_rings(["a", "m", "z"]) == [1, 13, 26]
+    # Mixed
+    assert parse_and_validate_enigma_rings([1, "M", "26"]) == [1, 13, 26]
+
+@pytest.mark.parametrize("rings", [
+    [],
+    ["1"],
+    ["1", "2"],
+    ["1", "2", "3", "4"],
+])
+def test_parse_and_validate_enigma_rings_invalid_count(rings):
+    with pytest.raises(HTTPException) as exc_info:
+        parse_and_validate_enigma_rings(rings)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Exactly 3 ring settings must be specified."
+
+@pytest.mark.parametrize("rings", [
+    [0, 1, 2],
+    [1, 27, 3],
+    [-5, 10, 20],
+    ["0", "1", "2"],
+    ["1", "27", "3"],
+    ["-5", "10", "20"],
+    ["AA", "B", "C"],
+    ["!", "B", "C"],
+    ["", "B", "C"],
+    [None, "B", "C"],
+    [1.5, 2, 3],
+])
+def test_parse_and_validate_enigma_rings_invalid_values(rings):
+    with pytest.raises(HTTPException) as exc_info:
+        parse_and_validate_enigma_rings(rings)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Invalid ring setting"
+
+
+def test_validate_enigma_plugboard_valid():
+    validate_enigma_plugboard([])
+    validate_enigma_plugboard(["AB"])
+    validate_enigma_plugboard(["AB", "CD", "EF"])
+    validate_enigma_plugboard(["ab", "cd"])
+
+@pytest.mark.parametrize("plugboard", [
+    ["A"],
+    ["ABC"],
+    ["A1"],
+    ["!@"],
+    [""],
+])
+def test_validate_enigma_plugboard_invalid_format(plugboard):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_plugboard(plugboard)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Invalid plugboard swap format"
+
+@pytest.mark.parametrize("plugboard", [
+    ["AB", "BC"],
+    ["AA"],
+    ["AB", "BA"],
+])
+def test_validate_enigma_plugboard_duplicate_connection(plugboard):
+    with pytest.raises(HTTPException) as exc_info:
+        validate_enigma_plugboard(plugboard)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Duplicate plugboard connection"
+
+
+def test_get_enigma_reflector_wiring_valid():
+    assert get_enigma_reflector_wiring(None) == get_enigma_reflector_wiring("B")
+    assert get_enigma_reflector_wiring("") == get_enigma_reflector_wiring("B")
+    for name in ["A", "B", "C", "B_THIN", "C_THIN", "a", "b", "c", "b_thin", "c_thin"]:
+        wiring = get_enigma_reflector_wiring(name)
+        assert isinstance(wiring, str)
+        assert len(wiring) == 26
+
+@pytest.mark.parametrize("reflector", ["D", "INVALID", "UNKNOWN"])
+def test_get_enigma_reflector_wiring_invalid(reflector):
+    with pytest.raises(HTTPException) as exc_info:
+        get_enigma_reflector_wiring(reflector)
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == f"Invalid reflector '{reflector}'."
 
 def test_enigma_invalid_plugboard_character():
     response = client.post("/api/enigma/encipher", json={
@@ -539,7 +693,7 @@ def test_aes_encrypt_exception(caplog):
         "key_format": "text",
         "plaintext_format": "text"
     }
-    with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+    with patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
@@ -592,14 +746,14 @@ def test_caesar_encrypt_decrypt_success():
     assert dec.status_code == 200
     assert dec.json() == {"plaintext": "HELLO"}
 
-@unittest.mock.patch("methods.classical.caesar.encrypt")
+@patch("methods.classical.caesar.encrypt")
 def test_caesar_encrypt_value_error(mock_encrypt):
     mock_encrypt.side_effect = ValueError("Invalid shift value")
     response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid shift value"
 
-@unittest.mock.patch("methods.classical.caesar.encrypt")
+@patch("methods.classical.caesar.encrypt")
 def test_caesar_encrypt_internal_error(mock_encrypt, caplog):
     mock_encrypt.side_effect = RuntimeError("Test internal encryption error")
     with caplog.at_level("ERROR"):
@@ -608,14 +762,14 @@ def test_caesar_encrypt_internal_error(mock_encrypt, caplog):
     assert response.json() == {"detail": "Encryption failed"}
     assert "Caesar encryption error" in caplog.text
 
-@unittest.mock.patch("methods.classical.caesar.decrypt")
+@patch("methods.classical.caesar.decrypt")
 def test_caesar_decrypt_value_error(mock_decrypt):
     mock_decrypt.side_effect = ValueError("Invalid shift value")
     response = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid shift value"
 
-@unittest.mock.patch("methods.classical.caesar.decrypt")
+@patch("methods.classical.caesar.decrypt")
 def test_caesar_decrypt_internal_error(mock_decrypt, caplog):
     mock_decrypt.side_effect = RuntimeError("Test internal decryption error")
     with caplog.at_level("ERROR"):
@@ -737,6 +891,8 @@ def test_enigma_api_runtime_error_exception(caplog):
     "https://[::1]:8080",
     "https://[2001:db8::1]",
     "https://[2001:db8::1]:443",
+    "http://example.com:1",
+    "http://example.com:65535",
     "  http://example.com  ",
     "http://localhost:1",
     "http://localhost:65535",
@@ -764,7 +920,11 @@ def test_is_valid_origin_valid_cases(origin):
     "http://user@example.com",
     "http://",
     "https://",
+    "http://example.com:0",
+    "http://example.com:65536",
     "http://example.com:badport",
+    "http://example.com:",
+    "http://[not-an-ip]:8080",
     "http://localhost:0",
     "http://localhost:65536",
     "http://localhost:99999",
@@ -812,7 +972,7 @@ def test_is_valid_origin_ipv6_validation():
     assert is_valid_origin("http://[127.0.0.1.1]:80") is False
 
 def test_is_valid_origin_ipaddress_value_error():
-    with unittest.mock.patch("ipaddress.ip_address", side_effect=ValueError("Invalid IP")):
+    with patch("ipaddress.ip_address", side_effect=ValueError("Invalid IP")):
         assert is_valid_origin("http://[::1]:8080") is False
 
 def test_is_valid_origin_forbidden_characters():
@@ -825,11 +985,11 @@ def test_is_valid_origin_non_string_inputs():
         assert is_valid_origin(val) is False
 
 def test_is_valid_origin_exception_handling():
-    with unittest.mock.patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
+    with patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
         assert is_valid_origin("https://example.com") is False
 
 def test_is_valid_origin_unexpected_exception(caplog):
-    with unittest.mock.patch("api.main.urlparse", side_effect=RuntimeError("Unexpected urlparse error")):
+    with patch("api.main.urlparse", side_effect=RuntimeError("Unexpected urlparse error")):
         with caplog.at_level("WARNING"):
             assert is_valid_origin("http://localhost:3000") is False
     assert "Unexpected error validating origin" in caplog.text
@@ -894,6 +1054,42 @@ def test_scytale_encrypt_excessive_width():
         "width": 10001
     }
     response = client.post("/api/scytale/encrypt", json=payload)
+    assert response.status_code == 400
+
+def test_enigma_encipher_oversized_element_string():
+    payload = {
+        "plaintext": "HELLO",
+        "rotors": ["I" * 20, "II", "III"],
+        "positions": ["A", "A", "A"],
+        "rings": ["A", "A", "A"],
+        "plugboard": []
+    }
+    response = client.post("/api/enigma/encipher", json=payload)
+    assert response.status_code == 400
+
+def test_lorenz_encrypt_oversized_nested_pins():
+    payload = {
+        "plaintext": "HELLO",
+        "chi_pins": [[1] * 100]
+    }
+    response = client.post("/api/lorenz/encrypt", json=payload)
+    assert response.status_code == 400
+
+def test_lorenz_encrypt_out_of_bounds_position():
+    payload = {
+        "plaintext": "HELLO",
+        "positions": [100000] * 12
+    }
+    response = client.post("/api/lorenz/encrypt", json=payload)
+    assert response.status_code == 400
+
+def test_aes_encrypt_oversized_format():
+    payload = {
+        "plaintext": "HELLO",
+        "key": "1234567890123456",
+        "key_format": "text" * 10
+    }
+    response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
 
 

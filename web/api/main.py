@@ -5,6 +5,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
+from typing import Annotated
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -75,9 +76,8 @@ def is_valid_origin(origin: str) -> bool:
             netloc = netloc.split("]")[-1]
         if ":" in netloc:
             port_str = netloc.split(":")[-1]
-            if port_str:
-                if not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
-                    return False
+            if not port_str or not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
+                return False
         return True
     except ValueError:
         return False
@@ -345,27 +345,33 @@ class PolybiusDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
     key: str = Field(default=None, max_length=500, description="Polybius grid key (25 letters)")
 
+# Security: Bounded types to prevent Denial of Service (DoS) via Unrestricted Resource Allocation
+Str10 = Annotated[str, Field(max_length=10)]
+BoundedInt = Annotated[int, Field(ge=-10000, le=10000)]
+PinVal = Annotated[int, Field(ge=0, le=1)]
+PinList = Annotated[list[PinVal], Field(max_length=61)]
+
 class EnigmaEncipherInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The message to encipher")
-    rotors: list[str] = Field(..., max_length=3, description="Rotors like ['I', 'II', 'III']")
-    positions: list[str] = Field(..., max_length=3, description="Positions like ['A', 'A', 'A']")
-    rings: list[str] = Field(..., max_length=3, description="Rings like ['A', 'A', 'A'] or ['1', '1', '1']")
-    plugboard: list[str] = Field(default=[], max_length=13, description="Plugboard swaps like ['AB', 'CD']")
+    rotors: list[Str10] = Field(..., max_length=3, description="Rotors like ['I', 'II', 'III']")
+    positions: list[Str10] = Field(..., max_length=3, description="Positions like ['A', 'A', 'A']")
+    rings: list[Str10] = Field(..., max_length=3, description="Rings like ['A', 'A', 'A'] or ['1', '1', '1']")
+    plugboard: list[Str10] = Field(default=[], max_length=13, description="Plugboard swaps like ['AB', 'CD']")
     reflector: str = Field(default="B", max_length=10, description="Reflector selection (A, B, C, B_THIN, C_THIN)")
 
 class LorenzEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    positions: list[int] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
-    chi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
-    motor_pins: list[list[int]] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
-    psi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
+    positions: list[BoundedInt] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[PinList] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
 
 class LorenzDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
-    positions: list[int] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
-    chi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
-    motor_pins: list[list[int]] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
-    psi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
+    positions: list[BoundedInt] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[PinList] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
 
 
 @app.post("/api/scytale/encrypt")
@@ -690,14 +696,14 @@ def lorenz_decrypt(data: LorenzDecryptInput):
 class AesEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
     key: str = Field(..., max_length=500, description="16 or 32-byte key (raw string or hex)")
-    key_format: str = Field(default="text", description="Key format: 'text' or 'hex'")
-    plaintext_format: str = Field(default="text", description="Plaintext format: 'text' or 'hex'")
+    key_format: str = Field(default="text", max_length=10, description="Key format: 'text' or 'hex'")
+    plaintext_format: str = Field(default="text", max_length=10, description="Plaintext format: 'text' or 'hex'")
 
 class AesDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The hex ciphertext to decrypt")
     key: str = Field(..., max_length=500, description="16 or 32-byte key (raw string or hex)")
     nonce: str = Field(..., max_length=500, description="The hex nonce")
-    key_format: str = Field(default="text", description="Key format: 'text' or 'hex'")
+    key_format: str = Field(default="text", max_length=10, description="Key format: 'text' or 'hex'")
 
 class RsaKeygenInput(BaseModel):
     p: int = Field(..., gt=0, lt=2**2048, description="Prime number p")
