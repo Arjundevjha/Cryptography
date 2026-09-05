@@ -65,8 +65,7 @@ def test_main_function(capsys):
 
 
 def test_fallback_imports():
-    """Test fallback imports by masking the modern module temporarily."""
-    import sys
+    """Test fallback imports by masking relative imports and routing to package modules without modifying sys.path."""
     import builtins
     from importlib import reload
     import methods.modern.keypair as keypair_module
@@ -75,15 +74,13 @@ def test_fallback_imports():
 
     def mocked_import(name, globals=None, locals=None, fromlist=(), level=0):
         if level > 0 and name in ('', 'symmetric', 'helpers'):
-            raise ImportError(f"Mocked ImportError for {name}")
+            raise ImportError(f"Mocked relative ImportError for {name}")
+        if level == 0 and name in ('helpers', 'symmetric'):
+            return original_import(f"methods.modern.{name}", globals, locals, fromlist, level=0)
         return original_import(name, globals, locals, fromlist, level)
 
     with patch("builtins.__import__", side_effect=mocked_import):
-        sys.path.insert(0, 'methods/modern')
-        try:
-            reload(keypair_module)
-        finally:
-            sys.path.pop(0)
+        reload(keypair_module)
 
     # Restore the module to original state for other tests
     reload(keypair_module)
