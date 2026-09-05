@@ -98,6 +98,39 @@ def test_scytale_encrypt_invalid_width():
     assert response.status_code == 400
     assert "width" in response.json()["detail"].lower()
 
+def test_scytale_decrypt_invalid_width():
+    response = client.post("/api/scytale/decrypt", json={"ciphertext": "HELLO", "width": 1})
+    assert response.status_code == 400
+    assert "width" in response.json()["detail"].lower()
+
+@patch("methods.historical.scytale.encrypt", side_effect=ValueError("Scytale val error"))
+def test_scytale_encrypt_value_error(mock_enc):
+    response = client.post("/api/scytale/encrypt", json={"plaintext": "HELLO", "width": 4})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Scytale val error"
+
+@patch("methods.historical.scytale.encrypt", side_effect=Exception("Scytale error"))
+def test_scytale_encrypt_exception(mock_enc, caplog):
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/scytale/encrypt", json={"plaintext": "HELLO", "width": 4})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Encryption failed"
+    assert "Scytale encryption error" in caplog.text
+
+@patch("methods.historical.scytale.decrypt", side_effect=ValueError("Scytale dec val error"))
+def test_scytale_decrypt_value_error(mock_dec):
+    response = client.post("/api/scytale/decrypt", json={"ciphertext": "HELLO", "width": 4})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Scytale dec val error"
+
+@patch("methods.historical.scytale.decrypt", side_effect=Exception("Scytale dec error"))
+def test_scytale_decrypt_exception(mock_dec, caplog):
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/scytale/decrypt", json={"ciphertext": "HELLO", "width": 4})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Decryption failed"
+    assert "Scytale decryption error" in caplog.text
+
 
 # ==========================================
 # POLYBIUS TESTS
@@ -128,6 +161,44 @@ def test_polybius_decrypt_non_numeric():
     response = client.post("/api/polybius/decrypt", json={"ciphertext": "2a 15 31"})
     assert response.status_code == 400
     assert "pairs" in response.json()["detail"].lower()
+
+def test_polybius_encrypt_invalid_key():
+    response = client.post("/api/polybius/encrypt", json={"plaintext": "HELLO", "key": "short"})
+    assert response.status_code == 400
+    assert "25 unique letters" in response.json()["detail"].lower()
+
+def test_polybius_decrypt_invalid_key():
+    response = client.post("/api/polybius/decrypt", json={"ciphertext": "23 15", "key": "short"})
+    assert response.status_code == 400
+    assert "25 unique letters" in response.json()["detail"].lower()
+
+@patch("methods.historical.polybius.encrypt", side_effect=ValueError("Polybius val error"))
+def test_polybius_encrypt_value_error(mock_enc):
+    response = client.post("/api/polybius/encrypt", json={"plaintext": "HELLO"})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Polybius val error"
+
+@patch("methods.historical.polybius.encrypt", side_effect=Exception("Polybius error"))
+def test_polybius_encrypt_exception(mock_enc, caplog):
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/polybius/encrypt", json={"plaintext": "HELLO"})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Encryption failed"
+    assert "Polybius encryption error" in caplog.text
+
+@patch("methods.historical.polybius.decrypt", side_effect=ValueError("Polybius dec val error"))
+def test_polybius_decrypt_value_error(mock_dec):
+    response = client.post("/api/polybius/decrypt", json={"ciphertext": "23 15"})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Polybius dec val error"
+
+@patch("methods.historical.polybius.decrypt", side_effect=Exception("Polybius dec error"))
+def test_polybius_decrypt_exception(mock_dec, caplog):
+    with caplog.at_level("ERROR"):
+        response = client.post("/api/polybius/decrypt", json={"ciphertext": "23 15"})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Decryption failed"
+    assert "Polybius decryption error" in caplog.text
 
 
 # ==========================================
@@ -473,6 +544,17 @@ def test_rsa_keygen_non_coprime():
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
+@patch("api.main.pow", side_effect=ValueError("Modular inverse failure"))
+def test_rsa_keygen_modular_inverse_error(mock_pow):
+    payload = {
+        "p": 61,
+        "q": 53,
+        "e": 17
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+    assert "modular inverse" in response.json()["detail"].lower()
+
 def test_rsa_encrypt_decrypt_success():
     # Generate keys
     keygen_resp = client.post("/api/rsa/keygen", json={"p": 61, "q": 53, "e": 17})
@@ -540,6 +622,20 @@ def test_aes_encrypt_exception(caplog):
         "plaintext_format": "text"
     }
     with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Encryption failed"
+    assert "AES encryption error" in caplog.text
+
+def test_aes_encrypt_symmetric_module_exception(caplog):
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "text"
+    }
+    with patch("methods.modern.aes.encrypt_block", side_effect=Exception("Symmetric encrypt failure")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
@@ -638,6 +734,39 @@ def test_vigenere_empty_key():
     assert resp.status_code == 400
     assert "cannot be empty" in resp.json()["detail"].lower()
 
+def test_vigenere_decrypt_empty_key():
+    resp = client.post("/api/vigenere/decrypt", json={"ciphertext": "HELLO", "key": ""})
+    assert resp.status_code == 400
+    assert "cannot be empty" in resp.json()["detail"].lower()
+
+@patch("methods.classical.vigenere.encrypt", side_effect=ValueError("Vigenere val error"))
+def test_vigenere_encrypt_value_error(mock_enc):
+    resp = client.post("/api/vigenere/encrypt", json={"plaintext": "HELLO", "key": "LEMON"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Vigenere val error"
+
+@patch("methods.classical.vigenere.encrypt", side_effect=Exception("Vigenere error"))
+def test_vigenere_encrypt_exception(mock_enc, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post("/api/vigenere/encrypt", json={"plaintext": "HELLO", "key": "LEMON"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Encryption failed"
+    assert "Vigenere encryption error" in caplog.text
+
+@patch("methods.classical.vigenere.decrypt", side_effect=ValueError("Vigenere dec val error"))
+def test_vigenere_decrypt_value_error(mock_dec):
+    resp = client.post("/api/vigenere/decrypt", json={"ciphertext": "HELLO", "key": "LEMON"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Vigenere dec val error"
+
+@patch("methods.classical.vigenere.decrypt", side_effect=Exception("Vigenere dec error"))
+def test_vigenere_decrypt_exception(mock_dec, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post("/api/vigenere/decrypt", json={"ciphertext": "HELLO", "key": "LEMON"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Decryption failed"
+    assert "Vigenere decryption error" in caplog.text
+
 def test_playfair_encrypt_decrypt_success():
     enc = client.post("/api/playfair/encrypt", json={"plaintext": "INSTRUMENT", "key": "MONARCHY"})
     assert enc.status_code == 200
@@ -651,6 +780,39 @@ def test_playfair_empty_key():
     resp = client.post("/api/playfair/encrypt", json={"plaintext": "HELLO", "key": ""})
     assert resp.status_code == 400
     assert "cannot be empty" in resp.json()["detail"].lower()
+
+def test_playfair_decrypt_empty_key():
+    resp = client.post("/api/playfair/decrypt", json={"ciphertext": "HELLO", "key": ""})
+    assert resp.status_code == 400
+    assert "cannot be empty" in resp.json()["detail"].lower()
+
+@patch("methods.classical.playfair.encrypt", side_effect=ValueError("Playfair val error"))
+def test_playfair_encrypt_value_error(mock_enc):
+    resp = client.post("/api/playfair/encrypt", json={"plaintext": "HELLO", "key": "MONARCHY"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Playfair val error"
+
+@patch("methods.classical.playfair.encrypt", side_effect=Exception("Playfair error"))
+def test_playfair_encrypt_exception(mock_enc, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post("/api/playfair/encrypt", json={"plaintext": "HELLO", "key": "MONARCHY"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Encryption failed"
+    assert "Playfair encryption error" in caplog.text
+
+@patch("methods.classical.playfair.decrypt", side_effect=ValueError("Playfair dec val error"))
+def test_playfair_decrypt_value_error(mock_dec):
+    resp = client.post("/api/playfair/decrypt", json={"ciphertext": "HELLO", "key": "MONARCHY"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Playfair dec val error"
+
+@patch("methods.classical.playfair.decrypt", side_effect=Exception("Playfair dec error"))
+def test_playfair_decrypt_exception(mock_dec, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post("/api/playfair/decrypt", json={"ciphertext": "HELLO", "key": "MONARCHY"})
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Decryption failed"
+    assert "Playfair decryption error" in caplog.text
 
 
 # ==========================================
@@ -719,6 +881,72 @@ def test_enigma_api_runtime_error_exception(caplog):
         assert resp.status_code == 400
         assert resp.json() == {"detail": "Encryption failed"}
         assert "Enigma encryption error" in caplog.text
+
+def test_enigma_api_value_error_exception():
+    with patch("api.main.build_enigma_machine", side_effect=ValueError("Enigma value error")):
+        resp = client.post("/api/enigma/encipher", json={
+            "plaintext": "HELLO",
+            "rotors": ["I", "II", "III"],
+            "positions": ["A", "A", "A"],
+            "rings": ["A", "A", "A"],
+            "plugboard": []
+        })
+        assert resp.status_code == 400
+        assert resp.json()["detail"] == "Enigma value error"
+
+def test_enigma_invalid_reflector():
+    resp = client.post("/api/enigma/encipher", json={
+        "plaintext": "HELLO",
+        "rotors": ["I", "II", "III"],
+        "positions": ["A", "A", "A"],
+        "rings": ["A", "A", "A"],
+        "reflector": "INVALID_R",
+        "plugboard": []
+    })
+    assert resp.status_code == 400
+    assert "invalid reflector" in resp.json()["detail"].lower()
+
+@pytest.mark.parametrize("rings", [
+    [0, 1, 1],
+    [1, 27, 1],
+    ["0", "1", "1"],
+    ["27", "1", "1"],
+    ["AA", "A", "A"],
+    [1.5, 1, 1],
+    ["1", "2"],
+])
+def test_enigma_invalid_ring_settings(rings):
+    resp = client.post("/api/enigma/encipher", json={
+        "plaintext": "HELLO",
+        "rotors": ["I", "II", "III"],
+        "positions": ["A", "A", "A"],
+        "rings": rings,
+        "plugboard": []
+    })
+    assert resp.status_code == 400
+
+@pytest.mark.parametrize("positions", [
+    ["A", "A"],
+    ["AA", "A", "A"],
+    ["1", "A", "A"],
+])
+def test_enigma_invalid_positions(positions):
+    resp = client.post("/api/enigma/encipher", json={
+        "plaintext": "HELLO",
+        "rotors": ["I", "II", "III"],
+        "positions": positions,
+        "rings": ["A", "A", "A"],
+        "plugboard": []
+    })
+    assert resp.status_code == 400
+
+def test_lorenz_api_decrypt_runtime_error_exception(caplog):
+    with patch("methods.historical.lorenz.Lorenz.decrypt_text", side_effect=RuntimeError("Test Lorenz Decrypt RuntimeError")):
+        with caplog.at_level("ERROR"):
+            resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLO"})
+        assert resp.status_code == 400
+        assert resp.json() == {"detail": "Decryption failed"}
+        assert "Lorenz decryption error" in caplog.text
 
 
 # ==========================================
