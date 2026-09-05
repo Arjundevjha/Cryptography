@@ -730,10 +730,16 @@ def test_enigma_api_runtime_error_exception(caplog):
     "http://localhost:3000/",
     "https://example.com",
     "https://sub.domain.example.com:8443",
+    "http://127.0.0.1",
     "http://127.0.0.1:8080",
     "http://192.168.1.1",
+    "http://[::1]",
     "https://[::1]:8080",
+    "https://[2001:db8::1]",
+    "https://[2001:db8::1]:443",
     "  http://example.com  ",
+    "http://localhost:1",
+    "http://localhost:65535",
 ])
 def test_is_valid_origin_valid_cases(origin):
     assert is_valid_origin(origin) is True
@@ -745,14 +751,24 @@ def test_is_valid_origin_valid_cases(origin):
     "ftp://example.com",
     "ws://example.com",
     "wss://example.com",
+    "file:///etc/passwd",
     "javascript:alert(1)",
+    "mailto:user@example.com",
+    "localhost:3000",
     "http://example.com/path",
+    "http://example.com//",
     "http://example.com?query=1",
     "http://example.com#fragment",
     "http://example.com;matrix=1",
+    "http://user:pass@example.com",
+    "http://user@example.com",
     "http://",
     "https://",
     "http://example.com:badport",
+    "http://localhost:0",
+    "http://localhost:65536",
+    "http://localhost:99999",
+    "http://localhost:-1",
     "http://example com",
     "http://example\tcom",
     "http://example\ncom",
@@ -761,17 +777,52 @@ def test_is_valid_origin_valid_cases(origin):
     "http://example'com",
     "http://example<com",
     "http://example>com",
+    "http://[invalid-ipv6]:8080",
+    "http://[2001:::1]:80",
+    "http://[gggg::1]",
+    "http://[:::1]",
     "",
     "   ",
     None,
     123,
+    45.67,
     [],
     {},
     True,
-    "http://[:::1]",
+    False,
 ])
 def test_is_valid_origin_invalid_cases(origin):
     assert is_valid_origin(origin) is False
+
+def test_is_valid_origin_port_boundaries():
+    assert is_valid_origin("http://localhost:1") is True
+    assert is_valid_origin("http://localhost:65535") is True
+    assert is_valid_origin("http://localhost:0") is False
+    assert is_valid_origin("http://localhost:65536") is False
+
+def test_is_valid_origin_ipv6_validation():
+    # Valid IPv6 literals
+    assert is_valid_origin("http://[::1]") is True
+    assert is_valid_origin("http://[::1]:8080") is True
+    assert is_valid_origin("https://[2001:db8::1]:443") is True
+
+    # Invalid IPv6 literals inside brackets
+    assert is_valid_origin("http://[not-an-ip]:8080") is False
+    assert is_valid_origin("http://[2001:::1]:80") is False
+    assert is_valid_origin("http://[127.0.0.1.1]:80") is False
+
+def test_is_valid_origin_ipaddress_value_error():
+    with unittest.mock.patch("ipaddress.ip_address", side_effect=ValueError("Invalid IP")):
+        assert is_valid_origin("http://[::1]:8080") is False
+
+def test_is_valid_origin_forbidden_characters():
+    forbidden = [" ", "\t", "\r", "\n", "<", ">", '"', "'", ";", "@"]
+    for char in forbidden:
+        assert is_valid_origin(f"http://example{char}.com") is False
+
+def test_is_valid_origin_non_string_inputs():
+    for val in [None, 0, 123, 3.14, [], {}, set(), True, False]:
+        assert is_valid_origin(val) is False
 
 def test_is_valid_origin_exception_handling():
     with unittest.mock.patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
