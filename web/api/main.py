@@ -527,33 +527,26 @@ def parse_enigma_positions(positions: list[str]) -> str:
     return "".join([pos.upper() for pos in positions])
 
 
+def _parse_ring_item(r: int | str) -> int:
+    """Helper to parse a single ring setting (integer 1-26 or letter A-Z / '1'-'26')."""
+    if isinstance(r, int):
+        if 1 <= r <= 26:
+            return r
+    elif isinstance(r, str):
+        r_str = r.strip()
+        if r_str.isdigit():
+            val = int(r_str)
+            if 1 <= val <= 26:
+                return val
+        elif len(r_str) == 1 and r_str.isalpha():
+            return ord(r_str.upper()) - ord('A') + 1
+    raise HTTPException(status_code=400, detail="Invalid ring setting")
+
+
 def parse_and_validate_enigma_rings(rings: list[str]) -> list[int]:
     if len(rings) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 ring settings must be specified.")
-        
-    parsed_rings = []
-    for r in rings:
-        if isinstance(r, int):
-            if 1 <= r <= 26:
-                parsed_rings.append(r)
-            else:
-                raise HTTPException(status_code=400, detail="Invalid ring setting")
-        elif isinstance(r, str):
-            r_str = r.strip()
-            if r_str.isdigit():
-                val = int(r_str)
-                if 1 <= val <= 26:
-                    parsed_rings.append(val)
-                else:
-                    raise HTTPException(status_code=400, detail="Invalid ring setting")
-            elif len(r_str) == 1 and r_str.isalpha():
-                val = ord(r_str.upper()) - ord('A') + 1
-                parsed_rings.append(val)
-            else:
-                raise HTTPException(status_code=400, detail="Invalid ring setting")
-        else:
-            raise HTTPException(status_code=400, detail="Invalid ring setting")
-    return parsed_rings
+    return [_parse_ring_item(r) for r in rings]
 
 
 def validate_enigma_plugboard(plugboard: list[str]) -> None:
