@@ -560,16 +560,31 @@ def test_aes_invalid_plaintext_format():
     assert response.status_code == 400
     assert "invalid plaintext format" in response.json()["detail"].lower()
 
-def test_aes_encrypt_invalid_hex_plaintext():
+def test_aes_encrypt_invalid_hex_plaintext(caplog):
     payload = {
         "plaintext": "InvalidHex!",
         "key": "1234567890123456",
         "key_format": "text",
         "plaintext_format": "hex"
     }
-    response = client.post("/api/aes/encrypt", json=payload)
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
     assert "invalid hex plaintext" in response.json()["detail"].lower()
+    assert "Invalid hex plaintext in AES encrypt" in caplog.text
+
+def test_aes_encrypt_invalid_utf8_hex_plaintext(caplog):
+    payload = {
+        "plaintext": "FF",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "hex"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert "invalid hex plaintext" in response.json()["detail"].lower()
+    assert "Invalid hex plaintext in AES encrypt" in caplog.text
 
 def test_aes_decrypt_invalid_hex_ciphertext():
     payload = {
