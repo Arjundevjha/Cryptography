@@ -76,9 +76,8 @@ def is_valid_origin(origin: str) -> bool:
             netloc = netloc.split("]")[-1]
         if ":" in netloc:
             port_str = netloc.split(":")[-1]
-            if port_str:
-                if not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
-                    return False
+            if not port_str or not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
+                return False
         return True
     except ValueError:
         return False
