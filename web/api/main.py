@@ -749,7 +749,8 @@ def aes_encrypt(data: AesEncryptInput):
     if data.plaintext_format == "hex":
         try:
             plaintext = bytes.fromhex(plaintext).decode('utf-8')
-        except Exception:
+        except (ValueError, UnicodeDecodeError) as ve:
+            logger.warning("Invalid hex plaintext in AES encrypt: %s", ve)
             raise HTTPException(status_code=400, detail="Invalid hex plaintext")
             
     key_bytes = parse_aes_key(data.key, data.key_format)
