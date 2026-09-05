@@ -61,6 +61,13 @@ def test_b64encode_stdlib_parity(length: int):
     assert b64encode(data) == expected
 
 
+def test_b64encode_bytearray_input():
+    """Test Base64 encoding with bytearray inputs."""
+    data = bytearray(b"Hello Base64")
+    expected = base64.b64encode(data).decode("utf-8")
+    assert b64encode(data) == expected
+
+
 def test_b64encode_roundtrip():
     """Test roundtrip encoding and decoding for various byte payloads."""
     payloads = [

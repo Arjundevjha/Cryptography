@@ -373,6 +373,7 @@ def md5(data: str) -> str:
 
     WARNING: MD5 is cryptographically broken due to severe collision vulnerabilities.
     It should not be used for security-sensitive applications or cryptographic verification.
+    This pure Python implementation is provided strictly for educational and historical purposes.
 
     Args:
         data: The input string to hash

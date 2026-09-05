@@ -54,3 +54,9 @@ def test_encrypt_custom_key():
     encrypted = encrypt(plaintext, key=key)
     decrypted = decrypt(encrypted, key=key)
     assert decrypted == plaintext.upper()
+
+def test_encrypt_uppercase_key():
+    """Test encryption with an uppercase key grid."""
+    key = ALPHABET.upper()
+    plaintext = "juliet"
+    assert encrypt(plaintext, key=key) == "24 45 31 24 15 44"

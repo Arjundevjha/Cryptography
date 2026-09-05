@@ -5,6 +5,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
+from typing import Annotated
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -75,9 +76,8 @@ def is_valid_origin(origin: str) -> bool:
             netloc = netloc.split("]")[-1]
         if ":" in netloc:
             port_str = netloc.split(":")[-1]
-            if port_str:
-                if not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
-                    return False
+            if not port_str or not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
+                return False
         return True
     except ValueError:
         return False
@@ -345,27 +345,33 @@ class PolybiusDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
     key: str = Field(default=None, max_length=500, description="Polybius grid key (25 letters)")
 
+# Security: Bounded types to prevent Denial of Service (DoS) via Unrestricted Resource Allocation
+Str10 = Annotated[str, Field(max_length=10)]
+BoundedInt = Annotated[int, Field(ge=-10000, le=10000)]
+PinVal = Annotated[int, Field(ge=0, le=1)]
+PinList = Annotated[list[PinVal], Field(max_length=61)]
+
 class EnigmaEncipherInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The message to encipher")
-    rotors: list[str] = Field(..., max_length=3, description="Rotors like ['I', 'II', 'III']")
-    positions: list[str] = Field(..., max_length=3, description="Positions like ['A', 'A', 'A']")
-    rings: list[str] = Field(..., max_length=3, description="Rings like ['A', 'A', 'A'] or ['1', '1', '1']")
-    plugboard: list[str] = Field(default=[], max_length=13, description="Plugboard swaps like ['AB', 'CD']")
+    rotors: list[Str10] = Field(..., max_length=3, description="Rotors like ['I', 'II', 'III']")
+    positions: list[Str10] = Field(..., max_length=3, description="Positions like ['A', 'A', 'A']")
+    rings: list[Str10] = Field(..., max_length=3, description="Rings like ['A', 'A', 'A'] or ['1', '1', '1']")
+    plugboard: list[Str10] = Field(default=[], max_length=13, description="Plugboard swaps like ['AB', 'CD']")
     reflector: str = Field(default="B", max_length=10, description="Reflector selection (A, B, C, B_THIN, C_THIN)")
 
 class LorenzEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    positions: list[int] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
-    chi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
-    motor_pins: list[list[int]] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
-    psi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
+    positions: list[BoundedInt] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[PinList] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
 
 class LorenzDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
-    positions: list[int] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
-    chi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
-    motor_pins: list[list[int]] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
-    psi_pins: list[list[int]] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
+    positions: list[BoundedInt] = Field(default=[], max_length=12, description="12 wheel positions [chi1..5, motor1..2, psi1..5]")
+    chi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Chi wheels")
+    motor_pins: list[PinList] = Field(default=[], max_length=2, description="Custom pin state arrays for 2 Motor wheels")
+    psi_pins: list[PinList] = Field(default=[], max_length=5, description="Custom pin state arrays for 5 Psi wheels")
 
 
 @app.post("/api/scytale/encrypt")
@@ -527,33 +533,26 @@ def parse_enigma_positions(positions: list[str]) -> str:
     return "".join([pos.upper() for pos in positions])
 
 
+def _parse_ring_item(r: int | str) -> int:
+    """Helper to parse a single ring setting (integer 1-26 or letter A-Z / '1'-'26')."""
+    if isinstance(r, int):
+        if 1 <= r <= 26:
+            return r
+    elif isinstance(r, str):
+        r_str = r.strip()
+        if r_str.isdigit():
+            val = int(r_str)
+            if 1 <= val <= 26:
+                return val
+        elif len(r_str) == 1 and r_str.isalpha():
+            return ord(r_str.upper()) - ord('A') + 1
+    raise HTTPException(status_code=400, detail="Invalid ring setting")
+
+
 def parse_and_validate_enigma_rings(rings: list[str]) -> list[int]:
     if len(rings) != 3:
         raise HTTPException(status_code=400, detail="Exactly 3 ring settings must be specified.")
-        
-    parsed_rings = []
-    for r in rings:
-        if isinstance(r, int):
-            if 1 <= r <= 26:
-                parsed_rings.append(r)
-            else:
-                raise HTTPException(status_code=400, detail="Invalid ring setting")
-        elif isinstance(r, str):
-            r_str = r.strip()
-            if r_str.isdigit():
-                val = int(r_str)
-                if 1 <= val <= 26:
-                    parsed_rings.append(val)
-                else:
-                    raise HTTPException(status_code=400, detail="Invalid ring setting")
-            elif len(r_str) == 1 and r_str.isalpha():
-                val = ord(r_str.upper()) - ord('A') + 1
-                parsed_rings.append(val)
-            else:
-                raise HTTPException(status_code=400, detail="Invalid ring setting")
-        else:
-            raise HTTPException(status_code=400, detail="Invalid ring setting")
-    return parsed_rings
+    return [_parse_ring_item(r) for r in rings]
 
 
 def validate_enigma_plugboard(plugboard: list[str]) -> None:
@@ -690,14 +689,14 @@ def lorenz_decrypt(data: LorenzDecryptInput):
 class AesEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
     key: str = Field(..., max_length=500, description="16 or 32-byte key (raw string or hex)")
-    key_format: str = Field(default="text", description="Key format: 'text' or 'hex'")
-    plaintext_format: str = Field(default="text", description="Plaintext format: 'text' or 'hex'")
+    key_format: str = Field(default="text", max_length=10, description="Key format: 'text' or 'hex'")
+    plaintext_format: str = Field(default="text", max_length=10, description="Plaintext format: 'text' or 'hex'")
 
 class AesDecryptInput(BaseModel):
     ciphertext: str = Field(..., max_length=500, description="The hex ciphertext to decrypt")
     key: str = Field(..., max_length=500, description="16 or 32-byte key (raw string or hex)")
     nonce: str = Field(..., max_length=500, description="The hex nonce")
-    key_format: str = Field(default="text", description="Key format: 'text' or 'hex'")
+    key_format: str = Field(default="text", max_length=10, description="Key format: 'text' or 'hex'")
 
 class RsaKeygenInput(BaseModel):
     p: int = Field(..., gt=0, lt=2**2048, description="Prime number p")
@@ -749,7 +748,8 @@ def aes_encrypt(data: AesEncryptInput):
     if data.plaintext_format == "hex":
         try:
             plaintext = bytes.fromhex(plaintext).decode('utf-8')
-        except Exception:
+        except (ValueError, UnicodeDecodeError) as ve:
+            logger.warning("Invalid hex plaintext in AES encrypt: %s", ve)
             raise HTTPException(status_code=400, detail="Invalid hex plaintext")
             
     key_bytes = parse_aes_key(data.key, data.key_format)
