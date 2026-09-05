@@ -1,6 +1,5 @@
 """Unit tests for Lorenz SteppingController."""
 
-import pytest
 from methods.historical.lorenz.wheels import Wheel
 from methods.historical.lorenz.stepping import SteppingController
 

@@ -1,4 +1,3 @@
-import pytest
 from methods.historical.enigma.plugboard import Plugboard
 
 def test_plugboard_no_pairs():
