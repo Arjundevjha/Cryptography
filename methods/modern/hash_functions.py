@@ -506,6 +506,50 @@ def sha1(data: str) -> str:
     ).hex()
 
 
+def _sha512_compress_block(h_state: List[int], block_bytes: bytes) -> None:
+    """Process a single 128-byte block to update the SHA-512 hash state in place."""
+    w_words = [0] * 80
+    for j in range(16):
+        w_words[j] = int.from_bytes(block_bytes[j * 8 : (j + 1) * 8], 'big')
+    for j in range(16, 80):
+        s0 = (
+            _rotr64(w_words[j - 15], 1)
+            ^ _rotr64(w_words[j - 15], 8)
+            ^ (w_words[j - 15] >> 7)
+        )
+        s1 = (
+            _rotr64(w_words[j - 2], 19)
+            ^ _rotr64(w_words[j - 2], 61)
+            ^ (w_words[j - 2] >> 6)
+        )
+        w_words[j] = (w_words[j - 16] + s0 + w_words[j - 7] + s1) & 0xffffffffffffffff
+
+    state = list(h_state)
+    for j in range(80):
+        t1 = (
+            state[7]
+            + (_rotr64(state[4], 14) ^ _rotr64(state[4], 18) ^ _rotr64(state[4], 41))
+            + ((state[4] & state[5]) ^ (((~state[4]) & 0xffffffffffffffff) & state[6]))
+            + SHA512_K[j]
+            + w_words[j]
+        ) & 0xffffffffffffffff
+        t2 = (
+            (_rotr64(state[0], 28) ^ _rotr64(state[0], 34) ^ _rotr64(state[0], 39))
+            + ((state[0] & state[1]) ^ (state[0] & state[2]) ^ (state[1] & state[2]))
+        ) & 0xffffffff
+        state[7] = state[6]
+        state[6] = state[5]
+        state[5] = state[4]
+        state[4] = (state[3] + t1) & 0xffffffffffffffff
+        state[3] = state[2]
+        state[2] = state[1]
+        state[1] = state[0]
+        state[0] = (t1 + t2) & 0xffffffffffffffff
+
+    for i in range(8):
+        h_state[i] = (h_state[i] + state[i]) & 0xffffffffffffffff
+
+
 def sha512(data: str) -> str:
     """
     Compute the SHA-512 hash of the given data.
@@ -527,54 +571,9 @@ def sha512(data: str) -> str:
     h_state = list(SHA512_H_INIT)
 
     for offset in range(0, len(b_data), PADDING_MOD_128):
-        w_words = [0] * 80
-        for j in range(16):
-            w_words[j] = int.from_bytes(b_data[offset + j * 8 : offset + (j + 1) * 8], 'big')
-        for j in range(16, 80):
-            s0 = (
-                _rotr64(w_words[j - 15], 1)
-                ^ _rotr64(w_words[j - 15], 8)
-                ^ (w_words[j - 15] >> 7)
-            )
-            s1 = (
-                _rotr64(w_words[j - 2], 19)
-                ^ _rotr64(w_words[j - 2], 61)
-                ^ (w_words[j - 2] >> 6)
-            )
-            w_words[j] = (w_words[j - 16] + s0 + w_words[j - 7] + s1) & 0xffffffffffffffff
+        _sha512_compress_block(h_state, b_data[offset : offset + PADDING_MOD_128])
 
-        state = list(h_state)
-        for j in range(80):
-            t1 = (
-                state[7]
-                + (_rotr64(state[4], 14) ^ _rotr64(state[4], 18) ^ _rotr64(state[4], 41))
-                + ((state[4] & state[5]) ^ (((~state[4]) & 0xffffffffffffffff) & state[6]))
-                + SHA512_K[j]
-                + w_words[j]
-            ) & 0xffffffffffffffff
-            t2 = (
-                (_rotr64(state[0], 28) ^ _rotr64(state[0], 34) ^ _rotr64(state[0], 39))
-                + ((state[0] & state[1]) ^ (state[0] & state[2]) ^ (state[1] & state[2]))
-            ) & 0xffffffff
-            state[7] = state[6]
-            state[6] = state[5]
-            state[5] = state[4]
-            state[4] = (state[3] + t1) & 0xffffffffffffffff
-            state[3] = state[2]
-            state[2] = state[1]
-            state[1] = state[0]
-            state[0] = (t1 + t2) & 0xffffffffffffffff
-
-        h_state[0] = (h_state[0] + state[0]) & 0xffffffffffffffff
-        h_state[1] = (h_state[1] + state[1]) & 0xffffffffffffffff
-        h_state[2] = (h_state[2] + state[2]) & 0xffffffffffffffff
-        h_state[3] = (h_state[3] + state[3]) & 0xffffffffffffffff
-        h_state[4] = (h_state[4] + state[4]) & 0xffffffffffffffff
-        h_state[5] = (h_state[5] + state[5]) & 0xffffffffffffffff
-        h_state[6] = (h_state[6] + state[6]) & 0xffffffffffffffff
-        h_state[7] = (h_state[7] + state[7]) & 0xffffffffffffffff
-
-    return b_data[:0].join(val.to_bytes(8, 'big') for val in h_state).hex()
+    return b"".join(val.to_bytes(8, 'big') for val in h_state).hex()
 
 
 def sha3_256(data: str) -> str:

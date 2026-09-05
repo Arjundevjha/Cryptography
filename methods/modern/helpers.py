@@ -100,6 +100,35 @@ def sigma_1_lower(x: int) -> int:
     """Sigma 1 lowercase function for SHA-256."""
     return rotr(x, 17) ^ rotr(x, 19) ^ shr(x, 10)
 
+def _sha256_compress_block(h_state: list[int], block_bytes: bytes) -> None:
+    """Process a single 64-byte block to update the SHA-256 state in place."""
+    w = [0] * 64
+    for i in range(16):
+        w[i] = int.from_bytes(block_bytes[i * 4 : (i + 1) * 4], byteorder='big')
+    for i in range(16, 64):
+        w[i] = (sigma_1_lower(w[i - 2]) + w[i - 7] + sigma_0_lower(w[i - 15]) + w[i - 16]) & 0xFFFFFFFF
+
+    state = list(h_state)
+
+    for i in range(64):
+        val_s1 = sigma_1_upper(state[4])
+        val_ch = ch_func(state[4], state[5], state[6])
+        t_1 = (state[7] + val_s1 + val_ch + K_CONSTANTS[i] + w[i]) & 0xFFFFFFFF
+        t_2 = (sigma_0_upper(state[0]) + maj_func(state[0], state[1], state[2])) & 0xFFFFFFFF
+
+        state[7] = state[6]
+        state[6] = state[5]
+        state[5] = state[4]
+        state[4] = (state[3] + t_1) & 0xFFFFFFFF
+        state[3] = state[2]
+        state[2] = state[1]
+        state[1] = state[0]
+        state[0] = (t_1 + t_2) & 0xFFFFFFFF
+
+    for j in range(8):
+        h_state[j] = (h_state[j] + state[j]) & 0xFFFFFFFF
+
+
 def sha256(data: bytes) -> bytes:
     """Compute SHA-256 hash of bytes."""
     bit_len = len(data) * 8
@@ -114,32 +143,7 @@ def sha256(data: bytes) -> bytes:
     h = list(H_INIT)
 
     for chunk_idx in range(0, len(padded), 64):
-        chunk = padded[chunk_idx : chunk_idx + 64]
-        w = [0] * 64
-        for i in range(16):
-            w[i] = int.from_bytes(chunk[i*4 : i*4 + 4], byteorder='big')
-        for i in range(16, 64):
-            w[i] = (sigma_1_lower(w[i-2]) + w[i-7] + sigma_0_lower(w[i-15]) + w[i-16]) & 0xFFFFFFFF
-
-        state = list(h)
-
-        for i in range(64):
-            val_s1 = sigma_1_upper(state[4])
-            val_ch = ch_func(state[4], state[5], state[6])
-            t_1 = (state[7] + val_s1 + val_ch + K_CONSTANTS[i] + w[i]) & 0xFFFFFFFF
-            t_2 = (sigma_0_upper(state[0]) + maj_func(state[0], state[1], state[2])) & 0xFFFFFFFF
-
-            state[7] = state[6]
-            state[6] = state[5]
-            state[5] = state[4]
-            state[4] = (state[3] + t_1) & 0xFFFFFFFF
-            state[3] = state[2]
-            state[2] = state[1]
-            state[1] = state[0]
-            state[0] = (t_1 + t_2) & 0xFFFFFFFF
-
-        for j in range(8):
-            h[j] = (h[j] + state[j]) & 0xFFFFFFFF
+        _sha256_compress_block(h, padded[chunk_idx : chunk_idx + 64])
 
     return b"".join(val.to_bytes(4, byteorder='big') for val in h)
 
