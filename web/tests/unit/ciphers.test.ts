@@ -200,17 +200,68 @@ describe('SHA-256 Padding helper', () => {
 });
 
 describe('Playfair Cipher', () => {
-  it('should generate a correct 5x5 Playfair grid without duplicate letters and with J mapped to I', () => {
-    const grid = generatePlayfairGrid('playfair example');
-    // 'playfair example' -> 'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm' (mapping 'j' to 'i')
-    // and then appending remaining letters of the 25-letter alphabet:
-    // 'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's', 't', 'u', 'v', 'w', 'z'
-    const expected = [
-      'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm',
-      'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's',
-      't', 'u', 'v', 'w', 'z'
-    ];
-    expect(grid).toEqual(expected);
+  describe('generatePlayfairGrid', () => {
+    it('should generate default alphabet grid when key is empty or whitespace', () => {
+      const defaultAlphabet = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k',
+        'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+        'v', 'w', 'x', 'y', 'z'
+      ];
+      expect(generatePlayfairGrid('')).toEqual(defaultAlphabet);
+      expect(generatePlayfairGrid('   \t\n')).toEqual(defaultAlphabet);
+    });
+
+    it('should generate a correct 5x5 Playfair grid without duplicate letters and with J mapped to I', () => {
+      const grid = generatePlayfairGrid('playfair example');
+      // 'playfair example' -> 'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm' (mapping 'j' to 'i')
+      // and then appending remaining letters of the 25-letter alphabet:
+      // 'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's', 't', 'u', 'v', 'w', 'z'
+      const expected = [
+        'p', 'l', 'a', 'y', 'f', 'i', 'r', 'e', 'x', 'm',
+        'b', 'c', 'd', 'g', 'h', 'k', 'n', 'o', 'q', 's',
+        't', 'u', 'v', 'w', 'z'
+      ];
+      expect(grid).toEqual(expected);
+    });
+
+    it('should replace j/J with i/I and deduplicate letters', () => {
+      const grid = generatePlayfairGrid('JUNGLE JACK');
+      // 'JUNGLE JACK' -> 'i','u','n','g','l','e','a','c','k'
+      expect(grid.slice(0, 9)).toEqual(['i', 'u', 'n', 'g', 'l', 'e', 'a', 'c', 'k']);
+      expect(grid).not.toContain('j');
+    });
+
+    it('should ignore duplicate characters in key', () => {
+      const grid = generatePlayfairGrid('BALLOON MISSISSIPPI');
+      // 'balloon mississippi' -> 'b', 'a', 'l', 'o', 'n', 'm', 'i', 's', 'p'
+      expect(grid.slice(0, 9)).toEqual(['b', 'a', 'l', 'o', 'n', 'm', 'i', 's', 'p']);
+    });
+
+    it('should filter out numbers, punctuation, and non-alphabetic symbols', () => {
+      const gridWithNumbers = generatePlayfairGrid('KEY123!@# $WORLD%^&');
+      const gridWithoutNumbers = generatePlayfairGrid('KEY WORLD');
+      expect(gridWithNumbers).toEqual(gridWithoutNumbers);
+    });
+
+    it('should satisfy all Playfair grid invariants', () => {
+      const grid = generatePlayfairGrid('The Quick Brown Fox Jumps Over The Lazy Dog 123!');
+
+      // Invariant 1: Grid length is exactly 25
+      expect(grid.length).toBe(25);
+
+      // Invariant 2: Every element is unique
+      const uniqueElements = new Set(grid);
+      expect(uniqueElements.size).toBe(25);
+
+      // Invariant 3: 'j' is never included in the grid
+      expect(grid).not.toContain('j');
+
+      // Invariant 4: Contains all 25 valid Playfair alphabet letters
+      const validAlphabet = "abcdefghiklmnopqrstuvwxyz".split("");
+      for (const char of validAlphabet) {
+        expect(grid).toContain(char);
+      }
+    });
   });
 
   it('should encrypt and decrypt text correctly', () => {
