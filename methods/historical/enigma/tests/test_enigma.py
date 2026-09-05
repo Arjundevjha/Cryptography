@@ -142,11 +142,6 @@ def test_enigma_r2_r3_notch_simultaneous():
 
     # I notch: Q, II notch: W, III notch: V
     # Let's set R3 to its notch (V) and R2 to its notch (W).
-    # We want to trigger lines 36-38:
-    # if self.r2.left[0] == self.r2.notch and self.r3.left[0] == self.r3.notch:
-    #     self.r1.rotate()
-    #     self.r2.rotate()
-    #     self.r3.rotate()
     enigma = Enigma(B, [I, II, III], PB, KB)
     enigma.set_key("AWV")
 
