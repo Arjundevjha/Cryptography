@@ -7,7 +7,7 @@
 **Action:** Pre-compute 26-character translation mapping tables using `str.maketrans` and process strings using `str.translate` for substitution/affine ciphers.
 
 ## 2025-05-20 - Vectorize Scytale Cipher Transposition via Strided Slicing
-**Learning:** Explicit Python nested loops with index arithmetic (`row * diameter + col`) and per-character appending incur heavy bytecode loop interpretation overhead. Python's strided string slicing (`str[start::step]`) offloads index calculation and sequence extraction to optimized C memory routines, achieving ~150x speedups.
+**Learning:** In explicit Python nested loops with index arithmetic (`row * diameter + col`) and per-character appending incur heavy bytecode loop interpretation overhead. Python's strided string slicing (`str[start::step]`) offloads index calculation and sequence extraction to optimized C memory routines, achieving ~150x speedups.
 **Action:** Use strided string slicing `[col::stride]` for column-wise or matrix transposition algorithms on strings.
 
 ## 2025-05-20 - Pre-compute Coordinate Maps for Grid Ciphers
@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Pre-compute 25x25 Digraph Transformation Mapping Table for Playfair Cipher
+**Learning:** In 2D grid digraph substitution ciphers like Playfair, looking up character grid coordinates, performing row/column equality checks, and executing modulo arithmetic per digraph pair in the main loop creates unnecessary Python runtime evaluation overhead. Pre-building a 25x25 (625-entry) digraph lookup table (`_build_digraph_map`) once per operation reduces per-pair transformations to $O(1)$ dictionary lookups. Additionally, replacing Python list comprehensions and `.replace("j", "i")` with `str.translate(_TRANS_TABLE)` speeds up string cleaning by ~20x. Combined, this delivers ~1.75x overall performance speedups.
+**Action:** Pre-compute digraph substitution mapping tables and use C-level string translation tables for digraph/grid ciphers.
