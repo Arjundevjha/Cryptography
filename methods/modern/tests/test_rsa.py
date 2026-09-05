@@ -68,6 +68,17 @@ def test_encrypt_decrypt_large_message():
     decrypted_message = decrypt(ciphertext, priv_pem)
     assert decrypted_message == message
 
+def test_encrypt_decrypt_unicode_message():
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    message = "Hello World 🔑🔒! Café & Naïve Unicode 🔏"
+    ciphertext = encrypt(message, pub_pem)
+
+    assert isinstance(ciphertext, bytes)
+    assert len(ciphertext) > 0
+
+    decrypted_message = decrypt(ciphertext, priv_pem)
+    assert decrypted_message == message
+
 def test_decrypt_encrypted_private_key():
     passphrase = b"supersecretpassphrase"
     pub_pem, enc_priv_pem = generate_encrypted_keypair(passphrase, key_size=512)
@@ -120,6 +131,11 @@ def test_fallback_imports():
         sys.path.insert(0, 'methods/modern')
         try:
             reload(rsa_module)
+            assert callable(rsa_module.aes_decrypt)
+            assert callable(rsa_module.b64decode)
+            assert callable(rsa_module.sha256)
+            assert callable(rsa_module.generate_keypair)
+            assert callable(rsa_module.generate_encrypted_keypair)
         finally:
             sys.path.pop(0)
 
@@ -179,14 +195,11 @@ def test_decrypt_ciphertext_with_extra_empty_slice():
 
     original_range = builtins.range
 
-    def mock_range(start, stop=None, step=1):
-        if stop is None:
-            return original_range(start)
-        r = list(original_range(start, stop, step))
-        # Only append extra index for the ciphertext iteration in decrypt
-        if stop == len(ciphertext) and step == key_size_bytes:
-            r.append(stop)
-        return r
+    def mock_range(*args, **kwargs):
+        res = list(original_range(*args, **kwargs))
+        if len(args) == 3 and args[1] == len(ciphertext):
+            res.append(args[1])
+        return res
 
     with patch("builtins.range", side_effect=mock_range):
         decrypted = decrypt(ciphertext, priv_pem)
