@@ -23,9 +23,19 @@ def test_aes_decrypt_kat():
     assert decrypted == KAT_PLAINTEXT
 
 def test_aes_encrypt_decrypt_roundtrip():
-    """Test that encrypting and decrypting a message recovers the original."""
+    """Test that encrypting and decrypting a message recovers the original with 256-bit key."""
     key = os.urandom(32) # Test data generation doesn't need secrets module, but we can update anyway or leave it. We'll use os.urandom for testing.
     message = "A test message with arbitrary length!"
+    ciphertext, nonce = encrypt(message, key)
+    decrypted = decrypt(ciphertext, key, nonce)
+
+    assert decrypted == message
+    assert len(nonce) == NONCE_SIZE
+
+def test_aes_128_encrypt_decrypt_roundtrip():
+    """Test that encrypting and decrypting a message recovers the original with 128-bit key."""
+    key = os.urandom(16)
+    message = "AES-128 test message with 16-byte key!"
     ciphertext, nonce = encrypt(message, key)
     decrypted = decrypt(ciphertext, key, nonce)
 
