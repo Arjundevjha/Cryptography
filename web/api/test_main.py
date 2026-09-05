@@ -1,5 +1,4 @@
 from unittest.mock import patch
-import unittest.mock
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import HTTPException
@@ -539,7 +538,7 @@ def test_aes_encrypt_exception(caplog):
         "key_format": "text",
         "plaintext_format": "text"
     }
-    with unittest.mock.patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
+    with patch("methods.modern.aes.encrypt", side_effect=Exception("Mocked AES encryption error")):
         with caplog.at_level("ERROR"):
             response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
@@ -592,14 +591,14 @@ def test_caesar_encrypt_decrypt_success():
     assert dec.status_code == 200
     assert dec.json() == {"plaintext": "HELLO"}
 
-@unittest.mock.patch("methods.classical.caesar.encrypt")
+@patch("methods.classical.caesar.encrypt")
 def test_caesar_encrypt_value_error(mock_encrypt):
     mock_encrypt.side_effect = ValueError("Invalid shift value")
     response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": 3})
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid shift value"
 
-@unittest.mock.patch("methods.classical.caesar.encrypt")
+@patch("methods.classical.caesar.encrypt")
 def test_caesar_encrypt_internal_error(mock_encrypt, caplog):
     mock_encrypt.side_effect = RuntimeError("Test internal encryption error")
     with caplog.at_level("ERROR"):
@@ -608,14 +607,14 @@ def test_caesar_encrypt_internal_error(mock_encrypt, caplog):
     assert response.json() == {"detail": "Encryption failed"}
     assert "Caesar encryption error" in caplog.text
 
-@unittest.mock.patch("methods.classical.caesar.decrypt")
+@patch("methods.classical.caesar.decrypt")
 def test_caesar_decrypt_value_error(mock_decrypt):
     mock_decrypt.side_effect = ValueError("Invalid shift value")
     response = client.post("/api/caesar/decrypt", json={"ciphertext": "KHOOR", "shift": 3})
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid shift value"
 
-@unittest.mock.patch("methods.classical.caesar.decrypt")
+@patch("methods.classical.caesar.decrypt")
 def test_caesar_decrypt_internal_error(mock_decrypt, caplog):
     mock_decrypt.side_effect = RuntimeError("Test internal decryption error")
     with caplog.at_level("ERROR"):
@@ -774,11 +773,11 @@ def test_is_valid_origin_invalid_cases(origin):
     assert is_valid_origin(origin) is False
 
 def test_is_valid_origin_exception_handling():
-    with unittest.mock.patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
+    with patch("api.main.urlparse", side_effect=ValueError("Parse failed")):
         assert is_valid_origin("https://example.com") is False
 
 def test_is_valid_origin_unexpected_exception(caplog):
-    with unittest.mock.patch("api.main.urlparse", side_effect=RuntimeError("Unexpected urlparse error")):
+    with patch("api.main.urlparse", side_effect=RuntimeError("Unexpected urlparse error")):
         with caplog.at_level("WARNING"):
             assert is_valid_origin("http://localhost:3000") is False
     assert "Unexpected error validating origin" in caplog.text
