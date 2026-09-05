@@ -83,9 +83,10 @@ export function AudioSystem({ currentView }: AudioSystemProps) {
       audioCtxRef.current.resume();
     }
 
+    const newMuted = !muted;
+    setMuted(newMuted);
+
     if (reverbGainRef.current && audioCtxRef.current) {
-      const newMuted = !muted;
-      setMuted(newMuted);
       reverbGainRef.current.gain.setValueAtTime(newMuted ? 0 : 0.02, audioCtxRef.current.currentTime);
     }
   };
@@ -93,7 +94,9 @@ export function AudioSystem({ currentView }: AudioSystemProps) {
   return (
     <button
       onClick={toggleMute}
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-stone-900/80 backdrop-blur-md border border-amber-500/30 text-amber-200 hover:bg-stone-800 transition-all text-xs font-mono shadow-lg"
+      aria-label={muted ? 'Unmute Spatial Audio' : 'Mute Spatial Audio'}
+      aria-pressed={!muted}
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-stone-900/80 backdrop-blur-md border border-amber-500/30 text-amber-200 hover:bg-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all text-xs font-mono shadow-lg"
       title={muted ? 'Unmute Spatial Audio' : 'Mute Spatial Audio'}
     >
       {muted ? <VolumeX className="w-4 h-4 text-amber-400/60" /> : <Volume2 className="w-4 h-4 text-amber-400" />}

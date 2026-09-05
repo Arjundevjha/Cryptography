@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,22 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders AudioSystem toggle with dynamic accessible aria-label and aria-pressed state', () => {
+    render(<AudioSystem currentView="atrium" />);
+
+    // Initially muted
+    const audioButton = screen.getByRole('button', { name: /unmute spatial audio/i });
+    expect(audioButton).toBeInTheDocument();
+    expect(audioButton).toHaveAttribute('aria-pressed', 'false');
+
+    // Click to toggle audio on
+    fireEvent.click(audioButton);
+
+    // After clicking, aria-label should change to Mute Spatial Audio and aria-pressed to true
+    const unmutedAudioButton = screen.getByRole('button', { name: /mute spatial audio/i });
+    expect(unmutedAudioButton).toBeInTheDocument();
+    expect(unmutedAudioButton).toHaveAttribute('aria-pressed', 'true');
   });
 });
