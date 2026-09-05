@@ -1,16 +1,19 @@
 """Substitution cipher implementation."""
 
-import random
+import secrets
 import string
 
 def pick_keys() -> dict:
-    """Generate a random substitution key mapping each letter to another.
+    """Generate a random substitution key mapping each letter to another using CSPRNG.
 
     Returns a dictionary mapping each lowercase letter to a unique substitute.
     """
+    # Security: Use secrets.randbelow for cryptographically secure Fisher-Yates shuffle
     alphabet = list(string.ascii_lowercase)
     shuffled = alphabet.copy()
-    random.shuffle(shuffled)
+    for i in range(len(shuffled) - 1, 0, -1):
+        j = secrets.randbelow(i + 1)
+        shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
     return dict(zip(alphabet, shuffled))
 
 def _invert_key(key: dict) -> dict:
