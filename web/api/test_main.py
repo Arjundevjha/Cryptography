@@ -776,6 +776,56 @@ def test_aes_encrypt_exception(caplog):
     assert response.json()["detail"] == "Encryption failed"
     assert "AES encryption error" in caplog.text
 
+def test_parse_aes_key_hex_fallback():
+    orig_bytes = bytes
+
+    class MockBytes(bytes):
+        @classmethod
+        def fromhex(cls, string):
+            if string == "0123456789abcdef0123456789abcdef":
+                raise ValueError("Simulated hex decode error")
+            return orig_bytes.fromhex(string)
+
+    with patch("api.main.bytes", MockBytes):
+        res = parse_aes_key("0123456789abcdef0123456789abcdef", "text")
+        assert res == b"0123456789abcdef0123456789abcdef"
+
+def test_aes_encrypt_underlying_cipher_failure(caplog):
+    payload = {
+        "plaintext": "Secret Message",
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "text"
+    }
+    with unittest.mock.patch("methods.modern.aes.encrypt_block", side_effect=Exception("Underlying block cipher error")):
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Encryption failed"
+    assert "AES encryption error" in caplog.text
+
+def test_aes_encrypt_input_length_exceeded():
+    payload = {
+        "plaintext": "a" * 501,
+        "key": "1234567890123456",
+        "key_format": "text",
+        "plaintext_format": "text"
+    }
+    response = client.post("/api/aes/encrypt", json=payload)
+    assert response.status_code == 400
+    assert "exceeds" in response.json()["detail"].lower()
+
+def test_aes_decrypt_input_length_exceeded():
+    payload = {
+        "ciphertext": "a" * 501,
+        "key": "1234567890123456",
+        "nonce": "aabbccdd",
+        "key_format": "text"
+    }
+    response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "exceeds" in response.json()["detail"].lower()
+
 def test_aes_decrypt_exception(caplog):
     payload = {
         "ciphertext": "00112233",
