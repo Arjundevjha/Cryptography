@@ -717,6 +717,11 @@ class Sha256Input(BaseModel):
 
 
 def parse_aes_key(key: str, key_format: str = "text") -> bytes:
+    """Parses and validates AES key material (16-byte for AES-128 or 32-byte for AES-256).
+
+    Ensures 16-byte keys are used directly for native AES-128 and 32-byte keys for AES-256
+    without simple key repetition or arbitrary key expansion.
+    """
     if key_format not in ("text", "hex"):
         raise HTTPException(status_code=400, detail="Invalid key format")
     if key_format == "hex":

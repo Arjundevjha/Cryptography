@@ -272,7 +272,7 @@ def test_enigma_encipher_with_reflectors():
 # ==========================================
 
 def test_parse_aes_key_lengths():
-    # 16-byte text key should remain exactly 16 bytes (no key repetition)
+    # 16-byte text key should remain exactly 16 bytes for native AES-128 (no key repetition)
     key_16 = parse_aes_key("123456789012345G", "text")
     assert len(key_16) == 16
     assert key_16 == b"123456789012345G"
