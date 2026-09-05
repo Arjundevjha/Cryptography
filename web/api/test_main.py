@@ -421,6 +421,67 @@ def test_enigma_encipher_with_reflectors():
         assert len(response.json()["ciphertext"]) == 5
 
 
+def test_parse_enigma_positions_helper():
+    assert parse_enigma_positions(["a", "B", "c"]) == "ABC"
+    with pytest.raises(HTTPException) as exc_info1:
+        parse_enigma_positions(["A", "B"])
+    assert exc_info1.value.status_code == 400
+    assert "3 rotor positions" in exc_info1.value.detail.lower()
+
+    with pytest.raises(HTTPException) as exc_info2:
+        parse_enigma_positions(["A", "1", "C"])
+    assert exc_info2.value.status_code == 400
+    assert "single letters" in exc_info2.value.detail.lower()
+
+
+def test_parse_and_validate_enigma_rings_helper():
+    assert parse_and_validate_enigma_rings(["A", "B", "Z"]) == [1, 2, 26]
+    assert parse_and_validate_enigma_rings(["1", "2", "26"]) == [1, 2, 26]
+    assert parse_and_validate_enigma_rings([1, 2, 26]) == [1, 2, 26]
+
+    with pytest.raises(HTTPException) as exc_info1:
+        parse_and_validate_enigma_rings(["1", "2"])
+    assert exc_info1.value.status_code == 400
+    assert "3 ring settings" in exc_info1.value.detail.lower()
+
+    with pytest.raises(HTTPException) as exc_info2:
+        parse_and_validate_enigma_rings(["0", "1", "2"])
+    assert exc_info2.value.status_code == 400
+    assert "invalid ring setting" in exc_info2.value.detail.lower()
+
+    with pytest.raises(HTTPException) as exc_info3:
+        parse_and_validate_enigma_rings([27, 1, 2])
+    assert exc_info3.value.status_code == 400
+    assert "invalid ring setting" in exc_info3.value.detail.lower()
+
+    with pytest.raises(HTTPException) as exc_info4:
+        parse_and_validate_enigma_rings(["AB", "C", "D"])
+    assert exc_info4.value.status_code == 400
+    assert "invalid ring setting" in exc_info4.value.detail.lower()
+
+
+def test_validate_enigma_plugboard_helper():
+    validate_enigma_plugboard(["AB", "CD"])
+    with pytest.raises(HTTPException) as exc_info1:
+        validate_enigma_plugboard(["A1"])
+    assert exc_info1.value.status_code == 400
+    assert "format" in exc_info1.value.detail.lower()
+
+    with pytest.raises(HTTPException) as exc_info2:
+        validate_enigma_plugboard(["AB", "BC"])
+    assert exc_info2.value.status_code == 400
+    assert "duplicate" in exc_info2.value.detail.lower()
+
+
+def test_get_enigma_reflector_wiring_helper():
+    assert get_enigma_reflector_wiring(None) == "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+    assert get_enigma_reflector_wiring("a") == "EJMZALYXVBWFCRQUONTSPIKHGD"
+    with pytest.raises(HTTPException) as exc_info:
+        get_enigma_reflector_wiring("INVALID")
+    assert exc_info.value.status_code == 400
+    assert "invalid reflector" in exc_info.value.detail.lower()
+
+
 # ==========================================
 # MODERN CIPHER TESTS
 # ==========================================
