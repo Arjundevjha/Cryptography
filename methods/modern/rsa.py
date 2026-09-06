@@ -64,6 +64,9 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     n = key_params[0]
     e = key_params[1]
 
+    if n < 256:
+        raise ValueError("RSA modulus n must be at least 256 (key size >= 8 bits) to encrypt byte values up to 255.")
+
     msg_bytes = message.encode('utf-8')
     key_size_bytes = (n.bit_length() + 7) // 8
 
@@ -90,6 +93,9 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     )
     n = key_params[0]
     d = key_params[2]
+
+    if n < 256:
+        raise ValueError("RSA modulus n must be at least 256 (key size >= 8 bits) to decrypt byte values up to 255.")
 
     key_size_bytes = (n.bit_length() + 7) // 8
     decrypted_bytes = bytearray()

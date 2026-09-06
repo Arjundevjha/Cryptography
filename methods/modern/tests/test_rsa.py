@@ -224,3 +224,31 @@ def test_encrypt_invalid_key_pem():
     invalid_pem = b"-----BEGIN RSA PUBLIC KEY-----\n\n-----END RSA PUBLIC KEY-----\n"
     with pytest.raises(Exception):
         encrypt("Test", invalid_pem)
+
+def test_rsa_encrypt_small_modulus_error():
+    from methods.modern.helpers import b64encode
+    # Construct a PEM key with small n (e.g., n = 15, e = 3)
+    pub_str = "15:3"
+    pub_b64 = b64encode(pub_str.encode('utf-8'))
+    small_pub_pem = (
+        f"-----BEGIN RSA PUBLIC KEY-----\n"
+        f"{pub_b64}\n"
+        f"-----END RSA PUBLIC KEY-----\n"
+    ).encode('utf-8')
+
+    with pytest.raises(ValueError, match="RSA modulus n must be at least 256"):
+        encrypt("Test", small_pub_pem)
+
+def test_rsa_decrypt_small_modulus_error():
+    from methods.modern.helpers import b64encode
+    # Construct a private key PEM with small n (e.g., n = 15, e = 3, d = 3, p = 3, q = 5)
+    priv_str = "15:3:3:3:5"
+    priv_b64 = b64encode(priv_str.encode('utf-8'))
+    small_priv_pem = (
+        f"-----BEGIN RSA PRIVATE KEY-----\n"
+        f"{priv_b64}\n"
+        f"-----END RSA PRIVATE KEY-----\n"
+    ).encode('utf-8')
+
+    with pytest.raises(ValueError, match="RSA modulus n must be at least 256"):
+        decrypt(b"\x00", small_priv_pem)
