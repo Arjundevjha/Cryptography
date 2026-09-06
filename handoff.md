@@ -1,39 +1,42 @@
-# Session Handoff: PR Triage & Clearing (#181 – #183)
+# Session Handoff: PR Triage & Clearing (#184 – #186)
 
 ## Executive Summary
-Completed automated review, standards enforcement, conflict resolution, test verification, and PR clearing for all open Pull Requests in the repository (#181 through #183), bringing open PRs to exactly **zero**.
+Completed automated review, standards enforcement, conflict resolution, test verification, and PR clearing for all open Pull Requests in the repository (#184 through #186), bringing open PRs to exactly **zero**.
 
-### 1. PR Triage & Lifecycle Operations (PRs #181 – #183)
+### 1. PR Triage & Lifecycle Operations (PRs #184 – #186)
 1. **Closed Rejected PRs (2 Total)**:
-   - [#182](https://github.com/Arjundevjha/Cryptography/pull/182): Closed — contained external AI journal/scratch file (`.jules/bolt.md`), violating repository cleanliness guidelines. Remote branch deleted.
-   - [#183](https://github.com/Arjundevjha/Cryptography/pull/183): Closed — contained extraneous lockfile (`web/pnpm-lock.yaml`), violating repository package management standards (`npm` with `package-lock.json`). Remote branch deleted.
+   - [#184](https://github.com/Arjundevjha/Cryptography/pull/184): Closed — contained extraneous lockfile (`web/pnpm-lock.yaml`), violating repository package management standards (`npm` with `package-lock.json`). Remote branch deleted.
+   - [#186](https://github.com/Arjundevjha/Cryptography/pull/186): Closed — contained external AI journal/scratch file (`.jules/bolt.md`), violating repository cleanliness guidelines. Remote branch deleted.
 
 2. **Merged Approved PRs (1 Total)**:
-   - [#181](https://github.com/Arjundevjha/Cryptography/pull/181): Enforced cryptographically secure pseudo-random number generation (`secrets.choice`, `secrets.randbelow`, Fisher-Yates shuffle) for key generation across Affine, Playfair, Substitution, Polybius, and Scytale ciphers. Squashed & merged, remote branch deleted.
+   - [#185](https://github.com/Arjundevjha/Cryptography/pull/185): Added modulus size validation ($n \ge 256$) in RSA `encrypt` and `decrypt` to prevent mathematical decryption corruption and potential `OverflowError` for byte-by-byte RSA operations, with accompanying unit tests. Squashed & merged, remote branch deleted.
 
 ---
 
 ## Active State of Codebase
 - **Zero Open PRs**: `gh pr list` confirms 0 open PRs remaining.
 - **Single Remote Branch**: Remote tracking branches pruned. Remote has exactly 1 branch: `main`.
-- **Python Test Suite**: **643 / 643** tests passing (`pytest`, 100% pass rate).
+- **Python Test Suite**: **645 / 645** tests passing (`pytest`, 100% pass rate).
 - **Frontend Unit Tests**: **42 / 42** tests passing (`npm test`, 100% pass rate).
-- **Graphify Knowledge Graph**: Re-indexed and updated (`graphify update .` -> 1,274 nodes, 2,208 edges, 78 communities).
+- **Graphify Knowledge Graph**: Re-indexed and updated (`graphify update .` -> 1,276 nodes, 2,215 edges, 77 communities).
 
 ---
 
-## PR Summary Table (Latest Batch: #181 – #183)
+## PR Summary Table (Latest Batch: #184 – #186)
+| PR # | Title | Type | Status | Action Taken |
+|---|---|---|---|---|
+| [#184](https://github.com/Arjundevjha/Cryptography/pull/184) | 🎨 Palette: Improve HUD audio toggle and API status dot accessibility | Dependency | Rejected | Closed (`pnpm-lock.yaml`), branch deleted |
+| [#185](https://github.com/Arjundevjha/Cryptography/pull/185) | 🛡️ Sentinel: Fix potential OverflowError in RSA by adding modulus validation (n >= 256) | Security | Merged | Squashed & merged, branch deleted |
+| [#186](https://github.com/Arjundevjha/Cryptography/pull/186) | ⚡ Bolt: Memoize modular exponentiations in RSA encryption and decryption | Cleanliness | Rejected | Closed (`.jules/bolt.md`), branch deleted |
+
+---
+
+## Historical PR Triage Archive (#128 – #183)
 | PR # | Title | Type | Status | Action Taken |
 |---|---|---|---|---|
 | [#181](https://github.com/Arjundevjha/Cryptography/pull/181) | 🛡️ Sentinel: Enforce CSPRNG for classical and historical cipher key generation | Security | Merged | Squashed & merged, branch deleted |
 | [#182](https://github.com/Arjundevjha/Cryptography/pull/182) | ⚡ Bolt: Optimize Playfair cipher via C-level string filtering and digraph map pre-computation | Cleanliness | Rejected | Closed (`.jules/bolt.md`), branch deleted |
 | [#183](https://github.com/Arjundevjha/Cryptography/pull/183) | 🎨 Palette: Improve accessibility for WorkbenchPanel inputs and controls | Dependency | Rejected | Closed (`pnpm-lock.yaml`), branch deleted |
-
----
-
-## Historical PR Triage Archive (#128 – #180)
-| PR # | Title | Type | Status | Action Taken |
-|---|---|---|---|---|
 | [#155](https://github.com/Arjundevjha/Cryptography/pull/155) | 🎨 Palette: Improve accessibility and focus states for spatial audio and HUD navigation | Dependency / Cleanliness | Rejected | Closed (`.Jules/palette.md` & `pnpm-lock.yaml`), branch deleted |
 | [#156](https://github.com/Arjundevjha/Cryptography/pull/156) | ⚡ Bolt: Vectorize Base64 encoding/decoding via ASCII lookup table | Cleanliness | Rejected | Closed (`.jules/bolt.md`), branch deleted |
 | [#157](https://github.com/Arjundevjha/Cryptography/pull/157) | 🛡️ Sentinel: Enforce element-level bounds on API Pydantic models | Security | Merged | Squashed & merged, branch deleted |

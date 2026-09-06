@@ -1,16 +1,16 @@
-# Graph Report - Cryptography  (2026-09-07)
+# Graph Report - Cryptography  (2026-09-06)
 
 ## Corpus Check
-- 113 files · ~75,454 words
+- 113 files · ~75,596 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1276 nodes · 2215 edges · 77 communities (63 shown, 14 thin omitted)
+- 1274 nodes · 2208 edges · 78 communities (64 shown, 14 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 157 edges (avg confidence: 0.51)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `359c1bb1`
+- Built from commit: `eb3df41e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -71,6 +71,7 @@
 - test_playfair.py
 - _find_position
 - keypair.py
+- validation_exception_handler
 - PolybiusDecryptInput
 - validate_enigma_plugboard
 - .__init__
@@ -109,15 +110,15 @@
 - **Museum Testing Flow** — test_infra_philosophy, test_ready_coverage, web_quality_log_tracks, web_security_log_scans [INFERRED 0.85]
 - **Cryptography Project Guidelines** — contributing_python_standards, style_guide_no_external_libs, style_guide_file_structure, style_guide_naming_conventions [INFERRED 0.85]
 
-## Communities (77 total, 14 thin omitted)
+## Communities (78 total, 14 thin omitted)
 
 ### Community 0 - "Cryptographic Helpers & Base64 Utilities"
 Cohesion: 0.15
-Nodes (30): generate_keypair(), Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), decrypt_private_key(), encrypt(), main(), _parse_pem(), RSA asymmetric encryption and decryption module in pure Python.  This module pro (+22 more)
+Nodes (31): generate_encrypted_keypair(), generate_keypair(), Generate an RSA key pair with an encrypted private key.      Args:         passp, Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), decrypt_private_key(), encrypt(), main() (+23 more)
 
 ### Community 1 - "Playfair Cipher Implementation & Benchmarks"
-Cohesion: 0.09
-Nodes (22): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext., Test decrypt converts uppercase characters to lowercase and 'J' to 'I'. (+14 more)
+Cohesion: 0.12
+Nodes (24): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext. (+16 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
 Cohesion: 0.08
@@ -240,8 +241,8 @@ Cohesion: 0.10
 Nodes (19): Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Process an entire text string through the Lorenz cipher machine.          Non-IT, Alias for process_message., Alias for process_message., Get current position indices for all 12 wheels., Set manual pin configurations for Chi, Motor, and Psi wheels.          Args:, Main simulation runner and interactive CLI for the Lorenz SZ40/SZ42 machine. (+11 more)
 
 ### Community 35 - "Lorenz Machine Core Unit Tests"
-Cohesion: 0.13
-Nodes (32): b64decode(), ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Process a single 64-byte block to update the SHA-256 state in place., Compute SHA-256 hash of bytes. (+24 more)
+Cohesion: 0.16
+Nodes (27): ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Process a single 64-byte block to update the SHA-256 state in place., Compute SHA-256 hash of bytes., Compute HMAC-SHA256 signature of data using key. (+19 more)
 
 ### Community 36 - "Lorenz Machine Pinwheels Initialization"
 Cohesion: 0.29
@@ -280,16 +281,20 @@ Cohesion: 0.17
 Nodes (12): encrypt(), Encrypt plaintext using Playfair cipher., Test encrypting digraphs where characters share a column., Test encrypting digraphs forming a rectangle., Test decryption when key contains spaces, uppercase letters, duplicate character, Test encrypt raises ValueError when pos_map lookup raises KeyError., Test encrypting digraphs where characters share a row., test_decrypt_complex_key() (+4 more)
 
 ### Community 68 - "test_playfair.py"
-Cohesion: 0.28
-Nodes (8): _create_grid(), Create a 5x5 Playfair grid from key., Test decrypting digraphs where characters share a row., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j(), test_decrypt_same_row()
+Cohesion: 0.33
+Nodes (6): _create_grid(), Create a 5x5 Playfair grid from key., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j()
 
 ### Community 69 - "_find_position"
 Cohesion: 0.33
 Nodes (6): _find_position(), Find row and column of a character in the grid., Test finding a character's row and column in the grid., Test ValueError is raised if character is missing., test_find_position(), test_find_position_missing_char()
 
 ### Community 70 - "keypair.py"
-Cohesion: 0.13
-Nodes (21): Modern cryptography methods package., generate_encrypted_keypair(), generate_prime(), is_prime(), main(), RSA Keypair Generation Module in pure Python.  This module provides functionalit, Generate an RSA key pair with an encrypted private key.      Args:         passp, Generate and print a sample RSA keypair. (+13 more)
+Cohesion: 0.15
+Nodes (18): Modern cryptography methods package., generate_prime(), is_prime(), main(), RSA Keypair Generation Module in pure Python.  This module provides functionalit, Generate and print a sample RSA keypair., Check if val is prime using Miller-Rabin primality test., Generate a random prime number of specified bit length. (+10 more)
+
+### Community 71 - "validation_exception_handler"
+Cohesion: 0.40
+Nodes (5): b64decode(), Decode a Base64 string to bytes., Test roundtrip encoding and decoding for various byte payloads., test_b64decode(), test_b64encode_roundtrip()
 
 ### Community 72 - "PolybiusDecryptInput"
 Cohesion: 0.40
@@ -313,8 +318,8 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `sha256()` connect `Manual Hash Function Implementations` to `FastAPI Backend Routes & Schema Models`?**
   _High betweenness centrality (0.062) - this node is a cross-community bridge._
-- **Why does `b64encode()` connect `VercelPathMiddleware` to `Cryptographic Helpers & Base64 Utilities`, `FastAPI Backend Routes & Schema Models`, `Lorenz Machine Core Unit Tests`, `keypair.py`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+- **Why does `b64encode()` connect `VercelPathMiddleware` to `Cryptographic Helpers & Base64 Utilities`, `FastAPI Backend Routes & Schema Models`, `Lorenz Machine Core Unit Tests`, `keypair.py`, `validation_exception_handler`?**
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Why does `Wheel` connect `Lorenz Wheels Components Testing` to `Lorenz Text Processing Procedures`, `.__init__`, `stepping.py`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Stepping Controller Engine`?**
   _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Are the 25 inferred relationships involving `Lorenz` (e.g. with `SteppingController` and `Wheel`) actually correct?**
