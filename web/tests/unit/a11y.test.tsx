@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,19 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders WorkbenchPanel textarea with accessible aria-label', () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const textarea = screen.getByRole('textbox', { name: /plaintext input/i });
+    expect(textarea).toBeInTheDocument();
+
+    // Toggle to Decrypt mode and check updated aria-label
+    const decryptButton = screen.getByTestId(`decrypt-btn-${sampleExhibit.id}`);
+    fireEvent.click(decryptButton);
+
+    const decryptTextarea = screen.getByRole('textbox', { name: /ciphertext input/i });
+    expect(decryptTextarea).toBeInTheDocument();
   });
 });
