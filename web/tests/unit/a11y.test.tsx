@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { AudioSystem } from '../../src/components/museum/AudioSystem';
+import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +41,26 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders AudioSystem button with accessible aria-label and aria-pressed state', () => {
+    render(<AudioSystem currentView="atrium" />);
+
+    const audioButton = screen.getByRole('button', { name: /unmute spatial audio/i });
+    expect(audioButton).toBeInTheDocument();
+    expect(audioButton).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(audioButton);
+    expect(audioButton).toHaveAttribute('aria-pressed', 'true');
+    expect(audioButton).toHaveAttribute('aria-label', 'Mute spatial audio');
+  });
+
+  it('renders ApiStatusDot with status role, aria-live, and screen reader text', () => {
+    render(<ApiStatusDot />);
+
+    const statusWidget = screen.getByRole('status');
+    expect(statusWidget).toBeInTheDocument();
+    expect(statusWidget).toHaveAttribute('aria-live', 'polite');
+    expect(screen.getByText(/cryptographic server/i)).toBeInTheDocument();
   });
 });
