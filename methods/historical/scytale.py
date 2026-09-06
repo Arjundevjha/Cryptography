@@ -1,10 +1,11 @@
 """Scytale transposition cipher implementation."""
 
-import random
+import secrets
 
 def pick_keys() -> int:
-    """Generate a random cylinder diameter (3-8)."""
-    return random.randint(3, 8)
+    """Generate a random cylinder diameter (3-8) using CSPRNG."""
+    # Security: Use secrets module for cryptographically secure random parameter generation
+    return secrets.randbelow(6) + 3
 
 def encrypt(plaintext: str, diameter: int) -> str:
     """Encrypt plaintext using the Scytale cipher.

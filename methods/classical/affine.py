@@ -1,6 +1,6 @@
 """Affine cipher implementation."""
 
-import random
+import secrets
 import math
 import string
 
@@ -10,7 +10,8 @@ def _check_coprime(a_key: int):
         raise ValueError(f"The key 'a' ({a_key}) must be coprime to 26.")
 
 def pick_keys():
-    """Generate a random key pair (a, b) where a is coprime to 26."""
+    """Generate a random key pair (a, b) where a is coprime to 26 using CSPRNG."""
+    # Security: Use secrets module for cryptographically secure key pair selection
     coprimes = [
         1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 41,
         43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 67, 69, 71, 73, 75, 77, 79,
@@ -21,9 +22,9 @@ def pick_keys():
         207, 209, 211, 213, 215
     ]
 
-    a_key = random.choice(coprimes)
+    a_key = secrets.choice(coprimes)
     coprimes.remove(a_key)
-    b_key = random.choice(coprimes)
+    b_key = secrets.choice(coprimes)
 
     return a_key, b_key
 

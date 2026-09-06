@@ -1,14 +1,17 @@
 """Polybius Square cipher implementation."""
 
-import random
+import secrets
 
 ALPHABET = "abcdefghiklmnopqrstuvwxyz"
 GRID_SIZE = 5
 
 def pick_keys() -> str:
-    """Generate a random key grid by shuffling the alphabet."""
+    """Generate a random key grid by shuffling the alphabet using CSPRNG."""
+    # Security: Use secrets.randbelow for cryptographically secure Fisher-Yates shuffle
     chars = list(ALPHABET)
-    random.shuffle(chars)
+    for i in range(len(chars) - 1, 0, -1):
+        j = secrets.randbelow(i + 1)
+        chars[i], chars[j] = chars[j], chars[i]
     return "".join(chars)
 
 def encrypt(plaintext: str, key: str = None) -> str:

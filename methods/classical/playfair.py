@@ -1,6 +1,6 @@
 """Playfair cipher implementation."""
 
-import random
+import secrets
 
 ALPHABET = "abcdefghiklmnopqrstuvwxyz"
 DIGRAPH_LEN = 2
@@ -60,10 +60,11 @@ def _prepare_text(text: str) -> list[str]:
     return digraphs
 
 def pick_keys() -> str:
-    """Generate and return a random encryption key."""
-    length = random.randint(5, 10)
+    """Generate and return a random encryption key using CSPRNG."""
+    # Security: Use secrets module for cryptographically secure random key generation
+    length = secrets.randbelow(6) + 5
     chars = "abcdefghiklmnopqrstuvwxyz"
-    return "".join(random.choice(chars) for _ in range(length))
+    return "".join(secrets.choice(chars) for _ in range(length))
 
 def encrypt(plaintext: str, key: str) -> str:
     """Encrypt plaintext using Playfair cipher."""
