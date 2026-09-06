@@ -1,38 +1,15 @@
-# Session Handoff: PR Triage & Clearing (#155 – #180)
+# Session Handoff: PR Triage & Clearing (#181 – #183)
 
 ## Executive Summary
-Completed automated review, standards enforcement, conflict resolution, test verification, and PR clearing for all open Pull Requests in the repository (#155 through #180), bringing open PRs to exactly **zero**.
+Completed automated review, standards enforcement, conflict resolution, test verification, and PR clearing for all open Pull Requests in the repository (#181 through #183), bringing open PRs to exactly **zero**.
 
-### 1. PR Triage & Lifecycle Operations (PRs #155 – #180)
-1. **Closed Rejected PRs (8 Total)**:
-   - [#155](https://github.com/Arjundevjha/Cryptography/pull/155): Closed — contained external AI journal/scratch file (`.Jules/palette.md`) and extraneous lockfile (`web/pnpm-lock.yaml`), violating repository standards (`npm` with `package-lock.json`). Remote branch deleted.
-   - [#156](https://github.com/Arjundevjha/Cryptography/pull/156): Closed — contained external AI journal/scratch file (`.jules/bolt.md`), violating repository cleanliness guidelines. Remote branch deleted.
-   - [#159](https://github.com/Arjundevjha/Cryptography/pull/159): Closed — title misleading (did not remove any unused pytest imports) and deleted active codebase comments in `test_enigma.py`, violating comment preservation standards. Remote branch deleted.
-   - [#161](https://github.com/Arjundevjha/Cryptography/pull/161): Closed — empty diff with zero file modifications. Remote branch deleted.
-   - [#163](https://github.com/Arjundevjha/Cryptography/pull/163): Closed — duplicate of #160. Remote branch deleted.
-   - [#169](https://github.com/Arjundevjha/Cryptography/pull/169): Closed — introduced `sys.path.insert(0, ...)` hack in test suite, violating project architecture standards. Remote branch deleted.
-   - [#171](https://github.com/Arjundevjha/Cryptography/pull/171): Closed — contained extraneous lockfile (`web/pnpm-lock.yaml`), violating repository package management standards (`npm` with `package-lock.json`). Remote branch deleted.
-   - [#175](https://github.com/Arjundevjha/Cryptography/pull/175): Closed — replaced native 16-byte (128-bit) AES key handling with arbitrary PBKDF2 expansion, regressing PR #150 and breaking 128-bit key support. Remote branch deleted.
+### 1. PR Triage & Lifecycle Operations (PRs #181 – #183)
+1. **Closed Rejected PRs (2 Total)**:
+   - [#182](https://github.com/Arjundevjha/Cryptography/pull/182): Closed — contained external AI journal/scratch file (`.jules/bolt.md`), violating repository cleanliness guidelines. Remote branch deleted.
+   - [#183](https://github.com/Arjundevjha/Cryptography/pull/183): Closed — contained extraneous lockfile (`web/pnpm-lock.yaml`), violating repository package management standards (`npm` with `package-lock.json`). Remote branch deleted.
 
-2. **Merged Approved PRs (18 Total)**:
-   - [#157](https://github.com/Arjundevjha/Cryptography/pull/157): Enforced element-level bounds (`Str10`, `BoundedInt`, `PinList`) on API Pydantic models for DoS prevention. Squashed & merged.
-   - [#158](https://github.com/Arjundevjha/Cryptography/pull/158): Added unit test for `b64encode` bytearray input. Squashed & merged.
-   - [#160](https://github.com/Arjundevjha/Cryptography/pull/160): Removed unused `pytest` imports in Enigma tests. Squashed & merged.
-   - [#162](https://github.com/Arjundevjha/Cryptography/pull/162): Cleaned up unused `unittest.mock` import in `web/api/test_main.py`. Squashed & merged.
-   - [#164](https://github.com/Arjundevjha/Cryptography/pull/164): Optimized Polybius encryption loop with precomputed position map and added uppercase key test. Squashed & merged.
-   - [#165](https://github.com/Arjundevjha/Cryptography/pull/165): Fixed port validation logic in `is_valid_origin` and added initial test cases. Squashed & merged.
-   - [#166](https://github.com/Arjundevjha/Cryptography/pull/166): Added parameterized edge-case unit tests for Enigma rotor, ring, and plugboard validation helpers. Squashed & merged.
-   - [#167](https://github.com/Arjundevjha/Cryptography/pull/167): Added comprehensive CORS origin validation test suite (IPv6 literals, port boundaries, invalid formats, non-string inputs). Resolved merge conflict with main, verified with pytest, squashed & merged.
-   - [#168](https://github.com/Arjundevjha/Cryptography/pull/168): Added Caesar, Scytale, and Polybius Cipher API error path unit tests. Squashed & merged.
-   - [#170](https://github.com/Arjundevjha/Cryptography/pull/170): Replaced string concatenation loop with `"".join(...)` in Enigma runner. Squashed & merged.
-   - [#172](https://github.com/Arjundevjha/Cryptography/pull/172): Replaced catch-all exception in AES encrypt plaintext parsing with `(ValueError, UnicodeDecodeError)` and added tests. Squashed & merged.
-   - [#173](https://github.com/Arjundevjha/Cryptography/pull/173): Modularized Enigma ring setting parsing into `_parse_ring_item` helper and added unit tests. Squashed & merged.
-   - [#174](https://github.com/Arjundevjha/Cryptography/pull/174): Documented educational scope and security warnings in MD5 docstring. Squashed & merged.
-   - [#176](https://github.com/Arjundevjha/Cryptography/pull/176): Enhanced RSA unit test coverage with unicode test cases and improved mock range helper. Squashed & merged.
-   - [#177](https://github.com/Arjundevjha/Cryptography/pull/177): Added edge-case error handling tests for AES API length bounds and hex decode fallback. Squashed & merged.
-   - [#178](https://github.com/Arjundevjha/Cryptography/pull/178): Added roundtrip verification test for 128-bit keys in AES. Squashed & merged.
-   - [#179](https://github.com/Arjundevjha/Cryptography/pull/179): Added comprehensive error-handling unit tests across AES, RSA, Vigenere, Playfair, Enigma, and Lorenz API endpoints. Resolved merge conflicts with main, converted mock calls to `patch`, verified with pytest, squashed & merged.
-   - [#180](https://github.com/Arjundevjha/Cryptography/pull/180): Modularized SHA-512 and SHA-256 compression loops into `_sha512_compress_block` and `_sha256_compress_block`. Squashed & merged.
+2. **Merged Approved PRs (1 Total)**:
+   - [#181](https://github.com/Arjundevjha/Cryptography/pull/181): Enforced cryptographically secure pseudo-random number generation (`secrets.choice`, `secrets.randbelow`, Fisher-Yates shuffle) for key generation across Affine, Playfair, Substitution, Polybius, and Scytale ciphers. Squashed & merged, remote branch deleted.
 
 ---
 
@@ -45,7 +22,16 @@ Completed automated review, standards enforcement, conflict resolution, test ver
 
 ---
 
-## PR Summary Table (Latest Batch: #155 – #180)
+## PR Summary Table (Latest Batch: #181 – #183)
+| PR # | Title | Type | Status | Action Taken |
+|---|---|---|---|---|
+| [#181](https://github.com/Arjundevjha/Cryptography/pull/181) | 🛡️ Sentinel: Enforce CSPRNG for classical and historical cipher key generation | Security | Merged | Squashed & merged, branch deleted |
+| [#182](https://github.com/Arjundevjha/Cryptography/pull/182) | ⚡ Bolt: Optimize Playfair cipher via C-level string filtering and digraph map pre-computation | Cleanliness | Rejected | Closed (`.jules/bolt.md`), branch deleted |
+| [#183](https://github.com/Arjundevjha/Cryptography/pull/183) | 🎨 Palette: Improve accessibility for WorkbenchPanel inputs and controls | Dependency | Rejected | Closed (`pnpm-lock.yaml`), branch deleted |
+
+---
+
+## Historical PR Triage Archive (#128 – #180)
 | PR # | Title | Type | Status | Action Taken |
 |---|---|---|---|---|
 | [#155](https://github.com/Arjundevjha/Cryptography/pull/155) | 🎨 Palette: Improve accessibility and focus states for spatial audio and HUD navigation | Dependency / Cleanliness | Rejected | Closed (`.Jules/palette.md` & `pnpm-lock.yaml`), branch deleted |

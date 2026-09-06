@@ -1,7 +1,7 @@
-# Graph Report - Cryptography  (2026-09-06)
+# Graph Report - Cryptography  (2026-09-05)
 
 ## Corpus Check
-- 113 files · ~75,596 words
+- 113 files · ~74,735 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `eb3df41e`
+- Built from commit: `635f42bf`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -117,8 +117,8 @@ Cohesion: 0.15
 Nodes (31): generate_encrypted_keypair(), generate_keypair(), Generate an RSA key pair with an encrypted private key.      Args:         passp, Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), decrypt_private_key(), encrypt(), main() (+23 more)
 
 ### Community 1 - "Playfair Cipher Implementation & Benchmarks"
-Cohesion: 0.12
-Nodes (24): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext. (+16 more)
+Cohesion: 0.09
+Nodes (22): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext., Test decrypt converts uppercase characters to lowercase and 'J' to 'I'. (+14 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
 Cohesion: 0.08
@@ -142,7 +142,7 @@ Nodes (49): blake2b(), _blake2b_g(), blake2s(), _blake2s_g(), compute_hash(), _k
 
 ### Community 8 - "Affine Cipher Core & Unit Tests"
 Cohesion: 0.09
-Nodes (37): _check_coprime(), decrypt(), encrypt(), main(), pick_keys(), Affine cipher implementation., Generate a random key pair (a, b) where a is coprime to 26 using CSPRNG., Encrypt plaintext using Affine cipher.      Each letter is mapped to (a_key * x (+29 more)
+Nodes (37): _check_coprime(), decrypt(), encrypt(), main(), pick_keys(), Affine cipher implementation., Generate a random key pair (a, b) where a is coprime to 26., Encrypt plaintext using Affine cipher.      Each letter is mapped to (a_key * x (+29 more)
 
 ### Community 9 - "Caesar Cipher Core & Unit Tests"
 Cohesion: 0.09
@@ -274,15 +274,15 @@ Nodes (14): _prepare_text(), Prepare text: remove non-alpha, replace j, group in
 
 ### Community 66 - "playfair.py"
 Cohesion: 0.18
-Nodes (11): _build_pos_map(), main(), pick_keys(), Playfair cipher implementation., Run an interactive test of the Playfair cipher., Build a mapping of character to (row, col) position in the grid., Generate and return a random encryption key using CSPRNG., Test random key generation. (+3 more)
+Nodes (11): _build_pos_map(), main(), pick_keys(), Playfair cipher implementation., Run an interactive test of the Playfair cipher., Build a mapping of character to (row, col) position in the grid., Generate and return a random encryption key., Test random key generation. (+3 more)
 
 ### Community 67 - "encrypt"
 Cohesion: 0.17
 Nodes (12): encrypt(), Encrypt plaintext using Playfair cipher., Test encrypting digraphs where characters share a column., Test encrypting digraphs forming a rectangle., Test decryption when key contains spaces, uppercase letters, duplicate character, Test encrypt raises ValueError when pos_map lookup raises KeyError., Test encrypting digraphs where characters share a row., test_decrypt_complex_key() (+4 more)
 
 ### Community 68 - "test_playfair.py"
-Cohesion: 0.33
-Nodes (6): _create_grid(), Create a 5x5 Playfair grid from key., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j()
+Cohesion: 0.28
+Nodes (8): _create_grid(), Create a 5x5 Playfair grid from key., Test decrypting digraphs where characters share a row., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j(), test_decrypt_same_row()
 
 ### Community 69 - "_find_position"
 Cohesion: 0.33
