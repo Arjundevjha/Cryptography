@@ -536,7 +536,7 @@ def _sha512_compress_block(h_state: List[int], block_bytes: bytes) -> None:
         t2 = (
             (_rotr64(state[0], 28) ^ _rotr64(state[0], 34) ^ _rotr64(state[0], 39))
             + ((state[0] & state[1]) ^ (state[0] & state[2]) ^ (state[1] & state[2]))
-        ) & 0xffffffff
+        ) & 0xffffffffffffffff
         state[7] = state[6]
         state[6] = state[5]
         state[5] = state[4]

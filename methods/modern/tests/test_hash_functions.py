@@ -2,11 +2,14 @@ import warnings
 import pytest
 from methods.modern.hash_functions import (
     sha256,
+    sha512,
+    sha3_256,
     compute_hash,
     HASH_FUNCTIONS,
     md5,
     sha1,
 )
+
 
 def test_compute_hash_value_error():
     """Test that compute_hash raises a ValueError for unsupported algorithms."""
@@ -24,6 +27,26 @@ def test_sha256_kats():
         "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
     )
     assert compute_hash("abc", "sha256") == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+
+
+def test_sha512_kats():
+    """Test SHA-512 implementation against known-answer vectors."""
+    assert sha512("") == (
+        "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce"
+        "47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+    )
+    assert sha512("abc") == (
+        "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
+        "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+    )
+    assert sha512("abcdefghbcdefghicdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq") == (
+        "53931222059312508aae877c41b276230d48f0ef30b034c190a9b11b47235f68"
+        "ed71522a3a4fec604d8bf10336284602bf28d0756a0f690d63ce86495874b71c"
+    )
+    assert compute_hash("abc", "sha512") == (
+        "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
+        "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+    )
 
 
 def test_all_hash_functions_non_empty():
@@ -60,3 +83,46 @@ def test_sha1_kat_and_warning():
         empty_digest = compute_hash("", "sha1")
     assert empty_digest == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
+
+def test_sha3_256_kats():
+    """Test SHA3-256 implementation against known-answer vectors and boundary conditions."""
+    # Empty string KAT
+    assert (
+        sha3_256("")
+        == "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+    )
+
+    # Standard short input KAT
+    assert (
+        sha3_256("abc")
+        == "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
+    )
+
+    # Sentence input KAT
+    assert (
+        sha3_256("The quick brown fox jumps over the lazy dog")
+        == "69070dda01975c8c120c3aada1b282394e7f032fa9cf32f4cb2259a0897dfc04"
+    )
+
+    # Multi-block / boundary conditions (SHA3-256 block size rate = 136 bytes)
+    # Exactly 135 bytes
+    assert (
+        sha3_256("a" * 135)
+        == "8094bb53c44cfb1e67b7c30447f9a1c33696d2463ecc1d9c92538913392843c9"
+    )
+    # Exactly 136 bytes (1 block boundary)
+    assert (
+        sha3_256("a" * 136)
+        == "3fc5559f14db8e453a0a3091edbd2bc25e11528d81c66fa570a4efdcc2695ee1"
+    )
+    # 200 bytes (multiple blocks)
+    assert (
+        sha3_256("a" * 200)
+        == "cce34485baf2bf2aca99b94833892a4f52896d3d153f7b840cc4f9fe695f1387"
+    )
+
+    # compute_hash wrapper verification
+    assert (
+        compute_hash("abc", "sha3_256")
+        == "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
+    )
