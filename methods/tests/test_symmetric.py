@@ -2,7 +2,7 @@ import pytest
 from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
-    encrypt_block, decrypt_block, key_expansion,
+    encrypt_block, decrypt_block, key_expansion, add_round_key,
     sub_bytes, inv_sub_bytes, SBOX, INV_SBOX,
     mix_columns, inv_mix_columns, rot_word, xtime, mul_gf
 )
@@ -142,6 +142,7 @@ def test_key_expansion_valid_key_lengths():
     # 32 bytes
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
+
 
 
 def test_mix_columns_kat():
@@ -300,3 +301,19 @@ def test_inv_sub_bytes():
     subbed = sub_bytes(all_bytes)
     inv_subbed = inv_sub_bytes(subbed)
     assert inv_subbed == all_bytes
+ 
+def test_add_round_key():
+    """Test XOR state with round key in AES."""
+    state = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]
+    round_key = [0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00]
+    expected = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]
+
+    result = add_round_key(state, round_key)
+    assert result == expected
+
+    # Identity property: state XOR zeros == state
+    zero_key = [0x00] * 16
+    assert add_round_key(state, zero_key) == state
+
+    # Involution property: add_round_key twice with same key returns original state
+    assert add_round_key(result, round_key) == state
