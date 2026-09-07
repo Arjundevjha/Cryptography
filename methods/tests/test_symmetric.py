@@ -2,7 +2,8 @@ import pytest
 from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
-    encrypt_block, decrypt_block, key_expansion
+    encrypt_block, decrypt_block, key_expansion,
+    mix_columns, inv_mix_columns
 )
 
 def test_pkcs7_padding():
@@ -118,3 +119,27 @@ def test_key_expansion_valid_key_lengths():
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
 
+def test_inv_mix_columns_kat():
+    """Known Answer Test for inv_mix_columns."""
+    # Known column output after mix_columns([0xdb, 0x13, 0x53, 0x45]) is [0x8e, 0x4d, 0xa1, 0xbc]
+    mixed_state = [
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x8e, 0x4d, 0xa1, 0xbc
+    ]
+    expected_unmixed = [
+        0xdb, 0x13, 0x53, 0x45,
+        0xdb, 0x13, 0x53, 0x45,
+        0xdb, 0x13, 0x53, 0x45,
+        0xdb, 0x13, 0x53, 0x45
+    ]
+    assert inv_mix_columns(mixed_state) == expected_unmixed
+
+def test_mix_columns_inv_mix_columns_roundtrip():
+    """Test that inv_mix_columns is the exact inverse of mix_columns."""
+    state = [i * 17 % 256 for i in range(16)]
+    mixed = mix_columns(state)
+    unmixed = inv_mix_columns(mixed)
+    assert unmixed == state
+    assert mix_columns(unmixed) == mixed
