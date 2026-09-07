@@ -201,15 +201,16 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
       {/* Input Field */}
       <div className="mb-4">
-        <label className="block text-xs font-mono text-stone-300 mb-1">
+        <label htmlFor={`workbench-input-${exhibit.id}`} className="block text-xs font-mono text-stone-300 mb-1">
           {mode === 'encrypt' ? 'PLAINTEXT INPUT' : 'CIPHERTEXT INPUT'}
         </label>
         <textarea
+          id={`workbench-input-${exhibit.id}`}
           rows={2}
           data-testid={`input-text-${exhibit.id}`}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus:border-amber-500 transition-all"
+          className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus:border-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 transition-all"
         />
       </div>
 
@@ -219,13 +220,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {exhibit.id === 'caesar' && (
           <div>
-            <label className="block text-[11px] text-stone-400">Shift Value: {shift}</label>
+            <label htmlFor={`param-shift-${exhibit.id}`} className="block text-[11px] text-stone-400">Shift Value: {shift}</label>
             <input
+              id={`param-shift-${exhibit.id}`}
               type="text"
               data-testid="param-shift-caesar"
               value={shift}
               onChange={(e) => setShift(parseInt(e.target.value) || 0)}
-              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200"
+              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
           </div>
         )}
@@ -233,23 +235,25 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         {exhibit.id === 'affine' && (
           <div className="grid grid-cols-2 gap-2 text-xs font-mono">
             <div>
-              <label className="block text-[11px] text-stone-400">Key a:</label>
+              <label htmlFor={`param-a-${exhibit.id}`} className="block text-[11px] text-stone-400">Key a:</label>
               <input
+                id={`param-a-${exhibit.id}`}
                 type="number"
                 data-testid="param-a-affine"
                 value={aKey}
                 onChange={(e) => setAKey(parseInt(e.target.value) || 1)}
-                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800"
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] text-stone-400">Key b:</label>
+              <label htmlFor={`param-b-${exhibit.id}`} className="block text-[11px] text-stone-400">Key b:</label>
               <input
+                id={`param-b-${exhibit.id}`}
                 type="number"
                 data-testid="param-b-affine"
                 value={bKey}
                 onChange={(e) => setBKey(parseInt(e.target.value) || 0)}
-                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800"
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               />
             </div>
           </div>
@@ -257,13 +261,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {(exhibit.id === 'vigenere' || exhibit.id === 'playfair' || exhibit.id === 'polybius') && (
           <div>
-            <label className="block text-[11px] text-stone-400">Key Phrase:</label>
+            <label htmlFor={`param-key-${exhibit.id}`} className="block text-[11px] text-stone-400">Key Phrase:</label>
             <input
+              id={`param-key-${exhibit.id}`}
               type="text"
               data-testid={`param-key-${exhibit.id}`}
               value={keyPhrase}
               onChange={(e) => setKeyPhrase(e.target.value)}
-              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200"
+              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
           </div>
         )}
@@ -518,7 +523,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         data-testid={`execute-btn-${exhibit.id}`}
         onClick={handleExecute}
         disabled={loading}
-        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50"
+        aria-busy={loading}
+        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-stone-950" />}
         Execute {mode}
@@ -526,7 +532,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
       {/* Standardized Error Banner */}
       {errorMsg && (
-        <div className="mt-3 p-3 rounded-lg bg-red-950/80 border border-red-500/50 text-red-200 text-xs font-mono flex items-start gap-2">
+        <div role="alert" className="mt-3 p-3 rounded-lg bg-red-950/80 border border-red-500/50 text-red-200 text-xs font-mono flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
           <span>{errorMsg}</span>
         </div>
@@ -535,9 +541,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
       {/* Output Container */}
       <div className="mt-4">
         <div className="flex items-center justify-between mb-1">
-          <label className="block text-xs font-mono text-stone-300">
+          <span id={`workbench-output-label-${exhibit.id}`} className="block text-xs font-mono text-stone-300">
             {mode === 'encrypt' ? 'CIPHERTEXT RESULT' : 'DECRYPTED PLAINTEXT'}
-          </label>
+          </span>
           {outputText && (
             <button
               onClick={handleCopy}
@@ -559,6 +565,10 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           )}
         </div>
         <div
+          id={`workbench-output-${exhibit.id}`}
+          role="status"
+          aria-live="polite"
+          aria-labelledby={`workbench-output-label-${exhibit.id}`}
           data-testid={`output-text-${exhibit.id}`}
           className="w-full min-h-[50px] p-3 rounded-lg bg-stone-900 border border-stone-800 text-amber-300 font-mono text-xs break-all select-all"
         >
