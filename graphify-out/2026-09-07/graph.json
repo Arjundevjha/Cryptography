@@ -1251,8 +1251,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test_playfair.py"
     },
     {
@@ -1394,8 +1394,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_test_decrypt_same_row",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test_decrypt_same_row()"
     },
     {
@@ -1702,8 +1702,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_rationale_115",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test decrypting digraphs where characters share a row."
     },
     {
@@ -6212,8 +6212,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "methods_modern_helpers_b64decode",
-      "community": 71,
-      "community_name": "validation_exception_handler",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "b64decode()"
     },
     {
@@ -6366,8 +6366,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "methods_modern_helpers_rationale_46",
-      "community": 71,
-      "community_name": "validation_exception_handler",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "decode a base64 string to bytes."
     },
     {
@@ -6542,8 +6542,8 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "methods_modern_keypair_generate_encrypted_keypair",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "generate_encrypted_keypair()"
     },
     {
@@ -6608,8 +6608,8 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "methods_modern_keypair_rationale_104",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "generate an rsa key pair with an encrypted private key.      args:         passp"
     },
     {
@@ -6671,7 +6671,7 @@
       "label": "decrypt()",
       "file_type": "code",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L76",
+      "source_location": "L79",
       "_origin": "ast",
       "id": "methods_modern_rsa_decrypt",
       "community": 0,
@@ -6682,7 +6682,7 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L104",
+      "source_location": "L110",
       "_origin": "ast",
       "id": "methods_modern_rsa_main",
       "community": 0,
@@ -6737,9 +6737,9 @@
       "label": "Decrypt a message using RSA private key.      Args:         ciphertext: Encrypte",
       "file_type": "rationale",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L77",
+      "source_location": "L80",
       "_origin": "ast",
-      "id": "methods_modern_rsa_rationale_77",
+      "id": "methods_modern_rsa_rationale_80",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "decrypt a message using rsa private key.      args:         ciphertext: encrypte"
@@ -6748,9 +6748,9 @@
       "label": "Demonstrate RSA keypair generation, encryption, and decryption.",
       "file_type": "rationale",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L105",
+      "source_location": "L111",
       "_origin": "ast",
-      "id": "methods_modern_rsa_rationale_105",
+      "id": "methods_modern_rsa_rationale_111",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "demonstrate rsa keypair generation, encryption, and decryption."
@@ -7763,8 +7763,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64encode_roundtrip",
-      "community": 71,
-      "community_name": "validation_exception_handler",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_b64encode_roundtrip()"
     },
     {
@@ -7774,8 +7774,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64decode",
-      "community": 71,
-      "community_name": "validation_exception_handler",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_b64decode()"
     },
     {
@@ -7884,8 +7884,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_rationale_72",
-      "community": 71,
-      "community_name": "validation_exception_handler",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test roundtrip encoding and decoding for various byte payloads."
     },
     {
@@ -7972,8 +7972,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_encrypted_keypair",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_generate_encrypted_keypair()"
     },
     {
@@ -8206,6 +8206,28 @@
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "test_encrypt_invalid_key_pem()"
+    },
+    {
+      "label": "test_rsa_encrypt_small_modulus_error()",
+      "file_type": "code",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L228",
+      "_origin": "ast",
+      "id": "methods_modern_tests_test_rsa_test_rsa_encrypt_small_modulus_error",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "norm_label": "test_rsa_encrypt_small_modulus_error()"
+    },
+    {
+      "label": "test_rsa_decrypt_small_modulus_error()",
+      "file_type": "code",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L242",
+      "_origin": "ast",
+      "id": "methods_modern_tests_test_rsa_test_rsa_decrypt_small_modulus_error",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "norm_label": "test_rsa_decrypt_small_modulus_error()"
     },
     {
       "label": "Test fallback imports by masking the modern module temporarily.",
@@ -27678,6 +27700,42 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L229",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa",
+      "target": "methods_modern_helpers_b64encode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L246",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_decrypt_small_modulus_error",
+      "target": "methods_modern_helpers_b64encode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L232",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_encrypt_small_modulus_error",
+      "target": "methods_modern_helpers_b64encode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "web/api/main.py",
       "source_location": "L792",
       "weight": 1.0,
@@ -28774,7 +28832,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L109",
+      "source_location": "L115",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -28977,7 +29035,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L123",
+      "source_location": "L129",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -29083,7 +29141,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L76",
+      "source_location": "L79",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa",
@@ -29116,7 +29174,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L104",
+      "source_location": "L110",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa",
@@ -29198,7 +29256,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L86",
+      "source_location": "L89",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_decrypt",
@@ -29317,7 +29375,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L124",
+      "source_location": "L130",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -29376,7 +29434,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L110",
+      "source_location": "L116",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -29506,6 +29564,18 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L240",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_encrypt_small_modulus_error",
+      "target": "methods_modern_rsa_encrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/api/main.py",
       "source_location": "L840",
@@ -29519,7 +29589,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L111",
+      "source_location": "L117",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -29530,10 +29600,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L77",
+      "source_location": "L80",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_rsa_rationale_77",
+      "source": "methods_modern_rsa_rationale_80",
       "target": "methods_modern_rsa_decrypt",
       "confidence_score": 1.0
     },
@@ -29637,6 +29707,18 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L254",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_decrypt_small_modulus_error",
+      "target": "methods_modern_rsa_decrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/api/main.py",
       "source_location": "L853",
@@ -29649,10 +29731,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L105",
+      "source_location": "L111",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_rsa_rationale_105",
+      "source": "methods_modern_rsa_rationale_111",
       "target": "methods_modern_rsa_main",
       "confidence_score": 1.0
     },
@@ -31750,6 +31832,28 @@
       "_origin": "ast",
       "source": "methods_modern_tests_test_rsa",
       "target": "methods_modern_tests_test_rsa_test_rsa_decrypt_private_key_wrong_passphrase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L242",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa",
+      "target": "methods_modern_tests_test_rsa_test_rsa_decrypt_small_modulus_error",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L228",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa",
+      "target": "methods_modern_tests_test_rsa_test_rsa_encrypt_small_modulus_error",
       "confidence_score": 1.0
     },
     {
@@ -39429,5 +39533,5 @@
       "source_file": "STYLE_GUIDE.md"
     }
   ],
-  "built_at_commit": "eb3df41e4de85c742e651a90f6362814ed6cd6b7"
+  "built_at_commit": "359c1bb183e5704cfd8dcc70cc1180f205b7eb8a"
 }

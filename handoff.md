@@ -1,37 +1,79 @@
-# Session Handoff: PR Triage & Clearing (#184 – #186)
+# Session Handoff: PR Triage & Clearing (#187 – #207)
 
 ## Executive Summary
-Completed automated review, standards enforcement, conflict resolution, test verification, and PR clearing for all open Pull Requests in the repository (#184 through #186), bringing open PRs to exactly **zero**.
+Completed automated review, standards enforcement, conflict resolution, test verification, and PR clearing for all open Pull Requests in the repository (#187 through #207), bringing open PRs to exactly **zero**.
 
-### 1. PR Triage & Lifecycle Operations (PRs #184 – #186)
-1. **Closed Rejected PRs (2 Total)**:
-   - [#184](https://github.com/Arjundevjha/Cryptography/pull/184): Closed — contained extraneous lockfile (`web/pnpm-lock.yaml`), violating repository package management standards (`npm` with `package-lock.json`). Remote branch deleted.
-   - [#186](https://github.com/Arjundevjha/Cryptography/pull/186): Closed — contained external AI journal/scratch file (`.jules/bolt.md`), violating repository cleanliness guidelines. Remote branch deleted.
+### 1. PR Triage & Lifecycle Operations (PRs #187 – #207)
+All 21 pull requests in this batch adhered to repository standards (no forbidden math imports, no `sys.path` hacks, no extraneous lockfiles, no AI journal/scratch files). Sequential merge conflicts arising from high test addition churn across `methods/tests/test_symmetric.py`, `methods/modern/tests/test_hash_functions.py`, and `web/api/test_main.py` were locally resolved, fully verified against both Python and TypeScript test suites, and squash-merged with remote branch pruning:
 
-2. **Merged Approved PRs (1 Total)**:
-   - [#185](https://github.com/Arjundevjha/Cryptography/pull/185): Added modulus size validation ($n \ge 256$) in RSA `encrypt` and `decrypt` to prevent mathematical decryption corruption and potential `OverflowError` for byte-by-byte RSA operations, with accompanying unit tests. Squashed & merged, remote branch deleted.
+- **15 Pull Requests Merged in this Run**:
+  - **#193**: ShiftRows & InvShiftRows AES state matrix tests.
+  - **#194**: SubBytes & InvSubBytes AES S-box test suite.
+  - **#195**: MixColumns & InvMixColumns FIPS-197 Known Answer Tests.
+  - **#196**: Lorenz cipher `encrypt_char`, `decrypt_char`, pin validation, and stepping tests.
+  - **#197**: SHA-512 KATs & fixed 32-bit truncation bug (`t2`) in `_sha512_compress_block`.
+  - **#198**: Lorenz `get_keystream_vector()` and `SteppingController` initialization tests.
+  - **#199**: AES `inv_sub_bytes` direct mapping & roundtrip tests across 256 byte values.
+  - **#200**: AES `add_round_key` XOR calculation, identity, and involution property tests.
+  - **#201**: AES decryption API endpoint (`/api/aes/decrypt`) unit & integration tests.
+  - **#202**: SHA-256 API endpoint (`/api/sha256`) max-length limits and unicode tests.
+  - **#203**: BLAKE2b hash function KATs and `compute_hash` dispatcher tests.
+  - **#204**: Extended SHA-512 KATs (long strings, test phrases) merged into test suite.
+  - **#205**: AES `sub_word` word substitution and edge case tests.
+  - **#206**: FastAPI `validation_exception_handler` branch coverage & string limit tests.
+  - **#207**: Lorenz decryption API endpoint (`/api/lorenz/decrypt`) custom pins & error handling tests.
+- **6 Pull Requests Merged in Earlier Phase of this Batch**:
+  - **#187**: AES `inv_mix_columns` unit tests.
+  - **#188**: AES `rot_word` word rotation unit tests.
+  - **#189**: SHA3-256 Known Answer Tests & multi-block boundary tests.
+  - **#190**: AES `xtime` GF(2^8) multiplication by 2 tests and edge cases.
+  - **#191**: Lorenz CLI `run_cli` argument parsing and runner unit tests.
+  - **#192**: Lorenz character processing & text alias tests.
 
 ---
 
 ## Active State of Codebase
-- **Zero Open PRs**: `gh pr list` confirms 0 open PRs remaining.
-- **Single Remote Branch**: Remote tracking branches pruned. Remote has exactly 1 branch: `main`.
-- **Python Test Suite**: **645 / 645** tests passing (`pytest`, 100% pass rate).
+- **Zero Open PRs**: `gh pr list` confirms exactly **0** open PRs remaining.
+- **Single Remote Branch**: All merged remote branches pruned (`git remote prune origin`). Remote has exactly 1 branch: `main`.
+- **Python Test Suite**: **698 / 698** tests passing (`pytest`, 100% pass rate, up from 645).
 - **Frontend Unit Tests**: **42 / 42** tests passing (`npm test`, 100% pass rate).
-- **Graphify Knowledge Graph**: Re-indexed and updated (`graphify update .` -> 1,276 nodes, 2,215 edges, 77 communities).
+- **Graphify Knowledge Graph**: Re-indexed and updated (`graphify update .` -> 1,351 nodes, 2,362 edges, 85 communities).
 
 ---
 
-## PR Summary Table (Latest Batch: #184 – #186)
+## PR Summary Table (Latest Batch: #187 – #207)
+| PR # | Title | Type | Status | Action Taken |
+|---|---|---|---|---|
+| [#187](https://github.com/Arjundevjha/Cryptography/pull/187) | 🧪 test: add unit tests for inv_mix_columns | Testing | Merged | Squashed & merged, branch deleted |
+| [#188](https://github.com/Arjundevjha/Cryptography/pull/188) | 🧪 test(symmetric): add unit test for rot_word | Testing | Merged | Squashed & merged after conflict resolution |
+| [#189](https://github.com/Arjundevjha/Cryptography/pull/189) | 🧪 Add comprehensive unit tests for sha3_256 hash function | Testing | Merged | Squashed & merged, branch deleted |
+| [#190](https://github.com/Arjundevjha/Cryptography/pull/190) | 🧪 Add unit tests for xtime in symmetric cryptography | Testing | Merged | Squashed & merged after conflict resolution |
+| [#191](https://github.com/Arjundevjha/Cryptography/pull/191) | 🧪 test(lorenz): add tests for Lorenz CLI | Testing | Merged | Squashed & merged, branch deleted |
+| [#192](https://github.com/Arjundevjha/Cryptography/pull/192) | 🧪 test(lorenz): add unit tests for Lorenz cipher character processing and aliases | Testing | Merged | Squashed & merged, branch deleted |
+| [#193](https://github.com/Arjundevjha/Cryptography/pull/193) | 🧪 add missing tests for shift_rows and inv_shift_rows | Testing | Merged | Squashed & merged after conflict resolution |
+| [#194](https://github.com/Arjundevjha/Cryptography/pull/194) | 🧪 test(symmetric): add unit tests for sub_bytes | Testing | Merged | Squashed & merged after conflict resolution |
+| [#195](https://github.com/Arjundevjha/Cryptography/pull/195) | 🧪 Add unit tests for AES mix_columns function | Testing | Merged | Squashed & merged after conflict resolution |
+| [#196](https://github.com/Arjundevjha/Cryptography/pull/196) | 🧪 Add tests for Lorenz cipher encrypt_char and stepping mechanism | Testing | Merged | Squashed & merged after conflict resolution |
+| [#197](https://github.com/Arjundevjha/Cryptography/pull/197) | 🧪 Add unit tests for sha512 hash function | Bugfix / Testing | Merged | Fixed SHA-512 state mask & squashed/merged |
+| [#198](https://github.com/Arjundevjha/Cryptography/pull/198) | 🧪 test: add test for Lorenz get_keystream_vector | Testing | Merged | Squashed & merged, branch deleted |
+| [#199](https://github.com/Arjundevjha/Cryptography/pull/199) | 🧪 Add unit tests for inv_sub_bytes function in AES symmetric cryptography | Testing | Merged | Squashed & merged after conflict resolution |
+| [#200](https://github.com/Arjundevjha/Cryptography/pull/200) | 🧪 test: add unit test for add_round_key | Testing | Merged | Squashed & merged after conflict resolution |
+| [#201](https://github.com/Arjundevjha/Cryptography/pull/201) | 🧪 Add tests for aes_decrypt_endpoint | Testing | Merged | Squashed & merged, branch deleted |
+| [#202](https://github.com/Arjundevjha/Cryptography/pull/202) | 🧪 Add comprehensive test coverage for sha256_endpoint | Testing | Merged | Squashed & merged, branch deleted |
+| [#203](https://github.com/Arjundevjha/Cryptography/pull/203) | 🧪 Add unit tests for BLAKE2b hash function | Testing | Merged | Squashed & merged after conflict resolution |
+| [#204](https://github.com/Arjundevjha/Cryptography/pull/204) | 🧪 test: add unit tests for sha512 hash function | Testing | Merged | Combined KATs & squashed/merged |
+| [#205](https://github.com/Arjundevjha/Cryptography/pull/205) | 🧪 add unit tests for sub_word in symmetric module | Testing | Merged | Squashed & merged after conflict resolution |
+| [#206](https://github.com/Arjundevjha/Cryptography/pull/206) | 🧪 Add tests for validation_exception_handler in web/api/main.py | Testing | Merged | Squashed & merged after conflict resolution |
+| [#207](https://github.com/Arjundevjha/Cryptography/pull/207) | 🧪 test: add missing test coverage for lorenz_decrypt endpoint | Testing | Merged | Squashed & merged, branch deleted |
+
+---
+
+## Historical PR Triage Archive (#128 – #186)
 | PR # | Title | Type | Status | Action Taken |
 |---|---|---|---|---|
 | [#184](https://github.com/Arjundevjha/Cryptography/pull/184) | 🎨 Palette: Improve HUD audio toggle and API status dot accessibility | Dependency | Rejected | Closed (`pnpm-lock.yaml`), branch deleted |
 | [#185](https://github.com/Arjundevjha/Cryptography/pull/185) | 🛡️ Sentinel: Fix potential OverflowError in RSA by adding modulus validation (n >= 256) | Security | Merged | Squashed & merged, branch deleted |
 | [#186](https://github.com/Arjundevjha/Cryptography/pull/186) | ⚡ Bolt: Memoize modular exponentiations in RSA encryption and decryption | Cleanliness | Rejected | Closed (`.jules/bolt.md`), branch deleted |
-
----
-
-## Historical PR Triage Archive (#128 – #183)
 | PR # | Title | Type | Status | Action Taken |
 |---|---|---|---|---|
 | [#181](https://github.com/Arjundevjha/Cryptography/pull/181) | 🛡️ Sentinel: Enforce CSPRNG for classical and historical cipher key generation | Security | Merged | Squashed & merged, branch deleted |
