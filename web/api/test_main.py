@@ -820,6 +820,28 @@ def test_sha256_text():
     assert response.status_code == 200
     assert response.json() == {"hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"}
 
+def test_sha256_max_length():
+    plaintext = "a" * 500
+    response = client.post("/api/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 200
+    data = response.json()
+    assert "hash" in data
+    assert len(data["hash"]) == 64
+
+def test_sha256_exceeds_max_length():
+    plaintext = "a" * 501
+    response = client.post("/api/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 400
+    assert "exceeds" in response.json()["detail"].lower()
+
+def test_sha256_unicode_and_special_characters():
+    plaintext = "Hello World 🌍🔒\n\t"
+    response = client.post("/api/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 200
+    data = response.json()
+    assert "hash" in data
+    assert len(data["hash"]) == 64
+
 def test_rsa_encrypt_exception(caplog):
     enc_payload = {
         "plaintext": "Secret Message",
