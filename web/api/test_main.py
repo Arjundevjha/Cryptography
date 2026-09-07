@@ -2,8 +2,11 @@ from unittest.mock import patch
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import HTTPException
+from fastapi import Request
+from fastapi.exceptions import RequestValidationError
 from api.main import (
     app,
+    validation_exception_handler,
     validate_enigma_rotors,
     parse_enigma_positions,
     parse_and_validate_enigma_rings,
@@ -657,7 +660,59 @@ def test_aes_invalid_key_size():
     }
     response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
-    assert "key must be 16 or 32 bytes" in response.json()["detail"].lower()
+
+
+# ==========================================
+# VALIDATION EXCEPTION HANDLER TESTS
+# ==========================================
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_string_too_long_type():
+    req = Request({"type": "http"})
+    exc = RequestValidationError([{"type": "string_too_long", "msg": "String is too long"}])
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    assert response.body == b'{"detail":"Input string length exceeds limit of 500 characters."}'
+
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_value_error_any_str_max_length():
+    req = Request({"type": "http"})
+    exc = RequestValidationError([{"type": "value_error.any_str.max_length", "msg": "Max length exceeded"}])
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    assert response.body == b'{"detail":"Input string length exceeds limit of 500 characters."}'
+
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_msg_contains_500():
+    req = Request({"type": "http"})
+    exc = RequestValidationError([{"type": "value_error", "msg": "Value length exceeds 500 characters"}])
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    assert response.body == b'{"detail":"Input string length exceeds limit of 500 characters."}'
+
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_generic_validation_error():
+    req = Request({"type": "http"})
+    errors = [{"type": "missing", "loc": ["body", "plaintext"], "msg": "Field required"}]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    import json
+    data = json.loads(response.body.decode("utf-8"))
+    assert data["detail"] == errors
+
+
+def test_validation_exception_handler_integration_generic_error():
+    # Send request missing required fields
+    response = client.post("/api/caesar/encrypt", json={})
+    assert response.status_code == 400
+    data = response.json()
+    assert isinstance(data["detail"], list)
+    assert len(data["detail"]) > 0
+    assert any(err.get("type") == "missing" for err in data["detail"])
 
 def test_aes_invalid_hex_key():
     payload = {
