@@ -2,7 +2,8 @@ import pytest
 from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
-    encrypt_block, decrypt_block, key_expansion
+    encrypt_block, decrypt_block, key_expansion,
+    rot_word
 )
 
 def test_pkcs7_padding():
@@ -118,3 +119,22 @@ def test_key_expansion_valid_key_lengths():
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
 
+def test_rot_word():
+    """Test 1-byte left rotation on a 4-byte word."""
+    word = [0x01, 0x02, 0x03, 0x04]
+    original = word.copy()
+
+    rotated = rot_word(word)
+    assert rotated == [0x02, 0x03, 0x04, 0x01]
+    # Ensure original list was not modified in-place
+    assert word == original
+
+    # Test full 4-rotation cycle returns to original
+    w = word
+    for _ in range(4):
+        w = rot_word(w)
+    assert w == word
+
+    # Test word with identical elements
+    same_word = [0xFF, 0xFF, 0xFF, 0xFF]
+    assert rot_word(same_word) == same_word
