@@ -2,7 +2,8 @@ import pytest
 from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
-    encrypt_block, decrypt_block, key_expansion
+    encrypt_block, decrypt_block, key_expansion,
+    mix_columns, inv_mix_columns
 )
 
 def test_pkcs7_padding():
@@ -118,3 +119,34 @@ def test_key_expansion_valid_key_lengths():
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
 
+def test_mix_columns_kat():
+    """Test mix_columns against standard FIPS 197 AES test vectors."""
+    # FIPS 197 Appendix B example column 1: [0xd4, 0xbf, 0x5d, 0x30] -> [0x04, 0x66, 0x81, 0xe5]
+    state = [
+        0xd4, 0xbf, 0x5d, 0x30,
+        0xe0, 0xb4, 0x52, 0xae,
+        0xb8, 0x41, 0x11, 0xf1,
+        0x1e, 0x27, 0x98, 0xe5
+    ]
+    expected = [
+        0x04, 0x66, 0x81, 0xe5,
+        0xe0, 0xcb, 0x19, 0x9a,
+        0x48, 0xf8, 0xd3, 0x7a,
+        0x28, 0x06, 0x26, 0x4c
+    ]
+    assert mix_columns(state) == expected
+
+def test_mix_columns_zero_state():
+    """Test mix_columns on all-zero state matrix."""
+    state = [0] * 16
+    assert mix_columns(state) == [0] * 16
+    assert inv_mix_columns(state) == [0] * 16
+
+def test_mix_columns_inv_mix_columns_roundtrip():
+    """Test that inv_mix_columns reverses mix_columns for arbitrary states."""
+    import secrets
+    for _ in range(10):
+        state = list(secrets.token_bytes(16))
+        mixed = mix_columns(state)
+        unmixed = inv_mix_columns(mixed)
+        assert unmixed == state
