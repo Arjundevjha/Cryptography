@@ -1482,6 +1482,49 @@ def test_lorenz_api_custom_positions():
     assert dec.json()["plaintext"] == "TOPSECRET"
 
 
+def test_lorenz_api_custom_pins_decrypt():
+    # Valid custom pins for Chi (5 wheels of sizes 41,31,29,26,23), Motor (2 wheels: 37, 61), Psi (5 wheels: 43,47,51,53,59)
+    chi_pins = [
+        [1, 0] * 20 + [1],      # 41
+        [1, 0] * 15 + [1],      # 31
+        [1, 0] * 14 + [1],      # 29
+        [1, 0] * 13,            # 26
+        [1, 0] * 11 + [1],      # 23
+    ]
+    motor_pins = [
+        [1, 0] * 30 + [1],      # 61
+        [1, 0] * 18 + [1],      # 37
+    ]
+    psi_pins = [
+        [1, 0] * 21 + [1],      # 43
+        [1, 0] * 23 + [1],      # 47
+        [1, 0] * 25 + [1],      # 51
+        [1, 0] * 26 + [1],      # 53
+        [1, 0] * 29 + [1],      # 59
+    ]
+    payload_enc = {
+        "plaintext": "CUSTOMPINS",
+        "chi_pins": chi_pins,
+        "motor_pins": motor_pins,
+        "psi_pins": psi_pins,
+        "positions": [0] * 12
+    }
+    enc = client.post("/api/lorenz/encrypt", json=payload_enc)
+    assert enc.status_code == 200
+    ciphertext = enc.json()["ciphertext"]
+
+    payload_dec = {
+        "ciphertext": ciphertext,
+        "chi_pins": chi_pins,
+        "motor_pins": motor_pins,
+        "psi_pins": psi_pins,
+        "positions": [0] * 12
+    }
+    dec = client.post("/api/lorenz/decrypt", json=payload_dec)
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == "CUSTOMPINS"
+
+
 def test_lorenz_api_invalid_positions():
     positions = [1, 2]  # Should be 12 items
     enc = client.post("/api/lorenz/encrypt", json={"plaintext": "TOPSECRET", "positions": positions})
@@ -1499,6 +1542,25 @@ def test_lorenz_api_invalid_pins():
     enc = client.post("/api/lorenz/encrypt", json={"plaintext": "TEST", "chi_pins": chi_pins})
     assert enc.status_code == 400
     assert "encryption failed" in enc.json()["detail"].lower()
+
+    dec = client.post("/api/lorenz/decrypt", json={"ciphertext": "TEST", "chi_pins": chi_pins})
+    assert dec.status_code == 400
+    assert "decryption failed" in dec.json()["detail"].lower()
+
+
+def test_lorenz_decrypt_value_error_handling():
+    # Mock decrypt_text to raise ValueError to verify explicit "Decryption failed: ..." response detail
+    with patch("methods.historical.lorenz.Lorenz.decrypt_text", side_effect=ValueError("Invalid wheel pin length")):
+        resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ"})
+        assert resp.status_code == 400
+        assert resp.json()["detail"] == "Decryption failed: Invalid wheel pin length"
+
+
+def test_lorenz_decrypt_input_too_long():
+    long_ciphertext = "a" * 501
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": long_ciphertext})
+    assert resp.status_code == 400
+    assert "exceeds" in resp.json()["detail"].lower()
 
 
 def test_lorenz_api_runtime_error_exception(caplog):
@@ -1764,6 +1826,14 @@ def test_lorenz_encrypt_oversized_positions():
     response = client.post("/api/lorenz/encrypt", json=payload)
     assert response.status_code == 400
 
+def test_lorenz_decrypt_oversized_positions():
+    payload = {
+        "ciphertext": "HELLO",
+        "positions": [1] * 15
+    }
+    response = client.post("/api/lorenz/decrypt", json=payload)
+    assert response.status_code == 400
+
 def test_scytale_encrypt_excessive_width():
     payload = {
         "plaintext": "HELLO",
@@ -1791,12 +1861,28 @@ def test_lorenz_encrypt_oversized_nested_pins():
     response = client.post("/api/lorenz/encrypt", json=payload)
     assert response.status_code == 400
 
+def test_lorenz_decrypt_oversized_nested_pins():
+    payload = {
+        "ciphertext": "HELLO",
+        "chi_pins": [[1] * 100]
+    }
+    response = client.post("/api/lorenz/decrypt", json=payload)
+    assert response.status_code == 400
+
 def test_lorenz_encrypt_out_of_bounds_position():
     payload = {
         "plaintext": "HELLO",
         "positions": [100000] * 12
     }
     response = client.post("/api/lorenz/encrypt", json=payload)
+    assert response.status_code == 400
+
+def test_lorenz_decrypt_out_of_bounds_position():
+    payload = {
+        "ciphertext": "HELLO",
+        "positions": [100000] * 12
+    }
+    response = client.post("/api/lorenz/decrypt", json=payload)
     assert response.status_code == 400
 
 def test_aes_encrypt_oversized_format():
