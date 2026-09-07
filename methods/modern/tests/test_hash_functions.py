@@ -1,5 +1,6 @@
 import warnings
 import pytest
+import hashlib
 from methods.modern.hash_functions import (
     sha256,
     sha512,
@@ -8,6 +9,7 @@ from methods.modern.hash_functions import (
     HASH_FUNCTIONS,
     md5,
     sha1,
+    blake2b,
 )
 
 
@@ -82,6 +84,29 @@ def test_sha1_kat_and_warning():
     with pytest.warns(UserWarning, match="SHA-1 is cryptographically weak"):
         empty_digest = compute_hash("", "sha1")
     assert empty_digest == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+
+
+def test_blake2b_kats_and_compute_hash():
+    """Test BLAKE2b implementation against known-answer vectors and hashlib standard."""
+    # Test empty string input
+    expected_empty = hashlib.blake2b(b"").hexdigest()
+    assert blake2b("") == expected_empty
+
+    # Test short ASCII string input ("abc")
+    expected_abc = hashlib.blake2b(b"abc").hexdigest()
+    assert blake2b("abc") == expected_abc
+    assert compute_hash("abc", "blake2b") == expected_abc
+
+    # Test medium string input
+    phrase = "The quick brown fox jumps over the lazy dog"
+    expected_phrase = hashlib.blake2b(phrase.encode("utf-8")).hexdigest()
+    assert blake2b(phrase) == expected_phrase
+
+    # Test multi-block string input (> 128 bytes block size)
+    long_data = "a" * 250
+    expected_long = hashlib.blake2b(long_data.encode("utf-8")).hexdigest()
+    assert blake2b(long_data) == expected_long
+    assert compute_hash(long_data, "blake2b") == expected_long
 
 
 def test_sha3_256_kats():
