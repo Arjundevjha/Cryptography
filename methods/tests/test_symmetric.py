@@ -2,7 +2,8 @@ import pytest
 from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
-    encrypt_block, decrypt_block, key_expansion
+    encrypt_block, decrypt_block, key_expansion,
+    xtime, mul_gf
 )
 
 def test_pkcs7_padding():
@@ -118,3 +119,35 @@ def test_key_expansion_valid_key_lengths():
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
 
+def test_xtime_edge_cases_and_vectors():
+    """Test xtime GF(2^8) multiplication by 2 with edge cases and known values."""
+    # 0x00 -> 0x00
+    assert xtime(0x00) == 0x00
+
+    # 0x01 shifted left by 1 -> 0x02 (no MSB reduction)
+    assert xtime(0x01) == 0x02
+
+    # 0x57 * 2 in GF(2^8) (standard FIPS-197 / AES vector example)
+    # 0x57 (01010111) -> << 1 = 10101110 (0xAE) without MSB reduction since MSB was 0
+    assert xtime(0x57) == 0xAE
+
+    # 0xAE * 2 in GF(2^8) (0xAE has MSB set: 10101110)
+    # (0xAE << 1) ^ 0x1B & 0xFF -> (0x15C ^ 0x1B) & 0xFF -> 0x147 & 0xFF = 0x47
+    assert xtime(0xAE) == 0x47
+
+    # 0x7F boundary (MSB not set: 01111111) -> 0xFE
+    assert xtime(0x7F) == 0xFE
+
+    # 0x80 boundary (MSB set: 10000000) -> (0x100 ^ 0x1B) & 0xFF = 0x1B
+    assert xtime(0x80) == 0x1B
+
+    # 0x81 (MSB set: 10000001) -> (0x102 ^ 0x1B) & 0xFF = 0x19
+    assert xtime(0x81) == 0x19
+
+    # 0xFF (MSB set: 11111111) -> (0x1FE ^ 0x1B) & 0xFF = 0xE5
+    assert xtime(0xFF) == 0xE5
+
+def test_xtime_matches_mul_gf():
+    """Verify xtime matches mul_gf(val, 2) for all byte values from 0 to 255."""
+    for byte_val in range(256):
+        assert xtime(byte_val) == mul_gf(byte_val, 2)
