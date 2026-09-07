@@ -118,3 +118,43 @@ def test_key_expansion_valid_key_lengths():
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
 
+def test_shift_rows():
+    """Test shift_rows function with a 16-byte state represented as 0..15."""
+    from methods.modern.symmetric import shift_rows, inv_shift_rows
+
+    # State elements 0..15 corresponding to AES matrix positions
+    state = list(range(16))
+
+    # Expected shift_rows result:
+    # Row 0 (indices 0, 4, 8, 12): no shift -> [0, 4, 8, 12]
+    # Row 1 (indices 1, 5, 9, 13): 1 shift left -> [5, 9, 13, 1]
+    # Row 2 (indices 2, 6, 10, 14): 2 shift left -> [10, 14, 2, 6]
+    # Row 3 (indices 3, 7, 11, 15): 3 shift left -> [15, 3, 7, 11]
+    # State flat array index layout in code:
+    # [0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 6, 11]
+    expected_shifted = [
+        0, 5, 10, 15,
+        4, 9, 14, 3,
+        8, 13, 2, 7,
+        12, 1, 6, 11
+    ]
+
+    shifted = shift_rows(state)
+    assert shifted == expected_shifted
+
+    # Test inverse shift rows restores original state
+    restored = inv_shift_rows(shifted)
+    assert restored == state
+
+def test_inv_shift_rows():
+    """Test inv_shift_rows function directly with a known input state."""
+    from methods.modern.symmetric import inv_shift_rows
+
+    state = list(range(16))
+    expected_inv_shifted = [
+        0, 13, 10, 7,
+        4, 1, 14, 11,
+        8, 5, 2, 15,
+        12, 9, 6, 3
+    ]
+    assert inv_shift_rows(state) == expected_inv_shifted
