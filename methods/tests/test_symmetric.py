@@ -3,7 +3,8 @@ from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
     encrypt_block, decrypt_block, key_expansion,
-    mix_columns, inv_mix_columns
+    sub_bytes, inv_sub_bytes, SBOX,
+    mix_columns, inv_mix_columns, rot_word, xtime, mul_gf
 )
 
 def test_pkcs7_padding():
@@ -106,6 +107,29 @@ def test_key_expansion_invalid_key_length():
     with pytest.raises(ValueError, match="Key length must be 16, 24, or 32 bytes"):
         key_expansion(b"12345") # 5 bytes
 
+def test_sub_bytes_known_state():
+    """Test sub_bytes with a known input state against expected S-box substitution values."""
+    input_state = [0x00, 0x01, 0x02, 0x0f, 0x10, 0x53, 0xff, 0x80, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde]
+    expected_output = [SBOX[b] for b in input_state]
+
+    output_state = sub_bytes(input_state)
+    assert output_state == expected_output
+    assert len(output_state) == len(input_state)
+    # Check specific expected values from SBOX
+    # SBOX[0x00] == 0x63, SBOX[0x01] == 0x7c, SBOX[0x02] == 0x77, SBOX[0x0f] == 0x76, SBOX[0xff] == 0x16
+    assert output_state[0] == 0x63
+    assert output_state[1] == 0x7c
+    assert output_state[2] == 0x77
+    assert output_state[3] == 0x76
+    assert output_state[6] == 0x16
+
+def test_sub_bytes_inv_sub_bytes_roundtrip():
+    """Test that applying sub_bytes followed by inv_sub_bytes returns the original state."""
+    input_state = list(range(16))
+    sub_state = sub_bytes(input_state)
+    restored_state = inv_sub_bytes(sub_state)
+    assert restored_state == input_state
+
 def test_key_expansion_valid_key_lengths():
     # 16 bytes
     key16 = b"1" * 16
@@ -142,7 +166,7 @@ def test_mix_columns_zero_state():
     assert mix_columns(state) == [0] * 16
     assert inv_mix_columns(state) == [0] * 16
 
-def test_mix_columns_inv_mix_columns_roundtrip():
+def test_mix_columns_inv_mix_columns_random_roundtrip():
     """Test that inv_mix_columns reverses mix_columns for arbitrary states."""
     import secrets
     for _ in range(10):
@@ -150,3 +174,115 @@ def test_mix_columns_inv_mix_columns_roundtrip():
         mixed = mix_columns(state)
         unmixed = inv_mix_columns(mixed)
         assert unmixed == state
+
+def test_inv_mix_columns_kat():
+    """Known Answer Test for inv_mix_columns."""
+    # Known column output after mix_columns([0xdb, 0x13, 0x53, 0x45]) is [0x8e, 0x4d, 0xa1, 0xbc]
+    mixed_state = [
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x8e, 0x4d, 0xa1, 0xbc
+    ]
+    expected_unmixed = [
+        0xdb, 0x13, 0x53, 0x45,
+        0xdb, 0x13, 0x53, 0x45,
+        0xdb, 0x13, 0x53, 0x45,
+        0xdb, 0x13, 0x53, 0x45
+    ]
+    assert inv_mix_columns(mixed_state) == expected_unmixed
+
+def test_mix_columns_inv_mix_columns_roundtrip():
+    """Test that inv_mix_columns is the exact inverse of mix_columns."""
+    state = [i * 17 % 256 for i in range(16)]
+    mixed = mix_columns(state)
+    unmixed = inv_mix_columns(mixed)
+    assert unmixed == state
+    assert mix_columns(unmixed) == mixed
+
+def test_rot_word():
+    """Test 1-byte left rotation on a 4-byte word."""
+    word = [0x01, 0x02, 0x03, 0x04]
+    original = word.copy()
+
+    rotated = rot_word(word)
+    assert rotated == [0x02, 0x03, 0x04, 0x01]
+    # Ensure original list was not modified in-place
+    assert word == original
+
+    # Test full 4-rotation cycle returns to original
+    w = word
+    for _ in range(4):
+        w = rot_word(w)
+    assert w == word
+
+    # Test word with identical elements
+    same_word = [0xFF, 0xFF, 0xFF, 0xFF]
+    assert rot_word(same_word) == same_word
+
+def test_xtime_edge_cases_and_vectors():
+    """Test xtime GF(2^8) multiplication by 2 with edge cases and known values."""
+    # 0x00 -> 0x00
+    assert xtime(0x00) == 0x00
+
+    # 0x01 shifted left by 1 -> 0x02 (no MSB reduction)
+    assert xtime(0x01) == 0x02
+
+    # 0x57 * 2 in GF(2^8) (standard FIPS-197 / AES vector example)
+    # 0x57 (01010111) -> << 1 = 10101110 (0xAE) without MSB reduction since MSB was 0
+    assert xtime(0x57) == 0xAE
+
+    # 0xAE * 2 in GF(2^8) (0xAE has MSB set: 10101110)
+    # (0xAE << 1) ^ 0x1B & 0xFF -> (0x15C ^ 0x1B) & 0xFF -> 0x147 & 0xFF = 0x47
+    assert xtime(0xAE) == 0x47
+
+    # 0x7F boundary (MSB not set: 01111111) -> 0xFE
+    assert xtime(0x7F) == 0xFE
+
+    # 0x80 boundary (MSB set: 10000000) -> (0x100 ^ 0x1B) & 0xFF = 0x1B
+    assert xtime(0x80) == 0x1B
+
+    # 0x81 (MSB set: 10000001) -> (0x102 ^ 0x1B) & 0xFF = 0x19
+    assert xtime(0x81) == 0x19
+
+    # 0xFF (MSB set: 11111111) -> (0x1FE ^ 0x1B) & 0xFF = 0xE5
+    assert xtime(0xFF) == 0xE5
+
+def test_xtime_matches_mul_gf():
+    """Verify xtime matches mul_gf(val, 2) for all byte values from 0 to 255."""
+    for byte_val in range(256):
+        assert xtime(byte_val) == mul_gf(byte_val, 2)
+
+def test_shift_rows():
+    """Test shift_rows function with a 16-byte state represented as 0..15."""
+    from methods.modern.symmetric import shift_rows, inv_shift_rows
+
+    # State elements 0..15 corresponding to AES matrix positions
+    state = list(range(16))
+
+    expected_shifted = [
+        0, 5, 10, 15,
+        4, 9, 14, 3,
+        8, 13, 2, 7,
+        12, 1, 6, 11
+    ]
+
+    shifted = shift_rows(state)
+    assert shifted == expected_shifted
+
+    # Test inverse shift rows restores original state
+    restored = inv_shift_rows(shifted)
+    assert restored == state
+
+def test_inv_shift_rows():
+    """Test inv_shift_rows function directly with a known input state."""
+    from methods.modern.symmetric import inv_shift_rows
+
+    state = list(range(16))
+    expected_inv_shifted = [
+        0, 13, 10, 7,
+        4, 1, 14, 11,
+        8, 5, 2, 15,
+        12, 9, 6, 3
+    ]
+    assert inv_shift_rows(state) == expected_inv_shifted
