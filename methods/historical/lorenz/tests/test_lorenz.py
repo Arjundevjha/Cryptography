@@ -62,6 +62,18 @@ def test_lorenz_manual_position_change():
     assert pos["psi"] == [16, 18, 20, 22, 24]
 
 
+def test_lorenz_char_processing():
+    lorenz1 = Lorenz(positions=[0] * 12)
+    lorenz2 = Lorenz(positions=[0] * 12)
+
+    char = "A"
+    encrypted_char = lorenz1.encrypt_char(char)
+    decrypted_char = lorenz2.decrypt_char(encrypted_char)
+
+    assert decrypted_char == char
+    assert isinstance(encrypted_char, str)
+
+
 def test_lorenz_encrypt_char_and_stepping():
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
@@ -81,8 +93,19 @@ def test_lorenz_encrypt_char_and_stepping():
     assert decrypted_char == char
 
 
+def test_lorenz_text_aliases():
+    lorenz1 = Lorenz(positions=[0] * 12)
+    lorenz2 = Lorenz(positions=[0] * 12)
+
+    msg = "HELLO WORLD"
+    encrypted = lorenz1.encrypt_text(msg)
+    decrypted = lorenz2.decrypt_text(encrypted)
+
+    assert decrypted == msg
+
+
 def test_lorenz_set_pins():
-    lorenz = Lorenz()
+    lorenz = Lorenz(positions=[0] * 12)
 
     new_chi = [[1] * 41, [1] * 31, [1] * 29, [1] * 26, [1] * 23]
     new_motor = [[0] * 61, [0] * 37]
@@ -97,31 +120,16 @@ def test_lorenz_set_pins():
     for i, w in enumerate(lorenz.stepping.psi):
         assert w.pins == new_psi[i]
 
-
-def test_lorenz_set_pins_invalid():
+    # Validate error handling for invalid pin list lengths
     import pytest
-
-    lorenz = Lorenz()
-
-    with pytest.raises(ValueError, match="chi_pins must contain exactly 5 arrays"):
+    with pytest.raises(ValueError, match="chi_pins must contain exactly 5 arrays."):
         lorenz.set_pins(chi_pins=[[1] * 41])
 
-    with pytest.raises(ValueError, match="motor_pins must contain exactly 2 arrays"):
+    with pytest.raises(ValueError, match="motor_pins must contain exactly 2 arrays."):
         lorenz.set_pins(motor_pins=[[1] * 61])
 
-    with pytest.raises(ValueError, match="psi_pins must contain exactly 5 arrays"):
-        lorenz.set_pins(psi_pins=[[1] * 43])
-
-
-def test_lorenz_encrypt_decrypt_text_aliases():
-    lorenz1 = Lorenz(positions=[0] * 12)
-    lorenz2 = Lorenz(positions=[0] * 12)
-
-    msg = "HELLO WORLD"
-    encrypted = lorenz1.encrypt_text(msg)
-    decrypted = lorenz2.decrypt_text(encrypted)
-
-    assert decrypted == msg
+    with pytest.raises(ValueError, match="psi_pins must contain exactly 5 arrays."):
+        lorenz.set_pins(psi_pins=[[0] * 43])
 
 
 def test_lorenz_process_message_non_ita2_char():
