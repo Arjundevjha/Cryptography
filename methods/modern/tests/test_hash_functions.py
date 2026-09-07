@@ -2,12 +2,14 @@ import warnings
 import pytest
 from methods.modern.hash_functions import (
     sha256,
+    sha512,
     sha3_256,
     compute_hash,
     HASH_FUNCTIONS,
     md5,
     sha1,
 )
+
 
 def test_compute_hash_value_error():
     """Test that compute_hash raises a ValueError for unsupported algorithms."""
@@ -25,6 +27,26 @@ def test_sha256_kats():
         "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
     )
     assert compute_hash("abc", "sha256") == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+
+
+def test_sha512_kats():
+    """Test SHA-512 implementation against known-answer vectors."""
+    assert sha512("") == (
+        "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce"
+        "47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+    )
+    assert sha512("abc") == (
+        "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
+        "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+    )
+    assert sha512("abcdefghbcdefghicdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq") == (
+        "53931222059312508aae877c41b276230d48f0ef30b034c190a9b11b47235f68"
+        "ed71522a3a4fec604d8bf10336284602bf28d0756a0f690d63ce86495874b71c"
+    )
+    assert compute_hash("abc", "sha512") == (
+        "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
+        "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+    )
 
 
 def test_all_hash_functions_non_empty():
