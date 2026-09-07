@@ -660,6 +660,7 @@ def test_aes_invalid_key_size():
     }
     response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
+    assert "key must be 16 or 32 bytes" in response.json()["detail"].lower()
 
 
 # ==========================================
