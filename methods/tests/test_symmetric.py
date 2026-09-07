@@ -3,7 +3,7 @@ from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
     encrypt_block, decrypt_block, key_expansion,
-    sub_bytes, inv_sub_bytes, SBOX,
+    sub_bytes, inv_sub_bytes, SBOX, INV_SBOX,
     mix_columns, inv_mix_columns, rot_word, xtime, mul_gf
 )
 
@@ -142,6 +142,7 @@ def test_key_expansion_valid_key_lengths():
     # 32 bytes
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
+
 
 def test_mix_columns_kat():
     """Test mix_columns against standard FIPS 197 AES test vectors."""
@@ -286,3 +287,16 @@ def test_inv_shift_rows():
         12, 9, 6, 3
     ]
     assert inv_shift_rows(state) == expected_inv_shifted
+ 
+def test_inv_sub_bytes():
+    """Test inv_sub_bytes direct transformation and inverse relationship with sub_bytes."""
+    state = list(range(16))
+    expected_inv = [INV_SBOX[b] for b in state]
+
+    assert inv_sub_bytes(state) == expected_inv
+
+    # Verify that inv_sub_bytes(sub_bytes(state)) returns original state for all possible byte values 0..255
+    all_bytes = list(range(256))
+    subbed = sub_bytes(all_bytes)
+    inv_subbed = inv_sub_bytes(subbed)
+    assert inv_subbed == all_bytes
