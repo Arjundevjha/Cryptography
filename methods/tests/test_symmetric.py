@@ -4,7 +4,8 @@ from methods.modern.symmetric import (
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
     encrypt_block, decrypt_block, key_expansion, add_round_key,
     sub_bytes, inv_sub_bytes, SBOX, INV_SBOX,
-    mix_columns, inv_mix_columns, rot_word, xtime, mul_gf
+    sub_word, rot_word, xtime, mul_gf,
+    mix_columns, inv_mix_columns
 )
 
 def test_pkcs7_padding():
@@ -142,6 +143,7 @@ def test_key_expansion_valid_key_lengths():
     # 32 bytes
     key32 = b"1" * 32
     assert len(key_expansion(key32)) > 0
+
 
 
 
@@ -317,3 +319,24 @@ def test_add_round_key():
 
     # Involution property: add_round_key twice with same key returns original state
     assert add_round_key(result, round_key) == state
+ 
+def test_sub_word():
+    """Test byte substitution on 4-byte words using the S-box."""
+    word = [0x00, 0x01, 0x02, 0x03]
+    expected = [0x63, 0x7c, 0x77, 0x7b]
+    assert sub_word(word) == expected
+
+    word2 = [0x0f, 0x10, 0x80, 0xff]
+    expected2 = [SBOX[0x0f], SBOX[0x10], SBOX[0x80], SBOX[0xff]]
+    assert sub_word(word2) == expected2
+    assert expected2 == [0x76, 0xca, 0xcd, 0x16]
+
+def test_sub_word_all_bytes():
+    """Test sub_word over all 256 byte values."""
+    all_bytes = list(range(256))
+    substituted = sub_word(all_bytes)
+    assert substituted == SBOX
+
+def test_sub_word_empty():
+    """Test sub_word with an empty list."""
+    assert sub_word([]) == []
