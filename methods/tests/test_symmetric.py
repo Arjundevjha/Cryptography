@@ -196,3 +196,37 @@ def test_xtime_matches_mul_gf():
     """Verify xtime matches mul_gf(val, 2) for all byte values from 0 to 255."""
     for byte_val in range(256):
         assert xtime(byte_val) == mul_gf(byte_val, 2)
+
+def test_shift_rows():
+    """Test shift_rows function with a 16-byte state represented as 0..15."""
+    from methods.modern.symmetric import shift_rows, inv_shift_rows
+
+    # State elements 0..15 corresponding to AES matrix positions
+    state = list(range(16))
+
+    expected_shifted = [
+        0, 5, 10, 15,
+        4, 9, 14, 3,
+        8, 13, 2, 7,
+        12, 1, 6, 11
+    ]
+
+    shifted = shift_rows(state)
+    assert shifted == expected_shifted
+
+    # Test inverse shift rows restores original state
+    restored = inv_shift_rows(shifted)
+    assert restored == state
+
+def test_inv_shift_rows():
+    """Test inv_shift_rows function directly with a known input state."""
+    from methods.modern.symmetric import inv_shift_rows
+
+    state = list(range(16))
+    expected_inv_shifted = [
+        0, 13, 10, 7,
+        4, 1, 14, 11,
+        8, 5, 2, 15,
+        12, 9, 6, 3
+    ]
+    assert inv_shift_rows(state) == expected_inv_shifted
