@@ -2,6 +2,7 @@ import warnings
 import pytest
 from methods.modern.hash_functions import (
     sha256,
+    sha512,
     compute_hash,
     HASH_FUNCTIONS,
     md5,
@@ -60,3 +61,26 @@ def test_sha1_kat_and_warning():
         empty_digest = compute_hash("", "sha1")
     assert empty_digest == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
+
+def test_sha512_kats():
+    """Test SHA-512 implementation against known-answer vectors."""
+    assert (
+        sha512("")
+        == "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+    )
+    assert (
+        sha512("abc")
+        == "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+    )
+    assert (
+        sha512("The quick brown fox jumps over the lazy dog")
+        == "07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6"
+    )
+    assert (
+        sha512("abcdefghbcdefghi23456789345678904567890156789012678901237890123489012345")
+        == "2aa48b769a279f9a51ed5f48ddd3ed3cbfe0c515a90f0f8f7da47e670b0d814b5b20aaaab72d6a278a82701f187830928cda4a60abf3c584b7086de2ca21fc7e"
+    )
+    assert (
+        compute_hash("abc", "sha512")
+        == "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+    )
