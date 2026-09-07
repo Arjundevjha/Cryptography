@@ -2,6 +2,7 @@ import warnings
 import pytest
 from methods.modern.hash_functions import (
     sha256,
+    sha3_256,
     compute_hash,
     HASH_FUNCTIONS,
     md5,
@@ -60,3 +61,46 @@ def test_sha1_kat_and_warning():
         empty_digest = compute_hash("", "sha1")
     assert empty_digest == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
+
+def test_sha3_256_kats():
+    """Test SHA3-256 implementation against known-answer vectors and boundary conditions."""
+    # Empty string KAT
+    assert (
+        sha3_256("")
+        == "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+    )
+
+    # Standard short input KAT
+    assert (
+        sha3_256("abc")
+        == "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
+    )
+
+    # Sentence input KAT
+    assert (
+        sha3_256("The quick brown fox jumps over the lazy dog")
+        == "69070dda01975c8c120c3aada1b282394e7f032fa9cf32f4cb2259a0897dfc04"
+    )
+
+    # Multi-block / boundary conditions (SHA3-256 block size rate = 136 bytes)
+    # Exactly 135 bytes
+    assert (
+        sha3_256("a" * 135)
+        == "8094bb53c44cfb1e67b7c30447f9a1c33696d2463ecc1d9c92538913392843c9"
+    )
+    # Exactly 136 bytes (1 block boundary)
+    assert (
+        sha3_256("a" * 136)
+        == "3fc5559f14db8e453a0a3091edbd2bc25e11528d81c66fa570a4efdcc2695ee1"
+    )
+    # 200 bytes (multiple blocks)
+    assert (
+        sha3_256("a" * 200)
+        == "cce34485baf2bf2aca99b94833892a4f52896d3d153f7b840cc4f9fe695f1387"
+    )
+
+    # compute_hash wrapper verification
+    assert (
+        compute_hash("abc", "sha3_256")
+        == "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
+    )
