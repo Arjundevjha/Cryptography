@@ -60,3 +60,47 @@ def test_lorenz_manual_position_change():
     assert pos["chi"] == [2, 4, 6, 8, 10]
     assert pos["motor"] == [12, 14]
     assert pos["psi"] == [16, 18, 20, 22, 24]
+
+
+def test_lorenz_char_processing():
+    lorenz1 = Lorenz(positions=[0] * 12)
+    lorenz2 = Lorenz(positions=[0] * 12)
+
+    char = "A"
+    encrypted_char = lorenz1.encrypt_char(char)
+    decrypted_char = lorenz2.decrypt_char(encrypted_char)
+
+    assert decrypted_char == char
+    assert isinstance(encrypted_char, str)
+
+
+def test_lorenz_text_aliases():
+    lorenz1 = Lorenz(positions=[0] * 12)
+    lorenz2 = Lorenz(positions=[0] * 12)
+
+    msg = "HELLO"
+    encrypted = lorenz1.encrypt_text(msg)
+    decrypted = lorenz2.decrypt_text(encrypted)
+
+    assert decrypted == msg
+
+
+def test_lorenz_set_pins():
+    lorenz = Lorenz(positions=[0] * 12)
+
+    chi_pins = [[1] * 41, [0] * 31, [1] * 29, [0] * 26, [1] * 23]
+    motor_pins = [[1] * 61, [0] * 37]
+    psi_pins = [[0] * 43, [1] * 47, [0] * 51, [1] * 53, [0] * 59]
+
+    lorenz.set_pins(chi_pins=chi_pins, motor_pins=motor_pins, psi_pins=psi_pins)
+
+    # Validate error handling for invalid pin list lengths
+    import pytest
+    with pytest.raises(ValueError, match="chi_pins must contain exactly 5 arrays."):
+        lorenz.set_pins(chi_pins=[[1] * 41])
+
+    with pytest.raises(ValueError, match="motor_pins must contain exactly 2 arrays."):
+        lorenz.set_pins(motor_pins=[[1] * 61])
+
+    with pytest.raises(ValueError, match="psi_pins must contain exactly 5 arrays."):
+        lorenz.set_pins(psi_pins=[[0] * 43])
