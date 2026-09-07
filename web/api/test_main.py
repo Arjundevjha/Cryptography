@@ -944,6 +944,117 @@ def test_aes_decrypt_invalid_hex_logging(caplog):
     assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
     assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
 
+def test_aes_decrypt_endpoint_hex_key_format_16_bytes():
+    hex_key = "0123456789abcdef0123456789abcdef"
+    enc_payload = {
+        "plaintext": "Decrypt Test Hex Key",
+        "key": hex_key,
+        "key_format": "hex",
+        "plaintext_format": "text"
+    }
+    enc_resp = client.post("/api/aes/encrypt", json=enc_payload)
+    assert enc_resp.status_code == 200
+    enc_data = enc_resp.json()
+
+    dec_payload = {
+        "ciphertext": enc_data["ciphertext"],
+        "key": hex_key,
+        "nonce": enc_data["nonce"],
+        "key_format": "hex"
+    }
+    dec_resp = client.post("/api/aes/decrypt", json=dec_payload)
+    assert dec_resp.status_code == 200
+    assert dec_resp.json() == {"plaintext": "Decrypt Test Hex Key"}
+
+def test_aes_decrypt_endpoint_hex_key_format_32_bytes():
+    hex_key = "0123456789abcdef" * 4
+    enc_payload = {
+        "plaintext": "AES-256 Hex Key Decrypt Test",
+        "key": hex_key,
+        "key_format": "hex",
+        "plaintext_format": "text"
+    }
+    enc_resp = client.post("/api/aes/encrypt", json=enc_payload)
+    assert enc_resp.status_code == 200
+    enc_data = enc_resp.json()
+
+    dec_payload = {
+        "ciphertext": enc_data["ciphertext"],
+        "key": hex_key,
+        "nonce": enc_data["nonce"],
+        "key_format": "hex"
+    }
+    dec_resp = client.post("/api/aes/decrypt", json=dec_payload)
+    assert dec_resp.status_code == 200
+    assert dec_resp.json() == {"plaintext": "AES-256 Hex Key Decrypt Test"}
+
+@patch("methods.modern.aes.decrypt", return_value="Mocked Decrypted Plaintext")
+def test_aes_decrypt_endpoint_mocked_aes_decrypt_call(mock_decrypt):
+    ciphertext_hex = "aabbccdd"
+    key_hex = "00112233445566778899aabbccddeeff"
+    nonce_hex = "0102030405060708090a0b0c"
+
+    payload = {
+        "ciphertext": ciphertext_hex,
+        "key": key_hex,
+        "nonce": nonce_hex,
+        "key_format": "hex"
+    }
+    response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 200
+    assert response.json() == {"plaintext": "Mocked Decrypted Plaintext"}
+
+    mock_decrypt.assert_called_once_with(
+        bytes.fromhex(ciphertext_hex),
+        bytes.fromhex(key_hex),
+        bytes.fromhex(nonce_hex)
+    )
+
+def test_aes_decrypt_endpoint_invalid_nonce_hex():
+    payload = {
+        "ciphertext": "00112233",
+        "key": "1234567890123456",
+        "nonce": "InvalidNonceHex!",
+        "key_format": "text"
+    }
+    response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
+
+def test_aes_decrypt_endpoint_invalid_key_hex():
+    payload = {
+        "ciphertext": "00112233",
+        "key": "GHIJKL_NOT_HEX",
+        "nonce": "0102030405060708090a0b0c",
+        "key_format": "hex"
+    }
+    response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Invalid hex key" in response.json()["detail"]
+
+def test_aes_decrypt_endpoint_direct_function_call():
+    from api.main import aes_decrypt_endpoint, AesDecryptInput
+
+    ciphertext_hex = "aabbccdd"
+    key_hex = "00" * 16
+    nonce_hex = "00" * 12
+
+    input_data = AesDecryptInput(
+        ciphertext=ciphertext_hex,
+        key=key_hex,
+        nonce=nonce_hex,
+        key_format="hex"
+    )
+
+    with patch("methods.modern.aes.decrypt", return_value="Direct Call Success") as mock_decrypt:
+        result = aes_decrypt_endpoint(input_data)
+        assert result == {"plaintext": "Direct Call Success"}
+        mock_decrypt.assert_called_once_with(
+            bytes.fromhex(ciphertext_hex),
+            bytes.fromhex(key_hex),
+            bytes.fromhex(nonce_hex)
+        )
+
 
 
 def test_caesar_encrypt_decrypt_success():
