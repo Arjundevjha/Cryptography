@@ -215,6 +215,8 @@ def pkcs7_pad(data: bytes) -> bytes:
 
 def pkcs7_unpad(data: bytes) -> bytes:
     """Remove PKCS7 padding from raw bytes."""
+    if not data or len(data) % BLOCK_SIZE != 0:
+        raise ValueError("Invalid PKCS7 padding value")
     pad_len = data[-1]
     if pad_len < 1 or pad_len > BLOCK_SIZE:
         raise ValueError("Invalid PKCS7 padding value")

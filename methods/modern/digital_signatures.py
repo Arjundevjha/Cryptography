@@ -49,9 +49,14 @@ def verify_hmac(data: bytes, key: bytes, expected: str, algorithm: str = 'sha256
     Returns:
         True if signature matches, False otherwise
     """
-    computed = create_hmac(data, key, algorithm)
-    # Constant-time comparison to prevent timing attacks
-    return hmac_compare_digest(computed.encode('utf-8'), expected.encode('utf-8'))
+    if not isinstance(expected, str):
+        return False
+    try:
+        computed = create_hmac(data, key, algorithm)
+        # Normalize hex strings to lowercase for case-insensitive verification before constant-time comparison
+        return hmac_compare_digest(computed.lower().encode('utf-8'), expected.strip().lower().encode('utf-8'))
+    except Exception:
+        return False
 
 def hmac_compare_digest(val_a: bytes, val_b: bytes) -> bool:
     """Compare two digests in constant time to prevent timing attacks."""
