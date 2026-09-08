@@ -1,7 +1,7 @@
-# Graph Report - Cryptography  (2026-09-08)
+# Graph Report - Cryptography  (2026-09-07)
 
 ## Corpus Check
-- 114 files · ~79,089 words
+- 114 files · ~78,353 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c59cdcf6`
+- Built from commit: `9833d931`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -124,8 +124,8 @@ Cohesion: 0.15
 Nodes (30): generate_keypair(), Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), decrypt_private_key(), encrypt(), main(), _parse_pem(), RSA asymmetric encryption and decryption module in pure Python.  This module pro (+22 more)
 
 ### Community 1 - "Playfair Cipher Implementation & Benchmarks"
-Cohesion: 0.08
-Nodes (24): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext. (+16 more)
+Cohesion: 0.09
+Nodes (22): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext., Test decrypt converts uppercase characters to lowercase and 'J' to 'I'. (+14 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
 Cohesion: 0.09
@@ -276,7 +276,7 @@ Cohesion: 0.13
 Nodes (13): Main simulation runner for the Enigma machine., Plugboard, Plugboard component for Enigma machine., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Initialize the plugboard wiring based on pair mappings., Test plugboard with a single pair. (+5 more)
 
 ### Community 65 - "_prepare_text"
-Cohesion: 0.19
+Cohesion: 0.14
 Nodes (14): _prepare_text(), Prepare text: remove non-alpha, replace j, group into digraphs., Test that a message properly encrypts and decrypts., Test standard digraph preparation., Test that 'j' is replaced by 'i'., Test that non-alphabet characters are ignored., Test that odd-length texts get padded with 'x'., Test behavior with text containing all same letters. (+6 more)
 
 ### Community 66 - "playfair.py"
@@ -288,8 +288,8 @@ Cohesion: 0.17
 Nodes (12): encrypt(), Encrypt plaintext using Playfair cipher., Test encrypting digraphs where characters share a column., Test encrypting digraphs forming a rectangle., Test decryption when key contains spaces, uppercase letters, duplicate character, Test encrypt raises ValueError when pos_map lookup raises KeyError., Test encrypting digraphs where characters share a row., test_decrypt_complex_key() (+4 more)
 
 ### Community 68 - "test_playfair.py"
-Cohesion: 0.33
-Nodes (6): _create_grid(), Create a 5x5 Playfair grid from key., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j()
+Cohesion: 0.28
+Nodes (8): _create_grid(), Create a 5x5 Playfair grid from key., Test decrypting digraphs where characters share a row., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j(), test_decrypt_same_row()
 
 ### Community 69 - "_find_position"
 Cohesion: 0.33
