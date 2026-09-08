@@ -52,7 +52,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(screen.getByText(new RegExp(alkindi.description, 'i'))).toBeInTheDocument();
 
     // Switch to Interactive Pioneer Lab Tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     // Verify Al-Kindi Frequency Analysis components
@@ -67,7 +67,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={shannon} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/Plaintext Entropy H\(M\)/i)).toBeInTheDocument();
@@ -87,7 +87,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={diffieHellman} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/PUBLIC PRIME \(p\):/i)).toBeInTheDocument();

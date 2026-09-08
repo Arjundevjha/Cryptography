@@ -172,10 +172,14 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
+      <div role="tablist" aria-label="Statue details views" className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
         <button
+          role="tab"
+          id="tab-curation"
+          aria-selected={activeTab === 'curation'}
+          aria-controls="panel-curation"
           onClick={() => setActiveTab('curation')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'curation'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -184,8 +188,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
           <BookOpen className="w-4 h-4" /> HISTORICAL CURATION
         </button>
         <button
+          role="tab"
+          id="tab-lab"
+          aria-selected={activeTab === 'lab'}
+          aria-controls="panel-lab"
           onClick={() => setActiveTab('lab')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'lab'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -197,7 +205,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
 
       {/* TAB 1: CURATORIAL OVERVIEW & USER CITATION */}
       {activeTab === 'curation' && (
-        <div className="space-y-6 animate-in fade-in duration-200">
+        <div role="tabpanel" id="panel-curation" aria-labelledby="tab-curation" className="space-y-6 animate-in fade-in duration-200">
           {/* Highlighted Historical Citation (Prompt Requirement) */}
           <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/15 to-stone-900 border border-amber-500/40 shadow-inner space-y-2">
             <div className="flex items-center gap-2 text-amber-400 text-xs font-mono font-bold uppercase tracking-wider">
@@ -249,7 +257,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
 
       {/* TAB 2: INTERACTIVE PIONEER LAB */}
       {activeTab === 'lab' && (
-        <div className="space-y-6 animate-in fade-in duration-200">
+        <div role="tabpanel" id="panel-lab" aria-labelledby="tab-lab" className="space-y-6 animate-in fade-in duration-200">
           {/* 1. AL-KINDI: FREQUENCY ANALYSIS SIMULATOR */}
           {statue.interactiveDemoType === 'frequency-analysis' && (
             <div className="space-y-4">
