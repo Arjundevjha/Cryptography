@@ -70,11 +70,11 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     msg_bytes = message.encode('utf-8')
     key_size_bytes = (n.bit_length() + 7) // 8
 
-    ciphertext = b""
-    for b in msg_bytes:
-        c = pow(b, e, n)
-        ciphertext += c.to_bytes(key_size_bytes, byteorder='big')
-    return ciphertext
+    # BOLT OPTIMIZATION: Pre-compute 256-entry lookup table for byte-by-byte RSA encryption
+    # and join encrypted bytes in a single pass to eliminate O(N) bytes concatenation
+    # and redundant heavy modular exponentiations (pow(b, e, n)).
+    enc_table = [pow(b, e, n).to_bytes(key_size_bytes, byteorder='big') for b in range(256)]
+    return b"".join(enc_table[b] for b in msg_bytes)
 
 def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     """Decrypt a message using RSA private key.
@@ -99,11 +99,19 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
 
     key_size_bytes = (n.bit_length() + 7) // 8
     decrypted_bytes = bytearray()
+
+    # BOLT OPTIMIZATION: Use block memoization dictionary cache to reuse modular exponentiations
+    # for identical encrypted byte blocks, drastically improving decryption performance for repeating bytes/ASCII text.
+    dec_cache = {}
     for i in range(0, len(ciphertext), key_size_bytes):
         if not (block := ciphertext[i : i + key_size_bytes]):
             continue
-        c = int.from_bytes(block, byteorder='big')
-        m = pow(c, d, n)
+        if block in dec_cache:
+            m = dec_cache[block]
+        else:
+            c = int.from_bytes(block, byteorder='big')
+            m = pow(c, d, n)
+            dec_cache[block] = m
         decrypted_bytes.append(m)
     return decrypted_bytes.decode('utf-8')
 
