@@ -201,10 +201,11 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
       {/* Input Field */}
       <div className="mb-4">
-        <label className="block text-xs font-mono text-stone-300 mb-1">
+        <label htmlFor={`input-text-${exhibit.id}`} className="block text-xs font-mono text-stone-300 mb-1">
           {mode === 'encrypt' ? 'PLAINTEXT INPUT' : 'CIPHERTEXT INPUT'}
         </label>
         <textarea
+          id={`input-text-${exhibit.id}`}
           rows={2}
           data-testid={`input-text-${exhibit.id}`}
           value={inputText}
@@ -518,7 +519,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         data-testid={`execute-btn-${exhibit.id}`}
         onClick={handleExecute}
         disabled={loading}
-        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50"
+        aria-busy={loading}
+        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-stone-950" />}
         Execute {mode}
@@ -541,7 +543,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           {outputText && (
             <button
               onClick={handleCopy}
-              aria-label="Copy result to clipboard"
+              aria-label={copied ? 'Copied to clipboard' : 'Copy result to clipboard'}
               className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
             >
               {copied ? (
@@ -560,6 +562,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         </div>
         <div
           data-testid={`output-text-${exhibit.id}`}
+          aria-live="polite"
+          aria-atomic="true"
           className="w-full min-h-[50px] p-3 rounded-lg bg-stone-900 border border-stone-800 text-amber-300 font-mono text-xs break-all select-all"
         >
           {outputText || <span className="text-stone-600 italic">Result will appear here...</span>}

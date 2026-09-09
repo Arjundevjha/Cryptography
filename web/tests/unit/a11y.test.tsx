@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
+import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -39,5 +40,20 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+  });
+
+  it('renders WorkbenchPanel with accessible label input association and aria-live output region', () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Verify textarea is accessible via label
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    expect(inputArea).toBeInTheDocument();
+    expect(inputArea.tagName).toBe('TEXTAREA');
+    expect(inputArea).toHaveAttribute('id', `input-text-${sampleExhibit.id}`);
+
+    // Verify output container has aria-live="polite"
+    const outputContainer = screen.getByTestId(`output-text-${sampleExhibit.id}`);
+    expect(outputContainer).toHaveAttribute('aria-live', 'polite');
+    expect(outputContainer).toHaveAttribute('aria-atomic', 'true');
   });
 });
