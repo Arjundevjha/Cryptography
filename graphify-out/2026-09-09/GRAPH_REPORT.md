@@ -1,16 +1,16 @@
-# Graph Report - Cryptography  (2026-09-09)
+# Graph Report - Cryptography  (2026-09-08)
 
 ## Corpus Check
-- 114 files · ~79,125 words
+- 114 files · ~79,089 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1355 nodes · 2370 edges · 87 communities (72 shown, 15 thin omitted)
+- 1351 nodes · 2362 edges · 85 communities (70 shown, 15 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 161 edges (avg confidence: 0.52)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b8a24849`
+- Built from commit: `c59cdcf6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -85,8 +85,6 @@
 - validation_exception_handler
 - AesDecryptInput
 - VercelPathMiddleware
-- sub_word
-- b64decode
 
 ## God Nodes (most connected - your core abstractions)
 1. `Lorenz` - 53 edges
@@ -119,14 +117,14 @@
 - **Museum Testing Flow** — test_infra_philosophy, test_ready_coverage, web_quality_log_tracks, web_security_log_scans [INFERRED 0.85]
 - **Cryptography Project Guidelines** — contributing_python_standards, style_guide_no_external_libs, style_guide_file_structure, style_guide_naming_conventions [INFERRED 0.85]
 
-## Communities (87 total, 15 thin omitted)
+## Communities (85 total, 15 thin omitted)
 
 ### Community 0 - "Cryptographic Helpers & Base64 Utilities"
 Cohesion: 0.15
 Nodes (30): generate_keypair(), Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), decrypt_private_key(), encrypt(), main(), _parse_pem(), RSA asymmetric encryption and decryption module in pure Python.  This module pro (+22 more)
 
 ### Community 1 - "Playfair Cipher Implementation & Benchmarks"
-Cohesion: 0.12
+Cohesion: 0.08
 Nodes (24): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext. (+16 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
@@ -166,8 +164,8 @@ Cohesion: 0.09
 Nodes (31): decrypt(), encrypt(), main(), pick_keys(), Polybius Square cipher implementation., Encrypt plaintext using the Polybius Square cipher.      Maps each letter to a t, Decrypt ciphertext using the Polybius Square cipher.      Parses two-digit coord, Run an interactive test of the Polybius Square cipher. (+23 more)
 
 ### Community 12 - "HMAC and Digital Signature Utilities"
-Cohesion: 0.13
-Nodes (30): create_hmac(), generate_key(), hmac_compare_digest(), main(), HMAC digital signatures module in pure Python.  No external libraries or standar, Generate a random key for HMAC signing.      Args:         length: Key length in, Create an HMAC signature for the given data.      Args:         data: The data t, Verify an HMAC signature against expected value.      Args:         data: The or (+22 more)
+Cohesion: 0.14
+Nodes (28): create_hmac(), generate_key(), hmac_compare_digest(), main(), HMAC digital signatures module in pure Python.  No external libraries or standar, Generate a random key for HMAC signing.      Args:         length: Key length in, Create an HMAC signature for the given data.      Args:         data: The data t, Verify an HMAC signature against expected value.      Args:         data: The or (+20 more)
 
 ### Community 13 - "Simple Substitution Cipher Implementation"
 Cohesion: 0.13
@@ -191,7 +189,7 @@ Nodes (36): Home(), MuseumCanvas, AudioSystem(), AudioSystemProps, ApiStatusDot(
 
 ### Community 18 - "Symmetric Encryption Utilities"
 Cohesion: 0.25
-Nodes (8): add_round_key(), decrypt_block(), Decrypt a single 16-byte block using AES., XOR state with the round key., Test raw block encryption and decryption to ensure no data loss in core AES func, Test XOR state with round key in AES., test_add_round_key(), test_single_block_encryption_decryption()
+Nodes (8): add_round_key(), decrypt_block(), Decrypt a single 16-byte block using AES., XOR state with the round key., Test XOR state with round key in AES., Test raw block encryption and decryption to ensure no data loss in core AES func, test_add_round_key(), test_single_block_encryption_decryption()
 
 ### Community 19 - "Scytale Cipher & Classical Init Modules"
 Cohesion: 0.14
@@ -210,12 +208,12 @@ Cohesion: 0.14
 Nodes (25): test_decrypt(), test_decrypt_unmatching_length_and_edge_cases(), test_encrypt(), test_encrypt_decrypt_char(), test_encrypt_decrypt_roundtrip(), test_encrypt_unmatching_length_and_edge_cases(), test_main_custom_key(), test_main_random_key() (+17 more)
 
 ### Community 23 - "Enigma Keyboard Component Routing"
-Cohesion: 0.16
-Nodes (17): mul_gf(), pkcs7_pad(), pkcs7_unpad(), Perform GF(2^8) multiplication by 2., Perform GF(2^8) multiplication of two bytes., Apply PKCS7 padding to raw bytes., Remove PKCS7 padding from raw bytes., xtime() (+9 more)
+Cohesion: 0.13
+Nodes (23): key_expansion(), pkcs7_pad(), pkcs7_unpad(), Apply PKCS7 padding to raw bytes., Remove PKCS7 padding from raw bytes., Substitute bytes in a 4-byte word using the S-box., Rotate a 4-byte word: shift left by 1 position., Expand the AES key into round keys. Supports 16, 24, and 32 byte keys. (+15 more)
 
 ### Community 24 - "Manual AES CTR Cipher Core"
-Cohesion: 0.12
-Nodes (24): decrypt(), encrypt(), main(), AES symmetric encryption using manual AES-256-CTR in pure Python.  Reuses the AE, Encrypt a message using AES-256-CTR mode.      Args:         message: Plaintext, Decrypt a message encrypted with AES-256-CTR mode.      Args:         ciphertext, Demonstrate AES-CTR encryption and decryption., Modern cryptography methods package. (+16 more)
+Cohesion: 0.14
+Nodes (23): decrypt(), encrypt(), main(), AES symmetric encryption using manual AES-256-CTR in pure Python.  Reuses the AE, Encrypt a message using AES-256-CTR mode.      Args:         message: Plaintext, Decrypt a message encrypted with AES-256-CTR mode.      Args:         ciphertext, Demonstrate AES-CTR encryption and decryption., encrypt_block() (+15 more)
 
 ### Community 25 - "Enigma Rotor Mechanics Simulation"
 Cohesion: 0.10
@@ -250,8 +248,8 @@ Cohesion: 0.11
 Nodes (21): Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Process an entire text string through the Lorenz cipher machine.          Non-IT, Alias for process_message., Alias for process_message., Get current position indices for all 12 wheels., Set manual pin configurations for Chi, Motor, and Psi wheels.          Args:, Unit tests for Lorenz top-level machine class. (+13 more)
 
 ### Community 35 - "Lorenz Machine Core Unit Tests"
-Cohesion: 0.16
-Nodes (27): ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Process a single 64-byte block to update the SHA-256 state in place., Compute SHA-256 hash of bytes., Compute HMAC-SHA256 signature of data using key. (+19 more)
+Cohesion: 0.13
+Nodes (32): b64decode(), ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Process a single 64-byte block to update the SHA-256 state in place., Compute SHA-256 hash of bytes. (+24 more)
 
 ### Community 36 - "Lorenz Machine Pinwheels Initialization"
 Cohesion: 0.29
@@ -278,7 +276,7 @@ Cohesion: 0.13
 Nodes (13): Main simulation runner for the Enigma machine., Plugboard, Plugboard component for Enigma machine., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Initialize the plugboard wiring based on pair mappings., Test plugboard with a single pair. (+5 more)
 
 ### Community 65 - "_prepare_text"
-Cohesion: 0.14
+Cohesion: 0.19
 Nodes (14): _prepare_text(), Prepare text: remove non-alpha, replace j, group into digraphs., Test that a message properly encrypts and decrypts., Test standard digraph preparation., Test that 'j' is replaced by 'i'., Test that non-alphabet characters are ignored., Test that odd-length texts get padded with 'x'., Test behavior with text containing all same letters. (+6 more)
 
 ### Community 66 - "playfair.py"
@@ -298,8 +296,8 @@ Cohesion: 0.33
 Nodes (6): _find_position(), Find row and column of a character in the grid., Test finding a character's row and column in the grid., Test ValueError is raised if character is missing., test_find_position(), test_find_position_missing_char()
 
 ### Community 70 - "keypair.py"
-Cohesion: 0.15
-Nodes (20): generate_encrypted_keypair(), generate_prime(), is_prime(), main(), RSA Keypair Generation Module in pure Python.  This module provides functionalit, Generate an RSA key pair with an encrypted private key.      Args:         passp, Generate and print a sample RSA keypair., Check if val is prime using Miller-Rabin primality test. (+12 more)
+Cohesion: 0.13
+Nodes (21): Modern cryptography methods package., generate_encrypted_keypair(), generate_prime(), is_prime(), main(), RSA Keypair Generation Module in pure Python.  This module provides functionalit, Generate an RSA key pair with an encrypted private key.      Args:         passp, Generate and print a sample RSA keypair. (+13 more)
 
 ### Community 71 - "inv_mix_columns"
 Cohesion: 0.16
@@ -331,7 +329,7 @@ Nodes (8): inv_shift_rows(), Shift state rows to the left by row offsets., Shift
 
 ### Community 81 - "xtime"
 Cohesion: 0.25
-Nodes (8): key_expansion(), Rotate a 4-byte word: shift left by 1 position., Expand the AES key into round keys. Supports 16, 24, and 32 byte keys., rot_word(), Test 1-byte left rotation on a 4-byte word., test_key_expansion_invalid_key_length(), test_key_expansion_valid_key_lengths(), test_rot_word()
+Nodes (8): mul_gf(), Perform GF(2^8) multiplication by 2., Perform GF(2^8) multiplication of two bytes., xtime(), Test xtime GF(2^8) multiplication by 2 with edge cases and known values., Verify xtime matches mul_gf(val, 2) for all byte values from 0 to 255., test_xtime_edge_cases_and_vectors(), test_xtime_matches_mul_gf()
 
 ### Community 82 - "validation_exception_handler"
 Cohesion: 0.48
@@ -340,14 +338,6 @@ Nodes (7): Request, RequestValidationError, validation_exception_handler(), test
 ### Community 83 - "AesDecryptInput"
 Cohesion: 1.00
 Nodes (3): aes_decrypt_endpoint(), AesDecryptInput, test_aes_decrypt_endpoint_direct_function_call()
-
-### Community 85 - "sub_word"
-Cohesion: 0.25
-Nodes (8): Substitute bytes in a 4-byte word using the S-box., sub_word(), Test byte substitution on 4-byte words using the S-box., Test sub_word over all 256 byte values., Test sub_word with an empty list., test_sub_word(), test_sub_word_all_bytes(), test_sub_word_empty()
-
-### Community 86 - "b64decode"
-Cohesion: 0.40
-Nodes (5): b64decode(), Decode a Base64 string to bytes., Test roundtrip encoding and decoding for various byte payloads., test_b64decode(), test_b64encode_roundtrip()
 
 ## Knowledge Gaps
 - **123 isolated node(s):** `run_e2e_no_install.sh script`, `PYTHONPATH`, `run_e2e_tests.sh script`, `PYTHONPATH`, `run_tests.sh script` (+118 more)
@@ -358,9 +348,9 @@ Nodes (5): b64decode(), Decode a Base64 string to bytes., Test roundtrip encodin
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `sha256()` connect `Manual Hash Function Implementations` to `FastAPI Backend Routes & Schema Models`?**
-  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+  _High betweenness centrality (0.067) - this node is a cross-community bridge._
 - **Why does `Lorenz` connect `Lorenz Text Processing Procedures` to `FastAPI Backend Routes & Schema Models`, `.__init__`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `run_cli`, `AesDecryptInput`, `VercelPathMiddleware`, `Lorenz Stepping Controller Engine`, `Lorenz Machine Cryptography Vector Math`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+  _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **Why does `Wheel` connect `Lorenz Wheels Components Testing` to `Lorenz Text Processing Procedures`, `.__init__`, `stepping.py`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Stepping Controller Engine`?**
   _High betweenness centrality (0.055) - this node is a cross-community bridge._
 - **Are the 25 inferred relationships involving `Lorenz` (e.g. with `SteppingController` and `Wheel`) actually correct?**
