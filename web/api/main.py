@@ -705,11 +705,11 @@ class RsaKeygenInput(BaseModel):
 
 class RsaEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
-    public_key: str = Field(..., max_length=500, description="PEM formatted RSA public key")
+    public_key: str = Field(..., max_length=10000, description="PEM formatted RSA public key")
 
 class RsaDecryptInput(BaseModel):
-    ciphertext: str = Field(..., max_length=500, description="The hex ciphertext to decrypt")
-    private_key: str = Field(..., max_length=500, description="PEM formatted RSA private key")
+    ciphertext: str = Field(..., max_length=100000, description="The hex ciphertext to decrypt")
+    private_key: str = Field(..., max_length=10000, description="PEM formatted RSA private key")
 
 class Sha256Input(BaseModel):
     plaintext: str = Field("", max_length=500, description="The plaintext to hash")
@@ -795,6 +795,8 @@ def rsa_keygen(data: RsaKeygenInput):
         raise HTTPException(status_code=400, detail="p must be a prime greater than 2")
     if data.q <= 2 or not is_prime(data.q):
         raise HTTPException(status_code=400, detail="q must be a prime greater than 2")
+    if data.p == data.q:
+        raise HTTPException(status_code=400, detail="p and q must be distinct prime numbers")
         
     n = data.p * data.q
     phi = (data.p - 1) * (data.q - 1)
