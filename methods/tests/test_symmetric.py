@@ -22,10 +22,18 @@ def test_pkcs7_unpad_invalid_bytes():
 
 def test_pkcs7_unpad_invalid_value():
     with pytest.raises(ValueError, match="Invalid PKCS7 padding value"):
-        pkcs7_unpad(b"Hello\x11")
+        pkcs7_unpad(b"Hello\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11")
 
     with pytest.raises(ValueError, match="Invalid PKCS7 padding value"):
-        pkcs7_unpad(b"Hello\x00")
+        pkcs7_unpad(b"Hello\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+
+def test_pkcs7_unpad_empty_and_unaligned_data():
+    """Verify that empty bytes or unaligned block sizes raise expected ValueError."""
+    with pytest.raises(ValueError, match="Invalid PKCS7 padding value"):
+        pkcs7_unpad(b"")
+
+    with pytest.raises(ValueError, match="Invalid PKCS7 padding value"):
+        pkcs7_unpad(b"unaligned_data")  # 14 bytes
 
 def test_encrypt_decrypt():
     message = "Secret message"

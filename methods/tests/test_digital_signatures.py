@@ -41,3 +41,22 @@ def test_verify_hmac_invalid_signature():
     is_valid = verify_hmac(data, key, invalid_signature)
 
     assert is_valid is False
+
+def test_verify_hmac_length_mismatch_and_invalid_types():
+    """Test verification handles length mismatches, non-strings, and unsupported algorithms gracefully."""
+    key = generate_key()
+    data = b"message to sign"
+
+    signature = create_hmac(data, key)
+
+    # Length mismatch
+    assert verify_hmac(data, key, signature[:10]) is False
+    assert verify_hmac(data, key, signature + "ab") is False
+
+    # Case insensitive uppercase match
+    assert verify_hmac(data, key, signature.upper()) is True
+
+    # Invalid input types or values
+    assert verify_hmac(data, key, None) is False
+    assert verify_hmac(data, key, 12345) is False
+    assert verify_hmac(data, key, signature, algorithm="unsupported_alg") is False
