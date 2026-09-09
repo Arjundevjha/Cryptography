@@ -819,6 +819,30 @@ def test_rsa_keygen_too_small():
     assert response.status_code == 400
     assert "greater than 2" in response.json()["detail"].lower()
 
+def test_rsa_keygen_equal_primes():
+    payload = {
+        "p": 61,
+        "q": 61,
+        "e": 17
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+    assert "distinct" in response.json()["detail"].lower()
+
+def test_rsa_decrypt_large_key_pem():
+    from methods.modern.keypair import generate_keypair
+    from methods.modern.rsa import encrypt
+    pub_pem, priv_pem = generate_keypair(key_size=1024)
+    assert len(priv_pem) > 500
+    ciphertext = encrypt("42", pub_pem)
+
+    response = client.post("/api/rsa/decrypt", json={
+        "ciphertext": ciphertext.hex(),
+        "private_key": priv_pem.decode('utf-8')
+    })
+    assert response.status_code == 200
+    assert response.json() == {"plaintext": "42"}
+
 def test_rsa_keygen_non_coprime():
     # phi(61, 53) = 3120. e=13 is not coprime to 3120 (13 * 240 = 3120)
     payload = {
