@@ -49,3 +49,8 @@
 ## 5. UI/UX & Techstack Privacy Standards
 - **No Techstack Exposure**: Never display internal framework, backend, or engine names (e.g. "FastAPI", "Python Engine", "Uvicorn") in user-facing UI labels, headers, or subtext.
 - **Clean Subtext Removal**: When requested to remove technical subtitle subtext under headers, completely remove the subtitle element rather than substituting generic placeholder titles.
+
+## 6. PR Triage & Multi-Branch Integration Standards
+- **Unified Batch Integration (Single-Push Invariant)**: Never merge open PRs or integrated branches individually to remote `main` one by one. Always integrate approved PRs locally into `main` (filtering out extraneous files like lockfiles and external AI journals), verify the full test suite once (`pytest` + `npm test`), and push to `origin main` in **exactly 1 unified commit and push**. This prevents triggering $N$ redundant Vercel production builds and protects Function Storage (10 GB) quotas.
+- **Zero Orphaned Branches**: After pushing the unified commit, immediately close the integrated PRs (`gh pr close <num> --delete-branch`), delete all non-main remote branches via GitHub API sweep, and prune local tracking references (`git remote prune origin`).
+
