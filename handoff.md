@@ -139,9 +139,19 @@ Completed automated review, standards enforcement, security hardening, test veri
 
 ---
 
+## Vercel Deployment & Storage Cleanup
+- **Problem**: 334 deployments had accumulated from historical AI PRs and preview builds, consuming excessive storage and build artifact quota.
+- **Action Taken**:
+  - Authenticated via CLI (`arjundevjha`).
+  - Audited all deployments: whitelisted active production deployment (`dpl_6c6pyXABTd8AWhLhUoRpVzC5WSzF`) and the 5 most recent deployments.
+  - Safely deleted 328 stale/unused deployments (209 previews, 76 old production snapshots, 43 canceled builds) with rate-limiting backoff.
+- **Current Vercel State**:
+  - Exactly **6 deployments** remaining.
+  - Live production website (`https://cryptography-delta.vercel.app`) responding with `HTTP 200 OK`.
+  - Backend API health check (`/api/health`) returning `{"status":"ok"}`.
+
+---
+
 ## Immediate Next Steps
-1. Monitor deployment status on Vercel.
-2. Continue planned museum visual upgrades and interactive cryptographic tools.
-
-
-
+1. Continue planned museum visual upgrades and interactive cryptographic tools.
+2. Maintain clean deployment lifecycle by removing preview deployments upon PR closure.
