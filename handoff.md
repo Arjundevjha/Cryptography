@@ -160,6 +160,15 @@ Executed a Unified Batch Integration (Single Push) across all 3 open Pull Reques
 
 ---
 
+## Vercel Analytics Integration
+- **Feature**: Installed `@vercel/analytics` and added `<Analytics />` from `@vercel/analytics/next` into `web/app/layout.tsx`.
+- **Security & CSP**: Hardened Content Security Policy in `web/next.config.js` with `https://va.vercel-scripts.com` in `script-src` and `https://vitals.vercel-insights.com` in `connect-src` to guarantee analytics beacons and scripts are never blocked.
+- **Verification**: Tested Next.js production build (`npm run build`), frontend unit tests (43/43 passed), and Python tests (702/702 passed).
+
+---
+
 ## Immediate Next Steps
-1. Continue planned museum visual upgrades and interactive cryptographic tools.
-2. Maintain clean deployment lifecycle by removing preview deployments upon PR closure.
+1. Push unified analytics changes to `origin main`.
+2. Visit live production deployment (`https://cryptography-delta.vercel.app`) to verify analytics tracking in Vercel Dashboard.
+3. Continue planned museum visual upgrades and interactive cryptographic tools.
+

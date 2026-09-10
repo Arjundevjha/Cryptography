@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "methods/modern/rsa.py": {
-    "mtime": 1788736340.6734452,
-    "ast_hash": "ef8692eeacc5f31031c2ca29fd8d6887",
+    "mtime": 1788992816.4232137,
+    "ast_hash": "14e7340ac779144cee69cb759b8e45c8",
     "semantic_hash": ""
   },
   "methods/modern/symmetric.py": {
@@ -325,13 +325,13 @@
     "semantic_hash": "d011342da40a8f82597a09013e906cfc"
   },
   "web/api/main.py": {
-    "mtime": 1788619383.5788002,
-    "ast_hash": "ae4a5e8583d33ea79dea2ad4f7461f61",
+    "mtime": 1788992816.3955517,
+    "ast_hash": "279d0c652ccbe13fe43d32f910acc496",
     "semantic_hash": ""
   },
   "web/api/test_main.py": {
-    "mtime": 1788792583.358557,
-    "ast_hash": "7f7a2acdd9d3002f0fc1e117c9b0839f",
+    "mtime": 1788992816.3958483,
+    "ast_hash": "195e49fbf9cfb6f6936e9de8a105fca8",
     "semantic_hash": ""
   },
   "web/app/api/health/route.ts": {
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/WorkbenchPanel.tsx": {
-    "mtime": 1787896120.9045994,
-    "ast_hash": "d32a379d77e7d679209722e80dedcba0",
+    "mtime": 1788992816.372303,
+    "ast_hash": "64ff95695ef3e0d635725dafc7684b56",
     "semantic_hash": ""
   },
   "web/src/components/ui/ExhibitInput.tsx": {
@@ -510,8 +510,8 @@
     "semantic_hash": "1c06ba7292961575b45102f00433ce1c"
   },
   "handoff.md": {
-    "mtime": 1788861610.8614578,
-    "ast_hash": "39cf09793715f8e37b662d5e293bba0d",
+    "mtime": 1788963372.3363302,
+    "ast_hash": "9f1df9282bfa5dc7aa260cc9a464bf77",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "web/tests/unit/a11y.test.tsx": {
-    "mtime": 1787615196.8515902,
-    "ast_hash": "0135fe938fc566238650d0a0eaed452b",
+    "mtime": 1788992816.3730552,
+    "ast_hash": "1f882afb30b05fa2131cd531606370b6",
     "semantic_hash": ""
   },
   ".Jules/bolt.md": {

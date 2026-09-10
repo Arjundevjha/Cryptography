@@ -1,16 +1,16 @@
 # Graph Report - Cryptography  (2026-09-10)
 
 ## Corpus Check
-- 114 files · ~79,537 words
+- 114 files · ~79,675 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1357 nodes · 2378 edges · 85 communities (71 shown, 14 thin omitted)
+- 1359 nodes · 2380 edges · 85 communities (70 shown, 15 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 161 edges (avg confidence: 0.52)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `542151fc`
+- Built from commit: `fd9bfcbf`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -117,23 +117,23 @@
 - **Museum Testing Flow** — test_infra_philosophy, test_ready_coverage, web_quality_log_tracks, web_security_log_scans [INFERRED 0.85]
 - **Cryptography Project Guidelines** — contributing_python_standards, style_guide_no_external_libs, style_guide_file_structure, style_guide_naming_conventions [INFERRED 0.85]
 
-## Communities (85 total, 14 thin omitted)
+## Communities (85 total, 15 thin omitted)
 
 ### Community 0 - "Cryptographic Helpers & Base64 Utilities"
-Cohesion: 0.15
-Nodes (29): generate_keypair(), Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), encrypt(), main(), _parse_pem(), Demonstrate RSA keypair generation, encryption, and decryption., Helper to strip PEM wrapping, decode base64, and split by colon. (+21 more)
+Cohesion: 0.14
+Nodes (31): generate_keypair(), Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), decrypt_private_key(), encrypt(), main(), _parse_pem(), RSA asymmetric encryption and decryption module in pure Python.  This module pro (+23 more)
 
 ### Community 1 - "Playfair Cipher Implementation & Benchmarks"
-Cohesion: 0.09
-Nodes (22): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext., Test decrypt converts uppercase characters to lowercase and 'J' to 'I'. (+14 more)
+Cohesion: 0.12
+Nodes (24): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext. (+16 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
 Cohesion: 0.09
 Nodes (42): BaseModel, aes_encrypt(), AesEncryptInput, affine_decrypt(), affine_encrypt(), AffineDecryptInput, AffineEncryptInput, build_enigma_machine() (+34 more)
 
 ### Community 4 - "Frontend App Third-Party Dependencies"
-Cohesion: 0.05
-Nodes (43): canvas-confetti, clsx, framer-motion, lucide-react, next, postprocessing, react, react-dom (+35 more)
+Cohesion: 0.04
+Nodes (45): canvas-confetti, clsx, framer-motion, lucide-react, next, postprocessing, react, react-dom (+37 more)
 
 ### Community 5 - "Development Tooling & Testing Packages"
 Cohesion: 0.05
@@ -188,8 +188,8 @@ Cohesion: 0.09
 Nodes (36): Home(), MuseumCanvas, AudioSystem(), AudioSystemProps, ApiStatusDot(), MuseumHUD(), MuseumHUDProps, MuseumCanvas() (+28 more)
 
 ### Community 18 - "Symmetric Encryption Utilities"
-Cohesion: 0.19
-Nodes (11): Compute SHA-256 hash of bytes., sha256(), Modern cryptography methods package., generate_encrypted_keypair(), Generate an RSA key pair with an encrypted private key.      Args:         passp, decrypt_private_key(), RSA asymmetric encryption and decryption module in pure Python.  This module pro, Decrypt an encrypted private key PEM using the passphrase. (+3 more)
+Cohesion: 0.40
+Nodes (5): b64decode(), Decode a Base64 string to bytes., Test roundtrip encoding and decoding for various byte payloads., test_b64decode(), test_b64encode_roundtrip()
 
 ### Community 19 - "Scytale Cipher & Classical Init Modules"
 Cohesion: 0.14
@@ -208,12 +208,12 @@ Cohesion: 0.14
 Nodes (25): test_decrypt(), test_decrypt_unmatching_length_and_edge_cases(), test_encrypt(), test_encrypt_decrypt_char(), test_encrypt_decrypt_roundtrip(), test_encrypt_unmatching_length_and_edge_cases(), test_main_custom_key(), test_main_random_key() (+17 more)
 
 ### Community 23 - "Enigma Keyboard Component Routing"
-Cohesion: 0.16
-Nodes (17): pkcs7_pad(), pkcs7_unpad(), Apply PKCS7 padding to raw bytes., Remove PKCS7 padding from raw bytes., Substitute bytes in a 4-byte word using the S-box., sub_word(), Verify that empty bytes or unaligned block sizes raise expected ValueError., Test byte substitution on 4-byte words using the S-box. (+9 more)
+Cohesion: 0.12
+Nodes (25): key_expansion(), pkcs7_pad(), pkcs7_unpad(), Apply PKCS7 padding to raw bytes., Remove PKCS7 padding from raw bytes., Substitute bytes in a 4-byte word using the S-box., Rotate a 4-byte word: shift left by 1 position., Expand the AES key into round keys. Supports 16, 24, and 32 byte keys. (+17 more)
 
 ### Community 24 - "Manual AES CTR Cipher Core"
-Cohesion: 0.14
-Nodes (23): decrypt(), encrypt(), main(), AES symmetric encryption using manual AES-256-CTR in pure Python.  Reuses the AE, Encrypt a message using AES-256-CTR mode.      Args:         message: Plaintext, Decrypt a message encrypted with AES-256-CTR mode.      Args:         ciphertext, Demonstrate AES-CTR encryption and decryption., encrypt_block() (+15 more)
+Cohesion: 0.13
+Nodes (22): decrypt(), encrypt(), main(), AES symmetric encryption using manual AES-256-CTR in pure Python.  Reuses the AE, Encrypt a message using AES-256-CTR mode.      Args:         message: Plaintext, Decrypt a message encrypted with AES-256-CTR mode.      Args:         ciphertext, Demonstrate AES-CTR encryption and decryption., Modern cryptography methods package. (+14 more)
 
 ### Community 25 - "Enigma Rotor Mechanics Simulation"
 Cohesion: 0.10
@@ -248,8 +248,8 @@ Cohesion: 0.11
 Nodes (21): Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Process an entire text string through the Lorenz cipher machine.          Non-IT, Alias for process_message., Alias for process_message., Get current position indices for all 12 wheels., Set manual pin configurations for Chi, Motor, and Psi wheels.          Args:, Unit tests for Lorenz top-level machine class. (+13 more)
 
 ### Community 35 - "Lorenz Machine Core Unit Tests"
-Cohesion: 0.14
-Nodes (29): b64decode(), ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Process a single 64-byte block to update the SHA-256 state in place., Compute HMAC-SHA256 signature of data using key. (+21 more)
+Cohesion: 0.16
+Nodes (27): ch_func(), hmac_sha256(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Sigma 1 lowercase function for SHA-256., Process a single 64-byte block to update the SHA-256 state in place., Compute SHA-256 hash of bytes., Compute HMAC-SHA256 signature of data using key. (+19 more)
 
 ### Community 36 - "Lorenz Machine Pinwheels Initialization"
 Cohesion: 0.29
@@ -288,16 +288,16 @@ Cohesion: 0.17
 Nodes (12): encrypt(), Encrypt plaintext using Playfair cipher., Test encrypting digraphs where characters share a column., Test encrypting digraphs forming a rectangle., Test decryption when key contains spaces, uppercase letters, duplicate character, Test encrypt raises ValueError when pos_map lookup raises KeyError., Test encrypting digraphs where characters share a row., test_decrypt_complex_key() (+4 more)
 
 ### Community 68 - "test_playfair.py"
-Cohesion: 0.28
-Nodes (8): _create_grid(), Create a 5x5 Playfair grid from key., Test decrypting digraphs where characters share a row., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j(), test_decrypt_same_row()
+Cohesion: 0.33
+Nodes (6): _create_grid(), Create a 5x5 Playfair grid from key., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j()
 
 ### Community 69 - "_find_position"
 Cohesion: 0.33
 Nodes (6): _find_position(), Find row and column of a character in the grid., Test finding a character's row and column in the grid., Test ValueError is raised if character is missing., test_find_position(), test_find_position_missing_char()
 
 ### Community 70 - "keypair.py"
-Cohesion: 0.18
-Nodes (17): generate_prime(), is_prime(), main(), RSA Keypair Generation Module in pure Python.  This module provides functionalit, Generate and print a sample RSA keypair., Check if val is prime using Miller-Rabin primality test., Generate a random prime number of specified bit length., Test fallback imports by masking the modern module temporarily. (+9 more)
+Cohesion: 0.15
+Nodes (20): generate_encrypted_keypair(), generate_prime(), is_prime(), main(), RSA Keypair Generation Module in pure Python.  This module provides functionalit, Generate an RSA key pair with an encrypted private key.      Args:         passp, Generate and print a sample RSA keypair., Check if val is prime using Miller-Rabin primality test. (+12 more)
 
 ### Community 71 - "inv_mix_columns"
 Cohesion: 0.16
@@ -328,12 +328,8 @@ Cohesion: 0.22
 Nodes (10): inv_sub_bytes(), Substitute state bytes using the S-box., Substitute state bytes using the Inverse S-box., sub_bytes(), Test sub_bytes with a known input state against expected S-box substitution valu, Test that applying sub_bytes followed by inv_sub_bytes returns the original stat, Test inv_sub_bytes direct transformation and inverse relationship with sub_bytes, test_inv_sub_bytes() (+2 more)
 
 ### Community 80 - "inv_shift_rows"
-Cohesion: 0.14
-Nodes (14): add_round_key(), decrypt_block(), inv_shift_rows(), Shift state rows to the left by row offsets., Shift state rows to the right by row offsets., Decrypt a single 16-byte block using AES., XOR state with the round key., shift_rows() (+6 more)
-
-### Community 81 - "xtime"
-Cohesion: 0.20
-Nodes (10): key_expansion(), Rotate a 4-byte word: shift left by 1 position., Expand the AES key into round keys. Supports 16, 24, and 32 byte keys., rot_word(), Test raw block encryption and decryption to ensure no data loss in core AES func, Test 1-byte left rotation on a 4-byte word., test_key_expansion_invalid_key_length(), test_key_expansion_valid_key_lengths() (+2 more)
+Cohesion: 0.12
+Nodes (18): add_round_key(), decrypt_block(), encrypt_block(), inv_shift_rows(), Shift state rows to the left by row offsets., Shift state rows to the right by row offsets., Encrypt a single 16-byte block using AES., Decrypt a single 16-byte block using AES. (+10 more)
 
 ### Community 82 - "validation_exception_handler"
 Cohesion: 0.48
@@ -344,9 +340,9 @@ Cohesion: 1.00
 Nodes (3): aes_decrypt_endpoint(), AesDecryptInput, test_aes_decrypt_endpoint_direct_function_call()
 
 ## Knowledge Gaps
-- **123 isolated node(s):** `run_e2e_no_install.sh script`, `PYTHONPATH`, `run_e2e_tests.sh script`, `PYTHONPATH`, `run_tests.sh script` (+118 more)
+- **124 isolated node(s):** `run_e2e_no_install.sh script`, `PYTHONPATH`, `run_e2e_tests.sh script`, `PYTHONPATH`, `run_tests.sh script` (+119 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
