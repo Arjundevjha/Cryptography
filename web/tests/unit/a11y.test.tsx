@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
+import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -55,5 +56,20 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const outputContainer = screen.getByTestId(`output-text-${sampleExhibit.id}`);
     expect(outputContainer).toHaveAttribute('aria-live', 'polite');
     expect(outputContainer).toHaveAttribute('aria-atomic', 'true');
+  });
+
+  it('renders AudioSystem toggle button with accessible aria-label, aria-pressed, and focus styles', () => {
+    render(<AudioSystem currentView="atrium" />);
+
+    const audioButton = screen.getByRole('button', { name: /unmute spatial audio/i });
+    expect(audioButton).toBeInTheDocument();
+    expect(audioButton).toHaveAttribute('aria-pressed', 'false');
+    expect(audioButton.className).toContain('focus-visible:ring-2');
+
+    fireEvent.click(audioButton);
+
+    const unmutedButton = screen.getByRole('button', { name: /mute spatial audio/i });
+    expect(unmutedButton).toBeInTheDocument();
+    expect(unmutedButton).toHaveAttribute('aria-pressed', 'true');
   });
 });
