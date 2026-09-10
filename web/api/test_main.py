@@ -809,6 +809,27 @@ def test_rsa_keygen_non_prime():
     assert response.status_code == 400
     assert "prime" in response.json()["detail"].lower()
 
+def test_rsa_keygen_insecure_exponent():
+    # Public exponent e < 3 (e.g. e = 1 causes identity transformation c = m) must be rejected
+    payload = {
+        "p": 61,
+        "q": 53,
+        "e": 1
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+
+def test_rsa_keygen_modulus_too_small():
+    # Modulus n = p * q < 256 (e.g. p=3, q=5 => n=15) must be rejected
+    payload = {
+        "p": 3,
+        "q": 5,
+        "e": 3
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+    assert "at least 256" in response.json()["detail"].lower()
+
 def test_rsa_keygen_too_small():
     payload = {
         "p": 2,

@@ -701,7 +701,7 @@ class AesDecryptInput(BaseModel):
 class RsaKeygenInput(BaseModel):
     p: int = Field(..., gt=0, lt=2**2048, description="Prime number p")
     q: int = Field(..., gt=0, lt=2**2048, description="Prime number q")
-    e: int = Field(default=65537, gt=0, lt=2**2048, description="Public exponent e")
+    e: int = Field(default=65537, ge=3, lt=2**2048, description="Public exponent e (must be >= 3)")
 
 class RsaEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
@@ -791,6 +791,9 @@ def rsa_keygen(data: RsaKeygenInput):
     from methods.modern.keypair import is_prime
     from methods.modern.helpers import b64encode
     
+    # Security: Ensure public exponent e >= 3 (e=1 causes c = m, leaking plaintext without encryption)
+    if data.e < 3:
+        raise HTTPException(status_code=400, detail="Public exponent e must be an integer greater than or equal to 3")
     if data.p <= 2 or not is_prime(data.p):
         raise HTTPException(status_code=400, detail="p must be a prime greater than 2")
     if data.q <= 2 or not is_prime(data.q):
@@ -799,6 +802,10 @@ def rsa_keygen(data: RsaKeygenInput):
         raise HTTPException(status_code=400, detail="p and q must be distinct prime numbers")
         
     n = data.p * data.q
+    # Security: Ensure RSA modulus n >= 256 so byte values (0-255) fit without modular wraparound/data corruption
+    if n < 256:
+        raise HTTPException(status_code=400, detail="RSA modulus n (p * q) must be at least 256")
+
     phi = (data.p - 1) * (data.q - 1)
     
     if math.gcd(data.e, phi) != 1:
