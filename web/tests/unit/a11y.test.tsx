@@ -56,4 +56,13 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(outputContainer).toHaveAttribute('aria-live', 'polite');
     expect(outputContainer).toHaveAttribute('aria-atomic', 'true');
   });
+
+  it('associates cipher parameter input fields with their corresponding labels', () => {
+    const caesarExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'caesar')!;
+    render(<WorkbenchPanel exhibit={caesarExhibit} />);
+
+    const shiftInput = screen.getByLabelText(/shift value/i);
+    expect(shiftInput).toBeInTheDocument();
+    expect(shiftInput).toHaveAttribute('id', `param-shift-${caesarExhibit.id}`);
+  });
 });
