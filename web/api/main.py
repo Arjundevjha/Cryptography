@@ -701,7 +701,7 @@ class AesDecryptInput(BaseModel):
 class RsaKeygenInput(BaseModel):
     p: int = Field(..., gt=0, lt=2**2048, description="Prime number p")
     q: int = Field(..., gt=0, lt=2**2048, description="Prime number q")
-    e: int = Field(default=65537, gt=0, lt=2**2048, description="Public exponent e")
+    e: int = Field(default=65537, ge=3, lt=2**2048, description="Public exponent e")
 
 class RsaEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
@@ -799,6 +799,8 @@ def rsa_keygen(data: RsaKeygenInput):
         raise HTTPException(status_code=400, detail="p and q must be distinct prime numbers")
         
     n = data.p * data.q
+    if n < 256:
+        raise HTTPException(status_code=400, detail="RSA modulus n must be at least 256")
     phi = (data.p - 1) * (data.q - 1)
     
     if math.gcd(data.e, phi) != 1:

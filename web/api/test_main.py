@@ -1822,6 +1822,27 @@ def test_parse_allowed_origins():
 # INPUT BOUNDS & DOS MITIGATION TESTS
 # ==========================================
 
+def test_rsa_keygen_invalid_exponent_e():
+    for invalid_e in [0, 1, 2]:
+        payload = {
+            "p": 61,
+            "q": 53,
+            "e": invalid_e
+        }
+        response = client.post("/api/rsa/keygen", json=payload)
+        assert response.status_code == 400
+
+def test_rsa_keygen_small_modulus():
+    payload = {
+        "p": 11,
+        "q": 13,
+        "e": 17
+    }
+    # n = 11 * 13 = 143 < 256
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+    assert "at least 256" in response.json()["detail"].lower()
+
 def test_rsa_keygen_excessive_prime_bound():
     payload = {
         "p": 2**2048 + 1,
