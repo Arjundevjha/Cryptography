@@ -3,7 +3,9 @@
 import secrets
 
 ALPHABET = "abcdefghiklmnopqrstuvwxyz"
+ALPHA_SET = set(ALPHABET)
 DIGRAPH_LEN = 2
+
 
 def _create_grid(key: str) -> list[list[str]]:
     """Create a 5x5 Playfair grid from key."""
@@ -28,9 +30,11 @@ def _create_grid(key: str) -> list[list[str]]:
     # Create 5x5 grid
     return [grid_chars[i:i+5] for i in range(0, 25, 5)]
 
+
 def _build_pos_map(grid: list[list[str]]) -> dict[str, tuple[int, int]]:
     """Build a mapping of character to (row, col) position in the grid."""
     return {grid[r][c]: (r, c) for r in range(5) for c in range(5)}
+
 
 def _find_position(grid: list[list[str]], char: str) -> tuple[int, int]:
     """Find row and column of a character in the grid."""
@@ -39,25 +43,67 @@ def _find_position(grid: list[list[str]], char: str) -> tuple[int, int]:
             return r, grid[r].index(char)
     raise ValueError(f"Character {char} not found in grid")
 
+
+def _build_transform_map(
+    grid: list[list[str]], pos_map: dict[str, tuple[int, int]], mode: str = "encrypt"
+) -> dict[str, str]:
+    """Precompute 25x25 (625 entries) digraph pair transformation map for O(1) loop lookups.
+
+    BOLT OPTIMIZATION: Replaces per-pair matrix coordinate lookups, row/column conditional
+    branching, modulo arithmetic, and 2D grid index lookups inside the character loop with a single O(1) table lookup.
+    """
+    shift = 1 if mode == "encrypt" else -1
+    transform_map = {}
+    for c1 in ALPHABET:
+        if c1 not in pos_map:
+            continue
+        r1, col1 = pos_map[c1]
+        for c2 in ALPHABET:
+            if c2 not in pos_map:
+                continue
+            r2, col2 = pos_map[c2]
+            if r1 == r2:
+                # Same row: shift right (or left for decrypt)
+                out1 = grid[r1][(col1 + shift) % 5]
+                out2 = grid[r2][(col2 + shift) % 5]
+            elif col1 == col2:
+                # Same column: shift down (or up for decrypt)
+                out1 = grid[(r1 + shift) % 5][col1]
+                out2 = grid[(r2 + shift) % 5][col2]
+            else:
+                # Rectangle: swap columns
+                out1 = grid[r1][col2]
+                out2 = grid[r2][col1]
+            transform_map[c1 + c2] = out1 + out2
+    return transform_map
+
+
 def _prepare_text(text: str) -> list[str]:
-    """Prepare text: remove non-alpha, replace j, group into digraphs."""
+    """Prepare text: remove non-alpha, replace j, group into digraphs.
+
+    BOLT OPTIMIZATION: Fast filtering using set lookup before digraph grouping.
+    """
     text = text.lower().replace("j", "i")
-    text = "".join([c for c in text if c in ALPHABET])
+    text = "".join(c for c in text if c in ALPHA_SET)
 
     digraphs = []
-    iterator = iter(range(len(text)))
-    for i in iterator:
-        char1 = text[i]
-        if i + 1 < len(text):
-            char2 = text[i+1]
-            if char1 == char2:
-                digraphs.append(char1 + "x")
+    i = 0
+    n = len(text)
+    while i < n:
+        c1 = text[i]
+        if i + 1 < n:
+            c2 = text[i+1]
+            if c1 == c2:
+                digraphs.append(c1 + "x")
+                i += 1
             else:
-                digraphs.append(char1 + char2)
-                next(iterator, None)
+                digraphs.append(c1 + c2)
+                i += 2
         else:
-            digraphs.append(char1 + "x")
+            digraphs.append(c1 + "x")
+            i += 1
     return digraphs
+
 
 def pick_keys() -> str:
     """Generate and return a random encryption key using CSPRNG."""
@@ -66,70 +112,37 @@ def pick_keys() -> str:
     chars = "abcdefghiklmnopqrstuvwxyz"
     return "".join(secrets.choice(chars) for _ in range(length))
 
+
 def encrypt(plaintext: str, key: str) -> str:
     """Encrypt plaintext using Playfair cipher."""
     grid = _create_grid(key)
     pos_map = _build_pos_map(grid)
+    enc_map = _build_transform_map(grid, pos_map, mode="encrypt")
     digraphs = _prepare_text(plaintext)
-    ciphertext_chars = []
 
-    for pair in digraphs:
-        try:
-            r1, c1 = pos_map[pair[0]]
-            r2, c2 = pos_map[pair[1]]
-        except KeyError as e:
-            raise ValueError(f"Character {e.args[0]} not found in grid")
+    try:
+        return "".join(enc_map[pair] for pair in digraphs)
+    except KeyError as e:
+        missing_char = e.args[0][0] if e.args[0][0] not in pos_map else e.args[0][1]
+        raise ValueError(f"Character {missing_char} not found in grid")
 
-        if r1 == r2:
-            # Same row: shift right
-            ciphertext_chars.append(grid[r1][(c1 + 1) % 5])
-            ciphertext_chars.append(grid[r2][(c2 + 1) % 5])
-        elif c1 == c2:
-            # Same column: shift down
-            ciphertext_chars.append(grid[(r1 + 1) % 5][c1])
-            ciphertext_chars.append(grid[(r2 + 1) % 5][c2])
-        else:
-            # Rectangle: swap columns
-            ciphertext_chars.append(grid[r1][c2])
-            ciphertext_chars.append(grid[r2][c1])
-
-    return "".join(ciphertext_chars)
 
 def decrypt(ciphertext: str, key: str) -> str:
     """Decrypt ciphertext using Playfair cipher."""
     grid = _create_grid(key)
     pos_map = _build_pos_map(grid)
-    # Ciphertext is assumed to be valid pairs, but clean it just in case
+    dec_map = _build_transform_map(grid, pos_map, mode="decrypt")
+
     ciphertext = ciphertext.lower().replace("j", "i")
-    ciphertext = "".join([c for c in ciphertext if c in ALPHABET])
-
+    ciphertext = "".join(c for c in ciphertext if c in ALPHA_SET)
     pairs = [ciphertext[i:i+2] for i in range(0, len(ciphertext), 2)]
-    plaintext_chars = []
 
-    for pair in pairs:
-        if len(pair) != DIGRAPH_LEN:
-            continue
+    try:
+        return "".join(dec_map[pair] for pair in pairs if len(pair) == DIGRAPH_LEN)
+    except KeyError as e:
+        missing_char = e.args[0][0] if e.args[0][0] not in pos_map else e.args[0][1]
+        raise ValueError(f"Character {missing_char} not found in grid")
 
-        try:
-            r1, c1 = pos_map[pair[0]]
-            r2, c2 = pos_map[pair[1]]
-        except KeyError as e:
-            raise ValueError(f"Character {e.args[0]} not found in grid")
-
-        if r1 == r2:
-            # Same row: shift left
-            plaintext_chars.append(grid[r1][(c1 - 1) % 5])
-            plaintext_chars.append(grid[r2][(c2 - 1) % 5])
-        elif c1 == c2:
-            # Same column: shift up
-            plaintext_chars.append(grid[(r1 - 1) % 5][c1])
-            plaintext_chars.append(grid[(r2 - 1) % 5][c2])
-        else:
-            # Rectangle: swap columns
-            plaintext_chars.append(grid[r1][c2])
-            plaintext_chars.append(grid[r2][c1])
-
-    return "".join(plaintext_chars)
 
 def main():
     """Run an interactive test of the Playfair cipher."""
@@ -143,6 +156,7 @@ def main():
     print(f"Playfair Generated Key: {grid_key}")
     print(f"Playfair Encrypted Result: {playfair_encrypted}")
     print(f"Playfair Decrypted Result: {playfair_decrypted}")
+
 
 if __name__ == "__main__":
     main()
