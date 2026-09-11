@@ -210,7 +210,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           data-testid={`input-text-${exhibit.id}`}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus:border-amber-500 transition-all"
+          className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-all"
         />
       </div>
 
@@ -220,13 +220,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {exhibit.id === 'caesar' && (
           <div>
-            <label className="block text-[11px] text-stone-400">Shift Value: {shift}</label>
+            <label htmlFor={`param-shift-${exhibit.id}`} className="block text-[11px] text-stone-400">Shift Value: {shift}</label>
             <input
+              id={`param-shift-${exhibit.id}`}
               type="text"
               data-testid="param-shift-caesar"
               value={shift}
               onChange={(e) => setShift(parseInt(e.target.value) || 0)}
-              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200"
+              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
           </div>
         )}
@@ -234,23 +235,25 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         {exhibit.id === 'affine' && (
           <div className="grid grid-cols-2 gap-2 text-xs font-mono">
             <div>
-              <label className="block text-[11px] text-stone-400">Key a:</label>
+              <label htmlFor={`param-a-${exhibit.id}`} className="block text-[11px] text-stone-400">Key a:</label>
               <input
+                id={`param-a-${exhibit.id}`}
                 type="number"
                 data-testid="param-a-affine"
                 value={aKey}
                 onChange={(e) => setAKey(parseInt(e.target.value) || 1)}
-                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800"
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] text-stone-400">Key b:</label>
+              <label htmlFor={`param-b-${exhibit.id}`} className="block text-[11px] text-stone-400">Key b:</label>
               <input
+                id={`param-b-${exhibit.id}`}
                 type="number"
                 data-testid="param-b-affine"
                 value={bKey}
                 onChange={(e) => setBKey(parseInt(e.target.value) || 0)}
-                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800"
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               />
             </div>
           </div>
@@ -258,26 +261,28 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {(exhibit.id === 'vigenere' || exhibit.id === 'playfair' || exhibit.id === 'polybius') && (
           <div>
-            <label className="block text-[11px] text-stone-400">Key Phrase:</label>
+            <label htmlFor={`param-key-${exhibit.id}`} className="block text-[11px] text-stone-400">Key Phrase:</label>
             <input
+              id={`param-key-${exhibit.id}`}
               type="text"
               data-testid={`param-key-${exhibit.id}`}
               value={keyPhrase}
               onChange={(e) => setKeyPhrase(e.target.value)}
-              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200"
+              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
           </div>
         )}
 
         {exhibit.id === 'scytale' && (
           <div>
-            <label className="block text-[11px] text-stone-400">Cylinder Diameter Width: {width}</label>
+            <label htmlFor={`param-width-${exhibit.id}`} className="block text-[11px] text-stone-400">Cylinder Diameter Width: {width}</label>
             <input
+              id={`param-width-${exhibit.id}`}
               type="number"
               data-testid="param-width-scytale"
               value={width}
               onChange={(e) => setWidth(parseInt(e.target.value) || 2)}
-              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200"
+              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
           </div>
         )}
@@ -291,13 +296,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
                 {[0, 1, 2].map((idx) => (
                   <select
                     key={`rotor-${idx}`}
+                    aria-label={`Enigma Rotor ${idx + 1}`}
                     value={enigmaRotors[idx] || 'I'}
                     onChange={(e) => {
                       const updated = [...enigmaRotors];
                       updated[idx] = e.target.value;
                       setEnigmaRotors(updated);
                     }}
-                    className="px-1.5 py-1 rounded bg-stone-950 border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                    className="px-1.5 py-1 rounded bg-stone-950 border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                   >
                     {['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'].map((r) => (
                       <option key={r} value={r}>
@@ -321,12 +327,13 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
             {/* Reflector Selection */}
             <div>
-              <label className="block text-[11px] text-stone-400 mb-1">Reflector:</label>
+              <label htmlFor={`param-reflector-${exhibit.id}`} className="block text-[11px] text-stone-400 mb-1">Reflector:</label>
               <select
+                id={`param-reflector-${exhibit.id}`}
                 data-testid="param-reflector-enigma"
                 value={enigmaReflector}
                 onChange={(e) => setEnigmaReflector(e.target.value)}
-                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               >
                 <option value="A">Reflector A (EJMZALYX...)</option>
                 <option value="B">Reflector B (YRUHQSLD... Standard)</option>
@@ -339,8 +346,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             {/* Positions & Rings */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[11px] text-stone-400 mb-0.5">Positions:</label>
+                <label htmlFor={`param-positions-${exhibit.id}`} className="block text-[11px] text-stone-400 mb-0.5">Positions:</label>
                 <input
+                  id={`param-positions-${exhibit.id}`}
                   type="text"
                   data-testid="param-positions-enigma"
                   value={enigmaPositions.join('')}
@@ -352,13 +360,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
                     setEnigmaPositions([p1, p2, p3]);
                   }}
                   maxLength={3}
-                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center"
+                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-stone-400 mb-0.5">Rings:</label>
+                <label htmlFor={`param-rings-${exhibit.id}`} className="block text-[11px] text-stone-400 mb-0.5">Rings:</label>
                 <input
+                  id={`param-rings-${exhibit.id}`}
                   type="text"
                   data-testid="param-rings-enigma"
                   value={enigmaRings.join('')}
@@ -370,7 +379,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
                     setEnigmaRings([r1, r2, r3]);
                   }}
                   maxLength={3}
-                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center"
+                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 />
               </div>
             </div>
@@ -378,18 +387,19 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             {/* Plugboard Swaps */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-[11px] text-stone-400">Plugboard (Steckerbrett Swaps):</label>
+                <label htmlFor={`param-plugboard-${exhibit.id}`} className="block text-[11px] text-stone-400">Plugboard (Steckerbrett Swaps):</label>
                 <span className="text-[10px] text-amber-400 font-mono">
                   {enigmaPlugboard.trim() ? enigmaPlugboard.trim().split(/\s+/).length : 0} Swaps Active
                 </span>
               </div>
               <input
+                id={`param-plugboard-${exhibit.id}`}
                 type="text"
                 data-testid="param-plugboard-enigma"
                 value={enigmaPlugboard}
                 onChange={(e) => setEnigmaPlugboard(e.target.value.toUpperCase())}
                 placeholder="e.g. AB CD EF"
-                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 text-xs font-mono uppercase"
+                className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 text-xs font-mono uppercase focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               />
             </div>
           </div>
@@ -502,13 +512,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {exhibit.id === 'aes' && (
           <div>
-            <label className="block text-[11px] text-stone-400">16-Byte AES Key:</label>
+            <label htmlFor={`param-key-${exhibit.id}`} className="block text-[11px] text-stone-400">16-Byte AES Key:</label>
             <input
+              id={`param-key-${exhibit.id}`}
               type="text"
               data-testid="param-key-aes"
               value={aesKey}
               onChange={(e) => setAesKey(e.target.value)}
-              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200"
+              className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
           </div>
         )}
