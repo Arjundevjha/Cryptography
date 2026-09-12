@@ -56,4 +56,14 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(outputContainer).toHaveAttribute('aria-live', 'polite');
     expect(outputContainer).toHaveAttribute('aria-atomic', 'true');
   });
+
+  it('renders WorkbenchPanel parameter inputs with accessible labels and ARIA attributes', () => {
+    // Test Caesar exhibit shift parameter input label association
+    const caesarExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'caesar') || sampleExhibit;
+    render(<WorkbenchPanel exhibit={caesarExhibit} />);
+
+    const shiftInput = screen.getByLabelText(/shift value/i);
+    expect(shiftInput).toBeInTheDocument();
+    expect(shiftInput).toHaveAttribute('id', `param-shift-${caesarExhibit.id}`);
+  });
 });

@@ -220,8 +220,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {exhibit.id === 'caesar' && (
           <div>
-            <label className="block text-[11px] text-stone-400">Shift Value: {shift}</label>
+            <label htmlFor={`param-shift-${exhibit.id}`} className="block text-[11px] text-stone-400">Shift Value: {shift}</label>
             <input
+              id={`param-shift-${exhibit.id}`}
               type="text"
               data-testid="param-shift-caesar"
               value={shift}
@@ -234,8 +235,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         {exhibit.id === 'affine' && (
           <div className="grid grid-cols-2 gap-2 text-xs font-mono">
             <div>
-              <label className="block text-[11px] text-stone-400">Key a:</label>
+              <label htmlFor={`param-a-${exhibit.id}`} className="block text-[11px] text-stone-400">Key a:</label>
               <input
+                id={`param-a-${exhibit.id}`}
                 type="number"
                 data-testid="param-a-affine"
                 value={aKey}
@@ -244,8 +246,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
               />
             </div>
             <div>
-              <label className="block text-[11px] text-stone-400">Key b:</label>
+              <label htmlFor={`param-b-${exhibit.id}`} className="block text-[11px] text-stone-400">Key b:</label>
               <input
+                id={`param-b-${exhibit.id}`}
                 type="number"
                 data-testid="param-b-affine"
                 value={bKey}
@@ -258,8 +261,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {(exhibit.id === 'vigenere' || exhibit.id === 'playfair' || exhibit.id === 'polybius') && (
           <div>
-            <label className="block text-[11px] text-stone-400">Key Phrase:</label>
+            <label htmlFor={`param-key-${exhibit.id}`} className="block text-[11px] text-stone-400">Key Phrase:</label>
             <input
+              id={`param-key-${exhibit.id}`}
               type="text"
               data-testid={`param-key-${exhibit.id}`}
               value={keyPhrase}
@@ -271,8 +275,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {exhibit.id === 'scytale' && (
           <div>
-            <label className="block text-[11px] text-stone-400">Cylinder Diameter Width: {width}</label>
+            <label htmlFor={`param-width-${exhibit.id}`} className="block text-[11px] text-stone-400">Cylinder Diameter Width: {width}</label>
             <input
+              id={`param-width-${exhibit.id}`}
               type="number"
               data-testid="param-width-scytale"
               value={width}
@@ -487,9 +492,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         {exhibit.id === 'rsa' && (
           <div className="space-y-2">
             <div className="grid grid-cols-3 gap-1 text-xs font-mono">
-              <div>p: <input type="number" data-testid="param-p-rsa" value={pVal} onChange={(e)=>setPVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
-              <div>q: <input type="number" data-testid="param-q-rsa" value={qVal} onChange={(e)=>setQVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
-              <div>e: <input type="number" data-testid="param-e-rsa" value={eVal} onChange={(e)=>setEVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
+              <div>p: <input type="number" aria-label="Prime p" data-testid="param-p-rsa" value={pVal} onChange={(e)=>setPVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
+              <div>q: <input type="number" aria-label="Prime q" data-testid="param-q-rsa" value={qVal} onChange={(e)=>setQVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
+              <div>e: <input type="number" aria-label="Public exponent e" data-testid="param-e-rsa" value={eVal} onChange={(e)=>setEVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
             </div>
             <button
               onClick={handleRSAKeygen}
@@ -502,8 +507,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {exhibit.id === 'aes' && (
           <div>
-            <label className="block text-[11px] text-stone-400">16-Byte AES Key:</label>
+            <label htmlFor={`param-key-${exhibit.id}`} className="block text-[11px] text-stone-400">16-Byte AES Key:</label>
             <input
+              id={`param-key-${exhibit.id}`}
               type="text"
               data-testid="param-key-aes"
               value={aesKey}
