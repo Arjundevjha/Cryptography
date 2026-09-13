@@ -1123,6 +1123,32 @@ def test_aes_decrypt_endpoint_invalid_nonce_hex():
     assert response.status_code == 400
     assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
 
+def test_aes_decrypt_endpoint_odd_length_ciphertext_hex(caplog):
+    payload = {
+        "ciphertext": "abc",  # Odd length hex string
+        "key": "1234567890123456",
+        "nonce": "0102030405060708090a0b0c",
+        "key_format": "text"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
+    assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
+
+def test_aes_decrypt_endpoint_odd_length_nonce_hex(caplog):
+    payload = {
+        "ciphertext": "aabbccdd",
+        "key": "1234567890123456",
+        "nonce": "123",  # Odd length hex string
+        "key_format": "text"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
+    assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
+
 def test_aes_decrypt_endpoint_invalid_key_hex():
     payload = {
         "ciphertext": "00112233",
