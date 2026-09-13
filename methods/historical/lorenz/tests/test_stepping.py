@@ -106,6 +106,36 @@ def test_get_keystream_vector():
     assert sc.get_keystream_vector() == [1, 1, 0, 0, 1]
 
 
+def test_get_keystream_vector_across_steps_and_custom_wheels():
+    # Construct custom wheels with specific pin patterns
+    chi_sizes = [41, 31, 29, 26, 23]
+    psi_sizes = [43, 47, 51, 53, 59]
+
+    # Chi pins: alternating 1, 0
+    custom_chi = [Wheel(size, pins=[(i + 1) % 2 for i in range(size)]) for size in chi_sizes]
+    # Psi pins: alternating 0, 1
+    custom_psi = [Wheel(size, pins=[i % 2 for i in range(size)]) for size in psi_sizes]
+
+    sc = SteppingController(chi_wheels=custom_chi, psi_wheels=custom_psi)
+
+    # Initial state
+    chi_vec = sc.get_chi_vector()
+    psi_vec = sc.get_psi_vector()
+    keystream = sc.get_keystream_vector()
+
+    assert chi_vec == [1, 1, 1, 1, 1]
+    assert psi_vec == [0, 0, 0, 0, 0]
+    assert keystream == [1, 1, 1, 1, 1]
+
+    # Advance steps and verify keystream vector dynamically matches chi XOR psi
+    for _ in range(10):
+        sc.step()
+        c_vec = sc.get_chi_vector()
+        p_vec = sc.get_psi_vector()
+        ks_vec = sc.get_keystream_vector()
+        assert ks_vec == [c ^ p for c, p in zip(c_vec, p_vec)]
+
+
 def test_stepping_controller_init_validation():
     with pytest.raises(ValueError, match="Requires exactly 5 Chi wheels"):
         SteppingController(chi_wheels=[Wheel(41)] * 4)
