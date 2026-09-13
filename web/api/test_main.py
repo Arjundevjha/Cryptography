@@ -1677,6 +1677,88 @@ def test_lorenz_api_decrypt_runtime_error_exception(caplog):
         assert "Lorenz decryption error" in caplog.text
 
 
+def test_lorenz_decrypt_standalone_known_ciphertext():
+    # 'LURENC' decrypts to 'LORENZ' with default positions and pins
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "LURENC"})
+    assert resp.status_code == 200
+    assert resp.json() == {"plaintext": "LORENZ"}
+
+
+def test_lorenz_decrypt_empty_ciphertext():
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": ""})
+    assert resp.status_code == 200
+    assert resp.json() == {"plaintext": ""}
+
+
+def test_lorenz_decrypt_unmapped_characters_passthrough():
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "$%@!"})
+    assert resp.status_code == 200
+    assert resp.json() == {"plaintext": "$%@!"}
+
+
+def test_lorenz_decrypt_partial_chi_pins_only():
+    chi_pins = [
+        [1, 0] * 20 + [1],      # 41
+        [1, 0] * 15 + [1],      # 31
+        [1, 0] * 14 + [1],      # 29
+        [1, 0] * 13,            # 26
+        [1, 0] * 11 + [1],      # 23
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "chi_pins": chi_pins})
+    assert resp.status_code == 200
+    assert "plaintext" in resp.json()
+
+
+def test_lorenz_decrypt_partial_motor_pins_only():
+    motor_pins = [
+        [1, 0] * 30 + [1],      # 61
+        [1, 0] * 18 + [1],      # 37
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "motor_pins": motor_pins})
+    assert resp.status_code == 200
+    assert "plaintext" in resp.json()
+
+
+def test_lorenz_decrypt_partial_psi_pins_only():
+    psi_pins = [
+        [1, 0] * 21 + [1],      # 43
+        [1, 0] * 23 + [1],      # 47
+        [1, 0] * 25 + [1],      # 51
+        [1, 0] * 26 + [1],      # 53
+        [1, 0] * 29 + [1],      # 59
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "psi_pins": psi_pins})
+    assert resp.status_code == 200
+    assert "plaintext" in resp.json()
+
+
+def test_lorenz_decrypt_missing_required_ciphertext():
+    resp = client.post("/api/lorenz/decrypt", json={})
+    assert resp.status_code == 400
+
+
+def test_lorenz_decrypt_invalid_pin_value_bounds():
+    # Pin values outside 0 or 1 should trigger validation error (400)
+    invalid_chi_pins = [[2] * 41, [0] * 31, [0] * 29, [0] * 26, [0] * 23]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "chi_pins": invalid_chi_pins})
+    assert resp.status_code == 400
+
+
+def test_lorenz_decrypt_invalid_pin_array_length():
+    # Supplying a pin array with length not matching wheel size triggers ValueError in Lorenz initialization
+    invalid_chi_pins = [
+        [1, 0],                 # Invalid size (2 instead of 41)
+        [1, 0] * 15 + [1],      # 31
+        [1, 0] * 14 + [1],      # 29
+        [1, 0] * 13,            # 26
+        [1, 0] * 11 + [1],      # 23
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "chi_pins": invalid_chi_pins})
+    assert resp.status_code == 400
+    assert "decryption failed" in resp.json()["detail"].lower()
+    assert "requires exactly 41 pins" in resp.json()["detail"]
+
+
 # ==========================================
 # CORS ORIGIN VALIDATION TESTS
 # ==========================================
