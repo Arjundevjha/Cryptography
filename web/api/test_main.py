@@ -695,6 +695,34 @@ async def test_validation_exception_handler_msg_contains_500():
 
 
 @pytest.mark.anyio
+async def test_validation_exception_handler_multiple_errors_second_is_length():
+    req = Request({"type": "http"})
+    errors = [
+        {"type": "missing", "loc": ["body", "shift"], "msg": "Field required"},
+        {"type": "string_too_long", "loc": ["body", "plaintext"], "msg": "String is too long"}
+    ]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    assert response.body == b'{"detail":"Input string length exceeds limit of 500 characters."}'
+
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_missing_or_none_error_keys():
+    req = Request({"type": "http"})
+    errors = [
+        {"type": None, "msg": None},
+        {"loc": ["body", "text"]}
+    ]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    import json
+    data = json.loads(response.body.decode("utf-8"))
+    assert data["detail"] == errors
+
+
+@pytest.mark.anyio
 async def test_validation_exception_handler_generic_validation_error():
     req = Request({"type": "http"})
     errors = [{"type": "missing", "loc": ["body", "plaintext"], "msg": "Field required"}]
@@ -704,6 +732,13 @@ async def test_validation_exception_handler_generic_validation_error():
     import json
     data = json.loads(response.body.decode("utf-8"))
     assert data["detail"] == errors
+
+
+def test_validation_exception_handler_integration_string_length_exceeded():
+    long_text = "a" * 501
+    response = client.post("/api/caesar/encrypt", json={"plaintext": long_text, "shift": 3})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Input string length exceeds limit of 500 characters."}
 
 
 def test_validation_exception_handler_integration_generic_error():
