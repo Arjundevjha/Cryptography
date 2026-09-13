@@ -211,29 +211,32 @@ def test_sha3_256_kats():
     )
 
     # Multi-block / boundary conditions (SHA3-256 block size rate = 136 bytes)
-    # Exactly 135 bytes (1 byte less than rate)
+    # Testing boundaries around rate multiples (134, 135, 136, 137, 271, 272, 273 bytes)
+    boundary_sizes = [134, 135, 136, 137, 271, 272, 273, 500]
+    for size in boundary_sizes:
+        test_input = "x" * size
+        expected = hashlib.sha3_256(test_input.encode("utf-8")).hexdigest()
+        assert sha3_256(test_input) == expected
+        assert compute_hash(test_input, "sha3_256") == expected
+
+    # Specific KAT checks for rate boundaries
     b135 = "a" * 135
-    assert sha3_256(b135) == hashlib.sha3_256(b135.encode("utf-8")).hexdigest()
     assert (
         sha3_256(b135)
         == "8094bb53c44cfb1e67b7c30447f9a1c33696d2463ecc1d9c92538913392843c9"
     )
 
-    # Exactly 136 bytes (1 block boundary)
     b136 = "a" * 136
-    assert sha3_256(b136) == hashlib.sha3_256(b136.encode("utf-8")).hexdigest()
     assert (
         sha3_256(b136)
         == "3fc5559f14db8e453a0a3091edbd2bc25e11528d81c66fa570a4efdcc2695ee1"
     )
 
-    # Exactly 137 bytes (1 byte more than 1 block)
-    b137 = "a" * 137
-    assert sha3_256(b137) == hashlib.sha3_256(b137.encode("utf-8")).hexdigest()
-
-    # 272 bytes (exactly 2 blocks boundary)
-    b272 = "a" * 272
-    assert sha3_256(b272) == hashlib.sha3_256(b272.encode("utf-8")).hexdigest()
+    # Output structure and properties validation (64 hex characters / 256 bits)
+    digest = sha3_256("test properties")
+    assert isinstance(digest, str)
+    assert len(digest) == 64
+    assert all(c in "0123456789abcdef" for c in digest)
 
     # Unicode / multi-byte character test
     unicode_str = "Hello, 世界! 🔑 SHA3-256 🧪"
