@@ -46,6 +46,8 @@ app.add_middleware(VercelPathMiddleware)
 # CORS Middleware
 DEFAULT_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
+_INVALID_ORIGIN_CHARS = frozenset(" \t\r\n<>'\"@;")
+
 def _validate_origin_netloc(netloc: str) -> bool:
     """Validates host and port inside netloc, handling IPv6 literals and port ranges."""
     if netloc.startswith("[") and "]" in netloc:
@@ -61,17 +63,22 @@ def _validate_origin_netloc(netloc: str) -> bool:
             return False
     return True
 
-def is_valid_origin(origin: str) -> bool:
-    """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
+def _check_origin_string_format(origin: str) -> bool:
+    """Sanity checks basic string properties of an origin candidate."""
     if not isinstance(origin, str):
         return False
-    origin = origin.strip()
-    if not origin or origin == "*":
+    cleaned = origin.strip()
+    if not cleaned or cleaned == "*":
         return False
+    return not any(c in _INVALID_ORIGIN_CHARS for c in cleaned)
+
+def is_valid_origin(origin: str) -> bool:
+    """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
+    if not _check_origin_string_format(origin):
+        return False
+    origin = origin.strip()
     if origin.endswith("/"):
         origin = origin[:-1]
-    if any(c in origin for c in (" ", "\t", "\r", "\n", "<", ">", '"', "'", ";", "@")):
-        return False
     try:
         parsed = urlparse(origin)
         if parsed.scheme not in ("http", "https"):
@@ -434,24 +441,21 @@ def validate_polybius_ciphertext(ciphertext: str) -> None:
     i = 0
     n = len(ciphertext)
     while i < n:
-        char = ciphertext[i]
-        if char.isdigit():
-            if i + 1 < n and ciphertext[i + 1].isdigit():
-                d1 = int(char)
-                d2 = int(ciphertext[i + 1])
-                if not (1 <= d1 <= 5 and 1 <= d2 <= 5):
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail="Coordinates must be between 1 and 5"
-                    )
-                i += 2
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Digits must appear in pairs"
-                )
-        else:
+        if not ciphertext[i].isdigit():
             i += 1
+            continue
+        if i + 1 >= n or not ciphertext[i + 1].isdigit():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Digits must appear in pairs"
+            )
+        d1, d2 = int(ciphertext[i]), int(ciphertext[i + 1])
+        if not (1 <= d1 <= 5 and 1 <= d2 <= 5):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Coordinates must be between 1 and 5"
+            )
+        i += 2
 
 
 @app.post("/api/polybius/encrypt")
@@ -533,16 +537,13 @@ def parse_enigma_positions(positions: list[str]) -> str:
 
 def _parse_ring_item(r: int | str) -> int:
     """Helper to parse a single ring setting (integer 1-26 or letter A-Z / '1'-'26')."""
-    if isinstance(r, int):
-        if 1 <= r <= 26:
-            return r
-    elif isinstance(r, str):
+    if isinstance(r, int) and 1 <= r <= 26:
+        return r
+    if isinstance(r, str):
         r_str = r.strip()
-        if r_str.isdigit():
-            val = int(r_str)
-            if 1 <= val <= 26:
-                return val
-        elif len(r_str) == 1 and r_str.isalpha():
+        if r_str.isdigit() and 1 <= int(r_str) <= 26:
+            return int(r_str)
+        if len(r_str) == 1 and r_str.isalpha():
             return ord(r_str.upper()) - ord('A') + 1
     raise HTTPException(status_code=400, detail="Invalid ring setting")
 
@@ -713,27 +714,26 @@ class Sha256Input(BaseModel):
     plaintext: str = Field("", max_length=500, description="The plaintext to hash")
 
 
+def _decode_aes_key(key: str, key_format: str) -> bytes:
+    """Helper to decode raw string or hex string key representation."""
+    if key_format == "hex":
+        try:
+            return bytes.fromhex(key)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid hex key")
+    if len(key) in (32, 64) and all(c in "0123456789abcdefABCDEF" for c in key):
+        try:
+            return bytes.fromhex(key)
+        except ValueError:
+            pass
+    return key.encode('utf-8')
+
 def parse_aes_key(key: str, key_format: str = "text") -> bytes:
     if key_format not in ("text", "hex"):
         raise HTTPException(status_code=400, detail="Invalid key format")
-    if key_format == "hex":
-        try:
-            key_bytes = bytes.fromhex(key)
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid hex key")
-    else:
-        # Try to parse as hex if length is 64 (32 bytes) or 32 (16 bytes) and only hex characters
-        if len(key) in (32, 64) and all(c in "0123456789abcdefABCDEF" for c in key):
-            try:
-                key_bytes = bytes.fromhex(key)
-            except ValueError:
-                key_bytes = key.encode('utf-8')
-        else:
-            key_bytes = key.encode('utf-8')
-    
+    key_bytes = _decode_aes_key(key, key_format)
     if len(key_bytes) not in (16, 32):
         raise HTTPException(status_code=400, detail="Key must be 16 or 32 bytes (or 32 or 64 hex characters)")
-    
     return key_bytes
 
 
@@ -784,15 +784,17 @@ def aes_decrypt_endpoint(data: AesDecryptInput):
         raise HTTPException(status_code=400, detail="Decryption failed")
 
 
+def _validate_rsa_prime(val: int, name: str) -> None:
+    from methods.modern.keypair import is_prime
+    if val <= 2 or not is_prime(val):
+        raise HTTPException(status_code=400, detail=f"{name} must be a prime greater than 2")
+
 @app.post("/api/rsa/keygen")
 def rsa_keygen(data: RsaKeygenInput):
-    from methods.modern.keypair import is_prime
     from methods.modern.helpers import b64encode
     
-    if data.p <= 2 or not is_prime(data.p):
-        raise HTTPException(status_code=400, detail="p must be a prime greater than 2")
-    if data.q <= 2 or not is_prime(data.q):
-        raise HTTPException(status_code=400, detail="q must be a prime greater than 2")
+    _validate_rsa_prime(data.p, "p")
+    _validate_rsa_prime(data.q, "q")
     if data.p == data.q:
         raise HTTPException(status_code=400, detail="p and q must be distinct prime numbers")
         
