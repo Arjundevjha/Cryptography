@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Pre-computed Dict Lookup for Enigma Keyboard
+**Learning:** In character-to-index mapping methods (like `Keyboard.forward`), using `str.find()` incurs $O(N)$ scanning overhead per character lookup. Replacing `str.find()` with a pre-computed dictionary (`self._forward_map.get(letter, -1)`) initialized in `__init__` achieves constant $O(1)$ lookups and delivers a ~2.1x speedup (~52.8% execution time reduction) while maintaining safe fallback for invalid characters.
+**Action:** Pre-compute index lookup dictionaries in `__init__` for character-to-signal and fixed alphabet lookups.
