@@ -286,6 +286,89 @@ def test_shift_rows():
     restored = inv_shift_rows(shifted)
     assert restored == state
 
+def test_shift_rows_fips_197_kat():
+    """Test shift_rows against FIPS 197 Appendix B Known Answer Test vector."""
+    from methods.modern.symmetric import shift_rows
+
+    # State matrix after SubBytes in FIPS 197 Appendix B (in column-major order):
+    # Row 0: d4 e0 b8 1e
+    # Row 1: 27 bf b4 41
+    # Row 2: 11 98 5d 52
+    # Row 3: ae f1 e5 30
+    state = [
+        0xd4, 0x27, 0x11, 0xae,
+        0xe0, 0xbf, 0x98, 0xf1,
+        0xb8, 0xb4, 0x5d, 0xe5,
+        0x1e, 0x41, 0x52, 0x30
+    ]
+
+    # Expected state matrix after ShiftRows in FIPS 197 Appendix B (in column-major order):
+    # Row 0: d4 e0 b8 1e
+    # Row 1: bf b4 41 27
+    # Row 2: 5d 52 11 98
+    # Row 3: 30 ae f1 e5
+    expected_shifted = [
+        0xd4, 0xbf, 0x5d, 0x30,
+        0xe0, 0xb4, 0x52, 0xae,
+        0xb8, 0x41, 0x11, 0xf1,
+        0x1e, 0x27, 0x98, 0xe5
+    ]
+
+    assert shift_rows(state) == expected_shifted
+
+def test_shift_rows_four_rotations_identity():
+    """Test that applying shift_rows 4 times returns the state to its original configuration."""
+    from methods.modern.symmetric import shift_rows
+
+    state = list(range(16))
+    current = state.copy()
+    for _ in range(4):
+        current = shift_rows(current)
+    assert current == state
+
+def test_shift_rows_immutability():
+    """Verify shift_rows returns a new list and does not mutate the input state list in-place."""
+    from methods.modern.symmetric import shift_rows
+
+    state = list(range(16))
+    original_state = state.copy()
+    shifted = shift_rows(state)
+
+    assert state == original_state
+    assert shifted is not state
+
+def test_shift_rows_row_level_shifting():
+    """Verify shift_rows shifts row 0 by 0, row 1 by 1, row 2 by 2, and row 3 by 3."""
+    from methods.modern.symmetric import shift_rows
+
+    # Construct state where each row has distinct byte values:
+    # Row 0: 0x00, Row 1: 0x10..0x13, Row 2: 0x20..0x23, Row 3: 0x30..0x33
+    # Column-major index mapping: state[row + 4*col]
+    state = [0] * 16
+    for col in range(4):
+        state[0 + 4 * col] = 0x00 + col
+        state[1 + 4 * col] = 0x10 + col
+        state[2 + 4 * col] = 0x20 + col
+        state[3 + 4 * col] = 0x30 + col
+
+    shifted = shift_rows(state)
+
+    # Row 0 (shift 0): [0x00, 0x01, 0x02, 0x03]
+    row0 = [shifted[0 + 4 * c] for c in range(4)]
+    assert row0 == [0x00, 0x01, 0x02, 0x03]
+
+    # Row 1 (shift left 1): [0x11, 0x12, 0x13, 0x10]
+    row1 = [shifted[1 + 4 * c] for c in range(4)]
+    assert row1 == [0x11, 0x12, 0x13, 0x10]
+
+    # Row 2 (shift left 2): [0x22, 0x23, 0x20, 0x21]
+    row2 = [shifted[2 + 4 * c] for c in range(4)]
+    assert row2 == [0x22, 0x23, 0x20, 0x21]
+
+    # Row 3 (shift left 3): [0x33, 0x30, 0x31, 0x32]
+    row3 = [shifted[3 + 4 * c] for c in range(4)]
+    assert row3 == [0x33, 0x30, 0x31, 0x32]
+
 def test_inv_shift_rows():
     """Test inv_shift_rows function directly with a known input state."""
     from methods.modern.symmetric import inv_shift_rows
