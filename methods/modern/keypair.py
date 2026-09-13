@@ -50,6 +50,8 @@ def is_prime(val: int, tests: int = 5) -> bool:
 
 def generate_prime(bits: int) -> int:
     """Generate a random prime number of specified bit length."""
+    if bits < 2:
+        raise ValueError("Bit length must be at least 2 to generate a prime number")
     # Practical upper bound to avoid while-used warning
     for _ in range(100000):
         n = secrets.randbits(bits)
@@ -71,6 +73,8 @@ def generate_keypair(
     Returns:
         Tuple containing (public_key_pem, private_key_pem) as bytes
     """
+    if key_size < 16:
+        raise ValueError("Key size must be at least 16 bits")
     half_size = key_size // 2
     p = generate_prime(half_size)
     q = generate_prime(half_size)
