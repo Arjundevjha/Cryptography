@@ -7,6 +7,10 @@ No external library imports are used except for 'typing'.
 import warnings
 from typing import Dict, Callable, List
 
+
+class SecurityWarning(UserWarning):
+    """Warning category raised when insecure or cryptographically broken algorithms are invoked."""
+
 # --- Constants for Pylint Compliance ---
 PADDING_MOD_64 = 64
 PADDING_TARGET_56 = 56
@@ -382,8 +386,9 @@ def md5(data: str) -> str:
         MD5 hash as hexadecimal string
     """
     warnings.warn(
-        "MD5 is cryptographically broken and should not be used for security purposes.",
-        UserWarning,
+        "MD5 is cryptographically broken due to severe collision vulnerabilities and MUST NOT be "
+        "used for security-sensitive operations. Use SHA-256 or SHA-3 instead.",
+        SecurityWarning,
         stacklevel=2,
     )
     b_data = bytearray(data.encode('utf-8'))
@@ -444,9 +449,10 @@ def sha1(data: str) -> str:
         SHA-1 hash as hexadecimal string
     """
     warnings.warn(
-        "SHA-1 is cryptographically weak and vulnerable to collision attacks. "
-        "Do not use SHA-1 for security-sensitive operations.",
-        UserWarning,
+        "SHA-1 is cryptographically broken and vulnerable to collision attacks (e.g., SHAttered). "
+        "It MUST NOT be used for digital signatures, password hashing, or any security-critical "
+        "applications. Use SHA-256 or SHA-3 instead.",
+        SecurityWarning,
         stacklevel=2,
     )
     b_data = bytearray(data.encode('utf-8'))
