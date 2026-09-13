@@ -139,6 +139,45 @@ def test_sub_bytes_inv_sub_bytes_roundtrip():
     restored_state = inv_sub_bytes(sub_state)
     assert restored_state == input_state
 
+def test_sub_bytes_fips197_vector():
+    """Test sub_bytes against FIPS 197 Appendix B standard test vector."""
+    state = [
+        0x19, 0x3d, 0xe3, 0xbe,
+        0xa0, 0xf4, 0xe2, 0x2b,
+        0x9a, 0x4e, 0x08, 0x1b,
+        0x9f, 0x48, 0xd8, 0x01
+    ]
+    expected = [
+        0xd4, 0x27, 0x11, 0xae,
+        0xe0, 0xbf, 0x98, 0xf1,
+        0xb8, 0x2f, 0x30, 0xaf,
+        0xdb, 0x52, 0x61, 0x7c
+    ]
+    assert sub_bytes(state) == expected
+
+def test_sub_bytes_all_zeros():
+    """Test sub_bytes with all-zero input state."""
+    state = [0x00] * 16
+    expected = [0x63] * 16
+    assert sub_bytes(state) == expected
+
+def test_sub_bytes_all_byte_values():
+    """Test sub_bytes over all 256 byte values."""
+    all_bytes = list(range(256))
+    assert sub_bytes(all_bytes) == SBOX
+
+def test_sub_bytes_empty():
+    """Test sub_bytes with an empty state list."""
+    assert sub_bytes([]) == []
+
+def test_sub_bytes_immutability():
+    """Verify sub_bytes returns a new list and leaves the input state unchanged."""
+    state = [0x00, 0x01, 0x02, 0x03]
+    state_copy = state.copy()
+    res = sub_bytes(state)
+    assert state == state_copy
+    assert res is not state
+
 def test_key_expansion_valid_key_lengths():
     # 16 bytes
     key16 = b"1" * 16
