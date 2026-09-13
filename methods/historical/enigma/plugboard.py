@@ -25,9 +25,9 @@ class Plugboard:
 
         self.left = "".join(left_list)
 
-        # Precompute index lookup dictionaries for O(1) performance
-        self._forward_map = {i: self.left.index(self.right[i]) for i in range(len(self.right))}
-        self._backwards_map = {i: self.right.index(self.left[i]) for i in range(len(self.left))}
+        # Precompute index lookup tuples for O(1) performance
+        self._forward_map = tuple(self.left.index(self.right[i]) for i in range(len(self.right)))
+        self._backwards_map = tuple(self.right.index(self.left[i]) for i in range(len(self.left)))
 
     def forward(self, signal):
         """Pass the signal forward through the plugboard mapping."""
