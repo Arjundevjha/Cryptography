@@ -1033,6 +1033,42 @@ def test_sha256_exception(caplog):
     assert response.json()["detail"] == "Hashing failed"
     assert "SHA256 error" in caplog.text
 
+
+# Tests for /api/hash/sha256 endpoint route alias
+
+@pytest.mark.parametrize("plaintext, expected_hash", [
+    ("hello", "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"),
+    ("abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"),
+    ("", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+])
+def test_sha256_hash_endpoint_known_input(plaintext, expected_hash):
+    response = client.post("/api/hash/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 200
+    assert response.json() == {"hash": expected_hash}
+
+def test_sha256_hash_endpoint_max_length():
+    plaintext = "a" * 500
+    response = client.post("/api/hash/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 200
+    data = response.json()
+    assert "hash" in data
+    assert len(data["hash"]) == 64
+
+def test_sha256_hash_endpoint_exceeds_max_length():
+    plaintext = "a" * 501
+    response = client.post("/api/hash/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 400
+    assert "exceeds" in response.json()["detail"].lower()
+
+def test_sha256_hash_endpoint_exception(caplog):
+    payload = {"plaintext": "test message"}
+    with patch("methods.modern.hash_functions.sha256", side_effect=Exception("Mocked SHA256 error")):
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/hash/sha256", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Hashing failed"
+    assert "SHA256 error" in caplog.text
+
 def test_aes_decrypt_invalid_hex_logging(caplog):
     payload = {
         "ciphertext": "InvalidHex!",

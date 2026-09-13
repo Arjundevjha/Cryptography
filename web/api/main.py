@@ -860,6 +860,7 @@ def rsa_decrypt(data: RsaDecryptInput):
 
 
 @app.post("/api/sha256")
+@app.post("/api/hash/sha256")
 def sha256_endpoint(data: Sha256Input):
     try:
         from methods.modern.hash_functions import sha256
