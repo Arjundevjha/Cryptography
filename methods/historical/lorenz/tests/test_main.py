@@ -1,6 +1,7 @@
 """Unit tests for Lorenz CLI main runner."""
 
 from unittest.mock import patch
+import runpy
 from methods.historical.lorenz.main import run_cli
 
 
@@ -12,6 +13,17 @@ def test_run_cli_default_positions_and_valid_message(capsys):
     captured = capsys.readouterr()
     assert "LORENZ SZ40/SZ42 CIPHER MACHINE SIMULATOR" in captured.out
     assert "RESULT CIPHERTEXT / PLAINTEXT:" in captured.out
+    assert "HVLLO" in captured.out
+
+
+def test_main_module_execution(capsys):
+    inputs = ["", "HELLO"]
+    with patch("builtins.input", side_effect=inputs):
+        runpy.run_module("methods.historical.lorenz.main", run_name="__main__")
+
+    captured = capsys.readouterr()
+    assert "LORENZ SZ40/SZ42 CIPHER MACHINE SIMULATOR" in captured.out
+    assert "HVLLO" in captured.out
 
 
 def test_run_cli_custom_positions_and_valid_message(capsys):

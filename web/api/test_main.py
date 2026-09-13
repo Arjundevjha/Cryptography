@@ -16,6 +16,8 @@ from api.main import (
     is_valid_origin,
     parse_allowed_origins,
     parse_aes_key,
+    validate_polybius_key,
+    validate_polybius_ciphertext,
 )
 
 client = TestClient(app)
@@ -205,6 +207,32 @@ def test_polybius_decrypt_exception(mock_dec, caplog):
     assert response.status_code == 400
     assert response.json()["detail"] == "Decryption failed"
     assert "Polybius decryption error" in caplog.text
+
+def test_validate_polybius_key_unit():
+    assert validate_polybius_key(None) == "abcdefghiklmnopqrstuvwxyz"
+    assert validate_polybius_key("") == "abcdefghiklmnopqrstuvwxyz"
+    valid_key = "abcdefghiklmnopqrstuvwxyz"
+    assert validate_polybius_key(valid_key) == valid_key
+
+    with pytest.raises(HTTPException) as exc_info:
+        validate_polybius_key("shortkey")
+    assert exc_info.value.status_code == 400
+    assert "25 unique letters" in exc_info.value.detail
+
+
+def test_validate_polybius_ciphertext_unit():
+    validate_polybius_ciphertext("23 15 31 31 34")
+    validate_polybius_ciphertext("hello 23 world 15")
+
+    with pytest.raises(HTTPException) as exc1:
+        validate_polybius_ciphertext("23 15 31 3")
+    assert exc1.value.status_code == 400
+    assert "pairs" in exc1.value.detail.lower()
+
+    with pytest.raises(HTTPException) as exc2:
+        validate_polybius_ciphertext("23 99 31")
+    assert exc2.value.status_code == 400
+    assert "between 1 and 5" in exc2.value.detail.lower()
 
 
 # ==========================================
@@ -705,6 +733,60 @@ async def test_validation_exception_handler_generic_validation_error():
     data = json.loads(response.body.decode("utf-8"))
     assert data["detail"] == errors
 
+@pytest.mark.anyio
+async def test_validation_exception_handler_msg_none():
+    req = Request({"type": "http"})
+    errors = [{"type": "custom_type", "msg": None}]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    import json
+    data = json.loads(response.body.decode("utf-8"))
+    assert data["detail"] == errors
+
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_multiple_errors_second_too_long():
+    req = Request({"type": "http"})
+    errors = [
+        {"type": "missing", "loc": ["body", "shift"], "msg": "Field required"},
+        {"type": "string_too_long", "loc": ["body", "plaintext"], "msg": "String exceeds limit"},
+    ]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    assert response.body == b'{"detail":"Input string length exceeds limit of 500 characters."}'
+
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_missing_or_none_error_keys():
+    req = Request({"type": "http"})
+    errors = [
+        {"type": None, "msg": None},
+        {"loc": ["body", "text"]}
+    ]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    import json
+    data = json.loads(response.body.decode("utf-8"))
+    assert data["detail"] == errors
+
+
+def test_validation_exception_handler_integration_string_too_long():
+    response = client.post("/api/caesar/encrypt", json={"plaintext": "a" * 501, "shift": 3})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Input string length exceeds limit of 500 characters."}
+
+
+def test_validation_exception_handler_integration_invalid_type_error():
+    response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": "not_an_int"})
+    assert response.status_code == 400
+    data = response.json()
+    assert isinstance(data["detail"], list)
+    assert len(data["detail"]) > 0
+    assert any("int" in err.get("type", "") for err in data["detail"])
+
 
 def test_validation_exception_handler_integration_generic_error():
     # Send request missing required fields
@@ -808,6 +890,25 @@ def test_rsa_keygen_non_prime():
     response = client.post("/api/rsa/keygen", json=payload)
     assert response.status_code == 400
     assert "prime" in response.json()["detail"].lower()
+
+def test_rsa_keygen_exponent_too_small():
+    payload = {
+        "p": 61,
+        "q": 53,
+        "e": 2
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+
+def test_rsa_keygen_modulus_too_small():
+    payload = {
+        "p": 3,
+        "q": 5,
+        "e": 3
+    }
+    response = client.post("/api/rsa/keygen", json=payload)
+    assert response.status_code == 400
+    assert "at least 256" in response.json()["detail"].lower()
 
 def test_rsa_keygen_too_small():
     payload = {
@@ -1044,6 +1145,32 @@ def test_aes_decrypt_invalid_hex_logging(caplog):
         response = client.post("/api/aes/decrypt", json=payload)
     assert response.status_code == 400
     assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
+
+def test_aes_decrypt_endpoint_odd_length_ciphertext_hex(caplog):
+    payload = {
+        "ciphertext": "abc",  # Odd length hex string
+        "key": "1234567890123456",
+        "nonce": "0102030405060708090a0b0c",
+        "key_format": "text"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
+    assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
+
+def test_aes_decrypt_endpoint_odd_length_nonce_hex(caplog):
+    payload = {
+        "ciphertext": "aabbccdd",
+        "key": "1234567890123456",
+        "nonce": "123",  # Odd length hex string
+        "key_format": "text"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "Ciphertext and nonce must be valid hex strings" in response.json()["detail"]
+    assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
     assert "Invalid hex ciphertext or nonce in AES decrypt" in caplog.text
 
 def test_aes_decrypt_endpoint_hex_key_format_16_bytes():
@@ -1676,6 +1803,85 @@ def test_lorenz_api_decrypt_runtime_error_exception(caplog):
         assert resp.json() == {"detail": "Decryption failed"}
         assert "Lorenz decryption error" in caplog.text
 
+def test_lorenz_decrypt_standalone_known_ciphertext():
+    # 'LURENC' decrypts to 'LORENZ' with default positions and pins
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "LURENC"})
+    assert resp.status_code == 200
+    assert resp.json() == {"plaintext": "LORENZ"}
+
+
+def test_lorenz_decrypt_empty_ciphertext():
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": ""})
+    assert resp.status_code == 200
+    assert resp.json() == {"plaintext": ""}
+
+
+def test_lorenz_decrypt_unmapped_characters_passthrough():
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "$%@!"})
+    assert resp.status_code == 200
+    assert resp.json() == {"plaintext": "$%@!"}
+
+
+def test_lorenz_decrypt_partial_chi_pins_only():
+    chi_pins = [
+        [1, 0] * 20 + [1],      # 41
+        [1, 0] * 15 + [1],      # 31
+        [1, 0] * 14 + [1],      # 29
+        [1, 0] * 13,            # 26
+        [1, 0] * 11 + [1],      # 23
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "chi_pins": chi_pins})
+    assert resp.status_code == 200
+    assert "plaintext" in resp.json()
+
+
+def test_lorenz_decrypt_partial_motor_pins_only():
+    motor_pins = [
+        [1, 0] * 30 + [1],      # 61
+        [1, 0] * 18 + [1],      # 37
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "motor_pins": motor_pins})
+    assert resp.status_code == 200
+    assert "plaintext" in resp.json()
+
+
+def test_lorenz_decrypt_partial_psi_pins_only():
+    psi_pins = [
+        [1, 0] * 21 + [1],      # 43
+        [1, 0] * 23 + [1],      # 47
+        [1, 0] * 25 + [1],      # 51
+        [1, 0] * 26 + [1],      # 53
+        [1, 0] * 29 + [1],      # 59
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "psi_pins": psi_pins})
+    assert resp.status_code == 200
+    assert "plaintext" in resp.json()
+
+
+def test_lorenz_decrypt_missing_required_ciphertext():
+    resp = client.post("/api/lorenz/decrypt", json={})
+    assert resp.status_code == 400
+
+
+def test_lorenz_decrypt_invalid_pin_value_bounds():
+    invalid_chi_pins = [[2] * 41, [0] * 31, [0] * 29, [0] * 26, [0] * 23]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "chi_pins": invalid_chi_pins})
+    assert resp.status_code == 400
+
+
+def test_lorenz_decrypt_invalid_pin_array_length():
+    invalid_chi_pins = [
+        [1, 0],
+        [1, 0] * 15 + [1],
+        [1, 0] * 14 + [1],
+        [1, 0] * 13,
+        [1, 0] * 11 + [1],
+    ]
+    resp = client.post("/api/lorenz/decrypt", json={"ciphertext": "HELLOLORENZ", "chi_pins": invalid_chi_pins})
+    assert resp.status_code == 400
+    assert "decryption failed" in resp.json()["detail"].lower()
+    assert "requires exactly 41 pins" in resp.json()["detail"]
+
 
 # ==========================================
 # CORS ORIGIN VALIDATION TESTS
@@ -1918,8 +2124,42 @@ def test_aes_encrypt_oversized_format():
     response = client.post("/api/aes/encrypt", json=payload)
     assert response.status_code == 400
 
+# ==========================================
+# SHA-256 ENDPOINT TESTS
+# ==========================================
+
+@pytest.mark.parametrize("plaintext, expected_hash", [
+    ("hello", "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"),
+    ("abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"),
+    ("", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+])
+def test_sha256_hash_endpoint_known_input(plaintext, expected_hash):
+    response = client.post("/api/hash/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 200
+    assert response.json() == {"hash": expected_hash}
 
 
+def test_sha256_hash_endpoint_max_length():
+    plaintext = "a" * 500
+    response = client.post("/api/hash/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 200
+    data = response.json()
+    assert "hash" in data
+    assert len(data["hash"]) == 64
 
 
+def test_sha256_hash_endpoint_exceeds_max_length():
+    plaintext = "a" * 501
+    response = client.post("/api/hash/sha256", json={"plaintext": plaintext})
+    assert response.status_code == 400
+    assert "exceeds" in response.json()["detail"].lower()
 
+
+def test_sha256_hash_endpoint_exception(caplog):
+    payload = {"plaintext": "test message"}
+    with patch("methods.modern.hash_functions.sha256", side_effect=Exception("Mocked SHA256 error")):
+        with caplog.at_level("ERROR"):
+            response = client.post("/api/hash/sha256", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Hashing failed"
+    assert "SHA256 error" in caplog.text

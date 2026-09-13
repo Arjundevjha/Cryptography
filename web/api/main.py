@@ -11,8 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, Field
+import ipaddress
 import logging
 import math
+from urllib.parse import urlparse
 from methods.classical import affine
 
 logger = logging.getLogger(__name__)
@@ -42,9 +44,22 @@ class VercelPathMiddleware:
 app.add_middleware(VercelPathMiddleware)
 
 # CORS Middleware
-from urllib.parse import urlparse
-
 DEFAULT_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+def _validate_origin_netloc(netloc: str) -> bool:
+    """Validates host and port inside netloc, handling IPv6 literals and port ranges."""
+    if netloc.startswith("[") and "]" in netloc:
+        ipv6_str = netloc[1:netloc.index("]")]
+        try:
+            ipaddress.ip_address(ipv6_str)
+        except ValueError:
+            return False
+        netloc = netloc.split("]")[-1]
+    if ":" in netloc:
+        port_str = netloc.split(":")[-1]
+        if not port_str or not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
+            return False
+    return True
 
 def is_valid_origin(origin: str) -> bool:
     """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
@@ -65,20 +80,7 @@ def is_valid_origin(origin: str) -> bool:
             return False
         if parsed.path or parsed.params or parsed.query or parsed.fragment:
             return False
-        netloc = parsed.netloc
-        if netloc.startswith("[") and "]" in netloc:
-            ipv6_str = netloc[1:netloc.index("]")]
-            import ipaddress
-            try:
-                ipaddress.ip_address(ipv6_str)
-            except ValueError:
-                return False
-            netloc = netloc.split("]")[-1]
-        if ":" in netloc:
-            port_str = netloc.split(":")[-1]
-            if not port_str or not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
-                return False
-        return True
+        return _validate_origin_netloc(parsed.netloc)
     except ValueError:
         return False
     except Exception as e:
@@ -414,19 +416,47 @@ def scytale_decrypt(data: ScytaleDecryptInput):
             detail="Decryption failed"
         )
 
+def validate_polybius_key(key: str | None) -> str:
+    """Validates and returns normalized Polybius grid key."""
+    if not key:
+        return "abcdefghiklmnopqrstuvwxyz"
+    grid_key_clean = key.lower().replace("j", "i")
+    if len(grid_key_clean) != 25 or len(set(grid_key_clean)) != 25 or not grid_key_clean.isalpha():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Key must contain exactly 25 unique letters."
+        )
+    return key
+
+
+def validate_polybius_ciphertext(ciphertext: str) -> None:
+    """Validates digit coordinates in Polybius ciphertext."""
+    i = 0
+    n = len(ciphertext)
+    while i < n:
+        char = ciphertext[i]
+        if char.isdigit():
+            if i + 1 < n and ciphertext[i + 1].isdigit():
+                d1 = int(char)
+                d2 = int(ciphertext[i + 1])
+                if not (1 <= d1 <= 5 and 1 <= d2 <= 5):
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Coordinates must be between 1 and 5"
+                    )
+                i += 2
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Digits must appear in pairs"
+                )
+        else:
+            i += 1
+
+
 @app.post("/api/polybius/encrypt")
 def polybius_encrypt(data: PolybiusEncryptInput):
-    grid_key = data.key
-    if not grid_key:
-        grid_key = "abcdefghiklmnopqrstuvwxyz"
-    else:
-        # validate key
-        grid_key_clean = grid_key.lower().replace("j", "i")
-        if len(grid_key_clean) != 25 or len(set(grid_key_clean)) != 25 or not grid_key_clean.isalpha():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Key must contain exactly 25 unique letters."
-            )
+    grid_key = validate_polybius_key(data.key)
     try:
         from methods.historical import polybius
         ciphertext = polybius.encrypt(data.plaintext, grid_key)
@@ -440,43 +470,11 @@ def polybius_encrypt(data: PolybiusEncryptInput):
             detail="Encryption failed"
         )
 
+
 @app.post("/api/polybius/decrypt")
 def polybius_decrypt(data: PolybiusDecryptInput):
-    grid_key = data.key
-    if not grid_key:
-        grid_key = "abcdefghiklmnopqrstuvwxyz"
-    else:
-        # validate key
-        grid_key_clean = grid_key.lower().replace("j", "i")
-        if len(grid_key_clean) != 25 or len(set(grid_key_clean)) != 25 or not grid_key_clean.isalpha():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Key must contain exactly 25 unique letters."
-            )
-    
-    # validate ciphertext coordinates
-    try:
-        digits = []
-        i = 0
-        n = len(data.ciphertext)
-        while i < n:
-            char = data.ciphertext[i]
-            if char.isdigit():
-                if i + 1 < n and data.ciphertext[i+1].isdigit():
-                    d1 = int(char)
-                    d2 = int(data.ciphertext[i+1])
-                    if not (1 <= d1 <= 5 and 1 <= d2 <= 5):
-                        raise ValueError("Coordinates must be between 1 and 5")
-                    i += 2
-                else:
-                    raise ValueError("Digits must appear in pairs")
-            else:
-                i += 1
-    except ValueError as ve:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(ve)
-        )
+    grid_key = validate_polybius_key(data.key)
+    validate_polybius_ciphertext(data.ciphertext)
 
     try:
         from methods.historical import polybius
@@ -701,7 +699,7 @@ class AesDecryptInput(BaseModel):
 class RsaKeygenInput(BaseModel):
     p: int = Field(..., gt=0, lt=2**2048, description="Prime number p")
     q: int = Field(..., gt=0, lt=2**2048, description="Prime number q")
-    e: int = Field(default=65537, gt=0, lt=2**2048, description="Public exponent e")
+    e: int = Field(default=65537, ge=3, lt=2**2048, description="Public exponent e")
 
 class RsaEncryptInput(BaseModel):
     plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
@@ -799,6 +797,8 @@ def rsa_keygen(data: RsaKeygenInput):
         raise HTTPException(status_code=400, detail="p and q must be distinct prime numbers")
         
     n = data.p * data.q
+    if n < 256:
+        raise HTTPException(status_code=400, detail="Modulus n (p * q) must be at least 256")
     phi = (data.p - 1) * (data.q - 1)
     
     if math.gcd(data.e, phi) != 1:
@@ -860,6 +860,7 @@ def rsa_decrypt(data: RsaDecryptInput):
 
 
 @app.post("/api/sha256")
+@app.post("/api/hash/sha256")
 def sha256_endpoint(data: Sha256Input):
     try:
         from methods.modern.hash_functions import sha256

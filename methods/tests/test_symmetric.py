@@ -348,3 +348,310 @@ def test_sub_word_all_bytes():
 def test_sub_word_empty():
     """Test sub_word with an empty list."""
     assert sub_word([]) == []
+
+def test_sub_word_immutability():
+    """Test that sub_word does not mutate the input list in-place."""
+    original = [0x01, 0x02, 0x03, 0x04]
+    original_copy = original.copy()
+    _ = sub_word(original)
+    assert original == original_copy
+
+
+def test_inv_mix_columns_fips_197_vector():
+    """Test inv_mix_columns against FIPS 197 Appendix B example vector."""
+    mixed_state = [
+        0x04, 0x66, 0x81, 0xe5,
+        0xe0, 0xcb, 0x19, 0x9a,
+        0x48, 0xf8, 0xd3, 0x7a,
+        0x28, 0x06, 0x26, 0x4c
+    ]
+    expected_original = [
+        0xd4, 0xbf, 0x5d, 0x30,
+        0xe0, 0xb4, 0x52, 0xae,
+        0xb8, 0x41, 0x11, 0xf1,
+        0x1e, 0x27, 0x98, 0xe5
+    ]
+    assert inv_mix_columns(mixed_state) == expected_original
+
+
+def test_inv_mix_columns_column_independence():
+    """Test that inv_mix_columns operates on each 4-byte column independently."""
+    state = [
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x00, 0x00, 0x00, 0x00
+    ]
+    unmixed = inv_mix_columns(state)
+
+    assert unmixed[0:4] == [0, 0, 0, 0]
+    assert unmixed[4:8] == [0, 0, 0, 0]
+    assert unmixed[12:16] == [0, 0, 0, 0]
+    assert unmixed[8:12] == [0xdb, 0x13, 0x53, 0x45]
+
+
+def test_inv_mix_columns_matches_mul_gf():
+    """Verify inv_mix_columns calculations match explicit GF(2^8) multiplications."""
+    state = [0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10]
+    unmixed = inv_mix_columns(state)
+
+    expected = [0] * 16
+    for i in range(4):
+        idx = i * 4
+        c0, c1, c2, c3 = state[idx], state[idx + 1], state[idx + 2], state[idx + 3]
+        expected[idx]     = mul_gf(c0, 14) ^ mul_gf(c1, 11) ^ mul_gf(c2, 13) ^ mul_gf(c3, 9)
+        expected[idx + 1] = mul_gf(c0, 9)  ^ mul_gf(c1, 14) ^ mul_gf(c2, 11) ^ mul_gf(c3, 13)
+        expected[idx + 2] = mul_gf(c0, 13) ^ mul_gf(c1, 9)  ^ mul_gf(c2, 14) ^ mul_gf(c3, 11)
+        expected[idx + 3] = mul_gf(c0, 11) ^ mul_gf(c1, 13) ^ mul_gf(c2, 9)  ^ mul_gf(c3, 14)
+
+    assert unmixed == expected
+
+
+def test_mix_columns_fips197_single_column_vectors():
+    """Known Answer Test for MixColumns on basis columns."""
+    basis_state_c0 = [0x01, 0x00, 0x00, 0x00] + [0x00] * 12
+    assert mix_columns(basis_state_c0)[0:4] == [0x02, 0x01, 0x01, 0x03]
+
+    basis_state_c1 = [0x00, 0x01, 0x00, 0x00] + [0x00] * 12
+    assert mix_columns(basis_state_c1)[0:4] == [0x03, 0x02, 0x01, 0x01]
+
+    basis_state_c2 = [0x00, 0x00, 0x01, 0x00] + [0x00] * 12
+    assert mix_columns(basis_state_c2)[0:4] == [0x01, 0x03, 0x02, 0x01]
+
+    basis_state_c3 = [0x00, 0x00, 0x00, 0x01] + [0x00] * 12
+    assert mix_columns(basis_state_c3)[0:4] == [0x01, 0x01, 0x03, 0x02]
+
+
+def test_mix_columns_linearity():
+    """Verify linearity of MixColumns: MixColumns(A XOR B) == MixColumns(A) XOR MixColumns(B)."""
+    import secrets
+    state_a = [secrets.randbelow(256) for _ in range(16)]
+    state_b = [secrets.randbelow(256) for _ in range(16)]
+    state_xor = [a ^ b for a, b in zip(state_a, state_b)]
+
+    res_xor = mix_columns(state_xor)
+    res_a = mix_columns(state_a)
+    res_b = mix_columns(state_b)
+    expected = [a ^ b for a, b in zip(res_a, res_b)]
+
+    assert res_xor == expected
+
+
+def test_rot_word_fips_197_vector():
+    """Test rot_word against known FIPS 197 vector."""
+    word = [0x09, 0xcf, 0x4f, 0x3c]
+    expected = [0xcf, 0x4f, 0x3c, 0x09]
+    assert rot_word(word) == expected
+
+
+def test_rot_word_edge_cases():
+    """Test rot_word with uniform and boundary values."""
+    assert rot_word([0x00, 0x00, 0x00, 0x00]) == [0x00, 0x00, 0x00, 0x00]
+    assert rot_word([0xff, 0xff, 0xff, 0xff]) == [0xff, 0xff, 0xff, 0xff]
+    original = [0x11, 0x22, 0x33, 0x44]
+    original_copy = original.copy()
+    _ = rot_word(original)
+    assert original == original_copy
+
+
+@pytest.mark.parametrize(
+    "val,expected",
+    [
+        (0x00, 0x00),
+        (0x01, 0x02),
+        (0x02, 0x04),
+        (0x57, 0xAE),
+        (0x7F, 0xFE),
+        (0x80, 0x1B),
+        (0xAE, 0x47),
+        (0xFF, 0xE5),
+    ],
+)
+def test_xtime_known_vectors(val, expected):
+    """Test xtime against known multiplication-by-2 vectors in GF(2^8)."""
+    assert xtime(val) == expected
+
+
+def test_xtime_msb_not_set_branch():
+    """Test xtime when the most significant bit (MSB) is 0."""
+    for b in range(0x80):
+        assert xtime(b) == (b << 1)
+
+
+def test_xtime_msb_set_branch():
+    """Test xtime when the most significant bit (MSB) is 1."""
+    for b in range(0x80, 0x100):
+        assert xtime(b) == ((b << 1) ^ 0x11B) & 0xFF
+
+
+def test_add_round_key_fips197_kat():
+    """Known Answer Test for AddRoundKey using FIPS 197 Appendix B test vector."""
+    input_state = [
+        0x32, 0x43, 0xf6, 0xa8,
+        0x88, 0x5a, 0x30, 0x8d,
+        0x31, 0x31, 0x98, 0xa2,
+        0xe0, 0x37, 0x07, 0x34,
+    ]
+    round_key = [
+        0x2b, 0x7e, 0x15, 0x16,
+        0x28, 0xae, 0xd2, 0xa6,
+        0xab, 0xf7, 0x15, 0x88,
+        0x09, 0xcf, 0x4f, 0x3c,
+    ]
+    expected_state = [
+        0x19, 0x3d, 0xe3, 0xbe,
+        0xa0, 0xf4, 0xe2, 0x2b,
+        0x9a, 0xc6, 0x8d, 0x2a,
+        0xe9, 0xf8, 0x48, 0x08,
+    ]
+    assert add_round_key(input_state, round_key) == expected_state
+
+def test_shift_rows_fips_197_kat():
+    """Test shift_rows against FIPS 197 Appendix B Known Answer Test vector."""
+    from methods.modern.symmetric import shift_rows
+
+    state = [
+        0xd4, 0x27, 0x11, 0xae,
+        0xe0, 0xbf, 0x98, 0xf1,
+        0xb8, 0xb4, 0x5d, 0xe5,
+        0x1e, 0x41, 0x52, 0x30
+    ]
+
+    expected_shifted = [
+        0xd4, 0xbf, 0x5d, 0x30,
+        0xe0, 0xb4, 0x52, 0xae,
+        0xb8, 0x41, 0x11, 0xf1,
+        0x1e, 0x27, 0x98, 0xe5
+    ]
+
+    assert shift_rows(state) == expected_shifted
+
+
+def test_shift_rows_four_rotations_identity():
+    """Test that applying shift_rows 4 times returns the state to its original configuration."""
+    from methods.modern.symmetric import shift_rows
+
+    state = list(range(16))
+    current = state.copy()
+    for _ in range(4):
+        current = shift_rows(current)
+    assert current == state
+
+
+def test_shift_rows_immutability():
+    """Verify shift_rows returns a new list and does not mutate the input state list in-place."""
+    from methods.modern.symmetric import shift_rows
+
+    state = list(range(16))
+    original_state = state.copy()
+    shifted = shift_rows(state)
+
+    assert state == original_state
+    assert shifted is not state
+
+
+def test_shift_rows_row_level_shifting():
+    """Verify shift_rows shifts row 0 by 0, row 1 by 1, row 2 by 2, and row 3 by 3."""
+    from methods.modern.symmetric import shift_rows
+
+    state = [0] * 16
+    for col in range(4):
+        state[0 + 4 * col] = 0x00 + col
+        state[1 + 4 * col] = 0x10 + col
+        state[2 + 4 * col] = 0x20 + col
+        state[3 + 4 * col] = 0x30 + col
+
+    shifted = shift_rows(state)
+
+    row0 = [shifted[0 + 4 * c] for c in range(4)]
+    assert row0 == [0x00, 0x01, 0x02, 0x03]
+
+    row1 = [shifted[1 + 4 * c] for c in range(4)]
+    assert row1 == [0x11, 0x12, 0x13, 0x10]
+
+    row2 = [shifted[2 + 4 * c] for c in range(4)]
+    assert row2 == [0x22, 0x23, 0x20, 0x21]
+
+    row3 = [shifted[3 + 4 * c] for c in range(4)]
+    assert row3 == [0x33, 0x30, 0x31, 0x32]
+
+
+def test_sub_bytes_fips197_vector():
+    """Test SubBytes with FIPS 197 Appendix B known state vector."""
+    input_state = [
+        0x19, 0xa0, 0x9a, 0xe9,
+        0x3d, 0xf4, 0xc6, 0xf8,
+        0xe3, 0xe2, 0x8d, 0x48,
+        0xbe, 0x2b, 0x2a, 0x08,
+    ]
+    expected_output = [
+        0xd4, 0xe0, 0xb8, 0x1e,
+        0x27, 0xbf, 0xb4, 0x41,
+        0x11, 0x98, 0x5d, 0x52,
+        0xae, 0xf1, 0xe5, 0x30,
+    ]
+    assert sub_bytes(input_state) == expected_output
+
+
+def test_sub_bytes_all_zeros():
+    """Test SubBytes with 16 zeros."""
+    input_state = [0x00] * 16
+    expected_output = [SBOX[0x00]] * 16
+    assert sub_bytes(input_state) == expected_output
+
+
+def test_sub_bytes_all_byte_values():
+    """Test SubBytes with all 256 byte values."""
+    all_bytes = list(range(256))
+    assert sub_bytes(all_bytes) == SBOX
+
+
+def test_sub_bytes_empty():
+    """Test SubBytes with an empty list."""
+    assert sub_bytes([]) == []
+
+
+def test_sub_bytes_immutability():
+    """Test that SubBytes does not mutate input state in-place."""
+    state = [0x00, 0x11, 0x22, 0x33]
+    copy_state = state.copy()
+    _ = sub_bytes(state)
+    assert state == copy_state
+
+
+def test_inv_sub_bytes_known_state():
+    """Test inv_sub_bytes with FIPS 197 known state vector."""
+    subbed_state = [
+        0xd4, 0xe0, 0xb8, 0x1e,
+        0x27, 0xbf, 0xb4, 0x41,
+        0x11, 0x98, 0x5d, 0x52,
+        0xae, 0xf1, 0xe5, 0x30,
+    ]
+    expected_restored = [
+        0x19, 0xa0, 0x9a, 0xe9,
+        0x3d, 0xf4, 0xc6, 0xf8,
+        0xe3, 0xe2, 0x8d, 0x48,
+        0xbe, 0x2b, 0x2a, 0x08,
+    ]
+    assert inv_sub_bytes(subbed_state) == expected_restored
+
+
+def test_inv_sub_bytes_edge_cases():
+    """Test inv_sub_bytes on uniform state vectors and verify non-mutation."""
+    zero_state = [0x00] * 16
+    expected_zero = [INV_SBOX[0x00]] * 16
+    assert inv_sub_bytes(zero_state) == expected_zero
+
+    ff_state = [0xFF] * 16
+    expected_ff = [INV_SBOX[0xFF]] * 16
+    assert inv_sub_bytes(ff_state) == expected_ff
+
+    original_state = [0x63, 0x7c, 0x77, 0x76]
+    original_copy = original_state.copy()
+    _ = inv_sub_bytes(original_state)
+    assert original_state == original_copy
+
+
+def test_inv_sub_bytes_empty():
+    """Test inv_sub_bytes with an empty state list."""
+    assert inv_sub_bytes([]) == []

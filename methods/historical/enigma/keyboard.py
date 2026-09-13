@@ -6,10 +6,11 @@ class Keyboard:
     def __init__(self):
         """Initialize the keyboard layout."""
         self.alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        self._forward_map = {c: i for i, c in enumerate(self.alphabet)}
 
     def forward(self, letter):
         """Map a letter to its alphabetical signal index (0-25)."""
-        return self.alphabet.find(letter)
+        return self._forward_map.get(letter, -1)
 
     def backward(self, signal):
         """Map an alphabetical signal index (0-25) back to a letter."""
