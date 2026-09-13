@@ -11,8 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, Field
+import ipaddress
 import logging
 import math
+from urllib.parse import urlparse
 from methods.classical import affine
 
 logger = logging.getLogger(__name__)
@@ -42,9 +44,22 @@ class VercelPathMiddleware:
 app.add_middleware(VercelPathMiddleware)
 
 # CORS Middleware
-from urllib.parse import urlparse
-
 DEFAULT_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+def _validate_origin_netloc(netloc: str) -> bool:
+    """Validates host and port inside netloc, handling IPv6 literals and port ranges."""
+    if netloc.startswith("[") and "]" in netloc:
+        ipv6_str = netloc[1:netloc.index("]")]
+        try:
+            ipaddress.ip_address(ipv6_str)
+        except ValueError:
+            return False
+        netloc = netloc.split("]")[-1]
+    if ":" in netloc:
+        port_str = netloc.split(":")[-1]
+        if not port_str or not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
+            return False
+    return True
 
 def is_valid_origin(origin: str) -> bool:
     """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
@@ -65,20 +80,7 @@ def is_valid_origin(origin: str) -> bool:
             return False
         if parsed.path or parsed.params or parsed.query or parsed.fragment:
             return False
-        netloc = parsed.netloc
-        if netloc.startswith("[") and "]" in netloc:
-            ipv6_str = netloc[1:netloc.index("]")]
-            import ipaddress
-            try:
-                ipaddress.ip_address(ipv6_str)
-            except ValueError:
-                return False
-            netloc = netloc.split("]")[-1]
-        if ":" in netloc:
-            port_str = netloc.split(":")[-1]
-            if not port_str or not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
-                return False
-        return True
+        return _validate_origin_netloc(parsed.netloc)
     except ValueError:
         return False
     except Exception as e:
