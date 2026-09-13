@@ -706,6 +706,37 @@ async def test_validation_exception_handler_generic_validation_error():
     assert data["detail"] == errors
 
 
+@pytest.mark.anyio
+async def test_validation_exception_handler_msg_none():
+    req = Request({"type": "http"})
+    errors = [{"type": "custom_type", "msg": None}]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    import json
+    data = json.loads(response.body.decode("utf-8"))
+    assert data["detail"] == errors
+
+
+@pytest.mark.anyio
+async def test_validation_exception_handler_multiple_errors_second_too_long():
+    req = Request({"type": "http"})
+    errors = [
+        {"type": "missing", "loc": ["body", "shift"], "msg": "Field required"},
+        {"type": "string_too_long", "loc": ["body", "plaintext"], "msg": "String exceeds limit"},
+    ]
+    exc = RequestValidationError(errors)
+    response = await validation_exception_handler(req, exc)
+    assert response.status_code == 400
+    assert response.body == b'{"detail":"Input string length exceeds limit of 500 characters."}'
+
+
+def test_validation_exception_handler_integration_string_too_long():
+    response = client.post("/api/caesar/encrypt", json={"plaintext": "a" * 501, "shift": 3})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Input string length exceeds limit of 500 characters."}
+
+
 def test_validation_exception_handler_integration_generic_error():
     # Send request missing required fields
     response = client.post("/api/caesar/encrypt", json={})
@@ -714,6 +745,16 @@ def test_validation_exception_handler_integration_generic_error():
     assert isinstance(data["detail"], list)
     assert len(data["detail"]) > 0
     assert any(err.get("type") == "missing" for err in data["detail"])
+
+
+def test_validation_exception_handler_integration_invalid_type_error():
+    # Send request with invalid data type for shift (string instead of int)
+    response = client.post("/api/caesar/encrypt", json={"plaintext": "HELLO", "shift": "not_an_int"})
+    assert response.status_code == 400
+    data = response.json()
+    assert isinstance(data["detail"], list)
+    assert len(data["detail"]) > 0
+    assert any("int" in err.get("type", "") for err in data["detail"])
 
 def test_aes_invalid_hex_key():
     payload = {
