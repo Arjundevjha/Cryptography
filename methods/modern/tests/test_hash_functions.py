@@ -118,8 +118,12 @@ def test_blake2b_kats_and_compute_hash():
 
 
 def test_sha3_256_kats():
-    """Test SHA3-256 implementation against known-answer vectors and boundary conditions."""
+    """Test SHA3-256 implementation against known-answer vectors, boundary conditions, and Unicode."""
     # Empty string KAT
+    assert (
+        sha3_256("")
+        == hashlib.sha3_256(b"").hexdigest()
+    )
     assert (
         sha3_256("")
         == "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
@@ -128,34 +132,69 @@ def test_sha3_256_kats():
     # Standard short input KAT
     assert (
         sha3_256("abc")
+        == hashlib.sha3_256(b"abc").hexdigest()
+    )
+    assert (
+        sha3_256("abc")
         == "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
     )
 
-    # Sentence input KAT
+    # Standard sentence KAT
+    sentence = "The quick brown fox jumps over the lazy dog"
     assert (
-        sha3_256("The quick brown fox jumps over the lazy dog")
+        sha3_256(sentence)
+        == hashlib.sha3_256(sentence.encode("utf-8")).hexdigest()
+    )
+    assert (
+        sha3_256(sentence)
         == "69070dda01975c8c120c3aada1b282394e7f032fa9cf32f4cb2259a0897dfc04"
     )
 
-    # Multi-block / boundary conditions (SHA3-256 block size rate = 136 bytes)
-    # Exactly 135 bytes
+    # Long NIST KAT input
+    long_nist_input = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
     assert (
-        sha3_256("a" * 135)
+        sha3_256(long_nist_input)
+        == hashlib.sha3_256(long_nist_input.encode("utf-8")).hexdigest()
+    )
+    assert (
+        sha3_256(long_nist_input)
+        == "41c0dba2a9d6240849100376a8235e2c82e1b9998a999e21db32dd97496d3376"
+    )
+
+    # Multi-block / boundary conditions (SHA3-256 block size rate = 136 bytes)
+    # Exactly 135 bytes (1 byte less than rate)
+    b135 = "a" * 135
+    assert sha3_256(b135) == hashlib.sha3_256(b135.encode("utf-8")).hexdigest()
+    assert (
+        sha3_256(b135)
         == "8094bb53c44cfb1e67b7c30447f9a1c33696d2463ecc1d9c92538913392843c9"
     )
+
     # Exactly 136 bytes (1 block boundary)
+    b136 = "a" * 136
+    assert sha3_256(b136) == hashlib.sha3_256(b136.encode("utf-8")).hexdigest()
     assert (
-        sha3_256("a" * 136)
+        sha3_256(b136)
         == "3fc5559f14db8e453a0a3091edbd2bc25e11528d81c66fa570a4efdcc2695ee1"
     )
-    # 200 bytes (multiple blocks)
+
+    # Exactly 137 bytes (1 byte more than 1 block)
+    b137 = "a" * 137
+    assert sha3_256(b137) == hashlib.sha3_256(b137.encode("utf-8")).hexdigest()
+
+    # 272 bytes (exactly 2 blocks boundary)
+    b272 = "a" * 272
+    assert sha3_256(b272) == hashlib.sha3_256(b272.encode("utf-8")).hexdigest()
+
+    # Unicode / multi-byte character test
+    unicode_str = "Hello, 世界! 🔑 SHA3-256 🧪"
     assert (
-        sha3_256("a" * 200)
-        == "cce34485baf2bf2aca99b94833892a4f52896d3d153f7b840cc4f9fe695f1387"
+        sha3_256(unicode_str)
+        == hashlib.sha3_256(unicode_str.encode("utf-8")).hexdigest()
     )
 
     # compute_hash wrapper verification
     assert (
         compute_hash("abc", "sha3_256")
-        == "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
+        == hashlib.sha3_256(b"abc").hexdigest()
     )
