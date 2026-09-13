@@ -1,5 +1,7 @@
 """Unit tests for Lorenz top-level machine class."""
 
+import pytest
+from methods.historical.lorenz.converter import ita2_to_char
 from methods.historical.lorenz.lorenz import Lorenz
 
 
@@ -121,7 +123,6 @@ def test_lorenz_set_pins():
         assert w.pins == new_psi[i]
 
     # Validate error handling for invalid pin list lengths
-    import pytest
     with pytest.raises(ValueError, match="chi_pins must contain exactly 5 arrays."):
         lorenz.set_pins(chi_pins=[[1] * 41])
 
@@ -139,3 +140,41 @@ def test_lorenz_process_message_non_ita2_char():
     # The '!' and '@' should be preserved as-is since they are non-ITA2
     assert processed[5] == "!"
     assert processed[7] == "@"
+
+
+def test_lorenz_encrypt_char_unsupported_char_raises_value_error():
+    lorenz = Lorenz(positions=[0] * 12)
+    with pytest.raises(ValueError, match="Character '!' is not supported in ITA2 alphabet."):
+        lorenz.encrypt_char("!")
+
+
+def test_lorenz_encrypt_char_state_stepping_and_keystream():
+    lorenz = Lorenz(positions=[0] * 12)
+    initial_pos = lorenz.get_positions()
+
+    # Calculate expected keystream before stepping
+    expected_k_vec = lorenz.stepping.get_keystream_vector()
+
+    # Encrypt single char 'A' -> ITA2 [1, 1, 0, 0, 0]
+    p_vec = [1, 1, 0, 0, 0]
+    expected_z_vec = [p ^ k for p, k in zip(p_vec, expected_k_vec)]
+    expected_char = ita2_to_char(expected_z_vec)
+
+    result_char = lorenz.encrypt_char("a")  # test case-insensitivity as well
+
+    # Verify output char matches expected transformation
+    assert result_char == expected_char
+
+    # Verify stepping updated positions after single char processing
+    new_pos = lorenz.get_positions()
+    assert new_pos != initial_pos
+
+
+def test_lorenz_encrypt_char_special_ita2_symbols():
+    special_chars = [' ', '\r', '\n', '#', '*']
+    for c in special_chars:
+        lorenz1 = Lorenz(positions=[0] * 12)
+        lorenz2 = Lorenz(positions=[0] * 12)
+        encrypted = lorenz1.encrypt_char(c)
+        decrypted = lorenz2.decrypt_char(encrypted)
+        assert decrypted == c
