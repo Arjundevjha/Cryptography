@@ -311,6 +311,54 @@ def test_inv_sub_bytes():
     subbed = sub_bytes(all_bytes)
     inv_subbed = inv_sub_bytes(subbed)
     assert inv_subbed == all_bytes
+
+def test_inv_sub_bytes_known_state():
+    """Test inv_sub_bytes with a known input state against expected INV_SBOX values."""
+    # SBOX of [0x00, 0x01, 0x02, 0x0f] is [0x63, 0x7c, 0x77, 0x76]
+    # So inv_sub_bytes on [0x63, 0x7c, 0x77, 0x76] should return [0x00, 0x01, 0x02, 0x0f]
+    input_state = [0x63, 0x7c, 0x77, 0x76, 0x52, 0x09, 0x6a, 0xd5, 0x00, 0x16, 0xff, 0x80, 0x63, 0x7c, 0x77, 0x76]
+    expected_output = [INV_SBOX[b] for b in input_state]
+
+    output_state = inv_sub_bytes(input_state)
+    assert output_state == expected_output
+    assert output_state[0] == 0x00
+    assert output_state[1] == 0x01
+    assert output_state[2] == 0x02
+    assert output_state[3] == 0x0f
+    assert output_state[4] == 0x48  # INV_SBOX[0x52] == 0x48 (since SBOX[0x48] == 0x52)
+    assert output_state[8] == 0x52  # INV_SBOX[0x00] == 0x52 (since SBOX[0x52] == 0x00)
+
+def test_inv_sub_bytes_all_bytes():
+    """Test inv_sub_bytes across all 256 byte values and verify double inversion."""
+    all_bytes = list(range(256))
+    inv_subbed = inv_sub_bytes(all_bytes)
+
+    assert len(inv_subbed) == 256
+    assert inv_subbed == INV_SBOX
+
+    # Check reciprocity in both directions: sub_bytes(inv_sub_bytes(x)) == x
+    resubbed = sub_bytes(inv_subbed)
+    assert resubbed == all_bytes
+
+def test_inv_sub_bytes_edge_cases():
+    """Test inv_sub_bytes on uniform state vectors (all-zeros, all-0xFF) and verify state non-mutation."""
+    zero_state = [0x00] * 16
+    expected_zero = [INV_SBOX[0x00]] * 16  # INV_SBOX[0x00] == 0x52
+    assert inv_sub_bytes(zero_state) == expected_zero
+
+    ff_state = [0xFF] * 16
+    expected_ff = [INV_SBOX[0xFF]] * 16  # INV_SBOX[0xFF] == 0x7D
+    assert inv_sub_bytes(ff_state) == expected_ff
+
+    # Test that input state list is not modified in-place
+    original_state = [0x63, 0x7c, 0x77, 0x76]
+    original_copy = original_state.copy()
+    _ = inv_sub_bytes(original_state)
+    assert original_state == original_copy
+
+def test_inv_sub_bytes_empty():
+    """Test inv_sub_bytes with an empty state list."""
+    assert inv_sub_bytes([]) == []
  
 def test_add_round_key():
     """Test XOR state with round key in AES."""
