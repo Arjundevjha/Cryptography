@@ -25,32 +25,23 @@ class SteppingController:
             motor_wheels: List of 2 Motor wheels (sizes 61, 37).
             psi_wheels: List of 5 Psi wheels (sizes 43, 47, 51, 53, 59).
         """
-        if chi_wheels is None:
-            self.chi = [
-                Wheel(size, name=f"Chi_{i+1}") for i, size in enumerate(CHI_SIZES)
-            ]
-        else:
-            if len(chi_wheels) != 5:
-                raise ValueError(f"Requires exactly 5 Chi wheels, got {len(chi_wheels)}.")
-            self.chi = chi_wheels
+        self.chi = self._init_wheels(chi_wheels, CHI_SIZES, "Chi", 5)
+        self.motor = self._init_wheels(motor_wheels, MOTOR_SIZES, "Motor", 2)
+        self.psi = self._init_wheels(psi_wheels, PSI_SIZES, "Psi", 5)
 
-        if motor_wheels is None:
-            self.motor = [
-                Wheel(size, name=f"Motor_{i+1}") for i, size in enumerate(MOTOR_SIZES)
-            ]
-        else:
-            if len(motor_wheels) != 2:
-                raise ValueError(f"Requires exactly 2 Motor wheels, got {len(motor_wheels)}.")
-            self.motor = motor_wheels
-
-        if psi_wheels is None:
-            self.psi = [
-                Wheel(size, name=f"Psi_{i+1}") for i, size in enumerate(PSI_SIZES)
-            ]
-        else:
-            if len(psi_wheels) != 5:
-                raise ValueError(f"Requires exactly 5 Psi wheels, got {len(psi_wheels)}.")
-            self.psi = psi_wheels
+    @staticmethod
+    def _init_wheels(
+        wheels: Optional[List[Wheel]],
+        sizes: List[int],
+        name_prefix: str,
+        expected_count: int
+    ) -> List[Wheel]:
+        """Initialize or validate a set of wheels."""
+        if wheels is None:
+            return [Wheel(size, name=f"{name_prefix}_{i+1}") for i, size in enumerate(sizes)]
+        if len(wheels) != expected_count:
+            raise ValueError(f"Requires exactly {expected_count} {name_prefix} wheels, got {len(wheels)}.")
+        return wheels
 
     def get_chi_vector(self) -> List[int]:
         """Get current 5-bit vector from the 5 Chi wheels."""
@@ -113,29 +104,36 @@ class SteppingController:
             positions: Dict containing 'chi', 'motor', 'psi' lists OR flat list of 12 ints.
         """
         if isinstance(positions, dict):
-            chi_pos = positions.get("chi", [])
-            motor_pos = positions.get("motor", [])
-            psi_pos = positions.get("psi", [])
-
-            if len(chi_pos) != 5 or len(motor_pos) != 2 or len(psi_pos) != 5:
-                raise ValueError("Positions dict must contain 5 chi, 2 motor, and 5 psi values.")
-
-            for w, p in zip(self.chi, chi_pos):
-                w.set_position(p)
-            for w, p in zip(self.motor, motor_pos):
-                w.set_position(p)
-            for w, p in zip(self.psi, psi_pos):
-                w.set_position(p)
-
+            self._set_positions_from_dict(positions)
         elif isinstance(positions, (list, tuple)):
-            if len(positions) != 12:
-                raise ValueError(f"Flat positions list must contain exactly 12 integers, got {len(positions)}.")
-
-            for w, p in zip(self.chi, positions[0:5]):
-                w.set_position(p)
-            for w, p in zip(self.motor, positions[5:7]):
-                w.set_position(p)
-            for w, p in zip(self.psi, positions[7:12]):
-                w.set_position(p)
+            self._set_positions_from_sequence(positions)
         else:
             raise ValueError("Positions must be a dict or list/tuple.")
+
+    def _set_positions_from_dict(self, positions: Dict[str, List[int]]) -> None:
+        """Set wheel positions from a dictionary."""
+        chi_pos = positions.get("chi", [])
+        motor_pos = positions.get("motor", [])
+        psi_pos = positions.get("psi", [])
+
+        if len(chi_pos) != 5 or len(motor_pos) != 2 or len(psi_pos) != 5:
+            raise ValueError("Positions dict must contain 5 chi, 2 motor, and 5 psi values.")
+
+        self._apply_positions(self.chi, chi_pos)
+        self._apply_positions(self.motor, motor_pos)
+        self._apply_positions(self.psi, psi_pos)
+
+    def _set_positions_from_sequence(self, positions: Union[List[int], tuple]) -> None:
+        """Set wheel positions from a flat 12-element list or tuple."""
+        if len(positions) != 12:
+            raise ValueError(f"Flat positions list must contain exactly 12 integers, got {len(positions)}.")
+
+        self._apply_positions(self.chi, positions[0:5])
+        self._apply_positions(self.motor, positions[5:7])
+        self._apply_positions(self.psi, positions[7:12])
+
+    @staticmethod
+    def _apply_positions(wheels: List[Wheel], positions: Union[List[int], tuple]) -> None:
+        """Apply target position values to a list of Wheel instances."""
+        for wheel, pos in zip(wheels, positions):
+            wheel.set_position(pos)
