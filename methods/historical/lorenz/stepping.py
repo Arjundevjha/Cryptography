@@ -103,6 +103,34 @@ class SteppingController:
             "psi": [w.get_position() for w in self.psi],
         }
 
+    def _set_positions_from_dict(self, positions: Dict[str, List[int]]) -> None:
+        """Set positions for all 12 wheels from a position dictionary."""
+        chi_pos = positions.get("chi", [])
+        motor_pos = positions.get("motor", [])
+        psi_pos = positions.get("psi", [])
+
+        if len(chi_pos) != 5 or len(motor_pos) != 2 or len(psi_pos) != 5:
+            raise ValueError("Positions dict must contain 5 chi, 2 motor, and 5 psi values.")
+
+        for w, p in zip(self.chi, chi_pos):
+            w.set_position(p)
+        for w, p in zip(self.motor, motor_pos):
+            w.set_position(p)
+        for w, p in zip(self.psi, psi_pos):
+            w.set_position(p)
+
+    def _set_positions_from_sequence(self, positions: Union[List[int], tuple]) -> None:
+        """Set positions for all 12 wheels from a sequence (list or tuple)."""
+        if len(positions) != 12:
+            raise ValueError(f"Flat positions list must contain exactly 12 integers, got {len(positions)}.")
+
+        for w, p in zip(self.chi, positions[0:5]):
+            w.set_position(p)
+        for w, p in zip(self.motor, positions[5:7]):
+            w.set_position(p)
+        for w, p in zip(self.psi, positions[7:12]):
+            w.set_position(p)
+
     def set_positions(
         self,
         positions: Union[Dict[str, List[int]], List[int]]
@@ -113,29 +141,8 @@ class SteppingController:
             positions: Dict containing 'chi', 'motor', 'psi' lists OR flat list of 12 ints.
         """
         if isinstance(positions, dict):
-            chi_pos = positions.get("chi", [])
-            motor_pos = positions.get("motor", [])
-            psi_pos = positions.get("psi", [])
-
-            if len(chi_pos) != 5 or len(motor_pos) != 2 or len(psi_pos) != 5:
-                raise ValueError("Positions dict must contain 5 chi, 2 motor, and 5 psi values.")
-
-            for w, p in zip(self.chi, chi_pos):
-                w.set_position(p)
-            for w, p in zip(self.motor, motor_pos):
-                w.set_position(p)
-            for w, p in zip(self.psi, psi_pos):
-                w.set_position(p)
-
+            self._set_positions_from_dict(positions)
         elif isinstance(positions, (list, tuple)):
-            if len(positions) != 12:
-                raise ValueError(f"Flat positions list must contain exactly 12 integers, got {len(positions)}.")
-
-            for w, p in zip(self.chi, positions[0:5]):
-                w.set_position(p)
-            for w, p in zip(self.motor, positions[5:7]):
-                w.set_position(p)
-            for w, p in zip(self.psi, positions[7:12]):
-                w.set_position(p)
+            self._set_positions_from_sequence(positions)
         else:
             raise ValueError("Positions must be a dict or list/tuple.")
