@@ -339,6 +339,14 @@ def test_sub_word():
     assert sub_word(word2) == expected2
     assert expected2 == [0x76, 0xca, 0xcd, 0x16]
 
+def test_sub_word_immutability():
+    """Test sub_word does not mutate the input list in-place."""
+    word = [0x12, 0x34, 0x56, 0x78]
+    original_word = word.copy()
+    result = sub_word(word)
+    assert word == original_word
+    assert result != word
+
 def test_sub_word_all_bytes():
     """Test sub_word over all 256 byte values."""
     all_bytes = list(range(256))
