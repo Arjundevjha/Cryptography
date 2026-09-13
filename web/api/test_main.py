@@ -16,6 +16,8 @@ from api.main import (
     is_valid_origin,
     parse_allowed_origins,
     parse_aes_key,
+    validate_polybius_key,
+    validate_polybius_ciphertext,
 )
 
 client = TestClient(app)
@@ -205,6 +207,35 @@ def test_polybius_decrypt_exception(mock_dec, caplog):
     assert response.status_code == 400
     assert response.json()["detail"] == "Decryption failed"
     assert "Polybius decryption error" in caplog.text
+
+
+def test_validate_polybius_key_unit():
+    assert validate_polybius_key(None) == "abcdefghiklmnopqrstuvwxyz"
+    assert validate_polybius_key("") == "abcdefghiklmnopqrstuvwxyz"
+    valid_key = "abcdefghiklmnopqrstuvwxyz"
+    assert validate_polybius_key(valid_key) == valid_key
+
+    with pytest.raises(HTTPException) as exc_info:
+        validate_polybius_key("shortkey")
+    assert exc_info.value.status_code == 400
+    assert "25 unique letters" in exc_info.value.detail
+
+
+def test_validate_polybius_ciphertext_unit():
+    # Valid ciphertexts
+    validate_polybius_ciphertext("23 15 31 31 34")
+    validate_polybius_ciphertext("hello 23 world 15")
+
+    # Invalid coordinates
+    with pytest.raises(HTTPException) as exc1:
+        validate_polybius_ciphertext("23 15 31 3")
+    assert exc1.value.status_code == 400
+    assert "pairs" in exc1.value.detail.lower()
+
+    with pytest.raises(HTTPException) as exc2:
+        validate_polybius_ciphertext("23 99 31")
+    assert exc2.value.status_code == 400
+    assert "between 1 and 5" in exc2.value.detail.lower()
 
 
 # ==========================================

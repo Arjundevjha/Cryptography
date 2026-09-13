@@ -414,19 +414,47 @@ def scytale_decrypt(data: ScytaleDecryptInput):
             detail="Decryption failed"
         )
 
+def validate_polybius_key(key: str | None) -> str:
+    """Validates and returns normalized Polybius grid key."""
+    if not key:
+        return "abcdefghiklmnopqrstuvwxyz"
+    grid_key_clean = key.lower().replace("j", "i")
+    if len(grid_key_clean) != 25 or len(set(grid_key_clean)) != 25 or not grid_key_clean.isalpha():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Key must contain exactly 25 unique letters."
+        )
+    return key
+
+
+def validate_polybius_ciphertext(ciphertext: str) -> None:
+    """Validates digit coordinates in Polybius ciphertext."""
+    i = 0
+    n = len(ciphertext)
+    while i < n:
+        char = ciphertext[i]
+        if char.isdigit():
+            if i + 1 < n and ciphertext[i + 1].isdigit():
+                d1 = int(char)
+                d2 = int(ciphertext[i + 1])
+                if not (1 <= d1 <= 5 and 1 <= d2 <= 5):
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Coordinates must be between 1 and 5"
+                    )
+                i += 2
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Digits must appear in pairs"
+                )
+        else:
+            i += 1
+
+
 @app.post("/api/polybius/encrypt")
 def polybius_encrypt(data: PolybiusEncryptInput):
-    grid_key = data.key
-    if not grid_key:
-        grid_key = "abcdefghiklmnopqrstuvwxyz"
-    else:
-        # validate key
-        grid_key_clean = grid_key.lower().replace("j", "i")
-        if len(grid_key_clean) != 25 or len(set(grid_key_clean)) != 25 or not grid_key_clean.isalpha():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Key must contain exactly 25 unique letters."
-            )
+    grid_key = validate_polybius_key(data.key)
     try:
         from methods.historical import polybius
         ciphertext = polybius.encrypt(data.plaintext, grid_key)
@@ -440,43 +468,11 @@ def polybius_encrypt(data: PolybiusEncryptInput):
             detail="Encryption failed"
         )
 
+
 @app.post("/api/polybius/decrypt")
 def polybius_decrypt(data: PolybiusDecryptInput):
-    grid_key = data.key
-    if not grid_key:
-        grid_key = "abcdefghiklmnopqrstuvwxyz"
-    else:
-        # validate key
-        grid_key_clean = grid_key.lower().replace("j", "i")
-        if len(grid_key_clean) != 25 or len(set(grid_key_clean)) != 25 or not grid_key_clean.isalpha():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Key must contain exactly 25 unique letters."
-            )
-    
-    # validate ciphertext coordinates
-    try:
-        digits = []
-        i = 0
-        n = len(data.ciphertext)
-        while i < n:
-            char = data.ciphertext[i]
-            if char.isdigit():
-                if i + 1 < n and data.ciphertext[i+1].isdigit():
-                    d1 = int(char)
-                    d2 = int(data.ciphertext[i+1])
-                    if not (1 <= d1 <= 5 and 1 <= d2 <= 5):
-                        raise ValueError("Coordinates must be between 1 and 5")
-                    i += 2
-                else:
-                    raise ValueError("Digits must appear in pairs")
-            else:
-                i += 1
-    except ValueError as ve:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(ve)
-        )
+    grid_key = validate_polybius_key(data.key)
+    validate_polybius_ciphertext(data.ciphertext)
 
     try:
         from methods.historical import polybius
