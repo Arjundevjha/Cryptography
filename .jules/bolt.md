@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## Enigma Reflector Optimization
+- In `methods/historical/enigma/reflector.py`, `Reflector.reflect` originally performed `self.left.find(letter)` on every signal reflection ($O(N)$ string lookup).
+- Precomputing a dictionary lookup map `self._map = {i: self.left.find(letter) for i, letter in enumerate(self.right)}` in `Reflector.__init__` reduces `reflect(signal)` to an $O(1)$ dictionary lookup, yielding a ~2.51x speedup (reducing runtime from 6.66s down to 2.65s over 26M reflect calls).

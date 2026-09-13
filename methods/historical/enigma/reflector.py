@@ -7,12 +7,13 @@ class Reflector:
         """Initialize the reflector with standard and custom wiring mapping."""
         self.left = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         self.right = wiring
+        self._map = {i: self.left.find(letter) for i, letter in enumerate(self.right)}
 
     def reflect(self, signal):
         """Reflect a signal back through the rotors."""
-        letter = self.right[signal]
-        signal = self.left.find(letter)
-        return signal
+        if not isinstance(signal, int):
+            raise TypeError("Signal must be an integer index.")
+        return self._map[signal]
 
     def get_wiring(self) -> str:
         """Get the current reflector wiring mapping."""
