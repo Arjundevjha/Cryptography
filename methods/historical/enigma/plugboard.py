@@ -14,13 +14,15 @@ class Plugboard:
             pos_b = self.left.find(char_b)
             self.left = self.left[:pos_a] + char_b + self.left[pos_a+1:]
             self.left = self.left[:pos_b] + char_a + self.left[pos_b+1:]
+        self._left_indices = {char: idx for idx, char in enumerate(self.left)}
+        self._right_indices = {char: idx for idx, char in enumerate(self.right)}
 
     def forward(self, signal):
         """Pass the signal forward through the plugboard mapping."""
         mapped_letter = self.right[signal]
-        return self.left.index(mapped_letter)
+        return self._left_indices[mapped_letter]
 
     def backwards(self, signal):
         """Pass the signal backwards through the plugboard mapping."""
         mapped_letter = self.left[signal]
-        return self.right.index(mapped_letter)
+        return self._right_indices[mapped_letter]
