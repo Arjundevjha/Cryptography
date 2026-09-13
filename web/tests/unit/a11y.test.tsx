@@ -43,6 +43,31 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(closeMapButton).toBeInTheDocument();
   });
 
+  it('allows keyboard navigation and activation of 2D floorplan interactive room markers', () => {
+    const handleSelectRoom = jest.fn();
+    render(
+      <MuseumHUD
+        currentView="atrium"
+        isMacro={false}
+        onSelectRoom={handleSelectRoom}
+        onReturnToFoyer={jest.fn()}
+      />
+    );
+
+    // Open map
+    const toggleMapButton = screen.getByRole('button', { name: /toggle 2d museum floorplan map/i });
+    fireEvent.click(toggleMapButton);
+
+    // Find exhibit room marker button
+    const caesarMarker = screen.getByRole('button', { name: /navigate to exhibit caesar cipher/i });
+    expect(caesarMarker).toBeInTheDocument();
+    expect(caesarMarker).toHaveAttribute('tabindex', '0');
+
+    // Trigger Enter key press on room marker
+    fireEvent.keyDown(caesarMarker, { key: 'Enter', code: 'Enter' });
+    expect(handleSelectRoom).toHaveBeenCalledWith('caesar');
+  });
+
   it('renders WorkbenchPanel with accessible label input association and aria-live output region', () => {
     render(<WorkbenchPanel exhibit={sampleExhibit} />);
 
