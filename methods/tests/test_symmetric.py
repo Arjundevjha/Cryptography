@@ -157,7 +157,7 @@ def test_key_expansion_valid_key_lengths():
 
 def test_mix_columns_kat():
     """Test mix_columns against standard FIPS 197 AES test vectors."""
-    # FIPS 197 Appendix B example column 1: [0xd4, 0xbf, 0x5d, 0x30] -> [0x04, 0x66, 0x81, 0xe5]
+    # FIPS 197 Appendix B example state input and expected output after MixColumns step in Round 1
     state = [
         0xd4, 0xbf, 0x5d, 0x30,
         0xe0, 0xb4, 0x52, 0xae,
@@ -171,6 +171,38 @@ def test_mix_columns_kat():
         0x28, 0x06, 0x26, 0x4c
     ]
     assert mix_columns(state) == expected
+
+def test_mix_columns_fips197_single_column_vectors():
+    """Test mix_columns on individual standard FIPS 197 column vectors."""
+    # Column 1: [0xdb, 0x13, 0x53, 0x45] -> [0x8e, 0x4d, 0xa1, 0xbc]
+    state1 = [0xdb, 0x13, 0x53, 0x45] + [0] * 12
+    mixed1 = mix_columns(state1)
+    assert mixed1[:4] == [0x8e, 0x4d, 0xa1, 0xbc]
+    assert mixed1[4:] == [0] * 12
+
+    # Column 2: [0xf2, 0x0a, 0x22, 0x5c] -> [0x9f, 0xdc, 0x58, 0x9d]
+    state2 = [0] * 4 + [0xf2, 0x0a, 0x22, 0x5c] + [0] * 8
+    mixed2 = mix_columns(state2)
+    assert mixed2[4:8] == [0x9f, 0xdc, 0x58, 0x9d]
+
+    # Column 3: [0x01, 0x01, 0x01, 0x01] -> [0x01, 0x01, 0x01, 0x01]
+    # (2*1 ^ 3*1 ^ 1 ^ 1 = 2 ^ 3 ^ 1 ^ 1 = 1)
+    state3 = [0x01, 0x01, 0x01, 0x01] * 4
+    mixed3 = mix_columns(state3)
+    assert mixed3 == [0x01] * 16
+
+def test_mix_columns_linearity():
+    """Test linearity property of MixColumns: mix_columns(A ^ B) == mix_columns(A) ^ mix_columns(B)."""
+    import secrets
+    state_a = list(secrets.token_bytes(16))
+    state_b = list(secrets.token_bytes(16))
+    state_xor = [a ^ b for a, b in zip(state_a, state_b)]
+
+    mixed_a = mix_columns(state_a)
+    mixed_b = mix_columns(state_b)
+    expected_xor = [ma ^ mb for ma, mb in zip(mixed_a, mixed_b)]
+
+    assert mix_columns(state_xor) == expected_xor
 
 def test_mix_columns_zero_state():
     """Test mix_columns on all-zero state matrix."""
