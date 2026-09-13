@@ -204,6 +204,56 @@ def test_inv_mix_columns_kat():
     ]
     assert inv_mix_columns(mixed_state) == expected_unmixed
 
+def test_inv_mix_columns_fips_197_vector():
+    """Test inv_mix_columns against FIPS 197 Appendix B example vector."""
+    mixed_state = [
+        0x04, 0x66, 0x81, 0xe5,
+        0xe0, 0xcb, 0x19, 0x9a,
+        0x48, 0xf8, 0xd3, 0x7a,
+        0x28, 0x06, 0x26, 0x4c
+    ]
+    expected_original = [
+        0xd4, 0xbf, 0x5d, 0x30,
+        0xe0, 0xb4, 0x52, 0xae,
+        0xb8, 0x41, 0x11, 0xf1,
+        0x1e, 0x27, 0x98, 0xe5
+    ]
+    assert inv_mix_columns(mixed_state) == expected_original
+
+def test_inv_mix_columns_column_independence():
+    """Test that inv_mix_columns operates on each 4-byte column independently."""
+    # State with non-zero values only in the 3rd column (indices 8, 9, 10, 11)
+    state = [
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x8e, 0x4d, 0xa1, 0xbc,
+        0x00, 0x00, 0x00, 0x00
+    ]
+    unmixed = inv_mix_columns(state)
+
+    # Columns 1, 2, and 4 should remain all zeros
+    assert unmixed[0:4] == [0, 0, 0, 0]
+    assert unmixed[4:8] == [0, 0, 0, 0]
+    assert unmixed[12:16] == [0, 0, 0, 0]
+    # Column 3 should match expected GF(2^8) matrix inversion result
+    assert unmixed[8:12] == [0xdb, 0x13, 0x53, 0x45]
+
+def test_inv_mix_columns_matches_mul_gf():
+    """Verify inv_mix_columns calculations match explicit GF(2^8) multiplications."""
+    state = [0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10]
+    unmixed = inv_mix_columns(state)
+
+    expected = [0] * 16
+    for i in range(4):
+        idx = i * 4
+        c0, c1, c2, c3 = state[idx], state[idx + 1], state[idx + 2], state[idx + 3]
+        expected[idx]     = mul_gf(c0, 14) ^ mul_gf(c1, 11) ^ mul_gf(c2, 13) ^ mul_gf(c3, 9)
+        expected[idx + 1] = mul_gf(c0, 9)  ^ mul_gf(c1, 14) ^ mul_gf(c2, 11) ^ mul_gf(c3, 13)
+        expected[idx + 2] = mul_gf(c0, 13) ^ mul_gf(c1, 9)  ^ mul_gf(c2, 14) ^ mul_gf(c3, 11)
+        expected[idx + 3] = mul_gf(c0, 11) ^ mul_gf(c1, 13) ^ mul_gf(c2, 9)  ^ mul_gf(c3, 14)
+
+    assert unmixed == expected
+
 def test_mix_columns_inv_mix_columns_roundtrip():
     """Test that inv_mix_columns is the exact inverse of mix_columns."""
     state = [i * 17 % 256 for i in range(16)]
