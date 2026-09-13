@@ -18,6 +18,8 @@ from api.main import (
     parse_aes_key,
     validate_polybius_key,
     validate_polybius_ciphertext,
+    sha256_endpoint,
+    Sha256Input,
 )
 
 client = TestClient(app)
@@ -1124,6 +1126,12 @@ def test_aes_decrypt_exception(caplog):
     assert response.status_code == 400
     assert response.json()["detail"] == "Decryption failed"
     assert "AES decryption error" in caplog.text
+
+def test_sha256_endpoint_direct_call():
+    input_data = Sha256Input(plaintext="hello")
+    res = sha256_endpoint(input_data)
+    assert res == {"hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"}
+
 
 def test_sha256_exception(caplog):
     payload = {"plaintext": "hello"}
