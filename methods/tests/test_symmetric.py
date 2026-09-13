@@ -221,6 +221,7 @@ def test_rot_word():
     assert rotated == [0x02, 0x03, 0x04, 0x01]
     # Ensure original list was not modified in-place
     assert word == original
+    assert rotated is not word
 
     # Test full 4-rotation cycle returns to original
     w = word
@@ -231,6 +232,20 @@ def test_rot_word():
     # Test word with identical elements
     same_word = [0xFF, 0xFF, 0xFF, 0xFF]
     assert rot_word(same_word) == same_word
+
+def test_rot_word_fips_197_vector():
+    """Test rot_word against FIPS 197 Appendix A Key Expansion test vector."""
+    # FIPS 197 example: rot_word([0x09, 0xcf, 0x4f, 0x3c]) -> [0xcf, 0x4f, 0x3c, 0x09]
+    word = [0x09, 0xcf, 0x4f, 0x3c]
+    expected = [0xcf, 0x4f, 0x3c, 0x09]
+    assert rot_word(word) == expected
+
+def test_rot_word_edge_cases():
+    """Test rot_word edge cases including empty list, single element, and different length lists."""
+    assert rot_word([]) == []
+    assert rot_word([0x42]) == [0x42]
+    assert rot_word([1, 2]) == [2, 1]
+    assert rot_word([10, 20, 30, 40, 50]) == [20, 30, 40, 50, 10]
 
 def test_xtime_edge_cases_and_vectors():
     """Test xtime GF(2^8) multiplication by 2 with edge cases and known values."""
