@@ -64,3 +64,50 @@ def test_run_cli_empty_message(capsys):
 
     captured = capsys.readouterr()
     assert "No message entered. Exiting." in captured.out
+
+
+def test_run_cli_roundtrip_encipher_decipher(capsys):
+    pos_str = "0 1 2 3 4 5 6 7 8 9 10 11"
+    # First pass: encipher message
+    inputs1 = [pos_str, "SECRET"]
+    with patch("builtins.input", side_effect=inputs1):
+        run_cli()
+    captured1 = capsys.readouterr().out
+    ciphertext = captured1.split("RESULT CIPHERTEXT / PLAINTEXT:\n")[1].split("\n-")[0].strip()
+
+    # Second pass: decipher ciphertext using identical initial positions
+    inputs2 = [pos_str, ciphertext]
+    with patch("builtins.input", side_effect=inputs2):
+        run_cli()
+    captured2 = capsys.readouterr().out
+    decrypted = captured2.split("RESULT CIPHERTEXT / PLAINTEXT:\n")[1].split("\n-")[0].strip()
+
+    assert decrypted == "SECRET"
+
+
+def test_run_cli_lowercase_message_input(capsys):
+    inputs = ["", "hello world"]
+    with patch("builtins.input", side_effect=inputs):
+        run_cli()
+
+    captured = capsys.readouterr()
+    assert "RESULT CIPHERTEXT / PLAINTEXT:" in captured.out
+
+
+def test_run_cli_float_position_input(capsys):
+    inputs = ["0 1.5 2 3 4 5 6 7 8 9 10 11", "TEST"]
+    with patch("builtins.input", side_effect=inputs):
+        run_cli()
+
+    captured = capsys.readouterr()
+    assert "Warning: Invalid position format. Using default positions [0]*12." in captured.out
+
+
+def test_run_cli_positions_with_extra_whitespace(capsys):
+    pos_str = "  0   1 2  3 4 5 6 7 8 9 10  11  "
+    inputs = [pos_str, "TEST"]
+    with patch("builtins.input", side_effect=inputs):
+        run_cli()
+
+    captured = capsys.readouterr()
+    assert "Initial positions set: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]" in captured.out
