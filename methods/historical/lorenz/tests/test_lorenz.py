@@ -74,6 +74,27 @@ def test_lorenz_char_processing():
     assert isinstance(encrypted_char, str)
 
 
+def test_lorenz_decrypt_char_direct_and_stepping():
+    lorenz1 = Lorenz(positions=[0] * 12)
+    lorenz2 = Lorenz(positions=[0] * 12)
+
+    char = "B"
+
+    initial_pos = lorenz1.get_positions()
+    encrypted_char = lorenz1.encrypt_char(char)
+    # Position should have stepped after encrypting single char
+    assert lorenz1.get_positions() != initial_pos
+
+    # Test explicit call to decrypt_char
+    pos_before_decrypt = lorenz2.get_positions()
+    decrypted_char = lorenz2.decrypt_char(encrypted_char)
+
+    assert decrypted_char == char
+    assert isinstance(decrypted_char, str)
+    # Ensure decrypt_char also steps the machine wheel positions
+    assert lorenz2.get_positions() != pos_before_decrypt
+
+
 def test_lorenz_encrypt_char_and_stepping():
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
