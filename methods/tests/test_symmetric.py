@@ -339,6 +339,12 @@ def test_sub_word():
     assert sub_word(word2) == expected2
     assert expected2 == [0x76, 0xca, 0xcd, 0x16]
 
+def test_sub_word_fips197_kat():
+    """Known Answer Test for sub_word using FIPS 197 Appendix B vector."""
+    word = [0xcf, 0x4f, 0x3c, 0x09]
+    expected = [0x8a, 0x84, 0xeb, 0x01]
+    assert sub_word(word) == expected
+
 def test_sub_word_all_bytes():
     """Test sub_word over all 256 byte values."""
     all_bytes = list(range(256))
