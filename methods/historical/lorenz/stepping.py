@@ -112,16 +112,12 @@ class SteppingController:
 
     def _set_positions_from_dict(self, positions: Dict[str, List[int]]) -> None:
         """Set wheel positions from a dictionary."""
-        chi_pos = positions.get("chi", [])
-        motor_pos = positions.get("motor", [])
-        psi_pos = positions.get("psi", [])
-
-        if len(chi_pos) != 5 or len(motor_pos) != 2 or len(psi_pos) != 5:
+        groups = (("chi", self.chi, 5), ("motor", self.motor, 2), ("psi", self.psi, 5))
+        if any(len(positions.get(key, [])) != expected for key, _, expected in groups):
             raise ValueError("Positions dict must contain 5 chi, 2 motor, and 5 psi values.")
 
-        self._apply_positions(self.chi, chi_pos)
-        self._apply_positions(self.motor, motor_pos)
-        self._apply_positions(self.psi, psi_pos)
+        for key, wheels, _ in groups:
+            self._apply_positions(wheels, positions[key])
 
     def _set_positions_from_sequence(self, positions: Union[List[int], tuple]) -> None:
         """Set wheel positions from a flat 12-element list or tuple."""
