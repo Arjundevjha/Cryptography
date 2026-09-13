@@ -38,6 +38,7 @@ def is_prime(val: int, tests: int = 5) -> bool:
             break
 
     for _ in range(tests):
+        # Cryptographically secure random selection of base a in range [2, val - 2] using OS entropy (secrets)
         a = secrets.randbelow(val - 3) + 2
         if (x := pow(a, d, val)) in {1, val - 1}:
             continue
