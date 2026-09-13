@@ -38,6 +38,8 @@ def is_prime(val: int, tests: int = 5) -> bool:
             break
 
     for _ in range(tests):
+        # Python's `secrets` module uses OS entropy (SystemRandom) and is
+        # cryptographically secure for generating random bases for Miller-Rabin test.
         a = secrets.randbelow(val - 3) + 2
         if (x := pow(a, d, val)) in {1, val - 1}:
             continue
