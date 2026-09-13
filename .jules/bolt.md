@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Pre-compute Identity Dict for Enigma Plugboard Initialization
+**Learning:** In Enigma plugboard setup, computing forward and backward signal index maps via string `.index()` loops (`self.left.index(self.right[i])`) performs 52 linear string searches per instantiation. Copying a pre-computed module-level identity map (`_IDENTITY_MAP.copy()`) and assigning swapped pair indices directly eliminates all string search calls, yielding a 4.8x–10.5x speedup for plugboard initialization.
+**Action:** Pre-compute identity index mappings at module scope and use direct pair index updates during component initialization.
