@@ -59,6 +59,31 @@ def test_sha512_kats():
     )
 
 
+def test_sha512_block_boundaries_and_unicode():
+    """Test SHA-512 against standard hashlib for various block sizes, boundaries, and UTF-8 string inputs."""
+    test_cases = [
+        # Boundary around PADDING_TARGET_112 (112 bytes)
+        "a" * 111,
+        "a" * 112,
+        "a" * 113,
+        # Boundary around PADDING_MOD_128 (128 bytes block)
+        "a" * 127,
+        "a" * 128,
+        "a" * 129,
+        # Multi-block (>128 bytes)
+        "a" * 256,
+        "a" * 300,
+        # UTF-8 / Multibyte unicode characters
+        "Cryptographie UTF-8: 🔒 key & 🔑 cipher! 🎉",
+        "Hello World 🌍! 日本語テスト",
+    ]
+
+    for data in test_cases:
+        expected = hashlib.sha512(data.encode("utf-8")).hexdigest()
+        assert sha512(data) == expected
+        assert compute_hash(data, "sha512") == expected
+
+
 def test_all_hash_functions_non_empty():
     """Test that all hash functions compute non-empty digests."""
     for algo in HASH_FUNCTIONS:
