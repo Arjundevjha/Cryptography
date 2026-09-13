@@ -61,24 +61,37 @@ def _validate_origin_netloc(netloc: str) -> bool:
             return False
     return True
 
-def is_valid_origin(origin: str) -> bool:
-    """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
+FORBIDDEN_ORIGIN_CHARS = frozenset((" ", "\t", "\r", "\n", "<", ">", '"', "'", ";", "@"))
+
+def _normalize_origin(origin: str) -> str | None:
+    """Strips and sanitizes initial origin string, returning None if invalid."""
     if not isinstance(origin, str):
-        return False
+        return None
     origin = origin.strip()
     if not origin or origin == "*":
-        return False
+        return None
     if origin.endswith("/"):
         origin = origin[:-1]
-    if any(c in origin for c in (" ", "\t", "\r", "\n", "<", ">", '"', "'", ";", "@")):
+    if FORBIDDEN_ORIGIN_CHARS.intersection(origin):
+        return None
+    return origin
+
+def _has_invalid_url_components(parsed) -> bool:
+    """Checks if parsed URL contains forbidden path/query/fragment/params or invalid netloc."""
+    if parsed.scheme not in ("http", "https"):
+        return True
+    if not parsed.netloc or "*" in parsed.netloc:
+        return True
+    return any((parsed.path, parsed.params, parsed.query, parsed.fragment))
+
+def is_valid_origin(origin: str) -> bool:
+    """Validates if an origin string is a secure, well-formed HTTP/HTTPS origin."""
+    clean_origin = _normalize_origin(origin)
+    if not clean_origin:
         return False
     try:
-        parsed = urlparse(origin)
-        if parsed.scheme not in ("http", "https"):
-            return False
-        if not parsed.netloc or "*" in parsed.netloc:
-            return False
-        if parsed.path or parsed.params or parsed.query or parsed.fragment:
+        parsed = urlparse(clean_origin)
+        if _has_invalid_url_components(parsed):
             return False
         return _validate_origin_netloc(parsed.netloc)
     except ValueError:
