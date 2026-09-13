@@ -34,10 +34,11 @@ def _build_pos_map(grid: list[list[str]]) -> dict[str, tuple[int, int]]:
 
 def _find_position(grid: list[list[str]], char: str) -> tuple[int, int]:
     """Find row and column of a character in the grid."""
-    for r in range(5):
-        if char in grid[r]:
-            return r, grid[r].index(char)
-    raise ValueError(f"Character {char} not found in grid")
+    pos_map = _build_pos_map(grid)
+    try:
+        return pos_map[char]
+    except KeyError:
+        raise ValueError(f"Character {char} not found in grid")
 
 def _prepare_text(text: str) -> list[str]:
     """Prepare text: remove non-alpha, replace j, group into digraphs."""
