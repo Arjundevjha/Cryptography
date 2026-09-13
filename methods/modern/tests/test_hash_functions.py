@@ -122,25 +122,60 @@ def test_sha1_kat_and_warning():
 
 def test_blake2b_kats_and_compute_hash():
     """Test BLAKE2b implementation against known-answer vectors and hashlib standard."""
-    # Test empty string input
+    # Test empty string input KAT
     expected_empty = hashlib.blake2b(b"").hexdigest()
     assert blake2b("") == expected_empty
+    assert (
+        blake2b("")
+        == "786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce"
+    )
 
-    # Test short ASCII string input ("abc")
+    # Test short ASCII string input KAT ("abc")
     expected_abc = hashlib.blake2b(b"abc").hexdigest()
     assert blake2b("abc") == expected_abc
+    assert (
+        blake2b("abc")
+        == "ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923"
+    )
     assert compute_hash("abc", "blake2b") == expected_abc
 
-    # Test medium string input
+    # Test medium string input KAT
     phrase = "The quick brown fox jumps over the lazy dog"
     expected_phrase = hashlib.blake2b(phrase.encode("utf-8")).hexdigest()
     assert blake2b(phrase) == expected_phrase
+    assert (
+        blake2b(phrase)
+        == "a8add4bdddfd93e4877d2746e62817b116364a1fa7bc148d95090bc7333b3673f82401cf7aa2e4cb1ecd90296e3f14cb5413f8ed77be73045b13914cdcd6a918"
+    )
 
     # Test multi-block string input (> 128 bytes block size)
     long_data = "a" * 250
     expected_long = hashlib.blake2b(long_data.encode("utf-8")).hexdigest()
     assert blake2b(long_data) == expected_long
     assert compute_hash(long_data, "blake2b") == expected_long
+
+
+def test_blake2b_block_boundaries_and_unicode():
+    """Test BLAKE2b against hashlib standard for block boundaries (128 bytes) and UTF-8 strings."""
+    test_cases = [
+        # Boundary around BLAKE2B_BLOCK_SIZE (128 bytes)
+        "a" * 127,
+        "a" * 128,
+        "a" * 129,
+        # Multi-block boundaries
+        "a" * 255,
+        "a" * 256,
+        "a" * 257,
+        "a" * 512,
+        # UTF-8 / Multibyte unicode characters
+        "BLAKE2b UTF-8 Test: 🔒 cipher & 🔑 keys! 🚀",
+        "Hello World 🌍! 日本語テスト",
+    ]
+
+    for data in test_cases:
+        expected = hashlib.blake2b(data.encode("utf-8")).hexdigest()
+        assert blake2b(data) == expected
+        assert compute_hash(data, "blake2b") == expected
 
 
 def test_blake2s_kats_and_compute_hash():
