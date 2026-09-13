@@ -37,10 +37,16 @@ def _build_pos_map(grid: list[list[str]]) -> dict[str, tuple[int, int]]:
 
 
 def _find_position(grid: list[list[str]], char: str) -> tuple[int, int]:
-    """Find row and column of a character in the grid."""
+    """Find row and column of a character in the grid.
+
+    Note: For bulk digraph transformations during encryption/decryption,
+    `_build_pos_map` or `_build_transform_map` is preferred for O(1) table lookups.
+    This function avoids redundant grid[r] list subscript lookups via local row binding.
+    """
     for r in range(5):
-        if char in grid[r]:
-            return r, grid[r].index(char)
+        row = grid[r]
+        if char in row:
+            return r, row.index(char)
     raise ValueError(f"Character {char} not found in grid")
 
 
