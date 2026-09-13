@@ -10,6 +10,7 @@ from methods.modern.hash_functions import (
     md5,
     sha1,
     blake2b,
+    blake2s,
 )
 
 
@@ -115,6 +116,29 @@ def test_blake2b_kats_and_compute_hash():
     expected_long = hashlib.blake2b(long_data.encode("utf-8")).hexdigest()
     assert blake2b(long_data) == expected_long
     assert compute_hash(long_data, "blake2b") == expected_long
+
+
+def test_blake2s_kats_and_compute_hash():
+    """Test BLAKE2s implementation against known-answer vectors and hashlib standard."""
+    # Test empty string input
+    expected_empty = hashlib.blake2s(b"").hexdigest()
+    assert blake2s("") == expected_empty
+
+    # Test short ASCII string input ("abc")
+    expected_abc = hashlib.blake2s(b"abc").hexdigest()
+    assert blake2s("abc") == expected_abc
+    assert compute_hash("abc", "blake2s") == expected_abc
+
+    # Test medium string input
+    phrase = "The quick brown fox jumps over the lazy dog"
+    expected_phrase = hashlib.blake2s(phrase.encode("utf-8")).hexdigest()
+    assert blake2s(phrase) == expected_phrase
+
+    # Test multi-block string input (> 64 bytes block size)
+    long_data = "a" * 150
+    expected_long = hashlib.blake2s(long_data.encode("utf-8")).hexdigest()
+    assert blake2s(long_data) == expected_long
+    assert compute_hash(long_data, "blake2s") == expected_long
 
 
 def test_sha3_256_kats():
