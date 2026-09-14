@@ -325,8 +325,31 @@ def test_add_round_key():
     zero_key = [0x00] * 16
     assert add_round_key(state, zero_key) == state
 
+    # Self-XOR property: state XOR state == zeros
+    assert add_round_key(state, state) == zero_key
+
+    # Bitwise complement property: state XOR 0xFF == bitwise inverted state
+    ff_key = [0xFF] * 16
+    expected_inverted = [~b & 0xFF for b in state]
+    assert add_round_key(state, ff_key) == expected_inverted
+
     # Involution property: add_round_key twice with same key returns original state
     assert add_round_key(result, round_key) == state
+
+def test_add_round_key_immutability():
+    """Verify that add_round_key does not mutate input state or round_key in-place."""
+    state = list(range(16))
+    round_key = [0xAA] * 16
+
+    state_copy = state.copy()
+    key_copy = round_key.copy()
+
+    result = add_round_key(state, round_key)
+
+    assert state == state_copy
+    assert round_key == key_copy
+    assert result is not state
+    assert result is not round_key
  
 def test_sub_word():
     """Test byte substitution on 4-byte words using the S-box."""
@@ -338,6 +361,12 @@ def test_sub_word():
     expected2 = [SBOX[0x0f], SBOX[0x10], SBOX[0x80], SBOX[0xff]]
     assert sub_word(word2) == expected2
     assert expected2 == [0x76, 0xca, 0xcd, 0x16]
+
+def test_sub_word_fips197_kat():
+    """Known Answer Test for sub_word using FIPS 197 Appendix B vector."""
+    word = [0xcf, 0x4f, 0x3c, 0x09]
+    expected = [0x8a, 0x84, 0xeb, 0x01]
+    assert sub_word(word) == expected
 
 def test_sub_word_all_bytes():
     """Test sub_word over all 256 byte values."""

@@ -33,6 +33,18 @@ def test_generate_prime_raises_runtime_error_if_failed():
         with pytest.raises(RuntimeError, match="Failed to generate prime"):
             generate_prime(128)
 
+def test_generate_prime_invalid_bits():
+    with pytest.raises(ValueError, match="Bit length must be at least 2"):
+        generate_prime(1)
+    with pytest.raises(ValueError, match="Bit length must be at least 2"):
+        generate_prime(0)
+    with pytest.raises(ValueError, match="Bit length must be at least 2"):
+        generate_prime(-5)
+
+def test_generate_keypair_invalid_key_size():
+    with pytest.raises(ValueError, match="Key size must be at least 16 bits"):
+        generate_keypair(key_size=15)
+
 def test_generate_keypair_default_params():
     public_key, private_key = generate_keypair(key_size=512)
     assert isinstance(public_key, bytes)

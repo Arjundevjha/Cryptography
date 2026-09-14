@@ -199,3 +199,19 @@ def test_lorenz_encrypt_char_special_ita2_symbols():
         encrypted = lorenz1.encrypt_char(c)
         decrypted = lorenz2.decrypt_char(encrypted)
         assert decrypted == c
+
+
+def test_lorenz_decrypt_char_unsupported_char_raises_value_error():
+    lorenz = Lorenz(positions=[0] * 12)
+    with pytest.raises(ValueError, match="Character '!' is not supported in ITA2 alphabet."):
+        lorenz.decrypt_char("!")
+
+
+def test_lorenz_decrypt_char_case_insensitivity():
+    lorenz1 = Lorenz(positions=[0] * 12)
+    lorenz2 = Lorenz(positions=[0] * 12)
+
+    # 'a' (lowercase) should produce same outcome as 'A'
+    enc = lorenz1.encrypt_char("A")
+    dec = lorenz2.decrypt_char(enc.lower())
+    assert dec == "A"

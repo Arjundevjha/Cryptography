@@ -11,6 +11,7 @@ from methods.modern.hash_functions import (
     sha1,
     blake2b,
     blake2s,
+    SecurityWarning,
 )
 
 
@@ -93,8 +94,8 @@ def test_all_hash_functions_non_empty():
 
 
 def test_md5_warning_and_output():
-    """Test that md5 function triggers a security UserWarning and computes expected hash."""
-    with pytest.warns(UserWarning, match="MD5 is cryptographically broken"):
+    """Test that md5 function triggers a SecurityWarning and computes expected hash."""
+    with pytest.warns(SecurityWarning, match="MD5 is cryptographically broken"):
         result = md5("hello world")
 
     # Known MD5 hash KAT for "hello world"
@@ -102,45 +103,69 @@ def test_md5_warning_and_output():
 
 
 def test_compute_hash_md5_warning():
-    """Test compute_hash with 'md5' algorithm triggers UserWarning."""
-    with pytest.warns(UserWarning, match="MD5 is cryptographically broken"):
+    """Test compute_hash with 'md5' algorithm triggers SecurityWarning."""
+    with pytest.warns(SecurityWarning, match="MD5 is cryptographically broken"):
         result = compute_hash("hello world", "md5")
 
     assert result == "5eb63bbbe01eeed093cb22bb8f5acdc3"
 
 
 def test_sha1_kat_and_warning():
-    """Test SHA-1 KAT correctness and verify security warning emission."""
-    with pytest.warns(UserWarning, match="SHA-1 is cryptographically weak"):
+    """Test SHA-1 KAT correctness and verify SecurityWarning emission."""
+    with pytest.warns(SecurityWarning, match="SHA-1 is cryptographically broken"):
         digest = sha1("The quick brown fox jumps over the lazy dog")
     assert digest == "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"
 
-    with pytest.warns(UserWarning, match="SHA-1 is cryptographically weak"):
+    with pytest.warns(SecurityWarning, match="SHA-1 is cryptographically broken"):
         empty_digest = compute_hash("", "sha1")
     assert empty_digest == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
 
 def test_blake2b_kats_and_compute_hash():
     """Test BLAKE2b implementation against known-answer vectors and hashlib standard."""
-    # Test empty string input
+    # Test empty string input KAT
     expected_empty = hashlib.blake2b(b"").hexdigest()
     assert blake2b("") == expected_empty
+    assert (
+        blake2b("")
+        == "786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce"
+    )
 
     # Test short ASCII string input ("abc")
     expected_abc = hashlib.blake2b(b"abc").hexdigest()
     assert blake2b("abc") == expected_abc
+    assert (
+        blake2b("abc")
+        == "ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923"
+    )
     assert compute_hash("abc", "blake2b") == expected_abc
 
     # Test medium string input
     phrase = "The quick brown fox jumps over the lazy dog"
     expected_phrase = hashlib.blake2b(phrase.encode("utf-8")).hexdigest()
     assert blake2b(phrase) == expected_phrase
+    assert (
+        blake2b(phrase)
+        == "a8add4bdddfd93e4877d2746e62817b116364a1fa7bc148d95090bc7333b3673f82401cf7aa2e4cb1ecd90296e3f14cb5413f8ed77be73045b13914cdcd6a918"
+    )
 
     # Test multi-block string input (> 128 bytes block size)
     long_data = "a" * 250
     expected_long = hashlib.blake2b(long_data.encode("utf-8")).hexdigest()
     assert blake2b(long_data) == expected_long
     assert compute_hash(long_data, "blake2b") == expected_long
+
+    # Test additional string cases (boundary and special characters)
+    test_cases = [
+        "1234567890",
+        "BLAKE2b cryptographic hash test vector validation",
+        "Hello World 🌍! 日本語テスト",
+    ]
+
+    for data in test_cases:
+        expected = hashlib.blake2b(data.encode("utf-8")).hexdigest()
+        assert blake2b(data) == expected
+        assert compute_hash(data, "blake2b") == expected
 
 
 def test_blake2s_kats_and_compute_hash():
@@ -211,29 +236,32 @@ def test_sha3_256_kats():
     )
 
     # Multi-block / boundary conditions (SHA3-256 block size rate = 136 bytes)
-    # Exactly 135 bytes (1 byte less than rate)
+    # Testing boundaries around rate multiples (134, 135, 136, 137, 271, 272, 273 bytes)
+    boundary_sizes = [134, 135, 136, 137, 271, 272, 273, 500]
+    for size in boundary_sizes:
+        test_input = "x" * size
+        expected = hashlib.sha3_256(test_input.encode("utf-8")).hexdigest()
+        assert sha3_256(test_input) == expected
+        assert compute_hash(test_input, "sha3_256") == expected
+
+    # Specific KAT checks for rate boundaries
     b135 = "a" * 135
-    assert sha3_256(b135) == hashlib.sha3_256(b135.encode("utf-8")).hexdigest()
     assert (
         sha3_256(b135)
         == "8094bb53c44cfb1e67b7c30447f9a1c33696d2463ecc1d9c92538913392843c9"
     )
 
-    # Exactly 136 bytes (1 block boundary)
     b136 = "a" * 136
-    assert sha3_256(b136) == hashlib.sha3_256(b136.encode("utf-8")).hexdigest()
     assert (
         sha3_256(b136)
         == "3fc5559f14db8e453a0a3091edbd2bc25e11528d81c66fa570a4efdcc2695ee1"
     )
 
-    # Exactly 137 bytes (1 byte more than 1 block)
-    b137 = "a" * 137
-    assert sha3_256(b137) == hashlib.sha3_256(b137.encode("utf-8")).hexdigest()
-
-    # 272 bytes (exactly 2 blocks boundary)
-    b272 = "a" * 272
-    assert sha3_256(b272) == hashlib.sha3_256(b272.encode("utf-8")).hexdigest()
+    # Output structure and properties validation (64 hex characters / 256 bits)
+    digest = sha3_256("test properties")
+    assert isinstance(digest, str)
+    assert len(digest) == 64
+    assert all(c in "0123456789abcdef" for c in digest)
 
     # Unicode / multi-byte character test
     unicode_str = "Hello, 世界! 🔑 SHA3-256 🧪"

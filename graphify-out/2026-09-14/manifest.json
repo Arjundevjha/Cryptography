@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "methods/historical/enigma/plugboard.py": {
-    "mtime": 1789343949.6971555,
-    "ast_hash": "d55e7c479172e7e5b2265e8bd874aa33",
+    "mtime": 1789295139.997374,
+    "ast_hash": "337ad83a1fc42f952047cb943e6a579f",
     "semantic_hash": ""
   },
   "methods/historical/enigma/reflector.py": {
@@ -155,8 +155,8 @@
     "semantic_hash": "58ef2ee63d26dd8e4382e4eab32a4117"
   },
   "methods/historical/lorenz/stepping.py": {
-    "mtime": 1789344598.2883477,
-    "ast_hash": "436cfb778585c6dc7c995256b358a5a9",
+    "mtime": 1789295130.6721926,
+    "ast_hash": "cb8978a838b7b16a4ae37773aa61afaa",
     "semantic_hash": ""
   },
   "methods/historical/lorenz/tests/__init__.py": {
@@ -170,8 +170,8 @@
     "semantic_hash": "24a12822c246053ecba68e0f61715489"
   },
   "methods/historical/lorenz/tests/test_lorenz.py": {
-    "mtime": 1789343956.9159055,
-    "ast_hash": "0b07f0b5c724a2acaa42afa3d705624e",
+    "mtime": 1789305947.1312637,
+    "ast_hash": "b57bae665c9b59593d11ce52d1ba5390",
     "semantic_hash": ""
   },
   "methods/historical/lorenz/tests/test_stepping.py": {
@@ -230,8 +230,8 @@
     "semantic_hash": ""
   },
   "methods/modern/hash_functions.py": {
-    "mtime": 1789344613.033953,
-    "ast_hash": "9694e609c21ff56641365bd8846fcea9",
+    "mtime": 1788792540.4024699,
+    "ast_hash": "2ce64b179157b5e08ff1cf8f9def54a8",
     "semantic_hash": ""
   },
   "methods/modern/helpers.py": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "methods/modern/keypair.py": {
-    "mtime": 1789343985.624397,
-    "ast_hash": "00c9600a40ef952aafaec549845b5a2a",
+    "mtime": 1787788523.485461,
+    "ast_hash": "d037122c4c995737d5a43a4ad08d028f",
     "semantic_hash": ""
   },
   "methods/modern/rsa.py": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "methods/modern/symmetric.py": {
-    "mtime": 1789344571.990216,
-    "ast_hash": "6504431de132d341612fe4999e69bb3d",
+    "mtime": 1788960871.7528265,
+    "ast_hash": "8d4d6907481b2cbf0d6317f9114050c2",
     "semantic_hash": ""
   },
   "methods/modern/tests/__init__.py": {
@@ -270,8 +270,8 @@
     "semantic_hash": "1a3969c139461aff6fd1717531c1eb23"
   },
   "methods/modern/tests/test_hash_functions.py": {
-    "mtime": 1789344449.6487737,
-    "ast_hash": "4a381bf5123689f6a68861dee9b2675d",
+    "mtime": 1789305986.443036,
+    "ast_hash": "268398e940f863bc273a7c6d6c82c1ac",
     "semantic_hash": ""
   },
   "methods/modern/tests/test_helpers.py": {
@@ -280,9 +280,9 @@
     "semantic_hash": ""
   },
   "methods/modern/tests/test_keypair.py": {
-    "mtime": 1789343989.186784,
-    "ast_hash": "af24a82efd3daf3d9a575a7f7a7ece38",
-    "semantic_hash": ""
+    "mtime": 1783293006.9839847,
+    "ast_hash": "16d2360c98e1c7c5a3810899fc43e6da",
+    "semantic_hash": "16d2360c98e1c7c5a3810899fc43e6da"
   },
   "methods/modern/tests/test_rsa.py": {
     "mtime": 1788736340.67393,
@@ -300,8 +300,8 @@
     "semantic_hash": ""
   },
   "methods/tests/test_symmetric.py": {
-    "mtime": 1789343980.498304,
-    "ast_hash": "72986135ef2490334fed4f40cbc60225",
+    "mtime": 1789306082.2074645,
+    "ast_hash": "42de75c971ca8502367ac5a9719e505d",
     "semantic_hash": ""
   },
   "run_e2e_no_install.sh": {
@@ -325,13 +325,13 @@
     "semantic_hash": "d011342da40a8f82597a09013e906cfc"
   },
   "web/api/main.py": {
-    "mtime": 1789344533.0643888,
-    "ast_hash": "3fd4ccac32c4077894aabeefc3adc27d",
+    "mtime": 1789306180.1281211,
+    "ast_hash": "eacd06b642df15b55d7dc97794798c36",
     "semantic_hash": ""
   },
   "web/api/test_main.py": {
-    "mtime": 1789344483.4424944,
-    "ast_hash": "09ae45de9065e72fcfa745210ec67e79",
+    "mtime": 1789306229.8756585,
+    "ast_hash": "f323137849dbc03736eaead9b322812d",
     "semantic_hash": ""
   },
   "web/app/api/health/route.ts": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "web/next.config.js": {
-    "mtime": 1789344506.8758307,
-    "ast_hash": "903bccf6bd62596454c1c628a6b9ca29",
+    "mtime": 1789046747.7230895,
+    "ast_hash": "526af063c5969ea0b07a7e2965ed9268",
     "semantic_hash": ""
   },
   "web/package.json": {
@@ -415,8 +415,8 @@
     "semantic_hash": "885804207ed654084f41d675f817cabb"
   },
   "web/src/components/museum/hud/MuseumHUD.tsx": {
-    "mtime": 1789344498.2794106,
-    "ast_hash": "6e5819403534f27399533256c3094705",
+    "mtime": 1788395672.2513406,
+    "ast_hash": "6312d4156fb75128f806928397260772",
     "semantic_hash": ""
   },
   "web/src/components/museum/museumData.ts": {
@@ -510,8 +510,8 @@
     "semantic_hash": "1c06ba7292961575b45102f00433ce1c"
   },
   "handoff.md": {
-    "mtime": 1789306675.6686618,
-    "ast_hash": "20e8e8b7e11a730cf1f86a07dd232db0",
+    "mtime": 1789046797.9023402,
+    "ast_hash": "dce778be05a47cdcc422a66a75745fae",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "web/tests/unit/a11y.test.tsx": {
-    "mtime": 1789344503.1972969,
-    "ast_hash": "223681a91b2ce5c4bbb402b3dbfc2a9c",
+    "mtime": 1789295621.5281105,
+    "ast_hash": "a3974f6248bbf03fa339be22d120dd48",
     "semantic_hash": ""
   },
   ".Jules/bolt.md": {
@@ -570,13 +570,8 @@
     "semantic_hash": ""
   },
   "methods/historical/lorenz/tests/test_main.py": {
-    "mtime": 1789343962.2961192,
-    "ast_hash": "548c96b60f678a436585253a91d6e59d",
-    "semantic_hash": ""
-  },
-  "web/tests/unit/config.test.ts": {
-    "mtime": 1789344511.0682368,
-    "ast_hash": "5b3f5ab029282d88e9054de106953b9b",
+    "mtime": 1789305885.626366,
+    "ast_hash": "a3e59c9d389ecc726e34e419bcb52ee1",
     "semantic_hash": ""
   }
 }

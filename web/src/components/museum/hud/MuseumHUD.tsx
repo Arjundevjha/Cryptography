@@ -187,11 +187,21 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                   return (
                     <g
                       key={ex.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Navigate to exhibit ${ex.name}`}
                       onClick={() => {
                         onSelectRoom(ex.id);
                         setShowMap(false);
                       }}
-                      className="cursor-pointer group"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onSelectRoom(ex.id);
+                          setShowMap(false);
+                        }
+                      }}
+                      className="cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                     >
                       <circle
                         cx={cx}
@@ -240,11 +250,21 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                   return (
                     <g
                       key={statue.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Navigate to statue monument ${statue.name}`}
                       onClick={() => {
                         onSelectRoom(statue.id);
                         setShowMap(false);
                       }}
-                      className="cursor-pointer group"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onSelectRoom(statue.id);
+                          setShowMap(false);
+                        }
+                      }}
+                      className="cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                     >
                       <rect
                         x={sx - (isActive ? 7 : 5)}
@@ -277,11 +297,21 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
 
                 {/* Lobby Point */}
                 <g
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Navigate to Grand Entrance Lobby"
                   onClick={() => {
                     onReturnToFoyer();
                     setShowMap(false);
                   }}
-                  className="cursor-pointer group"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onReturnToFoyer();
+                      setShowMap(false);
+                    }
+                  }}
+                  className="cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                 >
                   <circle
                     cx="400"

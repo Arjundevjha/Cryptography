@@ -18,6 +18,8 @@ from api.main import (
     parse_aes_key,
     validate_polybius_key,
     validate_polybius_ciphertext,
+    sha256_endpoint,
+    Sha256Input,
 )
 
 client = TestClient(app)
@@ -2163,3 +2165,10 @@ def test_sha256_hash_endpoint_exception(caplog):
     assert response.status_code == 400
     assert response.json()["detail"] == "Hashing failed"
     assert "SHA256 error" in caplog.text
+
+
+def test_sha256_endpoint_direct():
+    result = sha256_endpoint(Sha256Input(plaintext="hello"))
+    assert "hash" in result
+    assert result["hash"] == "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+
