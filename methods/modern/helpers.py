@@ -10,11 +10,11 @@ BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
 # BOLT OPTIMIZATION: Replaces per-character linear string searching (`BASE64_CHARS.index(char)`)
 # with pre-calculated O(1) single-character and 2-character pair lookup tables (`B64_DECODE_LUT` and `PAIR_LUT`).
 # Combined with pre-allocated bytearrays, this delivers ~1.86x performance speedup.
-B64_DECODE_LUT = [0] * 256
+B64_DECODE_LUT = [-1] * 256
 for i, c in enumerate(BASE64_CHARS):
     B64_DECODE_LUT[ord(c)] = i
 
-PAIR_LUT = [0] * 65536
+PAIR_LUT = [-1] * 65536
 for i, c0 in enumerate(BASE64_CHARS):
     for j, c1 in enumerate(BASE64_CHARS):
         PAIR_LUT[(ord(c0) << 8) | ord(c1)] = (i << 6) | j
@@ -72,24 +72,29 @@ def b64decode(data_str: str) -> bytes:
     if not (clean_str := data_str.strip().replace("\n", "").replace("\r", "").replace(" ", "")):
         return b""
 
-    pad_len = 0
     if clean_str.endswith("=="):
-        pad_len = 2
         clean_str = clean_str[:-2]
     elif clean_str.endswith("="):
-        pad_len = 1
         clean_str = clean_str[:-1]
 
     pair_lut = PAIR_LUT
     single_lut = B64_DECODE_LUT
-    clean_bytes = clean_str.encode('ascii')
+    try:
+        clean_bytes = clean_str.encode('ascii')
+    except UnicodeEncodeError as exc:
+        raise ValueError("Invalid non-ASCII character in Base64 string") from exc
+
     n = len(clean_bytes)
     res = bytearray((n * 3) // 4 + 3)
     idx = 0
 
     full_len = n - (n % 4)
     for i in range(0, full_len, 4):
-        val = (pair_lut[(clean_bytes[i] << 8) | clean_bytes[i + 1]] << 12) | pair_lut[(clean_bytes[i + 2] << 8) | clean_bytes[i + 3]]
+        v0 = pair_lut[(clean_bytes[i] << 8) | clean_bytes[i + 1]]
+        v1 = pair_lut[(clean_bytes[i + 2] << 8) | clean_bytes[i + 3]]
+        if v0 < 0 or v1 < 0:
+            raise ValueError("Invalid character in Base64 string")
+        val = (v0 << 12) | v1
         res[idx] = (val >> 16) & 0xFF
         res[idx + 1] = (val >> 8) & 0xFF
         res[idx + 2] = val & 0xFF
@@ -97,14 +102,24 @@ def b64decode(data_str: str) -> bytes:
 
     rem = n % 4
     if rem == 2:
-        val = (single_lut[clean_bytes[-2]] << 18) | (single_lut[clean_bytes[-1]] << 12)
+        v0 = single_lut[clean_bytes[-2]]
+        v1 = single_lut[clean_bytes[-1]]
+        if v0 < 0 or v1 < 0:
+            raise ValueError("Invalid character in Base64 string")
+        val = (v0 << 18) | (v1 << 12)
         res[idx] = (val >> 16) & 0xFF
         idx += 1
     elif rem == 3:
-        val = (pair_lut[(clean_bytes[-3] << 8) | clean_bytes[-2]] << 12) | (single_lut[clean_bytes[-1]] << 6)
+        v0 = pair_lut[(clean_bytes[-3] << 8) | clean_bytes[-2]]
+        v1 = single_lut[clean_bytes[-1]]
+        if v0 < 0 or v1 < 0:
+            raise ValueError("Invalid character in Base64 string")
+        val = (v0 << 12) | (v1 << 6)
         res[idx] = (val >> 16) & 0xFF
         res[idx + 1] = (val >> 8) & 0xFF
         idx += 2
+    elif rem == 1:
+        raise ValueError("Invalid Base64 string length")
 
     return bytes(res[:idx])
 

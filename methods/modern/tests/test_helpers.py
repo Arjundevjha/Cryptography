@@ -93,6 +93,22 @@ def test_b64decode():
     # test stripping whitespace
     assert b64decode("  Zm9vYmFy \n\r") == b"foobar"
 
+def test_b64decode_validation_errors():
+    """Verify that b64decode raises ValueError on invalid characters or invalid lengths."""
+    # Invalid ASCII characters
+    with pytest.raises(ValueError, match="Invalid character in Base64 string"):
+        b64decode("Zm!v")
+    with pytest.raises(ValueError, match="Invalid character in Base64 string"):
+        b64decode("Zg@#")
+
+    # Non-ASCII character
+    with pytest.raises(ValueError, match="Invalid non-ASCII character in Base64 string"):
+        b64decode("Zm9vñ")
+
+    # Invalid length (rem == 1)
+    with pytest.raises(ValueError, match="Invalid Base64 string length"):
+        b64decode("Z")
+
 def test_bitwise_operations():
     # Test 32-bit bound and rotation
     val = 0x80000001
