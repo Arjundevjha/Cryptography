@@ -96,3 +96,16 @@ Executed an automated PR review, triage, and Unified Batch Integration (Single-P
 - [x] Strictly `main` branch exists locally and on remote (`gh api repos/Arjundevjha/Cryptography/branches`)
 - [x] Pylint 10.00/10 across all modified Python modules
 - [x] Knowledge graph updated via `graphify update .` (1,479 nodes, 2,574 edges, 93 communities)
+
+---
+
+## Vercel Deployment & Storage Cleanup (Sep 14, 2026)
+- **Trigger**: Function Storage alert reaching 10.27 GB (exceeding 10 GB quota).
+- **Root Cause**: 409 completed builds in 30 days (390 on `cryptography`), with each build bundling 5 serverless functions (Next.js SSR + FastAPI Python lambdas), plus 99 auto-canceled deployments from automated PR runs.
+- **Action Taken**:
+  - Enforced maximum 4 builds policy across all projects.
+  - Whitelisted active production deployment (`dpl_C4NEdi5zPaCNsvXHnoLuMjuNdizg`).
+  - Safely pruned 108 deployments from `cryptography` (99 canceled, 9 older ready builds) and 21 deployments from other projects (129 total deleted).
+  - Kept exactly 4 healthy production/rollback deployments.
+  - Live production verified healthy (`HTTP 200 OK`).
+
