@@ -13,6 +13,7 @@ class Rotor:
         """Initialize the rotor with a wiring permutation and turnover notch."""
         self._initial_wiring = wiring
         self.notch = notch
+        self.notch_code = ord(notch) - 65
         self.offset = 0
 
         # Precompute integer arrays for O(1) signal index transformations
@@ -64,3 +65,4 @@ class Rotor:
         # Adjust the turnover notch in relationship to the wiring
         n_notch = ord(self.notch) - 65
         self.notch = chr(65 + (n_notch - n) % 26)
+        self.notch_code = (n_notch - n) % 26

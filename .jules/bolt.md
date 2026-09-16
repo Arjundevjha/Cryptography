@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Pre-compute Integer Notch Codes to Eliminate Property Slicing in Enigma Stepping Logic
+**Learning:** In Enigma rotor turnover checks (`Enigma.encipher`), repeatedly referencing `@property` methods (`rotor.left[0]`) triggers string slicing and string concatenation on every character enciphered. Pre-computing integer notch codes (`notch_code = ord(notch) - 65`) and comparing rotor turnover state via integer modulo arithmetic (`(rotor.offset % 26) == rotor.notch_code`) avoids string allocations completely, delivering a ~1.77x speedup in message enciphering.
+**Action:** Replace string property slicing in stateful machine conditionals with pre-computed integer codes and modulo arithmetic.

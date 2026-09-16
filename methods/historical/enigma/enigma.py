@@ -30,17 +30,24 @@ class Enigma:
         self.r3.rotate_to_letter(key[2])
 
     def encipher(self, letter):
-        """Encipher a single character through the Enigma machine."""
+        """Encipher a single character through the Enigma machine.
+
+        BOLT OPTIMIZATION: Check turnover notches directly via integer modulo offset operations
+        ((offset % 26) == notch_code) to avoid invoking Rotor.left string allocations on every character.
+        """
         # Rotate the rotors
-        if self.r2.left[0] == self.r2.notch and self.r3.left[0] == self.r3.notch:
+        r2_at_notch = (self.r2.offset % 26) == self.r2.notch_code
+        r3_at_notch = (self.r3.offset % 26) == self.r3.notch_code
+
+        if r2_at_notch and r3_at_notch:
             self.r1.rotate()
             self.r2.rotate()
             self.r3.rotate()
-        elif self.r2.left[0] == self.r2.notch:
+        elif r2_at_notch:
             self.r1.rotate()
             self.r2.rotate()
             self.r3.rotate()
-        elif self.r3.left[0] == self.r3.notch:
+        elif r3_at_notch:
             self.r2.rotate()
             self.r3.rotate()
         else:
