@@ -554,7 +554,20 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           {outputText && (
             <button
               onClick={handleCopy}
-              aria-label={copied ? 'Copied to clipboard' : 'Copy result to clipboard'}
+              title={
+                copied
+                  ? 'Copied to clipboard!'
+                  : mode === 'encrypt'
+                  ? 'Copy ciphertext result to clipboard'
+                  : 'Copy decrypted plaintext to clipboard'
+              }
+              aria-label={
+                copied
+                  ? 'Copied to clipboard'
+                  : mode === 'encrypt'
+                  ? 'Copy ciphertext result to clipboard'
+                  : 'Copy decrypted plaintext to clipboard'
+              }
               className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
             >
               {copied ? (

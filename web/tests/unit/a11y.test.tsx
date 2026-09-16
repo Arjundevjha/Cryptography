@@ -107,4 +107,46 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(shiftInput).toBeInTheDocument();
     expect(shiftInput).toHaveAttribute('id', `param-shift-${caesarExhibit.id}`);
   });
+
+  it('renders WorkbenchPanel copy button with accessible mode-specific tooltip and aria-label', async () => {
+    // Mock navigator.clipboard.writeText
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: jest.fn().mockImplementation(() => Promise.resolve()),
+      },
+    });
+
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Trigger encryption execution by rendering component state with mock output or simulate output
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    fireEvent.change(inputArea, { target: { value: 'TEST PLAINTEXT' } });
+
+    // Execute button to trigger output
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    // Mock global fetch for API response
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    // Wait for output copy button to render
+    const copyButton = await screen.findByRole('button', { name: /copy ciphertext result to clipboard/i });
+    expect(copyButton).toBeInTheDocument();
+    expect(copyButton).toHaveAttribute('title', 'Copy ciphertext result to clipboard');
+
+    // Click copy button inside act to handle setCopied state update
+    await React.act(async () => {
+      fireEvent.click(copyButton);
+    });
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('KHOOR');
+  });
 });
