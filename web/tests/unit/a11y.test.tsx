@@ -44,6 +44,27 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(closeMapButton).toBeInTheDocument();
   });
 
+  it('renders MuseumHUD top navigation buttons with aria-current="page" when active and focus visible styles', () => {
+    render(
+      <MuseumHUD
+        currentView="atrium"
+        isMacro={false}
+        onSelectRoom={jest.fn()}
+        onReturnToFoyer={jest.fn()}
+      />
+    );
+
+    const lobbyNavBtn = screen.getByRole('button', { name: /navigate to grand entrance lobby/i });
+    expect(lobbyNavBtn).toBeInTheDocument();
+    expect(lobbyNavBtn).toHaveAttribute('aria-current', 'page');
+    expect(lobbyNavBtn.className).toContain('focus-visible:ring-2');
+
+    const classicalWingBtn = screen.getByRole('button', { name: /navigate to classical ciphers wing/i });
+    expect(classicalWingBtn).toBeInTheDocument();
+    expect(classicalWingBtn).not.toHaveAttribute('aria-current');
+    expect(classicalWingBtn.className).toContain('focus-visible:ring-2');
+  });
+
   it('allows keyboard navigation and activation of 2D floorplan interactive room markers', () => {
     const handleSelectRoom = jest.fn();
     render(

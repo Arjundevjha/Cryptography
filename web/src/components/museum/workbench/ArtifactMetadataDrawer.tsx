@@ -29,7 +29,7 @@ export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDra
       {/* Return from Macro View button */}
       <button
         onClick={onClose}
-        className="w-full mb-6 py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:bg-amber-500/20 transition-all"
+        className="w-full mb-6 py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:bg-amber-500/20 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       >
         <ZoomOut className="w-4 h-4" /> Exit Macro Close-up View
       </button>
