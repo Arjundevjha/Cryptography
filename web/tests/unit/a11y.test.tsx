@@ -107,4 +107,42 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(shiftInput).toBeInTheDocument();
     expect(shiftInput).toHaveAttribute('id', `param-shift-${caesarExhibit.id}`);
   });
+
+  it('renders RSA parameter inputs and keygen button with accessible labels and focus styles', () => {
+    const rsaExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'rsa')!;
+    render(<WorkbenchPanel exhibit={rsaExhibit} />);
+
+    const pInput = screen.getByLabelText(/rsa prime p/i);
+    const qInput = screen.getByLabelText(/rsa prime q/i);
+    const eInput = screen.getByLabelText(/rsa public exponent e/i);
+    const keygenBtn = screen.getByRole('button', { name: /generate rsa keypair/i });
+
+    expect(pInput).toBeInTheDocument();
+    expect(qInput).toBeInTheDocument();
+    expect(eInput).toBeInTheDocument();
+    expect(keygenBtn).toBeInTheDocument();
+
+    expect(pInput.className).toContain('focus-visible:ring-2');
+    expect(qInput.className).toContain('focus-visible:ring-2');
+    expect(eInput.className).toContain('focus-visible:ring-2');
+    expect(keygenBtn.className).toContain('focus-visible:ring-2');
+  });
+
+  it('renders Lorenz wheel inputs and reset button with accessible labels and focus styles', () => {
+    const lorenzExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'lorenz')!;
+    render(<WorkbenchPanel exhibit={lorenzExhibit} />);
+
+    const chi1Input = screen.getByLabelText(/chi wheel 1 position/i);
+    const motor1Input = screen.getByLabelText(/motor wheel 1 position/i);
+    const psi1Input = screen.getByLabelText(/psi wheel 1 position/i);
+    const resetBtn = screen.getByRole('button', { name: /reset all lorenz wheel positions to zero/i });
+
+    expect(chi1Input).toBeInTheDocument();
+    expect(motor1Input).toBeInTheDocument();
+    expect(psi1Input).toBeInTheDocument();
+    expect(resetBtn).toBeInTheDocument();
+
+    expect(chi1Input.className).toContain('focus-visible:ring-2');
+    expect(resetBtn.className).toContain('focus-visible:ring-2');
+  });
 });
