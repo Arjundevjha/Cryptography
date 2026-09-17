@@ -4,6 +4,7 @@ import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/Ar
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { AudioSystem } from '../../src/components/museum/AudioSystem';
+import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -106,5 +107,15 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const shiftInput = screen.getByLabelText(/shift value/i);
     expect(shiftInput).toBeInTheDocument();
     expect(shiftInput).toHaveAttribute('id', `param-shift-${caesarExhibit.id}`);
+  });
+
+  it('renders ApiStatusDot with accessible role="status", aria-label, tabIndex, and focus styles', () => {
+    render(<ApiStatusDot />);
+
+    const statusWidget = screen.getByRole('status');
+    expect(statusWidget).toBeInTheDocument();
+    expect(statusWidget).toHaveAttribute('tabindex', '0');
+    expect(statusWidget).toHaveAttribute('aria-label');
+    expect(statusWidget.className).toContain('focus-visible:ring-2');
   });
 });
