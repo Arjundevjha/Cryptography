@@ -604,11 +604,8 @@ def enigma_encipher(data: EnigmaEncipherInput):
     """Encipher plaintext using the Enigma cipher machine."""
     try:
         enigma_machine = build_enigma_machine(data)
-        ciphertext_chars = [
-            enigma_machine.encipher(char.upper()) if char.isalpha() else char
-            for char in data.plaintext
-        ]
-        return {"ciphertext": "".join(ciphertext_chars)}
+        ciphertext = enigma_machine.process_message(data.plaintext)
+        return {"ciphertext": ciphertext}
     except HTTPException:
         raise
     except ValueError as ve:

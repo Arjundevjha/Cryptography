@@ -20,6 +20,7 @@ class Rotor:
         self._wiring_rev = [0] * 26
         for i, code in enumerate(self._wiring_arr):
             self._wiring_rev[code] = i
+        self.notch_code = ord(notch) - 65
 
     @property
     def left(self) -> str:
@@ -63,4 +64,6 @@ class Rotor:
 
         # Adjust the turnover notch in relationship to the wiring
         n_notch = ord(self.notch) - 65
-        self.notch = chr(65 + (n_notch - n) % 26)
+        notch_val = (n_notch - n) % 26
+        self.notch = chr(65 + notch_val)
+        self.notch_code = notch_val
