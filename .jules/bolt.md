@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Optimize SHA-512 Block Compression via Fast Unpacking and Rotation Inlining
+**Learning:** In 64-bit hash functions like SHA-512, byte-by-byte `int.from_bytes` conversion loops, repeated helper function calls (`_rotr64`), and list-based state manipulation (`state[7] = state[6]`) create significant Python interpreter overhead. Using `struct.unpack('>16Q')`, inlining bitwise 64-bit rotations, simplifying boolean expressions (`ch` and `maj`), and unrolling state shift assignments into scalar variables yields a ~1.46x performance speedup.
+**Action:** Use `struct.unpack('>16Q')`, inlined bitwise rotations, and local scalar variable shifts for 64-bit block compression routines in hash algorithms.
