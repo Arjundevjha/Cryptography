@@ -87,11 +87,9 @@
   "85": "sub_bytes",
   "86": "md5",
   "87": "sub_word",
-  "88": ".__init__",
   "89": "blake2b",
   "90": "blake2s",
   "91": "sha3_256",
   "92": "sha256",
-  "93": "test_fallback_imports",
   "95": "validate_polybius_ciphertext"
 }
