@@ -4,6 +4,7 @@ import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/Ar
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { AudioSystem } from '../../src/components/museum/AudioSystem';
+import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
@@ -106,5 +107,95 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const shiftInput = screen.getByLabelText(/shift value/i);
     expect(shiftInput).toBeInTheDocument();
     expect(shiftInput).toHaveAttribute('id', `param-shift-${caesarExhibit.id}`);
+  });
+
+  it('renders ApiStatusDot with accessible role="status", aria-label, tabIndex, and focus styles', () => {
+    render(<ApiStatusDot />);
+
+    const statusWidget = screen.getByRole('status');
+    expect(statusWidget).toBeInTheDocument();
+    expect(statusWidget).toHaveAttribute('tabindex', '0');
+    expect(statusWidget).toHaveAttribute('aria-label');
+    expect(statusWidget.className).toContain('focus-visible:ring-2');
+  });
+
+  it('renders RSA parameter inputs and keygen button with accessible labels and focus styles', () => {
+    const rsaExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'rsa')!;
+    render(<WorkbenchPanel exhibit={rsaExhibit} />);
+
+    const pInput = screen.getByLabelText(/rsa prime p/i);
+    const qInput = screen.getByLabelText(/rsa prime q/i);
+    const eInput = screen.getByLabelText(/rsa public exponent e/i);
+    const keygenBtn = screen.getByRole('button', { name: /generate rsa keypair/i });
+
+    expect(pInput).toBeInTheDocument();
+    expect(qInput).toBeInTheDocument();
+    expect(eInput).toBeInTheDocument();
+    expect(keygenBtn).toBeInTheDocument();
+
+    expect(pInput.className).toContain('focus-visible:ring-2');
+    expect(qInput.className).toContain('focus-visible:ring-2');
+    expect(eInput.className).toContain('focus-visible:ring-2');
+    expect(keygenBtn.className).toContain('focus-visible:ring-2');
+  });
+
+  it('renders Lorenz wheel inputs and reset button with accessible labels and focus styles', () => {
+    const lorenzExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'lorenz')!;
+    render(<WorkbenchPanel exhibit={lorenzExhibit} />);
+
+    const chi1Input = screen.getByLabelText(/chi wheel 1 position/i);
+    const motor1Input = screen.getByLabelText(/motor wheel 1 position/i);
+    const psi1Input = screen.getByLabelText(/psi wheel 1 position/i);
+    const resetBtn = screen.getByRole('button', { name: /reset all lorenz wheel positions to zero/i });
+
+    expect(chi1Input).toBeInTheDocument();
+    expect(motor1Input).toBeInTheDocument();
+    expect(psi1Input).toBeInTheDocument();
+    expect(resetBtn).toBeInTheDocument();
+
+    expect(chi1Input.className).toContain('focus-visible:ring-2');
+    expect(resetBtn.className).toContain('focus-visible:ring-2');
+  });
+
+  it('renders WorkbenchPanel copy button with accessible mode-specific tooltip and aria-label', async () => {
+    // Mock navigator.clipboard.writeText
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: jest.fn().mockImplementation(() => Promise.resolve()),
+      },
+    });
+
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Trigger encryption execution by rendering component state with mock output or simulate output
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    fireEvent.change(inputArea, { target: { value: 'TEST PLAINTEXT' } });
+
+    // Execute button to trigger output
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    // Mock global fetch for API response
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    // Wait for output copy button to render
+    const copyButton = await screen.findByRole('button', { name: /copy ciphertext result to clipboard/i });
+    expect(copyButton).toBeInTheDocument();
+    expect(copyButton).toHaveAttribute('title', 'Copy ciphertext result to clipboard');
+
+    // Click copy button inside act to handle setCopied state update
+    await React.act(async () => {
+      fireEvent.click(copyButton);
+    });
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('KHOOR');
   });
 });

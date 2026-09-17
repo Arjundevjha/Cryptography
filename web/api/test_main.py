@@ -29,6 +29,15 @@ def test_health_check():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
+def test_security_headers_present():
+    response = client.get("/api/health")
+    assert response.status_code == 200
+    assert response.headers["X-Frame-Options"] == "DENY"
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
+    assert response.headers["Permissions-Policy"] == "camera=(), microphone=(), geolocation=()"
+    assert response.headers["Strict-Transport-Security"] == "max-age=31536000; includeSubDomains"
+
 def test_validate_input_success():
     response = client.post("/api/validate", json={"text": "hello"})
     assert response.status_code == 200

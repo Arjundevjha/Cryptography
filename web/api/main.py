@@ -118,6 +118,18 @@ app.add_middleware(
     allow_headers=["Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
+# Security: Defense-in-depth middleware adding standard HTTP security headers
+# to all FastAPI responses
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
 # Custom exception handler for validation errors to return HTTP 400 on limit violation
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -604,11 +616,8 @@ def enigma_encipher(data: EnigmaEncipherInput):
     """Encipher plaintext using the Enigma cipher machine."""
     try:
         enigma_machine = build_enigma_machine(data)
-        ciphertext_chars = [
-            enigma_machine.encipher(char.upper()) if char.isalpha() else char
-            for char in data.plaintext
-        ]
-        return {"ciphertext": "".join(ciphertext_chars)}
+        ciphertext = enigma_machine.process_message(data.plaintext)
+        return {"ciphertext": ciphertext}
     except HTTPException:
         raise
     except ValueError as ve:

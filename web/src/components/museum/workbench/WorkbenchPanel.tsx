@@ -422,18 +422,19 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
                 Chi Wheels (χ₁-χ₅ Positions):
               </label>
               <div className="grid grid-cols-5 gap-1">
-                {[0, 1, 2, 3, 4].map((idx) => (
+                {[0, 1, 2, 3, 4].map((posIdx) => (
                   <input
-                    key={`chi-${idx}`}
+                    key={`chi-${posIdx}`}
                     type="number"
                     min={0}
-                    value={lorenzPositions[idx]}
+                    aria-label={`Chi Wheel ${posIdx + 1} position`}
+                    value={lorenzPositions[posIdx]}
                     onChange={(e) => {
                       const updated = [...lorenzPositions];
-                      updated[idx] = parseInt(e.target.value) || 0;
+                      updated[posIdx] = parseInt(e.target.value) || 0;
                       setLorenzPositions(updated);
                     }}
-                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                   />
                 ))}
               </div>
@@ -445,18 +446,19 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
                 Motor Wheels (μ₁-μ₂ Positions):
               </label>
               <div className="grid grid-cols-2 gap-1">
-                {[5, 6].map((idx) => (
+                {[5, 6].map((posIdx) => (
                   <input
-                    key={`motor-${idx}`}
+                    key={`motor-${posIdx}`}
                     type="number"
                     min={0}
-                    value={lorenzPositions[idx]}
+                    aria-label={`Motor Wheel ${posIdx - 4} position`}
+                    value={lorenzPositions[posIdx]}
                     onChange={(e) => {
                       const updated = [...lorenzPositions];
-                      updated[idx] = parseInt(e.target.value) || 0;
+                      updated[posIdx] = parseInt(e.target.value) || 0;
                       setLorenzPositions(updated);
                     }}
-                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                   />
                 ))}
               </div>
@@ -468,18 +470,19 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
                 Psi Wheels (ψ₁-ψ₅ Positions):
               </label>
               <div className="grid grid-cols-5 gap-1">
-                {[7, 8, 9, 10, 11].map((idx) => (
+                {[7, 8, 9, 10, 11].map((posIdx) => (
                   <input
-                    key={`psi-${idx}`}
+                    key={`psi-${posIdx}`}
                     type="number"
                     min={0}
-                    value={lorenzPositions[idx]}
+                    aria-label={`Psi Wheel ${posIdx - 6} position`}
+                    value={lorenzPositions[posIdx]}
                     onChange={(e) => {
                       const updated = [...lorenzPositions];
-                      updated[idx] = parseInt(e.target.value) || 0;
+                      updated[posIdx] = parseInt(e.target.value) || 0;
                       setLorenzPositions(updated);
                     }}
-                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500"
+                    className="w-full px-1 py-1 rounded bg-stone-950 border border-stone-800 text-center text-amber-300 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                   />
                 ))}
               </div>
@@ -487,7 +490,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
             <button
               onClick={() => setLorenzPositions(Array(12).fill(0))}
-              className="w-full py-1 rounded bg-stone-900 hover:bg-stone-800 text-stone-400 text-[10px] font-mono flex items-center justify-center gap-1 border border-stone-800"
+              aria-label="Reset all Lorenz wheel positions to zero"
+              className="w-full py-1 rounded bg-stone-900 hover:bg-stone-800 text-stone-400 text-[10px] font-mono flex items-center justify-center gap-1 border border-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
             >
               <RefreshCw className="w-3 h-3" /> Reset Positions to 0
             </button>
@@ -496,14 +500,54 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
         {exhibit.id === 'rsa' && (
           <div className="space-y-2">
-            <div className="grid grid-cols-3 gap-1 text-xs font-mono">
-              <div>p: <input type="number" data-testid="param-p-rsa" value={pVal} onChange={(e)=>setPVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
-              <div>q: <input type="number" data-testid="param-q-rsa" value={qVal} onChange={(e)=>setQVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
-              <div>e: <input type="number" data-testid="param-e-rsa" value={eVal} onChange={(e)=>setEVal(parseInt(e.target.value))} className="w-full bg-stone-950 px-1 border border-stone-800" /></div>
+            <div className="grid grid-cols-3 gap-1.5 text-xs font-mono">
+              <div>
+                <label htmlFor={`param-p-${exhibit.id}`} className="block text-[11px] text-stone-400 mb-0.5">
+                  p:
+                </label>
+                <input
+                  id={`param-p-${exhibit.id}`}
+                  type="number"
+                  aria-label="RSA Prime p"
+                  data-testid="param-p-rsa"
+                  value={pVal}
+                  onChange={(e) => setPVal(parseInt(e.target.value) || 0)}
+                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+                />
+              </div>
+              <div>
+                <label htmlFor={`param-q-${exhibit.id}`} className="block text-[11px] text-stone-400 mb-0.5">
+                  q:
+                </label>
+                <input
+                  id={`param-q-${exhibit.id}`}
+                  type="number"
+                  aria-label="RSA Prime q"
+                  data-testid="param-q-rsa"
+                  value={qVal}
+                  onChange={(e) => setQVal(parseInt(e.target.value) || 0)}
+                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+                />
+              </div>
+              <div>
+                <label htmlFor={`param-e-${exhibit.id}`} className="block text-[11px] text-stone-400 mb-0.5">
+                  e:
+                </label>
+                <input
+                  id={`param-e-${exhibit.id}`}
+                  type="number"
+                  aria-label="RSA Public Exponent e"
+                  data-testid="param-e-rsa"
+                  value={eVal}
+                  onChange={(e) => setEVal(parseInt(e.target.value) || 0)}
+                  className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+                />
+              </div>
             </div>
             <button
               onClick={handleRSAKeygen}
-              className="w-full py-1 text-xs rounded bg-stone-800 hover:bg-stone-700 text-amber-300 font-mono flex items-center justify-center gap-1"
+              aria-label="Generate RSA keypair"
+              className="w-full py-1 text-xs rounded bg-stone-800 hover:bg-stone-700 text-amber-300 font-mono flex items-center justify-center gap-1 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
             >
               <RefreshCw className="w-3 h-3" /> Generate Keys
             </button>
@@ -554,7 +598,20 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           {outputText && (
             <button
               onClick={handleCopy}
-              aria-label={copied ? 'Copied to clipboard' : 'Copy result to clipboard'}
+              title={
+                copied
+                  ? 'Copied to clipboard!'
+                  : mode === 'encrypt'
+                  ? 'Copy ciphertext result to clipboard'
+                  : 'Copy decrypted plaintext to clipboard'
+              }
+              aria-label={
+                copied
+                  ? 'Copied to clipboard'
+                  : mode === 'encrypt'
+                  ? 'Copy ciphertext result to clipboard'
+                  : 'Copy decrypted plaintext to clipboard'
+              }
               className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
             >
               {copied ? (
