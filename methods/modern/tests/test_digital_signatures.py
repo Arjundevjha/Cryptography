@@ -76,3 +76,5 @@ def test_hmac_compare_digest():
     assert hmac_compare_digest(b"hello", b"hell") is False
     assert hmac_compare_digest(b"hell", b"hello") is False
     assert hmac_compare_digest(b"", b"") is True
+    assert hmac_compare_digest(b"hello", None) is False
+    assert hmac_compare_digest(1234, b"hello") is False
