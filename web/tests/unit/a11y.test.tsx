@@ -21,6 +21,32 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
+  it('renders MuseumHUD top navigation with aria-current="page" on active item and focus-visible styles', () => {
+    render(
+      <MuseumHUD
+        currentView="wing-classical"
+        isMacro={false}
+        onSelectRoom={jest.fn()}
+        onReturnToFoyer={jest.fn()}
+      />
+    );
+
+    const lobbyNavBtn = screen.getByRole('button', { name: /^lobby$/i });
+    const classicalWingBtn = screen.getByRole('button', { name: /classical wing/i });
+    const historicalWingBtn = screen.getByRole('button', { name: /historical wing/i });
+
+    expect(lobbyNavBtn).not.toHaveAttribute('aria-current');
+    expect(classicalWingBtn).toHaveAttribute('aria-current', 'page');
+    expect(historicalWingBtn).not.toHaveAttribute('aria-current');
+
+    expect(lobbyNavBtn.className).toContain('focus-visible:ring-2');
+    expect(classicalWingBtn.className).toContain('focus-visible:ring-2');
+
+    // Return to lobby button should also have focus indicator
+    const returnToLobbyBtn = screen.getByRole('button', { name: /lobby entrance/i });
+    expect(returnToLobbyBtn.className).toContain('focus-visible:ring-2');
+  });
+
   it('renders MuseumHUD 2D Map toggle and modal close button with accessible aria-labels', () => {
     render(
       <MuseumHUD
