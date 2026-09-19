@@ -58,14 +58,12 @@ def verify_hmac(data: bytes, key: bytes, expected: str, algorithm: str = 'sha256
     except Exception:
         return False
 
-def hmac_compare_digest(val_a: bytes, val_b: bytes) -> bool:
-    """Compare two digests in constant time to prevent timing attacks."""
-    if len(val_a) != len(val_b):
+def hmac_compare_digest(val_a: bytes | str, val_b: bytes | str) -> bool:
+    """Compare two digests in constant time using secrets.compare_digest to prevent timing attacks."""
+    try:
+        return secrets.compare_digest(val_a, val_b)
+    except TypeError:
         return False
-    result = 0
-    for x, y in zip(val_a, val_b):
-        result |= x ^ y
-    return not result
 
 def main():
     """Run a test of key generation, signing, and verification using HMAC."""

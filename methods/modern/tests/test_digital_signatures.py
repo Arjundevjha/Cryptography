@@ -76,3 +76,10 @@ def test_hmac_compare_digest():
     assert hmac_compare_digest(b"hello", b"hell") is False
     assert hmac_compare_digest(b"hell", b"hello") is False
     assert hmac_compare_digest(b"", b"") is True
+    # Test string input comparisons
+    assert hmac_compare_digest("hello", "hello") is True
+    assert hmac_compare_digest("hello", "world") is False
+    # Test incompatible input types gracefully return False
+    assert hmac_compare_digest(b"hello", "hello") is False
+    assert hmac_compare_digest(b"hello", None) is False
+    assert hmac_compare_digest(12345, b"12345") is False
