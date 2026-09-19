@@ -10,9 +10,16 @@ import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
 
-  it('renders ArtifactMetadataDrawer close button with accessible aria-label', () => {
+  it('renders ArtifactMetadataDrawer with accessible dialog role, aria-label, and focus styles', () => {
     const handleClose = jest.fn();
     render(<ArtifactMetadataDrawer exhibit={sampleExhibit} onClose={handleClose} />);
+
+    const dialog = screen.getByRole('dialog', { name: `Artifact details for ${sampleExhibit.name}` });
+    expect(dialog).toBeInTheDocument();
+
+    const exitBtn = screen.getByRole('button', { name: /exit macro close-up view/i });
+    expect(exitBtn).toBeInTheDocument();
+    expect(exitBtn.className).toContain('focus-visible:ring-2');
 
     const closeButton = screen.getByRole('button', { name: /close artifact details/i });
     expect(closeButton).toBeInTheDocument();
