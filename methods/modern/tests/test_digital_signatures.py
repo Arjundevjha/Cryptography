@@ -1,3 +1,5 @@
+"""Unit tests for digital signatures and HMAC verification."""
+
 import pytest
 from methods.modern.digital_signatures import (
     generate_key,
@@ -7,6 +9,7 @@ from methods.modern.digital_signatures import (
 )
 
 def test_generate_key():
+    """Test generating a random symmetric HMAC key."""
     key1 = generate_key()
     key2 = generate_key()
 
@@ -15,10 +18,12 @@ def test_generate_key():
     assert key1 != key2
 
 def test_generate_key_custom_length():
+    """Test generating a key with a custom byte length."""
     key = generate_key(16)
     assert len(key) == 16
 
 def test_create_hmac():
+    """Test creating an HMAC-SHA256 signature for data."""
     key = b"secret_key"
     data = b"hello world"
 
@@ -30,6 +35,7 @@ def test_create_hmac():
     assert len(mac1) == 64  # Hex string of 32 bytes
 
 def test_create_hmac_unsupported_algorithm():
+    """Test that unsupported HMAC algorithms raise ValueError."""
     key = b"secret_key"
     data = b"hello world"
 
@@ -37,6 +43,7 @@ def test_create_hmac_unsupported_algorithm():
         create_hmac(data, key, algorithm='md5')
 
 def test_verify_hmac_success():
+    """Test successful verification of a valid HMAC signature."""
     key = b"secret_key"
     data = b"hello world"
 
@@ -45,6 +52,7 @@ def test_verify_hmac_success():
     assert verify_hmac(data, key, mac) is True
 
 def test_verify_hmac_failure_wrong_data():
+    """Test HMAC verification failure with altered payload."""
     key = b"secret_key"
     data = b"hello world"
 
@@ -53,6 +61,7 @@ def test_verify_hmac_failure_wrong_data():
     assert verify_hmac(b"hello world!", key, mac) is False
 
 def test_verify_hmac_failure_wrong_key():
+    """Test HMAC verification failure with mismatched key."""
     key1 = b"secret_key1"
     key2 = b"secret_key2"
     data = b"hello world"
@@ -62,6 +71,7 @@ def test_verify_hmac_failure_wrong_key():
     assert verify_hmac(data, key2, mac) is False
 
 def test_verify_hmac_failure_wrong_signature():
+    """Test HMAC verification failure with corrupted signature."""
     key = b"secret_key"
     data = b"hello world"
 
@@ -71,8 +81,16 @@ def test_verify_hmac_failure_wrong_signature():
     assert verify_hmac(data, key, tampered_mac) is False
 
 def test_hmac_compare_digest():
+    """Test constant-time digest comparison with secrets.compare_digest."""
     assert hmac_compare_digest(b"hello", b"hello") is True
     assert hmac_compare_digest(b"hello", b"world") is False
     assert hmac_compare_digest(b"hello", b"hell") is False
     assert hmac_compare_digest(b"hell", b"hello") is False
     assert hmac_compare_digest(b"", b"") is True
+    # Test string input comparisons
+    assert hmac_compare_digest("hello", "hello") is True
+    assert hmac_compare_digest("hello", "world") is False
+    # Test incompatible input types gracefully return False
+    assert hmac_compare_digest(b"hello", "hello") is False
+    assert hmac_compare_digest(b"hello", None) is False
+    assert hmac_compare_digest(12345, b"12345") is False
