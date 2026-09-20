@@ -230,5 +230,9 @@ describe('Accessibility (A11y) Unit Tests', () => {
     });
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('KHOOR');
+
+    // Verify screen-reader live status element updates with polite feedback
+    const liveStatus = screen.getByRole('status');
+    expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
   });
 });
