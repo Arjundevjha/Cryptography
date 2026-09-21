@@ -629,6 +629,13 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           )}
         </div>
         <div
+          role="status"
+          aria-live="polite"
+          className="sr-only"
+        >
+          {copied ? `Copied ${mode === 'encrypt' ? 'ciphertext' : 'decrypted plaintext'} to clipboard` : ''}
+        </div>
+        <div
           data-testid={`output-text-${exhibit.id}`}
           aria-live="polite"
           aria-atomic="true"

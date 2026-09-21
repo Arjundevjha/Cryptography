@@ -27,6 +27,8 @@ IV_SIZE = 16
 def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
     """Helper to strip PEM wrapping, decode base64, and split by colon."""
     pem_str = pem_bytes.decode('utf-8').strip()
+    if header not in pem_str or footer not in pem_str:
+        raise ValueError("Invalid PEM structure: missing required header or footer")
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
     decoded = b64decode(payload).decode('utf-8')
     return [int(val) for val in decoded.split(":")]
@@ -36,6 +38,8 @@ def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     pem_str = enc_private_key_pem.decode('utf-8').strip()
     header = "-----BEGIN ENCRYPTED RSA PRIVATE KEY-----"
     footer = "-----END ENCRYPTED RSA PRIVATE KEY-----"
+    if header not in pem_str or footer not in pem_str:
+        raise ValueError("Invalid encrypted PEM structure: missing required header or footer")
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
 
     raw_payload = b64decode(payload)
@@ -65,7 +69,10 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     e = key_params[1]
 
     if n < 256:
-        raise ValueError("RSA modulus n must be at least 256 (key size >= 8 bits) to encrypt byte values up to 255.")
+        raise ValueError(
+            "RSA modulus n must be at least 256 (key size >= 8 bits) "
+            "to encrypt byte values up to 255."
+        )
 
     msg_bytes = message.encode('utf-8')
     key_size_bytes = (n.bit_length() + 7) // 8
@@ -95,7 +102,10 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     d = key_params[2]
 
     if n < 256:
-        raise ValueError("RSA modulus n must be at least 256 (key size >= 8 bits) to decrypt byte values up to 255.")
+        raise ValueError(
+            "RSA modulus n must be at least 256 (key size >= 8 bits) "
+            "to decrypt byte values up to 255."
+        )
 
     key_size_bytes = (n.bit_length() + 7) // 8
     decrypted_bytes = bytearray()

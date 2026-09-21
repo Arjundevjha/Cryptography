@@ -252,3 +252,26 @@ def test_rsa_decrypt_small_modulus_error():
 
     with pytest.raises(ValueError, match="RSA modulus n must be at least 256"):
         decrypt(b"\x00", small_priv_pem)
+
+def test_parse_pem_missing_header_or_footer():
+    """Test that missing PEM header or footer raises ValueError in _parse_pem."""
+    header = "-----BEGIN RSA PUBLIC KEY-----"
+    footer = "-----END RSA PUBLIC KEY-----"
+    err_msg = "Invalid PEM structure: missing required header or footer"
+    # Missing footer
+    pem_no_footer = b"-----BEGIN RSA PUBLIC KEY-----\nMTIz\n"
+    with pytest.raises(ValueError, match=err_msg):
+        _parse_pem(pem_no_footer, header, footer)
+
+    # Missing header
+    pem_no_header = b"MTIz\n-----END RSA PUBLIC KEY-----\n"
+    with pytest.raises(ValueError, match=err_msg):
+        _parse_pem(pem_no_header, header, footer)
+
+def test_decrypt_private_key_missing_header_or_footer():
+    """Test that missing encrypted PEM header or footer raises ValueError in decrypt_private_key."""
+    passphrase = b"testpass"
+    enc_err = "Invalid encrypted PEM structure: missing required header or footer"
+    pem_no_header = b"SGVsbG8=\n-----END ENCRYPTED RSA PRIVATE KEY-----\n"
+    with pytest.raises(ValueError, match=enc_err):
+        decrypt_private_key(pem_no_header, passphrase)
