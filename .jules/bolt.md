@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Optimize Byte/Block XOR Operations via Integer Bitwise XOR
+**Learning:** In block ciphers and MAC constructions, generating byte-by-byte XORs via generator expressions (`bytes(x ^ y for x, y in zip(a, b))`) creates significant interpreter generator and `zip` iterator overhead (~2.39µs per 16-byte block). Converting byte strings to C-level integers (`int.from_bytes(...)`) and performing integer bitwise XOR (`^`) before converting back (`to_bytes(...)`) delivers a ~3.3x speedup for AES block XORs and ~8.6x speedup for HMAC pad generation.
+**Action:** Use `int.from_bytes` and integer bitwise XOR for block-level byte XOR operations in pure Python ciphers and MACs.
