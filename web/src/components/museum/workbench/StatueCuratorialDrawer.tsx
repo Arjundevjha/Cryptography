@@ -172,10 +172,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
+      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800" role="tablist">
         <button
+          role="tab"
+          aria-selected={activeTab === 'curation'}
           onClick={() => setActiveTab('curation')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'curation'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -184,8 +186,10 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
           <BookOpen className="w-4 h-4" /> HISTORICAL CURATION
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'lab'}
           onClick={() => setActiveTab('lab')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'lab'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -409,18 +413,22 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               {/* Toggle Merkle Puzzles note */}
-              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono">
+              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono" role="tablist">
                 <button
+                  role="tab"
+                  aria-selected={!showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(false)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     !showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >
                   Diffie-Hellman Math
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(true)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >

@@ -78,7 +78,7 @@ export function MuseumCanvas() {
                 <button
                   key={statue.id}
                   onClick={() => handleSelectRoom(statue.id)}
-                  className="p-2.5 rounded-xl bg-stone-950/85 backdrop-blur-md hover:bg-stone-900 border border-amber-500/40 hover:border-amber-400 shadow-lg hover:shadow-amber-500/20 transition-all text-left group"
+                  className="p-2.5 rounded-xl bg-stone-950/85 backdrop-blur-md hover:bg-stone-900 border border-amber-500/40 hover:border-amber-400 shadow-lg hover:shadow-amber-500/20 transition-all text-left group focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 >
                   <div className="flex items-center justify-between text-[9px] font-mono text-amber-400 font-bold uppercase tracking-wider">
                     <span>PIONEER MONUMENT</span>
@@ -115,7 +115,7 @@ export function MuseumCanvas() {
                 <button
                   key={ex.id}
                   onClick={() => handleSelectRoom(ex.id)}
-                  className="p-2.5 rounded-xl bg-white/90 backdrop-blur-md hover:bg-white border border-stone-200 hover:border-amber-400 transition-all text-left group shadow-md"
+                  className="p-2.5 rounded-xl bg-white/90 backdrop-blur-md hover:bg-white border border-stone-200 hover:border-amber-400 transition-all text-left group shadow-md focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 >
                   <div className="text-xs font-bold text-stone-900 group-hover:text-amber-700 transition-colors">{ex.name}</div>
                   <div className="text-[9px] text-stone-400 font-mono mt-1 flex items-center justify-between">
@@ -167,7 +167,7 @@ export function MuseumCanvas() {
 
             <button
               onClick={() => handleCaseClick(activeExhibit.id)}
-              className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-[11px] uppercase tracking-wider font-mono flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all"
+              className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-[11px] uppercase tracking-wider font-mono flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             >
               <ZoomIn className="w-3.5 h-3.5" /> Inspect Display Case
             </button>
@@ -204,7 +204,7 @@ export function MuseumCanvas() {
             </div>
             <button
               onClick={() => setIsMacro(false)}
-              className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow transition-all"
+              className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             >
               <ZoomOut className="w-3.5 h-3.5" /> Exit Inspection
             </button>
