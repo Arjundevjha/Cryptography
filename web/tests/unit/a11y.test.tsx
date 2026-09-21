@@ -235,4 +235,38 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
   });
+
+  it('renders WorkbenchPanel execution button with dynamic loading feedback text', async () => {
+    let resolvePromise: (val: any) => void;
+    const pendingPromise = new Promise((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    global.fetch = jest.fn().mockImplementation(() => pendingPromise as any);
+
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+    expect(executeBtn).toHaveTextContent('Execute encrypt');
+
+    // Click button to start loading state
+    React.act(() => {
+      fireEvent.click(executeBtn);
+    });
+
+    // Check loading text feedback
+    expect(executeBtn).toHaveTextContent('Encrypting...');
+    expect(executeBtn).toBeDisabled();
+
+    // Resolve pending request
+    await React.act(async () => {
+      resolvePromise!({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      });
+    });
+
+    expect(executeBtn).not.toBeDisabled();
+    expect(executeBtn).toHaveTextContent('Execute encrypt');
+  });
 });
