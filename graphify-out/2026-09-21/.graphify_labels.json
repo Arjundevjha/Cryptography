@@ -73,6 +73,7 @@
   "71": "inv_mix_columns",
   "72": "PolybiusDecryptInput",
   "73": "validate_enigma_plugboard",
+  "74": ".__init__",
   "75": "stepping.py",
   "76": "parse_aes_key",
   "77": "test_fallback_imports",
@@ -89,5 +90,6 @@
   "89": "blake2b",
   "90": "blake2s",
   "91": "sha3_256",
+  "93": "test_fallback_imports",
   "95": "validate_polybius_ciphertext"
 }

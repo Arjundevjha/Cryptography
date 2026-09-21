@@ -220,8 +220,8 @@
     "semantic_hash": "62349b9ae4dde14e80e8f5e3d9e186af"
   },
   "methods/modern/aes.py": {
-    "mtime": 1789950610.7138286,
-    "ast_hash": "d607b7c7111cb5da760727149aa5f8b5",
+    "mtime": 1787542454.383809,
+    "ast_hash": "63e1bf869366adb9a54074a2ac7e73da",
     "semantic_hash": ""
   },
   "methods/modern/digital_signatures.py": {
@@ -235,8 +235,8 @@
     "semantic_hash": ""
   },
   "methods/modern/helpers.py": {
-    "mtime": 1789950619.3687704,
-    "ast_hash": "94d63abd44b6fe080495d767d41796c2",
+    "mtime": 1789603212.2107801,
+    "ast_hash": "066a6f3a51cb80a97be8bfb33e94f8c3",
     "semantic_hash": ""
   },
   "methods/modern/keypair.py": {
@@ -245,13 +245,13 @@
     "semantic_hash": ""
   },
   "methods/modern/rsa.py": {
-    "mtime": 1789950651.639847,
-    "ast_hash": "b640bb8741f5dd617dd57bd6c1a67184",
+    "mtime": 1788992816.4232137,
+    "ast_hash": "14e7340ac779144cee69cb759b8e45c8",
     "semantic_hash": ""
   },
   "methods/modern/symmetric.py": {
-    "mtime": 1789950625.9851022,
-    "ast_hash": "023e12024b653e8002e902fcc9e55c25",
+    "mtime": 1789344571.990216,
+    "ast_hash": "6504431de132d341612fe4999e69bb3d",
     "semantic_hash": ""
   },
   "methods/modern/tests/__init__.py": {
@@ -285,8 +285,8 @@
     "semantic_hash": ""
   },
   "methods/modern/tests/test_rsa.py": {
-    "mtime": 1789950658.5384827,
-    "ast_hash": "e18c9484e9cf73520d3ef6a1118063b6",
+    "mtime": 1788736340.67393,
+    "ast_hash": "11d243f06012a5954ed1117707b33e47",
     "semantic_hash": ""
   },
   "methods/tests/__init__.py": {
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/WorkbenchPanel.tsx": {
-    "mtime": 1789950595.3475509,
-    "ast_hash": "f571cebb060aa046a0afe2323acc6ca1",
+    "mtime": 1789603270.9421108,
+    "ast_hash": "f19bb9ba16761fc90905ddf2035b96f4",
     "semantic_hash": ""
   },
   "web/src/components/ui/ExhibitInput.tsx": {
@@ -510,8 +510,8 @@
     "semantic_hash": "1c06ba7292961575b45102f00433ce1c"
   },
   "handoff.md": {
-    "mtime": 1789909126.5437374,
-    "ast_hash": "0b75c4edde2cb8dea866d8fb6b3795b0",
+    "mtime": 1789603386.7453446,
+    "ast_hash": "bcbec67ddc69a8e94cec818d6e00d750",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "web/tests/unit/a11y.test.tsx": {
-    "mtime": 1789950598.797751,
-    "ast_hash": "c3cb4b76deb7eb91374e66ec7969bf91",
+    "mtime": 1789908986.1540718,
+    "ast_hash": "f0ce0e860d886a1288babd31d24498ae",
     "semantic_hash": ""
   },
   ".Jules/bolt.md": {
