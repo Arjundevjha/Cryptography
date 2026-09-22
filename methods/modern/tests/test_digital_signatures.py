@@ -22,6 +22,31 @@ def test_generate_key_custom_length():
     key = generate_key(16)
     assert len(key) == 16
 
+def test_generate_key_invalid_length():
+    """Test that generating keys with weak or oversized lengths raises ValueError."""
+    with pytest.raises(ValueError, match="Key length must be between 16 and 4096 bytes"):
+        generate_key(15)
+
+    with pytest.raises(ValueError, match="Key length must be between 16 and 4096 bytes"):
+        generate_key(0)
+
+    with pytest.raises(ValueError, match="Key length must be between 16 and 4096 bytes"):
+        generate_key(5000)
+
+def test_create_hmac_invalid_inputs():
+    """Test input validation for create_hmac on types and empty key."""
+    # Invalid data types
+    with pytest.raises(TypeError, match="Data must be bytes or bytearray"):
+        create_hmac("invalid string data", b"secret_key")
+
+    # Invalid key types
+    with pytest.raises(TypeError, match="Key must be bytes or bytearray"):
+        create_hmac(b"hello world", "invalid string key")
+
+    # Empty key
+    with pytest.raises(ValueError, match="Key cannot be empty"):
+        create_hmac(b"hello world", b"")
+
 def test_create_hmac():
     """Test creating an HMAC-SHA256 signature for data."""
     key = b"secret_key"
