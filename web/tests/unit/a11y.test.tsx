@@ -54,7 +54,7 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(returnToLobbyBtn.className).toContain('focus-visible:ring-2');
   });
 
-  it('renders MuseumHUD 2D Map toggle and modal close button with accessible aria-labels', () => {
+  it('renders MuseumHUD 2D Map toggle, modal dialog role, aria-modal, and supports Escape key dismissal', () => {
     render(
       <MuseumHUD
         currentView="atrium"
@@ -72,9 +72,19 @@ describe('Accessibility (A11y) Unit Tests', () => {
     fireEvent.click(toggleMapButton);
     expect(toggleMapButton).toHaveAttribute('aria-expanded', 'true');
 
+    // Verify map dialog accessibility attributes
+    const dialog = screen.getByRole('dialog', { name: /interactive museum floorplan map/i });
+    expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+
+    // Verify pressing Escape key closes the map modal
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('dialog', { name: /interactive museum floorplan map/i })).not.toBeInTheDocument();
   });
 
   it('allows keyboard navigation and activation of 2D floorplan interactive room markers', () => {
