@@ -52,7 +52,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(screen.getByText(new RegExp(alkindi.description, 'i'))).toBeInTheDocument();
 
     // Switch to Interactive Pioneer Lab Tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     // Verify Al-Kindi Frequency Analysis components
@@ -67,7 +67,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={shannon} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/Plaintext Entropy H\(M\)/i)).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(screen.getByText(/One-Time Pad Stream/i)).toBeInTheDocument();
 
     // Test re-rolling keystream
-    const rerollBtn = screen.getByRole('button', { name: /re-roll keystream/i });
+    const rerollBtn = screen.getByRole('button', { name: /re-roll one-time pad keystream seed/i });
     expect(rerollBtn).toBeInTheDocument();
     fireEvent.click(rerollBtn);
   });
@@ -87,7 +87,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={diffieHellman} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/PUBLIC PRIME \(p\):/i)).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(screen.getByText(/AGREED SHARED SECRET KEY \(S\)/i)).toBeInTheDocument();
 
     // Switch to Merkle's Puzzles explainer
-    const merkleToggle = screen.getByRole('button', { name: /ralph merkle's puzzles/i });
+    const merkleToggle = screen.getByRole('tab', { name: /ralph merkle's puzzles/i });
     fireEvent.click(merkleToggle);
     expect(screen.getByText(/Ralph Merkle's Independent Puzzles \(1974\)/i)).toBeInTheDocument();
     expect(screen.getByText(/quadratic computational asymmetry/i)).toBeInTheDocument();

@@ -172,10 +172,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
+      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800" role="tablist" aria-label="Drawer sections">
         <button
+          role="tab"
+          aria-selected={activeTab === 'curation'}
           onClick={() => setActiveTab('curation')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'curation'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -184,8 +186,10 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
           <BookOpen className="w-4 h-4" /> HISTORICAL CURATION
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'lab'}
           onClick={() => setActiveTab('lab')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'lab'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -306,7 +310,8 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                   </label>
                   <button
                     onClick={() => setKindiShiftGuess(3)}
-                    className="text-[10px] font-mono text-amber-400 hover:text-amber-300 underline"
+                    aria-label="Set shift to 3 (Caesar default)"
+                    className="text-[10px] font-mono text-amber-400 hover:text-amber-300 underline focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1"
                   >
                     Set Shift = 3 (Caesar)
                   </button>
@@ -315,9 +320,10 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                   type="range"
                   min="0"
                   max="25"
+                  aria-label="Caesar shift key"
                   value={kindiShiftGuess}
                   onChange={(e) => setKindiShiftGuess(Number(e.target.value))}
-                  className="w-full accent-amber-500"
+                  className="w-full accent-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 />
 
                 <div className="p-2.5 rounded-lg bg-stone-950 border border-stone-800">
@@ -377,7 +383,8 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                   </span>
                   <button
                     onClick={() => setOtpSeed((prev) => prev + 1)}
-                    className="flex items-center gap-1 text-[10px] text-sky-400 hover:text-sky-300"
+                    aria-label="Re-roll One-Time Pad keystream seed"
+                    className="flex items-center gap-1 text-[10px] text-sky-400 hover:text-sky-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1"
                   >
                     <RotateCcw className="w-3 h-3" /> Re-roll Keystream
                   </button>
@@ -409,18 +416,22 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               {/* Toggle Merkle Puzzles note */}
-              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono">
+              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono" role="tablist" aria-label="Diffie-Hellman view modes">
                 <button
+                  role="tab"
+                  aria-selected={!showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(false)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     !showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >
                   Diffie-Hellman Math
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(true)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >
@@ -452,9 +463,10 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                         type="range"
                         min="2"
                         max="20"
+                        aria-label="Alice private key exponent"
                         value={alicePrivate}
                         onChange={(e) => setAlicePrivate(Number(e.target.value))}
-                        className="w-full accent-purple-500"
+                        className="w-full accent-purple-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                       />
                       <div className="text-[10px] font-mono text-stone-400 mt-1">
                         Public A = g^a mod p = <span className="text-stone-100 font-bold">{dhCalculations.alicePublic}</span>
@@ -469,9 +481,10 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                         type="range"
                         min="2"
                         max="20"
+                        aria-label="Bob private key exponent"
                         value={bobPrivate}
                         onChange={(e) => setBobPrivate(Number(e.target.value))}
-                        className="w-full accent-cyan-500"
+                        className="w-full accent-cyan-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                       />
                       <div className="text-[10px] font-mono text-stone-400 mt-1">
                         Public B = g^b mod p = <span className="text-stone-100 font-bold">{dhCalculations.bobPublic}</span>

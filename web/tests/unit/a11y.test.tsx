@@ -1,11 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
+import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/StatueCuratorialDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
-import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
+import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
@@ -234,5 +235,36 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify screen-reader live status element updates with polite feedback
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
+  });
+
+  it('renders StatueCuratorialDrawer with accessible dialog role, ARIA tabs, aria-selected, and focus-visible indicators', () => {
+    const handleClose = jest.fn();
+    const sampleStatue = MUSEUM_STATUES[0]; // Al-Kindi
+    render(<StatueCuratorialDrawer statue={sampleStatue} onClose={handleClose} />);
+
+    const dialog = screen.getByRole('dialog', { name: `Statue details for ${sampleStatue.name}` });
+    expect(dialog).toBeInTheDocument();
+
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs.length).toBeGreaterThanOrEqual(2);
+
+    const curationTab = tabs[0];
+    const labTab = tabs[1];
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'true');
+    expect(labTab).toHaveAttribute('aria-selected', 'false');
+
+    expect(curationTab.className).toContain('focus-visible:ring-2');
+    expect(labTab.className).toContain('focus-visible:ring-2');
+
+    // Switch to Interactive Pioneer Lab tab
+    fireEvent.click(labTab);
+    expect(curationTab).toHaveAttribute('aria-selected', 'false');
+    expect(labTab).toHaveAttribute('aria-selected', 'true');
+
+    // Verify slider input aria-label is accessible
+    const shiftSlider = screen.getByLabelText(/caesar shift key/i);
+    expect(shiftSlider).toBeInTheDocument();
+    expect(shiftSlider.className).toContain('focus-visible:ring-2');
   });
 });
