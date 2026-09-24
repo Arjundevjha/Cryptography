@@ -172,10 +172,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
+      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800" role="tablist" aria-label="Statue details tabs">
         <button
+          role="tab"
+          aria-selected={activeTab === 'curation'}
           onClick={() => setActiveTab('curation')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'curation'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -184,8 +186,10 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
           <BookOpen className="w-4 h-4" /> HISTORICAL CURATION
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'lab'}
           onClick={() => setActiveTab('lab')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'lab'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -258,14 +262,20 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               <div>
-                <label className="text-[11px] font-mono text-stone-400 uppercase font-bold block mb-1">
-                  Ciphertext Sample
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label htmlFor="kindi-ciphertext-input" className="text-[11px] font-mono text-stone-400 uppercase font-bold block">
+                    Ciphertext Sample
+                  </label>
+                  <span className="text-[10px] font-mono text-stone-500">
+                    {kindiCiphertext.length} chars
+                  </span>
+                </div>
                 <textarea
+                  id="kindi-ciphertext-input"
                   value={kindiCiphertext}
                   onChange={(e) => setKindiCiphertext(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus:ring-1 focus:ring-amber-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                   placeholder="Enter ciphertext to analyze..."
                 />
               </div>
@@ -336,14 +346,20 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               <div>
-                <label className="text-[11px] font-mono text-stone-400 uppercase font-bold block mb-1">
-                  Plaintext Input Message
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label htmlFor="shannon-message-input" className="text-[11px] font-mono text-stone-400 uppercase font-bold block">
+                    Plaintext Input Message
+                  </label>
+                  <span className="text-[10px] font-mono text-stone-500">
+                    {shannonMessage.length} chars
+                  </span>
+                </div>
                 <input
+                  id="shannon-message-input"
                   type="text"
                   value={shannonMessage}
                   onChange={(e) => setShannonMessage(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none"
                   placeholder="Enter message..."
                 />
               </div>
@@ -377,7 +393,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                   </span>
                   <button
                     onClick={() => setOtpSeed((prev) => prev + 1)}
-                    className="flex items-center gap-1 text-[10px] text-sky-400 hover:text-sky-300"
+                    className="flex items-center gap-1 text-[10px] text-sky-400 hover:text-sky-300 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none rounded px-1.5 py-0.5"
                   >
                     <RotateCcw className="w-3 h-3" /> Re-roll Keystream
                   </button>
@@ -409,18 +425,22 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               {/* Toggle Merkle Puzzles note */}
-              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono">
+              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono" role="tablist" aria-label="Key exchange options">
                 <button
+                  role="tab"
+                  aria-selected={!showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(false)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none ${
                     !showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >
                   Diffie-Hellman Math
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(true)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none ${
                     showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >
