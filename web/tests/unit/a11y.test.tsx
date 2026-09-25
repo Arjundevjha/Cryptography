@@ -5,7 +5,8 @@ import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
-import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
+import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/StatueCuratorialDrawer';
+import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
@@ -234,5 +235,40 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify screen-reader live status element updates with polite feedback
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
+  });
+
+  it('renders StatueCuratorialDrawer with accessible tablist, tabs, aria-selected, tabpanel, and focus styles', () => {
+    const handleClose = jest.fn();
+    const sampleStatue = MUSEUM_STATUES[0];
+    render(<StatueCuratorialDrawer statue={sampleStatue} onClose={handleClose} />);
+
+    const dialog = screen.getByRole('dialog', { name: `Statue details for ${sampleStatue.name}` });
+    expect(dialog).toBeInTheDocument();
+
+    const tabList = screen.getByRole('tablist', { name: /statue drawer tabs/i });
+    expect(tabList).toBeInTheDocument();
+
+    const curationTab = screen.getByRole('tab', { name: /historical curation/i });
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'true');
+    expect(labTab).toHaveAttribute('aria-selected', 'false');
+
+    expect(curationTab.className).toContain('focus-visible:ring-2');
+    expect(labTab.className).toContain('focus-visible:ring-2');
+
+    const curationPanel = screen.getByRole('tabpanel', { name: /historical curation/i });
+    expect(curationPanel).toBeInTheDocument();
+    expect(curationPanel).toHaveAttribute('id', 'tabpanel-curation');
+
+    // Switch to Interactive Pioneer Lab
+    fireEvent.click(labTab);
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'false');
+    expect(labTab).toHaveAttribute('aria-selected', 'true');
+
+    const labPanel = screen.getByRole('tabpanel', { name: /interactive pioneer lab/i });
+    expect(labPanel).toBeInTheDocument();
+    expect(labPanel).toHaveAttribute('id', 'tabpanel-lab');
   });
 });
