@@ -878,6 +878,17 @@ def test_aes_decrypt_invalid_hex_ciphertext():
     assert response.status_code == 400
     assert "hex" in response.json()["detail"].lower()
 
+def test_aes_decrypt_invalid_nonce_length_endpoint():
+    payload = {
+        "ciphertext": "00112233",
+        "key": "1234567890123456",
+        "nonce": "aabbcc",  # 3 bytes hex (needs 12 bytes = 24 hex chars)
+        "key_format": "text"
+    }
+    response = client.post("/api/aes/decrypt", json=payload)
+    assert response.status_code == 400
+    assert "nonce must be exactly 12 bytes" in response.json()["detail"].lower()
+
 def test_rsa_keygen_success():
     payload = {
         "p": 61,

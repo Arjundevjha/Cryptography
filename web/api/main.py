@@ -788,6 +788,8 @@ def aes_decrypt_endpoint(data: AesDecryptInput):
         from methods.modern import aes
         plaintext = aes.decrypt(ciphertext_bytes, key_bytes, nonce_bytes)
         return {"plaintext": plaintext}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         logger.error("AES decryption error: %s", e)
         raise HTTPException(status_code=400, detail="Decryption failed")

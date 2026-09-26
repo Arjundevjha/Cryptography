@@ -72,3 +72,11 @@ def test_aes_long_message():
 
     decrypted = decrypt(ciphertext, key, nonce)
     assert decrypted == message
+
+def test_aes_decrypt_invalid_nonce_length():
+    """Test that decrypt raises ValueError when nonce length is not 12 bytes."""
+    import pytest
+    key = os.urandom(32)
+    invalid_nonce = b"short"
+    with pytest.raises(ValueError, match="Nonce must be exactly 12 bytes"):
+        decrypt(KAT_CIPHERTEXT, key, invalid_nonce)

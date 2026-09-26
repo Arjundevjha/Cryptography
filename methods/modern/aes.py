@@ -58,6 +58,8 @@ def decrypt(ciphertext: bytes, key: bytes, nonce: bytes) -> str:
     Returns:
         Decrypted plaintext message string
     """
+    if len(nonce) != NONCE_SIZE:
+        raise ValueError(f"Nonce must be exactly {NONCE_SIZE} bytes (got {len(nonce)} bytes)")
     round_keys = key_expansion(key)
     decrypted_blocks = []
     counter = 0
