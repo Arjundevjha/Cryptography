@@ -48,12 +48,23 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
 
     // Initial Historical Curation Tab contains the citation
+    const curationTab = screen.getByRole('tab', { name: /historical curation/i });
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'true');
+    expect(labTab).toHaveAttribute('aria-selected', 'false');
+    expect(curationTab.className).toContain('focus-visible:ring-2');
+
+    expect(screen.getByRole('tabpanel', { name: /historical curation/i })).toBeInTheDocument();
     expect(screen.getByText(/Curatorial Landmark Citation/i)).toBeInTheDocument();
     expect(screen.getByText(new RegExp(alkindi.description, 'i'))).toBeInTheDocument();
 
     // Switch to Interactive Pioneer Lab Tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
-    fireEvent.click(labTabBtn);
+    fireEvent.click(labTab);
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'false');
+    expect(labTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tabpanel', { name: /interactive pioneer lab/i })).toBeInTheDocument();
 
     // Verify Al-Kindi Frequency Analysis components
     expect(screen.getByText(/Letter Frequency Histogram/i)).toBeInTheDocument();
@@ -67,7 +78,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={shannon} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/Plaintext Entropy H\(M\)/i)).toBeInTheDocument();
@@ -87,16 +98,24 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={diffieHellman} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
+
+    const dhMathTab = screen.getByRole('tab', { name: /diffie-hellman math/i });
+    const merkleTab = screen.getByRole('tab', { name: /ralph merkle's puzzles/i });
+
+    expect(dhMathTab).toHaveAttribute('aria-selected', 'true');
+    expect(merkleTab).toHaveAttribute('aria-selected', 'false');
 
     expect(screen.getByText(/PUBLIC PRIME \(p\):/i)).toBeInTheDocument();
     expect(screen.getByText(/PUBLIC GENERATOR \(g\):/i)).toBeInTheDocument();
     expect(screen.getByText(/AGREED SHARED SECRET KEY \(S\)/i)).toBeInTheDocument();
 
     // Switch to Merkle's Puzzles explainer
-    const merkleToggle = screen.getByRole('button', { name: /ralph merkle's puzzles/i });
-    fireEvent.click(merkleToggle);
+    fireEvent.click(merkleTab);
+    expect(dhMathTab).toHaveAttribute('aria-selected', 'false');
+    expect(merkleTab).toHaveAttribute('aria-selected', 'true');
+
     expect(screen.getByText(/Ralph Merkle's Independent Puzzles \(1974\)/i)).toBeInTheDocument();
     expect(screen.getByText(/quadratic computational asymmetry/i)).toBeInTheDocument();
   });

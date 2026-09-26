@@ -172,10 +172,14 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
+      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800" role="tablist" aria-label="Statue drawer views">
         <button
+          role="tab"
+          id="tab-curation"
+          aria-controls="panel-curation"
+          aria-selected={activeTab === 'curation'}
           onClick={() => setActiveTab('curation')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'curation'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -184,8 +188,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
           <BookOpen className="w-4 h-4" /> HISTORICAL CURATION
         </button>
         <button
+          role="tab"
+          id="tab-lab"
+          aria-controls="panel-lab"
+          aria-selected={activeTab === 'lab'}
           onClick={() => setActiveTab('lab')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'lab'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -197,7 +205,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
 
       {/* TAB 1: CURATORIAL OVERVIEW & USER CITATION */}
       {activeTab === 'curation' && (
-        <div className="space-y-6 animate-in fade-in duration-200">
+        <div id="panel-curation" role="tabpanel" aria-labelledby="tab-curation" className="space-y-6 animate-in fade-in duration-200">
           {/* Highlighted Historical Citation (Prompt Requirement) */}
           <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/15 to-stone-900 border border-amber-500/40 shadow-inner space-y-2">
             <div className="flex items-center gap-2 text-amber-400 text-xs font-mono font-bold uppercase tracking-wider">
@@ -249,7 +257,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
 
       {/* TAB 2: INTERACTIVE PIONEER LAB */}
       {activeTab === 'lab' && (
-        <div className="space-y-6 animate-in fade-in duration-200">
+        <div id="panel-lab" role="tabpanel" aria-labelledby="tab-lab" className="space-y-6 animate-in fade-in duration-200">
           {/* 1. AL-KINDI: FREQUENCY ANALYSIS SIMULATOR */}
           {statue.interactiveDemoType === 'frequency-analysis' && (
             <div className="space-y-4">
@@ -409,19 +417,27 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               {/* Toggle Merkle Puzzles note */}
-              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono">
+              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono" role="tablist" aria-label="Key exchange view options">
                 <button
+                  role="tab"
+                  id="tab-dh-math"
+                  aria-controls="panel-dh-math"
+                  aria-selected={!showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(false)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
-                    !showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                    !showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400 hover:text-stone-200'
                   }`}
                 >
                   Diffie-Hellman Math
                 </button>
                 <button
+                  role="tab"
+                  id="tab-merkle-puzzles"
+                  aria-controls="panel-merkle-puzzles"
+                  aria-selected={showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(true)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
-                    showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                    showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400 hover:text-stone-200'
                   }`}
                 >
                   Ralph Merkle&apos;s Puzzles
@@ -429,7 +445,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               {!showMerklePuzzleInfo ? (
-                <>
+                <div id="panel-dh-math" role="tabpanel" aria-labelledby="tab-dh-math" className="space-y-4">
                   {/* Public Parameters */}
                   <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                     <div className="p-2.5 rounded-xl bg-stone-900 border border-stone-800">
@@ -491,9 +507,9 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                       Alice computed B^a mod p = {dhCalculations.aliceShared}. Bob computed A^b mod p = {dhCalculations.bobShared}. Both identical!
                     </p>
                   </div>
-                </>
+                </div>
               ) : (
-                <div className="p-4 rounded-xl bg-stone-900 border border-purple-500/30 space-y-3 text-xs font-sans text-stone-300 leading-relaxed">
+                <div id="panel-merkle-puzzles" role="tabpanel" aria-labelledby="tab-merkle-puzzles" className="p-4 rounded-xl bg-stone-900 border border-purple-500/30 space-y-3 text-xs font-sans text-stone-300 leading-relaxed">
                   <h4 className="font-mono text-purple-400 font-bold flex items-center gap-1.5">
                     <Key className="w-4 h-4 text-purple-400" /> Ralph Merkle&apos;s Independent Puzzles (1974)
                   </h4>
