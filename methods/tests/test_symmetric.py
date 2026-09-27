@@ -47,6 +47,18 @@ def test_encrypt_decrypt():
     plaintext = decrypt(ciphertext, key, iv)
     assert plaintext == message
 
+def test_encrypt_invalid_iv_length():
+    key = generate_key()
+    invalid_iv = b"short_iv"
+    with pytest.raises(ValueError, match="IV must be exactly 16 bytes"):
+        encrypt("Test message", key, invalid_iv)
+
+def test_decrypt_invalid_iv_length():
+    key = generate_key()
+    invalid_iv = b"short_iv"
+    with pytest.raises(ValueError, match="IV must be exactly 16 bytes"):
+        decrypt(b"ciphertext_bytes", key, invalid_iv)
+
 def test_encrypt_empty_message():
     message = ""
     key = generate_key()

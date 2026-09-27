@@ -31,7 +31,10 @@ def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
         raise ValueError("Invalid PEM structure: missing required header or footer")
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
     decoded = b64decode(payload).decode('utf-8')
-    return [int(val) for val in decoded.split(":")]
+    parts = [val for val in decoded.split(":") if val]
+    if len(parts) < 2:
+        raise ValueError("Invalid PEM payload: insufficient key parameters")
+    return [int(val) for val in parts]
 
 def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     """Decrypt an encrypted private key PEM using the passphrase."""
@@ -43,6 +46,8 @@ def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
 
     raw_payload = b64decode(payload)
+    if len(raw_payload) < IV_SIZE:
+        raise ValueError("Payload too short to contain IV and ciphertext")
     iv = raw_payload[:IV_SIZE]
     ciphertext = raw_payload[IV_SIZE:]
 

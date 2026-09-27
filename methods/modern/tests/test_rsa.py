@@ -275,3 +275,17 @@ def test_decrypt_private_key_missing_header_or_footer():
     pem_no_header = b"SGVsbG8=\n-----END ENCRYPTED RSA PRIVATE KEY-----\n"
     with pytest.raises(ValueError, match=enc_err):
         decrypt_private_key(pem_no_header, passphrase)
+
+def test_parse_pem_insufficient_parameters():
+    from methods.modern.helpers import b64encode
+    payload = b64encode(b"100")
+    pem_bytes = f"-----BEGIN RSA PUBLIC KEY-----\n{payload}\n-----END RSA PUBLIC KEY-----\n".encode('utf-8')
+    with pytest.raises(ValueError, match="Invalid PEM payload: insufficient key parameters"):
+        _parse_pem(pem_bytes, "-----BEGIN RSA PUBLIC KEY-----", "-----END RSA PUBLIC KEY-----")
+
+def test_decrypt_private_key_payload_too_short():
+    from methods.modern.helpers import b64encode
+    short_payload = b64encode(b"short")
+    pem_bytes = f"-----BEGIN ENCRYPTED RSA PRIVATE KEY-----\n{short_payload}\n-----END ENCRYPTED RSA PRIVATE KEY-----\n".encode('utf-8')
+    with pytest.raises(ValueError, match="Payload too short to contain IV and ciphertext"):
+        decrypt_private_key(pem_bytes, b"passphrase")

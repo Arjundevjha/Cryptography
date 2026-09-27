@@ -390,6 +390,8 @@ def generate_iv() -> bytes:
 
 def encrypt(message: str, key: bytes, iv: bytes) -> bytes:
     """Encrypt a message string using AES-256-CBC with PKCS7 padding."""
+    if len(iv) != BLOCK_SIZE:
+        raise ValueError(f"IV must be exactly {BLOCK_SIZE} bytes")
     round_keys = key_expansion(key)
     padded_data = pkcs7_pad(message.encode('utf-8'))
     ciphertext_blocks = []
@@ -408,6 +410,8 @@ def encrypt(message: str, key: bytes, iv: bytes) -> bytes:
 
 def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> str:
     """Decrypt ciphertext bytes using AES-256-CBC and remove PKCS7 padding."""
+    if len(iv) != BLOCK_SIZE:
+        raise ValueError(f"IV must be exactly {BLOCK_SIZE} bytes")
     round_keys = key_expansion(key)
     decrypted_blocks = []
     prev_block = iv
