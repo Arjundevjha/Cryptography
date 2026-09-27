@@ -689,6 +689,10 @@ def blake2b(data: str) -> str:
 
     BLAKE2b is optimized for 64-bit platforms and produces digests up to 64 bytes.
 
+    BOLT OPTIMIZATION: Unpacks 16 64-bit words via struct.unpack('<16Q'), unrolls compression
+    rounds into scalar local variables (v0..v15), and inlines G-function transformations to
+    bypass 96 function call stack allocations and array subscript overhead per 128-byte block.
+
     Args:
         data: The input string to hash
 
@@ -708,36 +712,85 @@ def blake2b(data: str) -> str:
                 block += bytes(BLAKE2B_BLOCK_SIZE - len(block))
             blocks.append(block)
 
+    mask64 = 0xffffffffffffffff
+    num_blocks = len(blocks)
+
     for idx, block in enumerate(blocks):
-        if idx == len(blocks) - 1:
+        if idx == num_blocks - 1:
             t = len(b_data)
-            f0 = 0xffffffffffffffff
+            f0 = mask64
         else:
             t = (idx + 1) * BLAKE2B_BLOCK_SIZE
             f0 = 0
 
-        m_words = [int.from_bytes(block[j * 8 : (j + 1) * 8], 'little') for j in range(16)]
+        m_words = struct.unpack('<16Q', block)
 
-        v_state = h_state + BLAKE2B_IV
-        v_state[12] ^= t & 0xffffffffffffffff
-        v_state[13] ^= (t >> 64) & 0xffffffffffffffff
-        v_state[14] ^= f0
+        v0, v1, v2, v3, v4, v5, v6, v7 = h_state
+        v8, v9, v10, v11, v12, v13, v14, v15 = BLAKE2B_IV
+        v12 ^= t & mask64
+        v13 ^= (t >> 64) & mask64
+        v14 ^= f0
 
         for r in range(12):
-            sigma = BLAKE2_SIGMA[r % 10]
-            _blake2b_g(v_state, (0, 4, 8, 12), m_words[sigma[0]], m_words[sigma[1]])
-            _blake2b_g(v_state, (1, 5, 9, 13), m_words[sigma[2]], m_words[sigma[3]])
-            _blake2b_g(v_state, (2, 6, 10, 14), m_words[sigma[4]], m_words[sigma[5]])
-            _blake2b_g(v_state, (3, 7, 11, 15), m_words[sigma[6]], m_words[sigma[7]])
-            _blake2b_g(v_state, (0, 5, 10, 15), m_words[sigma[8]], m_words[sigma[9]])
-            _blake2b_g(v_state, (1, 6, 11, 12), m_words[sigma[10]], m_words[sigma[11]])
-            _blake2b_g(v_state, (2, 7, 8, 13), m_words[sigma[12]], m_words[sigma[13]])
-            _blake2b_g(v_state, (3, 4, 9, 14), m_words[sigma[14]], m_words[sigma[15]])
+            s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15 = BLAKE2_SIGMA[r % 10]
+            # Column step 0
+            v0 = (v0 + v4 + m_words[s0]) & mask64; v12 ^= v0; v12 = ((v12 >> 32) | (v12 << 32)) & mask64
+            v8 = (v8 + v12) & mask64; v4 ^= v8; v4 = ((v4 >> 24) | (v4 << 40)) & mask64
+            v0 = (v0 + v4 + m_words[s1]) & mask64; v12 ^= v0; v12 = ((v12 >> 16) | (v12 << 48)) & mask64
+            v8 = (v8 + v12) & mask64; v4 ^= v8; v4 = ((v4 >> 63) | (v4 << 1)) & mask64
 
-        for i in range(8):
-            h_state[i] ^= v_state[i] ^ v_state[i + 8]
+            # Column step 1
+            v1 = (v1 + v5 + m_words[s2]) & mask64; v13 ^= v1; v13 = ((v13 >> 32) | (v13 << 32)) & mask64
+            v9 = (v9 + v13) & mask64; v5 ^= v9; v5 = ((v5 >> 24) | (v5 << 40)) & mask64
+            v1 = (v1 + v5 + m_words[s3]) & mask64; v13 ^= v1; v13 = ((v13 >> 16) | (v13 << 48)) & mask64
+            v9 = (v9 + v13) & mask64; v5 ^= v9; v5 = ((v5 >> 63) | (v5 << 1)) & mask64
 
-    out_bytes = b"".join(h.to_bytes(8, 'little') for h in h_state)
+            # Column step 2
+            v2 = (v2 + v6 + m_words[s4]) & mask64; v14 ^= v2; v14 = ((v14 >> 32) | (v14 << 32)) & mask64
+            v10 = (v10 + v14) & mask64; v6 ^= v10; v6 = ((v6 >> 24) | (v6 << 40)) & mask64
+            v2 = (v2 + v6 + m_words[s5]) & mask64; v14 ^= v2; v14 = ((v14 >> 16) | (v14 << 48)) & mask64
+            v10 = (v10 + v14) & mask64; v6 ^= v10; v6 = ((v6 >> 63) | (v6 << 1)) & mask64
+
+            # Column step 3
+            v3 = (v3 + v7 + m_words[s6]) & mask64; v15 ^= v3; v15 = ((v15 >> 32) | (v15 << 32)) & mask64
+            v11 = (v11 + v15) & mask64; v7 ^= v11; v7 = ((v7 >> 24) | (v7 << 40)) & mask64
+            v3 = (v3 + v7 + m_words[s7]) & mask64; v15 ^= v3; v15 = ((v15 >> 16) | (v15 << 48)) & mask64
+            v11 = (v11 + v15) & mask64; v7 ^= v11; v7 = ((v7 >> 63) | (v7 << 1)) & mask64
+
+            # Diagonal step 0
+            v0 = (v0 + v5 + m_words[s8]) & mask64; v15 ^= v0; v15 = ((v15 >> 32) | (v15 << 32)) & mask64
+            v10 = (v10 + v15) & mask64; v5 ^= v10; v5 = ((v5 >> 24) | (v5 << 40)) & mask64
+            v0 = (v0 + v5 + m_words[s9]) & mask64; v15 ^= v0; v15 = ((v15 >> 16) | (v15 << 48)) & mask64
+            v10 = (v10 + v15) & mask64; v5 ^= v10; v5 = ((v5 >> 63) | (v5 << 1)) & mask64
+
+            # Diagonal step 1
+            v1 = (v1 + v6 + m_words[s10]) & mask64; v12 ^= v1; v12 = ((v12 >> 32) | (v12 << 32)) & mask64
+            v11 = (v11 + v12) & mask64; v6 ^= v11; v6 = ((v6 >> 24) | (v6 << 40)) & mask64
+            v1 = (v1 + v6 + m_words[s11]) & mask64; v12 ^= v1; v12 = ((v12 >> 16) | (v12 << 48)) & mask64
+            v11 = (v11 + v12) & mask64; v6 ^= v11; v6 = ((v6 >> 63) | (v6 << 1)) & mask64
+
+            # Diagonal step 2
+            v2 = (v2 + v7 + m_words[s12]) & mask64; v13 ^= v2; v13 = ((v13 >> 32) | (v13 << 32)) & mask64
+            v8 = (v8 + v13) & mask64; v7 ^= v8; v7 = ((v7 >> 24) | (v7 << 40)) & mask64
+            v2 = (v2 + v7 + m_words[s13]) & mask64; v13 ^= v2; v13 = ((v13 >> 16) | (v13 << 48)) & mask64
+            v8 = (v8 + v13) & mask64; v7 ^= v8; v7 = ((v7 >> 63) | (v7 << 1)) & mask64
+
+            # Diagonal step 3
+            v3 = (v3 + v4 + m_words[s14]) & mask64; v14 ^= v3; v14 = ((v14 >> 32) | (v14 << 32)) & mask64
+            v9 = (v9 + v14) & mask64; v4 ^= v9; v4 = ((v4 >> 24) | (v4 << 40)) & mask64
+            v3 = (v3 + v4 + m_words[s15]) & mask64; v14 ^= v3; v14 = ((v14 >> 16) | (v14 << 48)) & mask64
+            v9 = (v9 + v14) & mask64; v4 ^= v9; v4 = ((v4 >> 63) | (v4 << 1)) & mask64
+
+        h_state[0] ^= v0 ^ v8
+        h_state[1] ^= v1 ^ v9
+        h_state[2] ^= v2 ^ v10
+        h_state[3] ^= v3 ^ v11
+        h_state[4] ^= v4 ^ v12
+        h_state[5] ^= v5 ^ v13
+        h_state[6] ^= v6 ^ v14
+        h_state[7] ^= v7 ^ v15
+
+    out_bytes = struct.pack('<8Q', *h_state)
     return out_bytes.hex()
 
 
@@ -746,6 +799,10 @@ def blake2s(data: str) -> str:
     Compute the BLAKE2s hash of the given data.
 
     BLAKE2s is optimized for 8 to 32-bit platforms and produces digests up to 32 bytes.
+
+    BOLT OPTIMIZATION: Unpacks 16 32-bit words via struct.unpack('<16I'), unrolls compression
+    rounds into scalar local variables (v0..v15), and inlines G-function transformations to
+    bypass 80 function call stack allocations and array subscript overhead per 64-byte block.
 
     Args:
         data: The input string to hash
@@ -766,36 +823,85 @@ def blake2s(data: str) -> str:
                 block += bytes(BLAKE2S_BLOCK_SIZE - len(block))
             blocks.append(block)
 
+    mask32 = 0xffffffff
+    num_blocks = len(blocks)
+
     for idx, block in enumerate(blocks):
-        if idx == len(blocks) - 1:
+        if idx == num_blocks - 1:
             t = len(b_data)
-            f0 = 0xffffffff
+            f0 = mask32
         else:
             t = (idx + 1) * BLAKE2S_BLOCK_SIZE
             f0 = 0
 
-        m_words = [int.from_bytes(block[j * 4 : (j + 1) * 4], 'little') for j in range(16)]
+        m_words = struct.unpack('<16I', block)
 
-        v_state = h_state + BLAKE2S_IV
-        v_state[12] ^= t & 0xffffffff
-        v_state[13] ^= (t >> 32) & 0xffffffff
-        v_state[14] ^= f0
+        v0, v1, v2, v3, v4, v5, v6, v7 = h_state
+        v8, v9, v10, v11, v12, v13, v14, v15 = BLAKE2S_IV
+        v12 ^= t & mask32
+        v13 ^= (t >> 32) & mask32
+        v14 ^= f0
 
         for r in range(10):
-            sigma = BLAKE2_SIGMA[r]
-            _blake2s_g(v_state, (0, 4, 8, 12), m_words[sigma[0]], m_words[sigma[1]])
-            _blake2s_g(v_state, (1, 5, 9, 13), m_words[sigma[2]], m_words[sigma[3]])
-            _blake2s_g(v_state, (2, 6, 10, 14), m_words[sigma[4]], m_words[sigma[5]])
-            _blake2s_g(v_state, (3, 7, 11, 15), m_words[sigma[6]], m_words[sigma[7]])
-            _blake2s_g(v_state, (0, 5, 10, 15), m_words[sigma[8]], m_words[sigma[9]])
-            _blake2s_g(v_state, (1, 6, 11, 12), m_words[sigma[10]], m_words[sigma[11]])
-            _blake2s_g(v_state, (2, 7, 8, 13), m_words[sigma[12]], m_words[sigma[13]])
-            _blake2s_g(v_state, (3, 4, 9, 14), m_words[sigma[14]], m_words[sigma[15]])
+            s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15 = BLAKE2_SIGMA[r]
+            # Column step 0
+            v0 = (v0 + v4 + m_words[s0]) & mask32; v12 ^= v0; v12 = ((v12 >> 16) | (v12 << 16)) & mask32
+            v8 = (v8 + v12) & mask32; v4 ^= v8; v4 = ((v4 >> 12) | (v4 << 20)) & mask32
+            v0 = (v0 + v4 + m_words[s1]) & mask32; v12 ^= v0; v12 = ((v12 >> 8) | (v12 << 24)) & mask32
+            v8 = (v8 + v12) & mask32; v4 ^= v8; v4 = ((v4 >> 7) | (v4 << 25)) & mask32
 
-        for i in range(8):
-            h_state[i] ^= v_state[i] ^ v_state[i + 8]
+            # Column step 1
+            v1 = (v1 + v5 + m_words[s2]) & mask32; v13 ^= v1; v13 = ((v13 >> 16) | (v13 << 16)) & mask32
+            v9 = (v9 + v13) & mask32; v5 ^= v9; v5 = ((v5 >> 12) | (v5 << 20)) & mask32
+            v1 = (v1 + v5 + m_words[s3]) & mask32; v13 ^= v1; v13 = ((v13 >> 8) | (v13 << 24)) & mask32
+            v9 = (v9 + v13) & mask32; v5 ^= v9; v5 = ((v5 >> 7) | (v5 << 25)) & mask32
 
-    out_bytes = b"".join(h.to_bytes(4, 'little') for h in h_state)
+            # Column step 2
+            v2 = (v2 + v6 + m_words[s4]) & mask32; v14 ^= v2; v14 = ((v14 >> 16) | (v14 << 16)) & mask32
+            v10 = (v10 + v14) & mask32; v6 ^= v10; v6 = ((v6 >> 12) | (v6 << 20)) & mask32
+            v2 = (v2 + v6 + m_words[s5]) & mask32; v14 ^= v2; v14 = ((v14 >> 8) | (v14 << 24)) & mask32
+            v10 = (v10 + v14) & mask32; v6 ^= v10; v6 = ((v6 >> 7) | (v6 << 25)) & mask32
+
+            # Column step 3
+            v3 = (v3 + v7 + m_words[s6]) & mask32; v15 ^= v3; v15 = ((v15 >> 16) | (v15 << 16)) & mask32
+            v11 = (v11 + v15) & mask32; v7 ^= v11; v7 = ((v7 >> 12) | (v7 << 20)) & mask32
+            v3 = (v3 + v7 + m_words[s7]) & mask32; v15 ^= v3; v15 = ((v15 >> 8) | (v15 << 24)) & mask32
+            v11 = (v11 + v15) & mask32; v7 ^= v11; v7 = ((v7 >> 7) | (v7 << 25)) & mask32
+
+            # Diagonal step 0
+            v0 = (v0 + v5 + m_words[s8]) & mask32; v15 ^= v0; v15 = ((v15 >> 16) | (v15 << 16)) & mask32
+            v10 = (v10 + v15) & mask32; v5 ^= v10; v5 = ((v5 >> 12) | (v5 << 20)) & mask32
+            v0 = (v0 + v5 + m_words[s9]) & mask32; v15 ^= v0; v15 = ((v15 >> 8) | (v15 << 24)) & mask32
+            v10 = (v10 + v15) & mask32; v5 ^= v10; v5 = ((v5 >> 7) | (v5 << 25)) & mask32
+
+            # Diagonal step 1
+            v1 = (v1 + v6 + m_words[s10]) & mask32; v12 ^= v1; v12 = ((v12 >> 16) | (v12 << 16)) & mask32
+            v11 = (v11 + v12) & mask32; v6 ^= v11; v6 = ((v6 >> 12) | (v6 << 20)) & mask32
+            v1 = (v1 + v6 + m_words[s11]) & mask32; v12 ^= v1; v12 = ((v12 >> 8) | (v12 << 24)) & mask32
+            v11 = (v11 + v12) & mask32; v6 ^= v11; v6 = ((v6 >> 7) | (v6 << 25)) & mask32
+
+            # Diagonal step 2
+            v2 = (v2 + v7 + m_words[s12]) & mask32; v13 ^= v2; v13 = ((v13 >> 16) | (v13 << 16)) & mask32
+            v8 = (v8 + v13) & mask32; v7 ^= v8; v7 = ((v7 >> 12) | (v7 << 20)) & mask32
+            v2 = (v2 + v7 + m_words[s13]) & mask32; v13 ^= v2; v13 = ((v13 >> 8) | (v13 << 24)) & mask32
+            v8 = (v8 + v13) & mask32; v7 ^= v8; v7 = ((v7 >> 7) | (v7 << 25)) & mask32
+
+            # Diagonal step 3
+            v3 = (v3 + v4 + m_words[s14]) & mask32; v14 ^= v3; v14 = ((v14 >> 16) | (v14 << 16)) & mask32
+            v9 = (v9 + v14) & mask32; v4 ^= v9; v4 = ((v4 >> 12) | (v4 << 20)) & mask32
+            v3 = (v3 + v4 + m_words[s15]) & mask32; v14 ^= v3; v14 = ((v14 >> 8) | (v14 << 24)) & mask32
+            v9 = (v9 + v14) & mask32; v4 ^= v9; v4 = ((v4 >> 7) | (v4 << 25)) & mask32
+
+        h_state[0] ^= v0 ^ v8
+        h_state[1] ^= v1 ^ v9
+        h_state[2] ^= v2 ^ v10
+        h_state[3] ^= v3 ^ v11
+        h_state[4] ^= v4 ^ v12
+        h_state[5] ^= v5 ^ v13
+        h_state[6] ^= v6 ^ v14
+        h_state[7] ^= v7 ^ v15
+
+    out_bytes = struct.pack('<8I', *h_state)
     return out_bytes.hex()
 
 
