@@ -172,10 +172,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
+      <div role="tablist" aria-label="Statue details view tabs" className="flex rounded-xl bg-stone-900/90 p-1 mb-6 border border-stone-800">
         <button
+          role="tab"
+          aria-selected={activeTab === 'curation'}
           onClick={() => setActiveTab('curation')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'curation'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -184,8 +186,10 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
           <BookOpen className="w-4 h-4" /> HISTORICAL CURATION
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'lab'}
           onClick={() => setActiveTab('lab')}
-          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'lab'
               ? 'bg-amber-500 text-stone-950 shadow-md font-extrabold'
               : 'text-stone-400 hover:text-stone-200'
@@ -258,14 +262,15 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               <div>
-                <label className="text-[11px] font-mono text-stone-400 uppercase font-bold block mb-1">
+                <label htmlFor="kindi-ciphertext-input" className="text-[11px] font-mono text-stone-400 uppercase font-bold block mb-1">
                   Ciphertext Sample
                 </label>
                 <textarea
+                  id="kindi-ciphertext-input"
                   value={kindiCiphertext}
                   onChange={(e) => setKindiCiphertext(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus:ring-1 focus:ring-amber-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                   placeholder="Enter ciphertext to analyze..."
                 />
               </div>
@@ -301,23 +306,24 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               {/* Decipher Shift Tester */}
               <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-mono font-bold text-stone-300">
+                  <label htmlFor="kindi-shift-guess-input" className="text-xs font-mono font-bold text-stone-300">
                     Test Caesar Shift Key: <span className="text-amber-400">{kindiShiftGuess}</span>
                   </label>
                   <button
                     onClick={() => setKindiShiftGuess(3)}
-                    className="text-[10px] font-mono text-amber-400 hover:text-amber-300 underline"
+                    className="text-[10px] font-mono text-amber-400 hover:text-amber-300 underline focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1"
                   >
                     Set Shift = 3 (Caesar)
                   </button>
                 </div>
                 <input
+                  id="kindi-shift-guess-input"
                   type="range"
                   min="0"
                   max="25"
                   value={kindiShiftGuess}
                   onChange={(e) => setKindiShiftGuess(Number(e.target.value))}
-                  className="w-full accent-amber-500"
+                  className="w-full accent-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded"
                 />
 
                 <div className="p-2.5 rounded-lg bg-stone-950 border border-stone-800">
@@ -336,14 +342,15 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               <div>
-                <label className="text-[11px] font-mono text-stone-400 uppercase font-bold block mb-1">
+                <label htmlFor="shannon-message-input" className="text-[11px] font-mono text-stone-400 uppercase font-bold block mb-1">
                   Plaintext Input Message
                 </label>
                 <input
+                  id="shannon-message-input"
                   type="text"
                   value={shannonMessage}
                   onChange={(e) => setShannonMessage(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-100 font-mono text-xs focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none"
                   placeholder="Enter message..."
                 />
               </div>
@@ -377,7 +384,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                   </span>
                   <button
                     onClick={() => setOtpSeed((prev) => prev + 1)}
-                    className="flex items-center gap-1 text-[10px] text-sky-400 hover:text-sky-300"
+                    className="flex items-center gap-1 text-[10px] text-sky-400 hover:text-sky-300 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none rounded px-1"
                   >
                     <RotateCcw className="w-3 h-3" /> Re-roll Keystream
                   </button>
@@ -409,18 +416,22 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
               </div>
 
               {/* Toggle Merkle Puzzles note */}
-              <div className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono">
+              <div role="tablist" aria-label="Key exchange view mode" className="flex rounded-lg bg-stone-900 p-1 border border-stone-800 text-xs font-mono">
                 <button
+                  role="tab"
+                  aria-selected={!showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(false)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none ${
                     !showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >
                   Diffie-Hellman Math
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={showMerklePuzzleInfo}
                   onClick={() => setShowMerklePuzzleInfo(true)}
-                  className={`flex-1 py-1.5 rounded text-center transition-all ${
+                  className={`flex-1 py-1.5 rounded text-center transition-all focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none ${
                     showMerklePuzzleInfo ? 'bg-purple-600 text-white font-bold' : 'text-stone-400'
                   }`}
                 >
@@ -445,16 +456,17 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                   {/* Alice and Bob Private Key Inputs */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1">
-                      <label className="text-[10px] font-mono text-purple-300 font-bold block">
+                      <label htmlFor="alice-private-input" className="text-[10px] font-mono text-purple-300 font-bold block">
                         ALICE PRIVATE (a): {alicePrivate}
                       </label>
                       <input
+                        id="alice-private-input"
                         type="range"
                         min="2"
                         max="20"
                         value={alicePrivate}
                         onChange={(e) => setAlicePrivate(Number(e.target.value))}
-                        className="w-full accent-purple-500"
+                        className="w-full accent-purple-500 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none rounded"
                       />
                       <div className="text-[10px] font-mono text-stone-400 mt-1">
                         Public A = g^a mod p = <span className="text-stone-100 font-bold">{dhCalculations.alicePublic}</span>
@@ -462,16 +474,17 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
                     </div>
 
                     <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1">
-                      <label className="text-[10px] font-mono text-cyan-300 font-bold block">
+                      <label htmlFor="bob-private-input" className="text-[10px] font-mono text-cyan-300 font-bold block">
                         BOB PRIVATE (b): {bobPrivate}
                       </label>
                       <input
+                        id="bob-private-input"
                         type="range"
                         min="2"
                         max="20"
                         value={bobPrivate}
                         onChange={(e) => setBobPrivate(Number(e.target.value))}
-                        className="w-full accent-cyan-500"
+                        className="w-full accent-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:outline-none rounded"
                       />
                       <div className="text-[10px] font-mono text-stone-400 mt-1">
                         Public B = g^b mod p = <span className="text-stone-100 font-bold">{dhCalculations.bobPublic}</span>

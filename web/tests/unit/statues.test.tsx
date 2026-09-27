@@ -31,7 +31,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(diffieHellman?.description).toContain('Ralph Merkle');
   });
 
-  it('renders StatueCuratorialDrawer with accessible labels and handles tab switching', () => {
+  it('renders StatueCuratorialDrawer with accessible labels, ARIA tabs, focus states, and handles tab switching', () => {
     const handleClose = jest.fn();
     const alkindi = MUSEUM_STATUES[0];
 
@@ -47,17 +47,39 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     fireEvent.click(closeBtn);
     expect(handleClose).toHaveBeenCalledTimes(1);
 
+    // Check tablist container and ARIA tab roles
+    const tabList = screen.getByRole('tablist', { name: /statue details view tabs/i });
+    expect(tabList).toBeInTheDocument();
+
+    const curationTabBtn = screen.getByRole('tab', { name: /historical curation/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+
+    expect(curationTabBtn).toHaveAttribute('aria-selected', 'true');
+    expect(labTabBtn).toHaveAttribute('aria-selected', 'false');
+    expect(curationTabBtn.className).toContain('focus-visible:ring-2');
+    expect(labTabBtn.className).toContain('focus-visible:ring-2');
+
     // Initial Historical Curation Tab contains the citation
     expect(screen.getByText(/Curatorial Landmark Citation/i)).toBeInTheDocument();
     expect(screen.getByText(new RegExp(alkindi.description, 'i'))).toBeInTheDocument();
 
     // Switch to Interactive Pioneer Lab Tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
-    // Verify Al-Kindi Frequency Analysis components
+    expect(curationTabBtn).toHaveAttribute('aria-selected', 'false');
+    expect(labTabBtn).toHaveAttribute('aria-selected', 'true');
+
+    // Verify Al-Kindi Frequency Analysis components and form field associations
     expect(screen.getByText(/Letter Frequency Histogram/i)).toBeInTheDocument();
     expect(screen.getByText(/STATISTICAL DECRYPT PREVIEW:/i)).toBeInTheDocument();
+
+    const ciphertextInput = screen.getByLabelText(/ciphertext sample/i);
+    expect(ciphertextInput).toBeInTheDocument();
+    expect(ciphertextInput).toHaveAttribute('id', 'kindi-ciphertext-input');
+
+    const shiftSlider = screen.getByLabelText(/test caesar shift key/i);
+    expect(shiftSlider).toBeInTheDocument();
+    expect(shiftSlider).toHaveAttribute('id', 'kindi-shift-guess-input');
   });
 
   it('renders Claude Shannon interactive Information Entropy and OTP stream lab', () => {
@@ -67,7 +89,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={shannon} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/Plaintext Entropy H\(M\)/i)).toBeInTheDocument();
@@ -87,7 +109,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={diffieHellman} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/PUBLIC PRIME \(p\):/i)).toBeInTheDocument();
@@ -95,7 +117,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(screen.getByText(/AGREED SHARED SECRET KEY \(S\)/i)).toBeInTheDocument();
 
     // Switch to Merkle's Puzzles explainer
-    const merkleToggle = screen.getByRole('button', { name: /ralph merkle's puzzles/i });
+    const merkleToggle = screen.getByRole('tab', { name: /ralph merkle's puzzles/i });
     fireEvent.click(merkleToggle);
     expect(screen.getByText(/Ralph Merkle's Independent Puzzles \(1974\)/i)).toBeInTheDocument();
     expect(screen.getByText(/quadratic computational asymmetry/i)).toBeInTheDocument();
