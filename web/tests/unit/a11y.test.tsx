@@ -5,7 +5,8 @@ import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
-import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
+import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/StatueCuratorialDrawer';
+import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
@@ -234,5 +235,34 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify screen-reader live status element updates with polite feedback
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
+  });
+
+  it('renders StatueCuratorialDrawer with accessible tablist roles, tab states, label associations, and focus styles', () => {
+    const sampleStatue = MUSEUM_STATUES[0]; // Al-Kindi statue with frequency analysis demo
+    render(<StatueCuratorialDrawer statue={sampleStatue} onClose={jest.fn()} />);
+
+    const tabList = screen.getByRole('tablist', { name: /statue views/i });
+    expect(tabList).toBeInTheDocument();
+
+    const curationTab = screen.getByRole('tab', { name: /historical curation/i });
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'true');
+    expect(labTab).toHaveAttribute('aria-selected', 'false');
+    expect(curationTab.className).toContain('focus-visible:ring-2');
+    expect(labTab.className).toContain('focus-visible:ring-2');
+
+    // Switch to Pioneer Lab tab
+    fireEvent.click(labTab);
+    expect(labTab).toHaveAttribute('aria-selected', 'true');
+
+    // Verify form controls in Pioneer Lab have associated labels
+    const ciphertextInput = screen.getByLabelText(/ciphertext sample/i);
+    expect(ciphertextInput).toBeInTheDocument();
+    expect(ciphertextInput.className).toContain('focus-visible:ring-2');
+
+    const shiftInput = screen.getByLabelText(/test caesar shift key/i);
+    expect(shiftInput).toBeInTheDocument();
+    expect(shiftInput.className).toContain('focus-visible:ring-2');
   });
 });
