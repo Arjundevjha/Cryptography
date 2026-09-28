@@ -369,15 +369,29 @@ def pkcs7_pad(data: bytes) -> bytes:
     return data + bytes([pad_len] * pad_len)
 
 def pkcs7_unpad(data: bytes) -> bytes:
-    """Remove PKCS7 padding from raw bytes."""
+    """Remove PKCS7 padding from raw bytes in constant time to prevent timing oracle attacks."""
     if not data or len(data) % BLOCK_SIZE != 0:
         raise ValueError("Invalid PKCS7 padding value")
+
     pad_len = data[-1]
-    if pad_len < 1 or pad_len > BLOCK_SIZE:
+    is_valid_len = 1 <= pad_len <= BLOCK_SIZE
+    valid_pad_len = pad_len if is_valid_len else 1
+
+    block = data[-BLOCK_SIZE:]
+    invalid_bytes = 0
+    invalid_value = 0 if is_valid_len else 1
+
+    for i in range(BLOCK_SIZE):
+        b = block[i]
+        in_padding = 1 if i >= (BLOCK_SIZE - valid_pad_len) else 0
+        if in_padding:
+            invalid_bytes |= (b ^ valid_pad_len)
+
+    if invalid_value:
         raise ValueError("Invalid PKCS7 padding value")
-    for b in data[-pad_len:]:
-        if b != pad_len:
-            raise ValueError("Invalid PKCS7 padding bytes")
+    if invalid_bytes:
+        raise ValueError("Invalid PKCS7 padding bytes")
+
     return data[:-pad_len]
 
 def generate_key() -> bytes:
