@@ -31,7 +31,13 @@ def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
         raise ValueError("Invalid PEM structure: missing required header or footer")
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
     decoded = b64decode(payload).decode('utf-8')
-    return [int(val) for val in decoded.split(":")]
+    parts = decoded.split(":")
+    if len(parts) < 2:
+        raise ValueError("Invalid PEM payload format: expected colon-separated parameter values")
+    try:
+        return [int(val) for val in parts]
+    except ValueError as err:
+        raise ValueError("Invalid integer parameter in PEM payload") from err
 
 def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     """Decrypt an encrypted private key PEM using the passphrase."""
@@ -43,6 +49,8 @@ def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
 
     raw_payload = b64decode(payload)
+    if len(raw_payload) < IV_SIZE:
+        raise ValueError("Invalid encrypted PEM payload: payload size must be at least 16 bytes")
     iv = raw_payload[:IV_SIZE]
     ciphertext = raw_payload[IV_SIZE:]
 
