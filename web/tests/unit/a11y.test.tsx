@@ -1,11 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ArtifactMetadataDrawer } from '../../src/components/museum/workbench/ArtifactMetadataDrawer';
+import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/StatueCuratorialDrawer';
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
-import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
+import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from '../../src/components/museum/museumData';
 
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
@@ -234,5 +235,39 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify screen-reader live status element updates with polite feedback
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
+  });
+
+  it('renders StatueCuratorialDrawer with accessible tablists, tab roles, aria-selected, and focus styles', () => {
+    const sampleStatue = MUSEUM_STATUES[0];
+    const handleClose = jest.fn();
+
+    render(<StatueCuratorialDrawer statue={sampleStatue} onClose={handleClose} />);
+
+    // Verify tablist role
+    const tablist = screen.getByRole('tablist', { name: /statue drawer view options/i });
+    expect(tablist).toBeInTheDocument();
+
+    // Verify tab roles and initial aria-selected state
+    const curationTab = screen.getByRole('tab', { name: /historical curation/i });
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'true');
+    expect(labTab).toHaveAttribute('aria-selected', 'false');
+
+    expect(curationTab.className).toContain('focus-visible:ring-2');
+    expect(labTab.className).toContain('focus-visible:ring-2');
+
+    // Switch tabs and verify aria-selected updates
+    fireEvent.click(labTab);
+    expect(curationTab).toHaveAttribute('aria-selected', 'false');
+    expect(labTab).toHaveAttribute('aria-selected', 'true');
+
+    // Verify associated lab form inputs are properly associated with labels
+    const kindiInput = screen.getByLabelText(/ciphertext sample/i);
+    expect(kindiInput).toBeInTheDocument();
+    expect(kindiInput).toHaveAttribute('id', 'kindi-ciphertext-input');
+
+    const shiftSlider = screen.getByRole('slider', { name: /caesar shift key/i });
+    expect(shiftSlider).toBeInTheDocument();
   });
 });
