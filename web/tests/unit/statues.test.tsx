@@ -47,13 +47,35 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     fireEvent.click(closeBtn);
     expect(handleClose).toHaveBeenCalledTimes(1);
 
+    // Tablist accessibility & ARIA checks
+    const tablist = screen.getByRole('tablist', { name: /statue details sections/i });
+    expect(tablist).toBeInTheDocument();
+
+    const curationTabBtn = screen.getByRole('tab', { name: /historical curation/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+
+    expect(curationTabBtn).toHaveAttribute('aria-selected', 'true');
+    expect(curationTabBtn).toHaveAttribute('aria-controls', 'panel-curation');
+    expect(curationTabBtn.className).toContain('focus-visible:ring-2');
+
+    expect(labTabBtn).toHaveAttribute('aria-selected', 'false');
+    expect(labTabBtn).toHaveAttribute('aria-controls', 'panel-lab');
+    expect(labTabBtn.className).toContain('focus-visible:ring-2');
+
     // Initial Historical Curation Tab contains the citation
+    const curationPanel = screen.getByRole('tabpanel', { name: /historical curation/i });
+    expect(curationPanel).toBeInTheDocument();
     expect(screen.getByText(/Curatorial Landmark Citation/i)).toBeInTheDocument();
     expect(screen.getByText(new RegExp(alkindi.description, 'i'))).toBeInTheDocument();
 
     // Switch to Interactive Pioneer Lab Tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
+
+    expect(curationTabBtn).toHaveAttribute('aria-selected', 'false');
+    expect(labTabBtn).toHaveAttribute('aria-selected', 'true');
+
+    const labPanel = screen.getByRole('tabpanel', { name: /interactive pioneer lab/i });
+    expect(labPanel).toBeInTheDocument();
 
     // Verify Al-Kindi Frequency Analysis components
     expect(screen.getByText(/Letter Frequency Histogram/i)).toBeInTheDocument();
@@ -67,7 +89,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={shannon} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/Plaintext Entropy H\(M\)/i)).toBeInTheDocument();
@@ -87,7 +109,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(<StatueCuratorialDrawer statue={diffieHellman} onClose={handleClose} />);
 
     // Switch to Lab tab
-    const labTabBtn = screen.getByRole('button', { name: /interactive pioneer lab/i });
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
     fireEvent.click(labTabBtn);
 
     expect(screen.getByText(/PUBLIC PRIME \(p\):/i)).toBeInTheDocument();
