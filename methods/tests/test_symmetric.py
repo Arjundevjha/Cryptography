@@ -17,8 +17,17 @@ def test_pkcs7_padding():
     assert unpadded == data
 
 def test_pkcs7_unpad_invalid_bytes():
+    # Corrupt last byte of padding
     with pytest.raises(ValueError, match="Invalid PKCS7 padding bytes"):
         pkcs7_unpad(b"Hello\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0a")
+
+    # Corrupt first byte of padding
+    with pytest.raises(ValueError, match="Invalid PKCS7 padding bytes"):
+        pkcs7_unpad(b"Hello\x00\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b")
+
+    # Corrupt middle byte of padding
+    with pytest.raises(ValueError, match="Invalid PKCS7 padding bytes"):
+        pkcs7_unpad(b"Hello\x0b\x0b\x0b\x0b\x0b\xFF\x0b\x0b\x0b\x0b\x0b")
 
 def test_pkcs7_unpad_invalid_value():
     with pytest.raises(ValueError, match="Invalid PKCS7 padding value"):

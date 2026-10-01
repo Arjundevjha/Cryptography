@@ -375,9 +375,13 @@ def pkcs7_unpad(data: bytes) -> bytes:
     pad_len = data[-1]
     if pad_len < 1 or pad_len > BLOCK_SIZE:
         raise ValueError("Invalid PKCS7 padding value")
+    # Security: Use bitwise OR accumulator over all padding bytes to ensure
+    # constant-time verification and prevent timing side-channel attacks (Padding Oracle).
+    invalid = 0
     for b in data[-pad_len:]:
-        if b != pad_len:
-            raise ValueError("Invalid PKCS7 padding bytes")
+        invalid |= b ^ pad_len
+    if invalid != 0:
+        raise ValueError("Invalid PKCS7 padding bytes")
     return data[:-pad_len]
 
 def generate_key() -> bytes:
