@@ -445,7 +445,9 @@ def validate_polybius_key(key: str | None) -> str:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Key must contain exactly 25 unique letters."
         )
-    return key
+    # Security: Return normalized 25-character key grid (`grid_key_clean`) rather than raw `key`
+    # to prevent out-of-bounds matrix coordinate generation (e.g. "61") when `key` contains 'j'.
+    return grid_key_clean
 
 
 def validate_polybius_ciphertext(ciphertext: str) -> None:
