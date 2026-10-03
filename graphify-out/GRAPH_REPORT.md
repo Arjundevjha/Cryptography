@@ -1,16 +1,16 @@
-# Graph Report - Cryptography  (2026-09-21)
+# Graph Report - Cryptography  (2026-10-03)
 
 ## Corpus Check
-- 115 files · ~86,689 words
+- 115 files · ~87,462 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1501 nodes · 2593 edges · 91 communities (79 shown, 12 thin omitted)
+- 1514 nodes · 2620 edges · 94 communities (82 shown, 12 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 164 edges (avg confidence: 0.53)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `97e8157f`
+- Built from commit: `f92b3cac`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -75,6 +75,7 @@
 - inv_mix_columns
 - PolybiusDecryptInput
 - validate_enigma_plugboard
+- ._apply_positions
 - stepping.py
 - parse_aes_key
 - test_fallback_imports
@@ -88,9 +89,11 @@
 - sub_bytes
 - md5
 - sub_word
+- PolybiusDecryptInput
 - blake2b
 - blake2s
 - sha3_256
+- .__init__
 - validate_polybius_ciphertext
 
 ## God Nodes (most connected - your core abstractions)
@@ -124,19 +127,23 @@
 - **Museum Testing Flow** — test_infra_philosophy, test_ready_coverage, web_quality_log_tracks, web_security_log_scans [INFERRED 0.85]
 - **Cryptography Project Guidelines** — contributing_python_standards, style_guide_no_external_libs, style_guide_file_structure, style_guide_naming_conventions [INFERRED 0.85]
 
-## Communities (91 total, 12 thin omitted)
+## Communities (94 total, 12 thin omitted)
 
 ### Community 0 - "Cryptographic Helpers & Base64 Utilities"
-Cohesion: 0.11
-Nodes (39): generate_encrypted_keypair(), generate_keypair(), Generate an RSA key pair with an encrypted private key.      Args:         passp, Generate an RSA key pair.      Args:         key_size: The size of the key in bi, decrypt(), decrypt_private_key(), encrypt(), main() (+31 more)
+Cohesion: 0.06
+Nodes (72): b64decode(), b64encode(), Compute SHA-256 hash of bytes., Encode bytes to a Base64 string.      BOLT OPTIMIZATION: Converts 3-byte input c, Decode a Base64 string to bytes.      BOLT OPTIMIZATION: Processes 4-character b, sha256(), Modern cryptography methods package., generate_encrypted_keypair() (+64 more)
 
 ### Community 1 - "Playfair Cipher Implementation & Benchmarks"
-Cohesion: 0.08
-Nodes (24): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input., Test decrypt strips spaces, numbers, and special characters from ciphertext. (+16 more)
+Cohesion: 0.11
+Nodes (26): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test grid generation with a simple key., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input. (+18 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
-Cohesion: 0.09
-Nodes (42): BaseModel, aes_encrypt(), AesEncryptInput, affine_decrypt(), affine_encrypt(), AffineDecryptInput, AffineEncryptInput, caesar_decrypt() (+34 more)
+Cohesion: 0.11
+Nodes (34): BaseModel, affine_decrypt(), affine_encrypt(), AffineDecryptInput, AffineEncryptInput, caesar_decrypt(), caesar_encrypt(), CaesarDecryptInput (+26 more)
+
+### Community 3 - "FastAPI Endpoint Unit Tests"
+Cohesion: 0.01
+Nodes (3): test_parse_aes_key_hex_fallback(), test_parse_aes_key_lengths(), test_validate_polybius_key_unit()
 
 ### Community 4 - "Frontend App Third-Party Dependencies"
 Cohesion: 0.04
@@ -171,8 +178,8 @@ Cohesion: 0.09
 Nodes (31): decrypt(), encrypt(), main(), pick_keys(), Polybius Square cipher implementation., Encrypt plaintext using the Polybius Square cipher.      Maps each letter to a t, Decrypt ciphertext using the Polybius Square cipher.      Parses two-digit coord, Run an interactive test of the Polybius Square cipher. (+23 more)
 
 ### Community 12 - "HMAC and Digital Signature Utilities"
-Cohesion: 0.09
-Nodes (40): create_hmac(), generate_key(), hmac_compare_digest(), main(), HMAC digital signatures module in pure Python.  No external libraries or standar, Generate a random key for HMAC signing.      Args:         length: Key length in, Create an HMAC signature for the given data.      Args:         data: The data t, Verify an HMAC signature against expected value.      Args:         data: The or (+32 more)
+Cohesion: 0.13
+Nodes (25): create_hmac(), generate_key(), main(), HMAC digital signatures module in pure Python.  No external libraries or standar, Generate a random key for HMAC signing.      Args:         length: Key length in, Create an HMAC signature for the given data.      Args:         data: The data t, Verify an HMAC signature against expected value.      Args:         data: The or, Run a test of key generation, signing, and verification using HMAC. (+17 more)
 
 ### Community 13 - "Simple Substitution Cipher Implementation"
 Cohesion: 0.13
@@ -183,12 +190,12 @@ Cohesion: 0.15
 Nodes (22): char_to_ita2(), ita2_to_char(), ita2_vectors_to_text(), ITA2 (Baudot Code) converter and bitwise vector utilities for Lorenz cipher., Convert a string into a list of 5-bit ITA2 binary vectors.      Args:         te, Convert a list of 5-bit ITA2 binary vectors back to a string.      Args:, Convert a character to its 5-bit ITA2 binary vector.      Args:         char: Si, Convert a 5-bit binary vector to its ITA2 character representation.      Args: (+14 more)
 
 ### Community 15 - "Lorenz Wheels Components Testing"
-Cohesion: 0.09
-Nodes (20): Initialize stepping controller with 12 Lorenz wheels.          Args:, Initialize or validate a set of wheels., Unit tests for Lorenz Wheel class., test_wheel_custom_pins(), test_wheel_init_default(), test_wheel_invalid_pins_length(), test_wheel_invalid_pins_value(), test_wheel_invalid_position() (+12 more)
+Cohesion: 0.10
+Nodes (18): Unit tests for Lorenz Wheel class., test_wheel_custom_pins(), test_wheel_init_default(), test_wheel_invalid_pins_length(), test_wheel_invalid_pins_value(), test_wheel_invalid_position(), test_wheel_invalid_size(), test_wheel_step_wrapping() (+10 more)
 
 ### Community 16 - "Vigenere Cipher Core & Helpers"
-Cohesion: 0.15
-Nodes (22): decrypt(), decrypt_block(), encrypt(), encrypt_with_new_key(), generate_iv(), generate_key(), main(), Symmetric Encryption Module (AES-256) in pure Python.  This module provides symm (+14 more)
+Cohesion: 0.14
+Nodes (24): decrypt(), decrypt_block(), encrypt(), encrypt_with_new_key(), generate_iv(), generate_key(), main(), Symmetric Encryption Module (AES-256) in pure Python.  This module provides symm (+16 more)
 
 ### Community 17 - "Museum Frontend Layout & Audio Scenes"
 Cohesion: 0.10
@@ -207,8 +214,8 @@ Cohesion: 0.11
 Nodes (19): Enigma, Enigma machine class representing the whole machine assembly., Set the ring settings for each rotor., Set the initial key/letter position for each rotor., Encipher a single character through the Enigma machine.          BOLT OPTIMIZATI, Enigma machine simulation., Process an entire text string through the Enigma machine.          Non-alphabeti, Initialize Enigma machine with components.          Args:             re: The Re (+11 more)
 
 ### Community 21 - "Lorenz Stepping Controller Engine"
-Cohesion: 0.09
-Nodes (22): Set positions for all 12 wheels.          Args:             positions: Dict cont, Set wheel positions from a dictionary., Set wheel positions from a flat 12-element list or tuple., Manages the 12 Lorenz pinwheels and their stepping drive rules., Apply target position values to a list of Wheel instances., Get current 5-bit vector from the 5 Chi wheels., Get current 5-bit vector from the 5 Psi wheels., Generate current 5-bit keystream vector K = Chi ^ Psi. (+14 more)
+Cohesion: 0.11
+Nodes (20): Manages the 12 Lorenz pinwheels and their stepping drive rules., Initialize stepping controller with 12 Lorenz wheels.          Args:, Initialize or validate a set of wheels., Get current 5-bit vector from the 5 Chi wheels., Get current 5-bit vector from the 5 Psi wheels., Generate current 5-bit keystream vector K = Chi ^ Psi., Advance wheels according to Lorenz stepping rules for next character:          1, Get current position indices for all 12 wheels.          Returns:             Di (+12 more)
 
 ### Community 22 - "Vigenere Cipher Unit Tests"
 Cohesion: 0.14
@@ -216,11 +223,11 @@ Nodes (25): test_decrypt(), test_decrypt_unmatching_length_and_edge_cases(), tes
 
 ### Community 23 - "Enigma Keyboard Component Routing"
 Cohesion: 0.13
-Nodes (21): pkcs7_pad(), pkcs7_unpad(), Apply PKCS7 padding to raw bytes., Remove PKCS7 padding from raw bytes., Substitute bytes in a 4-byte word using the S-box., sub_word(), Verify that empty bytes or unaligned block sizes raise expected ValueError., Test byte substitution on 4-byte words using the S-box. (+13 more)
+Nodes (21): pkcs7_pad(), pkcs7_unpad(), Apply PKCS7 padding to raw bytes., Remove PKCS7 padding from raw bytes in constant time to prevent timing oracle at, Substitute bytes in a 4-byte word using the S-box., sub_word(), Test byte substitution on 4-byte words using the S-box., Known Answer Test for sub_word using FIPS 197 Appendix B vector. (+13 more)
 
 ### Community 24 - "Manual AES CTR Cipher Core"
-Cohesion: 0.11
-Nodes (29): decrypt(), encrypt(), main(), AES symmetric encryption using manual AES-256-CTR in pure Python.  Reuses the AE, Encrypt a message using AES-256-CTR mode.      Args:         message: Plaintext, Decrypt a message encrypted with AES-256-CTR mode.      Args:         ciphertext, Demonstrate AES-CTR encryption and decryption., encrypt_block() (+21 more)
+Cohesion: 0.10
+Nodes (31): decrypt(), encrypt(), main(), AES symmetric encryption using manual AES-256-CTR in pure Python.  Reuses the AE, Encrypt a message using AES-256-CTR mode.      Args:         message: Plaintext, Decrypt a message encrypted with AES-256-CTR mode.      Args:         ciphertext, Demonstrate AES-CTR encryption and decryption., encrypt_block() (+23 more)
 
 ### Community 25 - "Enigma Rotor Mechanics Simulation"
 Cohesion: 0.09
@@ -244,19 +251,19 @@ Nodes (4): Decrypt a 5-bit vector (identical to encrypt_vector due to XOR recipr
 
 ### Community 31 - "VercelPathMiddleware"
 Cohesion: 0.12
-Nodes (16): b64encode(), Encode bytes to a Base64 string.      BOLT OPTIMIZATION: Vectorizes 3-byte chunk, Test Base64 encoding against standard RFC 4648 test vectors., Test Base64 encoding padding rules (0, 1, and 2 '=' padding characters)., Test Base64 encoding with extreme binary values (0x00, 0xFF, full byte ranges)., Verify b64encode matches standard library base64.b64encode for various payload l, Test Base64 encoding with bytearray inputs., Test roundtrip encoding and decoding for various byte payloads. (+8 more)
+Nodes (17): hmac_sha256(), Compute HMAC-SHA256 signature of data using key., Test Base64 encoding against standard RFC 4648 test vectors., Test Base64 encoding padding rules (0, 1, and 2 '=' padding characters)., Test Base64 encoding with extreme binary values (0x00, 0xFF, full byte ranges)., Verify b64encode matches standard library base64.b64encode for various payload l, Test Base64 encoding with bytearray inputs., Verify that b64decode raises ValueError on invalid characters or invalid lengths (+9 more)
 
 ### Community 32 - "PlayfairEncryptInput"
 Cohesion: 0.11
 Nodes (18): Keyboard, Keyboard component for Enigma machine., Map a letter to its alphabetical signal index (0-25)., Map an alphabetical signal index (0-25) back to a letter., Keyboard simulator for Enigma machine., Initialize the keyboard layout., Test the forward logic: letter to signal., Test the backward logic: signal to letter. (+10 more)
 
 ### Community 34 - "Lorenz Text Processing Procedures"
-Cohesion: 0.09
-Nodes (25): Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Process an entire text string through the Lorenz cipher machine.          Non-IT, Alias for process_message., Alias for process_message., Initialize the 12-wheel Lorenz cipher machine.          Args:             chi_pi, Set positions for all 12 wheels.          Args:             positions: Position, Get current position indices for all 12 wheels. (+17 more)
+Cohesion: 0.10
+Nodes (24): Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Process an entire text string through the Lorenz cipher machine.          Non-IT, Alias for process_message., Alias for process_message., Get current position indices for all 12 wheels., Set manual pin configurations for Chi, Motor, and Psi wheels.          Args:, Main simulation runner and interactive CLI for the Lorenz SZ40/SZ42 machine. (+16 more)
 
 ### Community 35 - "Lorenz Machine Core Unit Tests"
-Cohesion: 0.12
-Nodes (30): ch_func(), hmac_sha256(), _init_b64_luts(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Rotate right a 32-bit integer by shift bits., Shift right a 32-bit integer by shift bits., Choose function for SHA-256. (+22 more)
+Cohesion: 0.13
+Nodes (23): ch_func(), _init_b64_luts(), maj_func(), Helper cryptographic utilities in pure Python.  Contains manual implementations, Rotate right a 32-bit integer by shift bits., Shift right a 32-bit integer by shift bits., Choose function for SHA-256., Majority function for SHA-256. (+15 more)
 
 ### Community 36 - "Lorenz Machine Pinwheels Initialization"
 Cohesion: 0.29
@@ -279,11 +286,11 @@ Cohesion: 0.33
 Nodes (6): validate_enigma_rotors(), test_validate_enigma_rotors_duplicate_rotors(), test_validate_enigma_rotors_error_precedence(), test_validate_enigma_rotors_invalid_count(), test_validate_enigma_rotors_invalid_rotor_type(), test_validate_enigma_rotors_valid()
 
 ### Community 64 - "Plugboard"
-Cohesion: 0.11
-Nodes (16): Plugboard, Plugboard component for Enigma machine., Initialize the plugboard wiring based on pair mappings., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Test plugboard with a single pair., Test plugboard with multiple pairs. (+8 more)
+Cohesion: 0.12
+Nodes (13): Plugboard, Plugboard component for Enigma machine., Initialize the plugboard wiring based on pair mappings., Pass the signal forward through the plugboard mapping., Pass the signal backwards through the plugboard mapping., Plugboard simulator for mapping/swapping character signals., Test plugboard with a single pair., Test plugboard with multiple pairs. (+5 more)
 
 ### Community 65 - "_prepare_text"
-Cohesion: 0.19
+Cohesion: 0.14
 Nodes (14): _prepare_text(), Prepare text: remove non-alpha, replace j, group into digraphs.      BOLT OPTIMI, Test that a message properly encrypts and decrypts., Test standard digraph preparation., Test that 'j' is replaced by 'i'., Test that non-alphabet characters are ignored., Test that odd-length texts get padded with 'x'., Test behavior with text containing all same letters. (+6 more)
 
 ### Community 66 - "playfair.py"
@@ -295,16 +302,16 @@ Cohesion: 0.17
 Nodes (12): encrypt(), Encrypt plaintext using Playfair cipher., Test encrypting digraphs where characters share a column., Test encrypting digraphs forming a rectangle., Test decryption when key contains spaces, uppercase letters, duplicate character, Test encrypt raises ValueError when pos_map lookup raises KeyError., Test encrypting digraphs where characters share a row., test_decrypt_complex_key() (+4 more)
 
 ### Community 68 - "test_playfair.py"
-Cohesion: 0.33
-Nodes (6): _create_grid(), Create a 5x5 Playfair grid from key., Test grid generation with a simple key., Test grid generation converts 'j' to 'i'., test_create_grid_basic(), test_create_grid_with_j()
+Cohesion: 0.50
+Nodes (4): _create_grid(), Create a 5x5 Playfair grid from key., Test grid generation converts 'j' to 'i'., test_create_grid_with_j()
 
 ### Community 69 - "_find_position"
 Cohesion: 0.33
 Nodes (6): _find_position(), Find row and column of a character in the grid., Test finding a character's row and column in the grid., Test ValueError is raised if character is missing., test_find_position(), test_find_position_missing_char()
 
 ### Community 70 - "keypair.py"
-Cohesion: 0.12
-Nodes (23): b64decode(), Decode a Base64 string to bytes.      BOLT OPTIMIZATION: Processes 4-character b, Modern cryptography methods package., generate_prime(), is_prime(), main(), RSA Keypair Generation Module in pure Python.  This module provides functionalit, Generate and print a sample RSA keypair. (+15 more)
+Cohesion: 0.11
+Nodes (19): hmac_compare_digest(), Compare two digests in constant time using secrets.compare_digest     to prevent, Unit tests for digital signatures and HMAC verification., Test HMAC verification failure with mismatched key., Test generating a random symmetric HMAC key., Test constant-time digest comparison with secrets.compare_digest., Test generating a key with a custom byte length., Test generating key with invalid types and bounds raises appropriate exceptions. (+11 more)
 
 ### Community 71 - "inv_mix_columns"
 Cohesion: 0.10
@@ -318,21 +325,25 @@ Nodes (5): get_enigma_reflector_wiring(), Retrieves and validates reflector wiri
 Cohesion: 0.40
 Nodes (5): validate_enigma_plugboard(), test_validate_enigma_plugboard_duplicate_connection(), test_validate_enigma_plugboard_helper(), test_validate_enigma_plugboard_invalid_format(), test_validate_enigma_plugboard_valid()
 
+### Community 74 - "._apply_positions"
+Cohesion: 0.29
+Nodes (4): Set positions for all 12 wheels.          Args:             positions: Dict cont, Set wheel positions from a dictionary., Set wheel positions from a flat 12-element list or tuple., Apply target position values to a list of Wheel instances.
+
 ### Community 75 - "stepping.py"
 Cohesion: 0.22
 Nodes (12): compute_hash(), Compute hash using the specified algorithm.      Args:         data: The input s, Test compute_hash with 'md5' algorithm triggers SecurityWarning., Test that compute_hash raises a ValueError for unsupported algorithms., Test SHA-256 implementation against known-answer vectors., Test SHA-512 against standard hashlib for various block sizes, boundaries, and U, Test that all hash functions compute non-empty digests., test_all_hash_functions_non_empty() (+4 more)
 
 ### Community 76 - "parse_aes_key"
-Cohesion: 0.40
-Nodes (5): _decode_aes_key(), parse_aes_key(), Helper to decode raw string or hex string key representation., test_parse_aes_key_hex_fallback(), test_parse_aes_key_lengths()
+Cohesion: 0.29
+Nodes (8): aes_decrypt_endpoint(), aes_encrypt(), AesDecryptInput, AesEncryptInput, _decode_aes_key(), parse_aes_key(), Helper to decode raw string or hex string key representation., test_aes_decrypt_endpoint_direct_function_call()
 
 ### Community 77 - "test_fallback_imports"
 Cohesion: 0.12
 Nodes (16): mul_gf(), Perform GF(2^8) multiplication by 2., Perform GF(2^8) multiplication of two bytes., xtime(), Test xtime GF(2^8) multiplication by 2 with edge cases and known values., Verify xtime matches mul_gf(val, 2) for all byte values from 0 to 255., Verify inv_mix_columns calculations match explicit GF(2^8) multiplications., Test xtime against known multiplication-by-2 vectors in GF(2^8). (+8 more)
 
 ### Community 78 - "run_cli"
-Cohesion: 0.21
-Nodes (13): Main simulation runner and interactive CLI for the Lorenz SZ40/SZ42 machine., Run interactive Lorenz machine cipher CLI session., run_cli(), Unit tests for Lorenz CLI main runner., test_run_cli_custom_positions_and_valid_message(), test_run_cli_default_positions_and_valid_message(), test_run_cli_empty_message(), test_run_cli_float_position_input() (+5 more)
+Cohesion: 0.24
+Nodes (12): Run interactive Lorenz machine cipher CLI session., run_cli(), Unit tests for Lorenz CLI main runner., test_run_cli_custom_positions_and_valid_message(), test_run_cli_default_positions_and_valid_message(), test_run_cli_empty_message(), test_run_cli_float_position_input(), test_run_cli_invalid_position_format() (+4 more)
 
 ### Community 79 - "sub_bytes"
 Cohesion: 0.08
@@ -370,6 +381,10 @@ Nodes (10): _left_rotate32(), md5(), Perform bitwise left rotation on a 32-bit u
 Cohesion: 0.33
 Nodes (6): Process a single 128-byte block to update the SHA-512 hash state in place., Compute the SHA-512 hash of the given data.      Args:         data: The input s, sha512(), _sha512_compress_block(), Test SHA-512 implementation against known-answer vectors., test_sha512_kats()
 
+### Community 88 - "PolybiusDecryptInput"
+Cohesion: 0.33
+Nodes (6): polybius_decrypt(), polybius_encrypt(), PolybiusDecryptInput, PolybiusEncryptInput, Validates and returns normalized Polybius grid key., validate_polybius_key()
+
 ### Community 89 - "blake2b"
 Cohesion: 0.33
 Nodes (6): blake2b(), _blake2b_g(), Helper G function for BLAKE2b., Compute the BLAKE2b hash of the given data.      BLAKE2b is optimized for 64-bit, Test BLAKE2b implementation against known-answer vectors and hashlib standard., test_blake2b_kats_and_compute_hash()
@@ -394,11 +409,11 @@ Nodes (3): Validates digit coordinates in Polybius ciphertext., validate_polybiu
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Lorenz` connect `Lorenz Text Processing Procedures` to `Plugboard`, `FastAPI Backend Routes & Schema Models`, `run_cli`, `Lorenz Wheels Components Testing`, `Baudot ITA2 Lorenz Code Conversions`, `Symmetric Encryption Utilities`, `AesDecryptInput`, `Lorenz Stepping Controller Engine`, `Lorenz Machine Cryptography Vector Math`?**
-  _High betweenness centrality (0.069) - this node is a cross-community bridge._
+- **Why does `Lorenz` connect `Lorenz Text Processing Procedures` to `Plugboard`, `FastAPI Backend Routes & Schema Models`, `parse_aes_key`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `run_cli`, `Symmetric Encryption Utilities`, `AesDecryptInput`, `Lorenz Stepping Controller Engine`, `PolybiusDecryptInput`, `.__init__`, `Lorenz Machine Cryptography Vector Math`?**
+  _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **Why does `sha256()` connect `Manual Hash Function Implementations` to `Symmetric Encryption Utilities`, `FastAPI Backend Routes & Schema Models`, `stepping.py`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
-- **Why does `Wheel` connect `Lorenz Wheels Components Testing` to `Lorenz Text Processing Procedures`, `Lorenz Stepping Controller Engine`, `Baudot ITA2 Lorenz Code Conversions`?**
+  _High betweenness centrality (0.055) - this node is a cross-community bridge._
+- **Why does `Wheel` connect `Lorenz Wheels Components Testing` to `Lorenz Text Processing Procedures`, `._apply_positions`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Stepping Controller Engine`, `.__init__`?**
   _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **Are the 25 inferred relationships involving `Lorenz` (e.g. with `SteppingController` and `Wheel`) actually correct?**
   _`Lorenz` has 25 INFERRED edges - model-reasoned connections that need verification._
