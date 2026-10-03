@@ -285,4 +285,28 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
   });
+
+  it('renders StatueCuratorialDrawer Pioneer Lab controls with accessible labels, ARIA attributes, and focus styles', () => {
+    const kindiStatue = MUSEUM_STATUES.find((s) => s.id === 'statue-alkindi')!;
+    render(<StatueCuratorialDrawer statue={kindiStatue} onClose={jest.fn()} />);
+
+    // Switch to Pioneer Lab tab
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+    fireEvent.click(labTab);
+
+    // Al-Kindi Lab inputs
+    const kindiTextarea = screen.getByLabelText(/ciphertext sample/i);
+    expect(kindiTextarea).toBeInTheDocument();
+    expect(kindiTextarea).toHaveAttribute('id', 'kindi-ciphertext-input');
+    expect(kindiTextarea.className).toContain('focus-visible:ring-2');
+
+    const kindiShiftInput = screen.getByLabelText(/test caesar shift key/i);
+    expect(kindiShiftInput).toBeInTheDocument();
+    expect(kindiShiftInput).toHaveAttribute('id', 'kindi-shift-input');
+    expect(kindiShiftInput.className).toContain('focus-visible:ring-2');
+
+    const presetShiftBtn = screen.getByRole('button', { name: /set caesar shift key to default value of 3/i });
+    expect(presetShiftBtn).toBeInTheDocument();
+    expect(presetShiftBtn.className).toContain('focus-visible:ring-2');
+  });
 });

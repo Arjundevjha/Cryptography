@@ -75,7 +75,7 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(screen.getByText(/One-Time Pad Stream/i)).toBeInTheDocument();
 
     // Test re-rolling keystream
-    const rerollBtn = screen.getByRole('button', { name: /re-roll keystream/i });
+    const rerollBtn = screen.getByRole('button', { name: /re-roll.*keystream/i });
     expect(rerollBtn).toBeInTheDocument();
     fireEvent.click(rerollBtn);
   });
