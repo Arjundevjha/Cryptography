@@ -20,6 +20,11 @@ def generate_key(length: int = 32) -> bytes:
     Returns:
         Random bytes of specified length
     """
+    # Security: Validate type and bounds to prevent weak keys or CPU/Memory DoS attacks
+    if not isinstance(length, int) or isinstance(length, bool):
+        raise TypeError("Key length must be an integer")
+    if not 16 <= length <= 4096:
+        raise ValueError("Key length must be between 16 and 4096 bytes")
     return secrets.token_bytes(length)
 
 def create_hmac(data: bytes, key: bytes, algorithm: str = 'sha256') -> str:
@@ -33,6 +38,12 @@ def create_hmac(data: bytes, key: bytes, algorithm: str = 'sha256') -> str:
     Returns:
         HMAC digest as hexadecimal string
     """
+    if not isinstance(data, (bytes, bytearray)):
+        raise TypeError("Data must be bytes or bytearray")
+    if not isinstance(key, (bytes, bytearray)):
+        raise TypeError("Key must be bytes or bytearray")
+    if len(key) == 0:
+        raise ValueError("Key cannot be empty")
     if algorithm != ALGORITHM_NAME:
         raise ValueError("Only sha256 is supported in this pure Python implementation")
     return hmac_sha256(key, data).hex()

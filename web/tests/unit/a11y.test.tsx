@@ -5,7 +5,8 @@ import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 import { WorkbenchPanel } from '../../src/components/museum/workbench/WorkbenchPanel';
 import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
-import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
+import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from '../../src/components/museum/museumData';
+import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/StatueCuratorialDrawer';
 
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
@@ -54,7 +55,7 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(returnToLobbyBtn.className).toContain('focus-visible:ring-2');
   });
 
-  it('renders MuseumHUD 2D Map toggle and modal close button with accessible aria-labels', () => {
+  it('renders MuseumHUD 2D Map toggle, modal dialog role, aria-modal, and supports Escape key dismissal', () => {
     render(
       <MuseumHUD
         currentView="atrium"
@@ -72,9 +73,19 @@ describe('Accessibility (A11y) Unit Tests', () => {
     fireEvent.click(toggleMapButton);
     expect(toggleMapButton).toHaveAttribute('aria-expanded', 'true');
 
+    // Verify map dialog accessibility attributes
+    const dialog = screen.getByRole('dialog', { name: /interactive museum floorplan map/i });
+    expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+
     // Verify map close button accessible name
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+
+    // Verify pressing Escape key closes the map modal
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('dialog', { name: /interactive museum floorplan map/i })).not.toBeInTheDocument();
   });
 
   it('allows keyboard navigation and activation of 2D floorplan interactive room markers', () => {
@@ -150,6 +161,45 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(statusWidget).toHaveAttribute('tabindex', '0');
     expect(statusWidget).toHaveAttribute('aria-label');
     expect(statusWidget.className).toContain('focus-visible:ring-2');
+  });
+
+  it('renders StatueCuratorialDrawer tab switchers with accessible tab roles, aria-selected, and focus styles', () => {
+    const diffieHellman = MUSEUM_STATUES.find((s) => s.id === 'statue-diffie-hellman')!;
+    render(<StatueCuratorialDrawer statue={diffieHellman} onClose={jest.fn()} />);
+
+    // Verify main tablist
+    const mainTabList = screen.getByRole('tablist', { name: /statue details view mode/i });
+    expect(mainTabList).toBeInTheDocument();
+
+    const curationTab = screen.getByRole('tab', { name: /historical curation/i });
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+
+    expect(curationTab).toHaveAttribute('aria-selected', 'true');
+    expect(labTab).toHaveAttribute('aria-selected', 'false');
+    expect(curationTab.className).toContain('focus-visible:ring-2');
+    expect(labTab.className).toContain('focus-visible:ring-2');
+
+    // Switch to Pioneer Lab
+    fireEvent.click(labTab);
+    expect(curationTab).toHaveAttribute('aria-selected', 'false');
+    expect(labTab).toHaveAttribute('aria-selected', 'true');
+
+    // Verify sub-tablist for Key exchange concept explanation
+    const subTabList = screen.getByRole('tablist', { name: /key exchange concept explanation/i });
+    expect(subTabList).toBeInTheDocument();
+
+    const dhMathTab = screen.getByRole('tab', { name: /diffie-hellman math/i });
+    const merklePuzzleTab = screen.getByRole('tab', { name: /ralph merkle's puzzles/i });
+
+    expect(dhMathTab).toHaveAttribute('aria-selected', 'true');
+    expect(merklePuzzleTab).toHaveAttribute('aria-selected', 'false');
+    expect(dhMathTab.className).toContain('focus-visible:ring-2');
+    expect(merklePuzzleTab.className).toContain('focus-visible:ring-2');
+
+    // Switch sub-tab
+    fireEvent.click(merklePuzzleTab);
+    expect(dhMathTab).toHaveAttribute('aria-selected', 'false');
+    expect(merklePuzzleTab).toHaveAttribute('aria-selected', 'true');
   });
 
   it('renders RSA parameter inputs and keygen button with accessible labels and focus styles', () => {

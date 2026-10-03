@@ -128,6 +128,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
     return response
 
 # Custom exception handler for validation errors to return HTTP 400 on limit violation
@@ -445,7 +446,9 @@ def validate_polybius_key(key: str | None) -> str:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Key must contain exactly 25 unique letters."
         )
-    return key
+    # Security: Return normalized 25-character key grid (`grid_key_clean`) rather than raw `key`
+    # to prevent out-of-bounds matrix coordinate generation (e.g. "61") when `key` contains 'j'.
+    return grid_key_clean
 
 
 def validate_polybius_ciphertext(ciphertext: str) -> None:
@@ -788,6 +791,8 @@ def aes_decrypt_endpoint(data: AesDecryptInput):
         from methods.modern import aes
         plaintext = aes.decrypt(ciphertext_bytes, key_bytes, nonce_bytes)
         return {"plaintext": plaintext}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
     except Exception as e:
         logger.error("AES decryption error: %s", e)
         raise HTTPException(status_code=400, detail="Decryption failed")

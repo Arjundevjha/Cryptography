@@ -275,3 +275,36 @@ def test_decrypt_private_key_missing_header_or_footer():
     pem_no_header = b"SGVsbG8=\n-----END ENCRYPTED RSA PRIVATE KEY-----\n"
     with pytest.raises(ValueError, match=enc_err):
         decrypt_private_key(pem_no_header, passphrase)
+
+
+def test_parse_pem_single_parameter_or_non_integer():
+    """Test that _parse_pem raises ValueError for single parameter or non-integer payloads."""
+    from methods.modern.helpers import b64encode
+    header = "-----BEGIN RSA PUBLIC KEY-----"
+    footer = "-----END RSA PUBLIC KEY-----"
+
+    # Single parameter payload
+    single_param_pem = f"{header}\n{b64encode(b'12345')}\n{footer}".encode('utf-8')
+    with pytest.raises(
+        ValueError,
+        match="Invalid PEM payload format: expected colon-separated parameter values"
+    ):
+        _parse_pem(single_param_pem, header, footer)
+
+    # Non-integer parameter payload
+    non_int_pem = f"{header}\n{b64encode(b'12345:abc')}\n{footer}".encode('utf-8')
+    with pytest.raises(ValueError, match="Invalid integer parameter in PEM payload"):
+        _parse_pem(non_int_pem, header, footer)
+
+
+def test_decrypt_private_key_payload_too_short():
+    """Test that decrypt_private_key raises ValueError when the payload is under 16 bytes."""
+    from methods.modern.helpers import b64encode
+    header = "-----BEGIN ENCRYPTED RSA PRIVATE KEY-----"
+    footer = "-----END ENCRYPTED RSA PRIVATE KEY-----"
+    short_pem = f"{header}\n{b64encode(b'short')}\n{footer}".encode('utf-8')
+    with pytest.raises(
+        ValueError,
+        match="Invalid encrypted PEM payload: payload size must be at least 16 bytes"
+    ):
+        decrypt_private_key(short_pem, b"passphrase")

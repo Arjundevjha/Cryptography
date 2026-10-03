@@ -37,6 +37,7 @@ def test_security_headers_present():
     assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
     assert response.headers["Permissions-Policy"] == "camera=(), microphone=(), geolocation=()"
     assert response.headers["Strict-Transport-Security"] == "max-age=31536000; includeSubDomains"
+    assert response.headers["Content-Security-Policy"] == "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
 
 def test_validate_input_success():
     response = client.post("/api/validate", json={"text": "hello"})
@@ -224,11 +225,29 @@ def test_validate_polybius_key_unit():
     assert validate_polybius_key("") == "abcdefghiklmnopqrstuvwxyz"
     valid_key = "abcdefghiklmnopqrstuvwxyz"
     assert validate_polybius_key(valid_key) == valid_key
+    # Ensure keys containing 'j' or uppercase letters are normalized to 25-character lowercase grids
+    key_with_j = "abcdefghjklmnopqrstuvwxyz"
+    assert validate_polybius_key(key_with_j) == "abcdefghiklmnopqrstuvwxyz"
+    uppercase_key = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    assert validate_polybius_key(uppercase_key) == "abcdefghiklmnopqrstuvwxyz"
 
     with pytest.raises(HTTPException) as exc_info:
         validate_polybius_key("shortkey")
     assert exc_info.value.status_code == 400
     assert "25 unique letters" in exc_info.value.detail
+
+
+def test_polybius_encrypt_decrypt_key_with_j():
+    # Encrypting with a key containing 'j' should normalize key and produce valid 1-5 coordinates
+    key_with_j = "abcdefghjklmnopqrstuvwxyz"
+    enc = client.post("/api/polybius/encrypt", json={"plaintext": "TEST", "key": key_with_j})
+    assert enc.status_code == 200
+    ciphertext = enc.json()["ciphertext"]
+
+    # Decrypting with the same key should succeed without out-of-bounds coordinate errors
+    dec = client.post("/api/polybius/decrypt", json={"ciphertext": ciphertext, "key": key_with_j})
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == "TEST"
 
 
 def test_validate_polybius_ciphertext_unit():

@@ -1,5 +1,6 @@
 import os
 from unittest.mock import patch
+import pytest
 
 from methods.modern.aes import encrypt, decrypt, NONCE_SIZE, BLOCK_SIZE
 
@@ -72,3 +73,11 @@ def test_aes_long_message():
 
     decrypted = decrypt(ciphertext, key, nonce)
     assert decrypted == message
+
+
+def test_aes_decrypt_invalid_nonce_length():
+    """Test that calling decrypt with an invalid nonce length raises ValueError."""
+    key = os.urandom(32)
+    ciphertext = b"testciphertext"
+    with pytest.raises(ValueError, match="Nonce must be exactly 12 bytes"):
+        decrypt(ciphertext, key, nonce=b"invalid_nonce")

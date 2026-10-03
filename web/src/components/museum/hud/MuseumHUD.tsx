@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ApiStatusDot } from './ApiStatusDot';
 import { Github, Home, Compass, Map, X, Sparkles, Navigation } from 'lucide-react';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from '../museumData';
@@ -14,6 +14,17 @@ interface MuseumHUDProps {
 
 export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer }: MuseumHUDProps) {
   const [showMap, setShowMap] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showMap) {
+        setShowMap(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showMap]);
+
   const activeExhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
   const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
@@ -105,7 +116,15 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
 
       {/* 2D INTERACTIVE MUSEUM FLOORPLAN MAP DRAWER */}
       {showMap && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fadeIn">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Interactive Museum Floorplan Map"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowMap(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fadeIn"
+        >
           <div className="relative w-full max-w-4xl bg-stone-900 border border-amber-500/40 rounded-3xl p-6 shadow-2xl text-stone-100 space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-stone-800 pb-3">
