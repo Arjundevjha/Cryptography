@@ -202,6 +202,46 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(merklePuzzleTab).toHaveAttribute('aria-selected', 'true');
   });
 
+  it('renders Pioneer Lab interactive inputs with accessible labels, aria-labels, and focus styles', () => {
+    const alkindi = MUSEUM_STATUES.find((s) => s.id === 'statue-alkindi')!;
+    const { rerender } = render(<StatueCuratorialDrawer statue={alkindi} onClose={jest.fn()} />);
+
+    // Switch to Pioneer Lab
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+    fireEvent.click(labTab);
+
+    // Verify Al-Kindi frequency analysis inputs
+    const kindiTextarea = screen.getByLabelText(/ciphertext sample/i);
+    expect(kindiTextarea).toBeInTheDocument();
+    expect(kindiTextarea.className).toContain('focus-visible:ring-2');
+
+    const kindiShiftRange = screen.getByLabelText(/test caesar shift key/i);
+    expect(kindiShiftRange).toBeInTheDocument();
+    expect(kindiShiftRange).toHaveAttribute('aria-label', 'Caesar shift key slider');
+    expect(kindiShiftRange.className).toContain('focus-visible:ring-2');
+
+    const resetShiftBtn = screen.getByRole('button', { name: /reset caesar shift to 3/i });
+    expect(resetShiftBtn).toBeInTheDocument();
+    expect(resetShiftBtn.className).toContain('focus-visible:ring-2');
+
+    // Verify Diffie-Hellman range inputs
+    const diffieHellman = MUSEUM_STATUES.find((s) => s.id === 'statue-diffie-hellman')!;
+    rerender(<StatueCuratorialDrawer statue={diffieHellman} onClose={jest.fn()} />);
+
+    const labTabDh = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+    fireEvent.click(labTabDh);
+
+    const aliceRange = screen.getByLabelText(/alice private/i);
+    const bobRange = screen.getByLabelText(/bob private/i);
+
+    expect(aliceRange).toBeInTheDocument();
+    expect(bobRange).toBeInTheDocument();
+    expect(aliceRange).toHaveAttribute('aria-label', 'Alice private key range slider');
+    expect(bobRange).toHaveAttribute('aria-label', 'Bob private key range slider');
+    expect(aliceRange.className).toContain('focus-visible:ring-2');
+    expect(bobRange.className).toContain('focus-visible:ring-2');
+  });
+
   it('renders RSA parameter inputs and keygen button with accessible labels and focus styles', () => {
     const rsaExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'rsa')!;
     render(<WorkbenchPanel exhibit={rsaExhibit} />);
