@@ -308,3 +308,14 @@ def test_decrypt_private_key_payload_too_short():
         match="Invalid encrypted PEM payload: payload size must be at least 16 bytes"
     ):
         decrypt_private_key(short_pem, b"passphrase")
+
+
+def test_decrypt_ciphertext_exceeds_max_limit():
+    """Test that decrypt raises ValueError when ciphertext length exceeds MAX_CIPHERTEXT_SIZE."""
+    _, priv_pem = generate_keypair(key_size=512)
+    oversized_ciphertext = b"A" * 100001
+    with pytest.raises(
+        ValueError,
+        match="Ciphertext length exceeds maximum limit of 100000 bytes"
+    ):
+        decrypt(oversized_ciphertext, priv_pem)

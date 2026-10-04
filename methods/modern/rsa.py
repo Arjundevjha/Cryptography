@@ -23,6 +23,7 @@ except ImportError:
 
 # Size constants
 IV_SIZE = 16
+MAX_CIPHERTEXT_SIZE = 100000
 
 def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
     """Helper to strip PEM wrapping, decode base64, and split by colon."""
@@ -115,6 +116,13 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
         raise ValueError(
             "RSA modulus n must be at least 256 (key size >= 8 bits) "
             "to decrypt byte values up to 255."
+        )
+
+    # Security: Limit ciphertext byte length to prevent CPU / Memory DoS attacks
+    # during modular exponentiation on arbitrarily large ciphertexts
+    if len(ciphertext) > MAX_CIPHERTEXT_SIZE:
+        raise ValueError(
+            f"Ciphertext length exceeds maximum limit of {MAX_CIPHERTEXT_SIZE} bytes"
         )
 
     key_size_bytes = (n.bit_length() + 7) // 8
