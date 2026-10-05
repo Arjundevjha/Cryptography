@@ -23,6 +23,7 @@ except ImportError:
 
 # Size constants
 IV_SIZE = 16
+MAX_MESSAGE_SIZE = 10000
 
 def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
     """Helper to strip PEM wrapping, decode base64, and split by colon."""
@@ -77,6 +78,11 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     )
     n = key_params[0]
     e = key_params[1]
+
+    if len(message) > MAX_MESSAGE_SIZE:
+        raise ValueError(
+            f"Message length ({len(message)}) exceeds maximum allowed limit of {MAX_MESSAGE_SIZE} characters"
+        )
 
     if n < 256:
         raise ValueError(

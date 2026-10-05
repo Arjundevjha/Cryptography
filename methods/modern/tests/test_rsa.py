@@ -46,6 +46,15 @@ def test_encrypt_decrypt_standard_message():
     decrypted_message = decrypt(ciphertext, priv_pem)
     assert decrypted_message == message
 
+def test_encrypt_message_exceeds_max_length():
+    pub_pem, _ = generate_keypair(key_size=512)
+    message = "A" * 10001
+    with pytest.raises(
+        ValueError,
+        match="Message length \\(10001\\) exceeds maximum allowed limit of 10000 characters"
+    ):
+        encrypt(message, pub_pem)
+
 def test_encrypt_decrypt_empty_message():
     pub_pem, priv_pem = generate_keypair(key_size=512)
     message = ""
