@@ -201,9 +201,24 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
       {/* Input Field */}
       <div className="mb-4">
-        <label htmlFor={`input-text-${exhibit.id}`} className="block text-xs font-mono text-stone-300 mb-1">
-          {mode === 'encrypt' ? 'PLAINTEXT INPUT' : 'CIPHERTEXT INPUT'}
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label htmlFor={`input-text-${exhibit.id}`} className="block text-xs font-mono text-stone-300">
+            {mode === 'encrypt' ? 'PLAINTEXT INPUT' : 'CIPHERTEXT INPUT'}
+          </label>
+          <div className="flex items-center gap-2 text-[10px] font-mono text-stone-400">
+            <span>{inputText.length} chars</span>
+            {inputText.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setInputText('')}
+                aria-label="Clear input text"
+                className="text-amber-400 hover:text-amber-300 underline focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
         <textarea
           id={`input-text-${exhibit.id}`}
           rows={2}

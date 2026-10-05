@@ -143,6 +143,23 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(unmutedButton).toHaveAttribute('aria-pressed', 'true');
   });
 
+  it('renders WorkbenchPanel input character counter and clear button action', () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    expect(screen.getByText('18 chars')).toBeInTheDocument();
+
+    const clearBtn = screen.getByRole('button', { name: /clear input text/i });
+    expect(clearBtn).toBeInTheDocument();
+    expect(clearBtn.className).toContain('focus-visible:ring-2');
+
+    fireEvent.click(clearBtn);
+
+    expect(inputArea).toHaveValue('');
+    expect(screen.getByText('0 chars')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear input text/i })).not.toBeInTheDocument();
+  });
+
   it('renders WorkbenchPanel parameter inputs with accessible labels and ARIA attributes', () => {
     // Test Caesar exhibit shift parameter input label association
     const caesarExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'caesar') || sampleExhibit;
