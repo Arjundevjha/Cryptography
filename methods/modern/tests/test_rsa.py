@@ -308,3 +308,39 @@ def test_decrypt_private_key_payload_too_short():
         match="Invalid encrypted PEM payload: payload size must be at least 16 bytes"
     ):
         decrypt_private_key(short_pem, b"passphrase")
+
+
+def test_rsa_input_validation_and_bounds():
+    """Test security input type and size bounds checks in RSA functions."""
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+
+    # Message type and length limits
+    with pytest.raises(TypeError, match="Message must be a string"):
+        encrypt(12345, pub_pem)
+
+    with pytest.raises(ValueError, match="Message length exceeds maximum limit"):
+        encrypt("A" * 10001, pub_pem)
+
+    # Ciphertext type and length limits
+    with pytest.raises(TypeError, match="Ciphertext must be bytes or bytearray"):
+        decrypt("not_bytes", priv_pem)
+
+    with pytest.raises(ValueError, match="Ciphertext length exceeds maximum limit"):
+        decrypt(b"A" * 100001, priv_pem)
+
+    # PEM data type and UTF-8 / Base64 error handling
+    with pytest.raises(TypeError, match="PEM data must be bytes or bytearray"):
+        _parse_pem("not_bytes", "-----BEGIN RSA PUBLIC KEY-----", "-----END RSA PUBLIC KEY-----")
+
+    with pytest.raises(ValueError, match="Invalid UTF-8 encoding"):
+        _parse_pem(b"\x80\x81\x82", "-----BEGIN RSA PUBLIC KEY-----", "-----END RSA PUBLIC KEY-----")
+
+    # Passphrase & Encrypted PEM type and empty passphrase checks
+    with pytest.raises(TypeError, match="Encrypted private key PEM must be bytes or bytearray"):
+        decrypt_private_key("not_bytes", b"passphrase")
+
+    with pytest.raises(TypeError, match="Passphrase must be bytes or bytearray"):
+        decrypt_private_key(pub_pem, "not_bytes")
+
+    with pytest.raises(ValueError, match="Passphrase cannot be empty"):
+        decrypt_private_key(pub_pem, b"")

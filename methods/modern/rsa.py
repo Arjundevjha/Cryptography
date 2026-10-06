@@ -23,14 +23,26 @@ except ImportError:
 
 # Size constants
 IV_SIZE = 16
+MAX_MESSAGE_SIZE = 10000
+MAX_CIPHERTEXT_SIZE = 100000
 
 def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
     """Helper to strip PEM wrapping, decode base64, and split by colon."""
-    pem_str = pem_bytes.decode('utf-8').strip()
+    if not isinstance(pem_bytes, (bytes, bytearray)):
+        raise TypeError("PEM data must be bytes or bytearray")
+    try:
+        pem_str = pem_bytes.decode('utf-8').strip()
+    except UnicodeDecodeError as err:
+        raise ValueError("Invalid UTF-8 encoding in PEM data") from err
+
     if header not in pem_str or footer not in pem_str:
         raise ValueError("Invalid PEM structure: missing required header or footer")
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
-    decoded = b64decode(payload).decode('utf-8')
+    try:
+        decoded = b64decode(payload).decode('utf-8')
+    except Exception as err:
+        raise ValueError("Invalid base64 encoding in PEM payload") from err
+
     parts = decoded.split(":")
     if len(parts) < 2:
         raise ValueError("Invalid PEM payload format: expected colon-separated parameter values")
@@ -41,14 +53,29 @@ def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
 
 def decrypt_private_key(enc_private_key_pem: bytes, passphrase: bytes) -> bytes:
     """Decrypt an encrypted private key PEM using the passphrase."""
-    pem_str = enc_private_key_pem.decode('utf-8').strip()
+    if not isinstance(enc_private_key_pem, (bytes, bytearray)):
+        raise TypeError("Encrypted private key PEM must be bytes or bytearray")
+    if not isinstance(passphrase, (bytes, bytearray)):
+        raise TypeError("Passphrase must be bytes or bytearray")
+    if len(passphrase) == 0:
+        raise ValueError("Passphrase cannot be empty")
+
+    try:
+        pem_str = enc_private_key_pem.decode('utf-8').strip()
+    except UnicodeDecodeError as err:
+        raise ValueError("Invalid UTF-8 encoding in encrypted PEM data") from err
+
     header = "-----BEGIN ENCRYPTED RSA PRIVATE KEY-----"
     footer = "-----END ENCRYPTED RSA PRIVATE KEY-----"
     if header not in pem_str or footer not in pem_str:
         raise ValueError("Invalid encrypted PEM structure: missing required header or footer")
     payload = pem_str.replace(header, "").replace(footer, "").replace("\n", "")
 
-    raw_payload = b64decode(payload)
+    try:
+        raw_payload = b64decode(payload)
+    except Exception as err:
+        raise ValueError("Invalid base64 encoding in encrypted PEM payload") from err
+
     if len(raw_payload) < IV_SIZE:
         raise ValueError(
             "Invalid encrypted PEM payload: payload size must be at least 16 bytes"
@@ -70,6 +97,13 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     Returns:
         Ciphertext bytes
     """
+    if not isinstance(message, str):
+        raise TypeError("Message must be a string")
+    if len(message) > MAX_MESSAGE_SIZE:
+        raise ValueError(
+            f"Message length exceeds maximum limit of {MAX_MESSAGE_SIZE} characters"
+        )
+
     key_params = _parse_pem(
         public_key_pem,
         "-----BEGIN RSA PUBLIC KEY-----",
@@ -103,6 +137,13 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     Returns:
         Decrypted plaintext string
     """
+    if not isinstance(ciphertext, (bytes, bytearray)):
+        raise TypeError("Ciphertext must be bytes or bytearray")
+    if len(ciphertext) > MAX_CIPHERTEXT_SIZE:
+        raise ValueError(
+            f"Ciphertext length exceeds maximum limit of {MAX_CIPHERTEXT_SIZE} bytes"
+        )
+
     key_params = _parse_pem(
         private_key_pem,
         "-----BEGIN RSA PRIVATE KEY-----",
