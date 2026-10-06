@@ -7,6 +7,14 @@ import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
 import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from '../../src/components/museum/museumData';
 import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/StatueCuratorialDrawer';
+import { MuseumCanvas } from '../../src/components/museum/MuseumCanvas';
+
+// Mock ThreeMuseumScene to prevent WebGL canvas initialization during unit tests
+jest.mock('../../src/components/museum/ThreeMuseumScene', () => {
+  return function DummyThreeMuseumScene() {
+    return <div data-testid="mock-three-scene" />;
+  };
+});
 
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
@@ -284,5 +292,15 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify screen-reader live status element updates with polite feedback
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
+  });
+
+  it('renders MuseumCanvas lobby statue buttons and inspect buttons with focus-visible focus ring styles', () => {
+    render(<MuseumCanvas />);
+
+    // Verify monument button focus-visible styling
+    const alKindiMonumentBtn = screen.getByRole('button', { name: /al-kindi/i });
+    expect(alKindiMonumentBtn).toBeInTheDocument();
+    expect(alKindiMonumentBtn.className).toContain('focus-visible:ring-2');
+    expect(alKindiMonumentBtn.className).toContain('focus-visible:ring-amber-500');
   });
 });
