@@ -308,3 +308,19 @@ def test_decrypt_private_key_payload_too_short():
         match="Invalid encrypted PEM payload: payload size must be at least 16 bytes"
     ):
         decrypt_private_key(short_pem, b"passphrase")
+
+
+def test_rsa_encrypt_exceeds_max_message_size():
+    """Test that encrypt raises ValueError when message length exceeds MAX_MESSAGE_SIZE."""
+    pub_pem, _ = generate_keypair(key_size=512)
+    large_message = "A" * 10001
+    with pytest.raises(ValueError, match="exceeds maximum limit of 10000 characters"):
+        encrypt(large_message, pub_pem)
+
+
+def test_rsa_decrypt_exceeds_max_ciphertext_size():
+    """Test that decrypt raises ValueError when ciphertext length exceeds MAX_CIPHERTEXT_SIZE."""
+    _, priv_pem = generate_keypair(key_size=512)
+    large_ciphertext = b"X" * 100001
+    with pytest.raises(ValueError, match="exceeds maximum limit of 100000 bytes"):
+        decrypt(large_ciphertext, priv_pem)

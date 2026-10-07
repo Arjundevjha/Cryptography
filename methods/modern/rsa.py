@@ -23,6 +23,8 @@ except ImportError:
 
 # Size constants
 IV_SIZE = 16
+MAX_MESSAGE_SIZE = 10000
+MAX_CIPHERTEXT_SIZE = 100000
 
 def _parse_pem(pem_bytes: bytes, header: str, footer: str) -> list[int]:
     """Helper to strip PEM wrapping, decode base64, and split by colon."""
@@ -70,6 +72,12 @@ def encrypt(message: str, public_key_pem: bytes) -> bytes:
     Returns:
         Ciphertext bytes
     """
+    # Security: Limit maximum message length to prevent CPU/memory resource exhaustion DoS attacks
+    if len(message) > MAX_MESSAGE_SIZE:
+        raise ValueError(
+            f"Message size ({len(message)} chars) exceeds maximum limit of {MAX_MESSAGE_SIZE} characters"
+        )
+
     key_params = _parse_pem(
         public_key_pem,
         "-----BEGIN RSA PUBLIC KEY-----",
@@ -103,6 +111,12 @@ def decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     Returns:
         Decrypted plaintext string
     """
+    # Security: Limit maximum ciphertext size to prevent CPU/memory resource exhaustion DoS attacks
+    if len(ciphertext) > MAX_CIPHERTEXT_SIZE:
+        raise ValueError(
+            f"Ciphertext size ({len(ciphertext)} bytes) exceeds maximum limit of {MAX_CIPHERTEXT_SIZE} bytes"
+        )
+
     key_params = _parse_pem(
         private_key_pem,
         "-----BEGIN RSA PRIVATE KEY-----",
