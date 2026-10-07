@@ -78,9 +78,14 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(dialog).toBeInTheDocument();
     expect(dialog).toHaveAttribute('aria-modal', 'true');
 
-    // Verify map close button accessible name
+    // Verify map close button accessible name and focus visible style
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+    expect(closeMapButton.className).toContain('focus-visible:ring-2');
+
+    const closeMapTextBtn = screen.getByRole('button', { name: /^close map$/i });
+    expect(closeMapTextBtn).toBeInTheDocument();
+    expect(closeMapTextBtn.className).toContain('focus-visible:ring-2');
 
     // Verify pressing Escape key closes the map modal
     fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
