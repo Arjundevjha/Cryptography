@@ -285,4 +285,25 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
   });
+
+  it('renders Enigma rotor selectors with accessible group role, aria-labelledby, and assigned IDs', () => {
+    const enigmaExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'enigma')!;
+    render(<WorkbenchPanel exhibit={enigmaExhibit} />);
+
+    const rotorGroup = screen.getByRole('group', { name: /rotors \(select i - viii\):/i });
+    expect(rotorGroup).toBeInTheDocument();
+    expect(rotorGroup).toHaveAttribute('aria-labelledby', `param-rotors-label-${enigmaExhibit.id}`);
+
+    const rotor1 = screen.getByRole('combobox', { name: /enigma rotor 1/i });
+    const rotor2 = screen.getByRole('combobox', { name: /enigma rotor 2/i });
+    const rotor3 = screen.getByRole('combobox', { name: /enigma rotor 3/i });
+
+    expect(rotor1).toBeInTheDocument();
+    expect(rotor2).toBeInTheDocument();
+    expect(rotor3).toBeInTheDocument();
+
+    expect(rotor1).toHaveAttribute('id', `param-rotor-0-${enigmaExhibit.id}`);
+    expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
+    expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
+  });
 });
