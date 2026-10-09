@@ -19,11 +19,20 @@ const CAESAR_TABLES: string[][] = Array.from({ length: 26 }, (_, shift) => {
   return table;
 });
 
+const MAX_INPUT_LENGTH = 100000;
+
+function validateInputLength(text: string): void {
+  if (text && text.length > MAX_INPUT_LENGTH) {
+    throw new Error(`Input length exceeds maximum allowed limit of ${MAX_INPUT_LENGTH} characters.`);
+  }
+}
+
 /**
  * Caesar cipher implementation.
  */
 export function caesarEncrypt(plaintext: string, shift: number): string {
   if (!plaintext) return '';
+  validateInputLength(plaintext);
   const normalizedShift = ((shift % 26) + 26) % 26;
   const table = CAESAR_TABLES[normalizedShift];
   const len = plaintext.length;
@@ -36,6 +45,8 @@ export function caesarEncrypt(plaintext: string, shift: number): string {
 }
 
 export function caesarDecrypt(ciphertext: string, shift: number): string {
+  if (!ciphertext) return '';
+  validateInputLength(ciphertext);
   const normalizedShift = ((shift % 26) + 26) % 26;
   return caesarEncrypt(ciphertext, 26 - normalizedShift);
 }
@@ -49,6 +60,7 @@ export function caesarDecrypt(ciphertext: string, shift: number): string {
  */
 function vigenereTransform(text: string, key: string, isEncrypt: boolean): string {
   if (!key || !text) return text;
+  validateInputLength(text);
   const keyLen = key.length;
   if (keyLen === 0) return text;
 
@@ -258,6 +270,8 @@ export function generatePlayfairGrid(key: string): string[] {
  * Playfair cipher implementation.
  */
 export function playfairEncrypt(plaintext: string, key: string): string {
+  if (!plaintext) return '';
+  validateInputLength(plaintext);
   const gridChars = generatePlayfairGrid(key);
   
   // Find position
@@ -307,6 +321,8 @@ export function playfairEncrypt(plaintext: string, key: string): string {
 }
 
 export function playfairDecrypt(ciphertext: string, key: string): string {
+  if (!ciphertext) return '';
+  validateInputLength(ciphertext);
   const gridChars = generatePlayfairGrid(key);
   
   const findPos = (char: string): [number, number] => {
@@ -378,6 +394,8 @@ function buildSubstitutionTable(keyAlphabet: string, isEncrypt: boolean): string
  * Fast substitution cipher transformation using precomputed ASCII lookup table.
  */
 function substitutionTransform(text: string, table: string[]): string {
+  if (!text) return '';
+  validateInputLength(text);
   const len = text.length;
   const out = new Array<string>(len);
   for (let i = 0; i < len; i++) {
