@@ -61,7 +61,10 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
       </div>
 
       {/* Top Center Wing & Navigation Bar */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex items-center gap-1.5 p-1.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/20 shadow-2xl">
+      <nav
+        aria-label="Museum navigation"
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex items-center gap-1.5 p-1.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/20 shadow-2xl"
+      >
         <button
           onClick={onReturnToFoyer}
           aria-current={currentView === 'atrium' ? 'page' : undefined}
@@ -98,7 +101,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         >
           <Map className="w-3.5 h-3.5" /> 2D MAP
         </button>
-      </div>
+      </nav>
 
       {/* Top Right Floating HUD Links */}
       <div className="fixed top-6 right-6 z-40 flex items-center gap-3">
