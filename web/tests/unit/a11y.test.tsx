@@ -37,7 +37,7 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
-  it('renders MuseumHUD top navigation with aria-current="page" on active item and focus-visible styles', () => {
+  it('renders MuseumHUD top navigation landmark with aria-current="page" on active item and focus-visible styles', () => {
     render(
       <MuseumHUD
         currentView="wing-classical"
@@ -46,6 +46,9 @@ describe('Accessibility (A11y) Unit Tests', () => {
         onReturnToFoyer={jest.fn()}
       />
     );
+
+    const navLandmark = screen.getByRole('navigation', { name: /museum navigation/i });
+    expect(navLandmark).toBeInTheDocument();
 
     const lobbyNavBtn = screen.getByRole('button', { name: /^lobby$/i });
     const classicalWingBtn = screen.getByRole('button', { name: /classical wing/i });
@@ -369,5 +372,33 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(rotor1).toHaveAttribute('id', `param-rotor-0-${enigmaExhibit.id}`);
     expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
     expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
+  });
+
+  it('displays dynamic loading text state on execute button while operation is running', async () => {
+    let resolveFetch: (value: any) => void = () => {};
+    global.fetch = jest.fn().mockImplementation(() =>
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      })
+    ) as jest.Mock;
+
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    React.act(() => {
+      fireEvent.click(executeBtn);
+    });
+
+    expect(screen.getByRole('button', { name: /encrypting\.\.\./i })).toBeInTheDocument();
+
+    await React.act(async () => {
+      resolveFetch({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      });
+    });
+
+    expect(screen.getByRole('button', { name: /execute encrypt/i })).toBeInTheDocument();
   });
 });
