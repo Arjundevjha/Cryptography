@@ -45,6 +45,12 @@ describe('Caesar Cipher Adapter', () => {
     expect(caesarEncrypt('', 5)).toBe('');
     expect(caesarDecrypt('', 5)).toBe('');
   });
+
+  it('should throw Error when input exceeds maximum allowed length', () => {
+    const oversizedText = 'a'.repeat(100001);
+    expect(() => caesarEncrypt(oversizedText, 3)).toThrow('Input length exceeds maximum allowed limit');
+    expect(() => caesarDecrypt(oversizedText, 3)).toThrow('Input length exceeds maximum allowed limit');
+  });
 });
 
 describe('Vigenere Cipher Adapter', () => {
@@ -64,6 +70,12 @@ describe('Vigenere Cipher Adapter', () => {
 
   it('should preserve special characters and case', () => {
     expect(vigenereEncrypt('HELLO WORLD!', 'KEY')).toBe('RIJVS UYVJN!');
+  });
+
+  it('should throw Error when input exceeds maximum allowed length', () => {
+    const oversizedText = 'a'.repeat(100001);
+    expect(() => vigenereEncrypt(oversizedText, 'KEY')).toThrow('Input length exceeds maximum allowed limit');
+    expect(() => vigenereDecrypt(oversizedText, 'KEY')).toThrow('Input length exceeds maximum allowed limit');
   });
 });
 
@@ -249,5 +261,11 @@ describe('Substitution Cipher', () => {
   it('should preserve non-alphabetic characters', () => {
     expect(substitutionEncrypt('flee at once! 123', keyAlphabet)).toBe('siaa zq lkba! 123');
     expect(substitutionDecrypt('siaa zq lkba! 123', keyAlphabet)).toBe('flee at once! 123');
+  });
+
+  it('should throw Error when input exceeds maximum allowed length', () => {
+    const oversizedText = 'a'.repeat(100001);
+    expect(() => substitutionEncrypt(oversizedText, keyAlphabet)).toThrow('Input length exceeds maximum allowed limit');
+    expect(() => substitutionDecrypt(oversizedText, keyAlphabet)).toThrow('Input length exceeds maximum allowed limit');
   });
 });
