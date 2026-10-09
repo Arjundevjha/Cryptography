@@ -1284,8 +1284,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_test_create_grid_basic",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test_create_grid_basic()"
     },
     {
@@ -1592,8 +1592,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_rationale_14",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test grid generation with a simple key."
     },
     {
@@ -5915,8 +5915,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern/__init__.py"
     },
     {
@@ -5926,8 +5926,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init_rationale_1",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern cryptography methods package."
     },
     {
@@ -6069,8 +6069,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "methods_modern_digital_signatures_hmac_compare_digest",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "hmac_compare_digest()"
     },
     {
@@ -6135,8 +6135,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "methods_modern_digital_signatures_rationale_77",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "compare two digests in constant time using secrets.compare_digest     to prevent"
     },
     {
@@ -6674,8 +6674,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "methods_modern_helpers_b64encode",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "b64encode()"
     },
     {
@@ -6685,8 +6685,8 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "methods_modern_helpers_b64decode",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "b64decode()"
     },
     {
@@ -6795,8 +6795,8 @@
       "source_location": "L292",
       "_origin": "ast",
       "id": "methods_modern_helpers_sha256",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "sha256()"
     },
     {
@@ -6806,8 +6806,8 @@
       "source_location": "L310",
       "_origin": "ast",
       "id": "methods_modern_helpers_hmac_sha256",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "hmac_sha256()"
     },
     {
@@ -6839,8 +6839,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "methods_modern_helpers_rationale_57",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "encode bytes to a base64 string.      bolt optimization: converts 3-byte input c"
     },
     {
@@ -6850,8 +6850,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "methods_modern_helpers_rationale_88",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "decode a base64 string to bytes.      bolt optimization: processes 4-character b"
     },
     {
@@ -6960,8 +6960,8 @@
       "source_location": "L293",
       "_origin": "ast",
       "id": "methods_modern_helpers_rationale_293",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "compute sha-256 hash of bytes."
     },
     {
@@ -6971,8 +6971,8 @@
       "source_location": "L311",
       "_origin": "ast",
       "id": "methods_modern_helpers_rationale_311",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "compute hmac-sha256 signature of data using key."
     },
     {
@@ -6982,48 +6982,48 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_keypair",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "keypair.py"
     },
     {
       "label": "is_prime()",
       "file_type": "code",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L23",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "methods_modern_keypair_is_prime",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "is_prime()"
     },
     {
       "label": "generate_prime()",
       "file_type": "code",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L51",
+      "source_location": "L65",
       "_origin": "ast",
       "id": "methods_modern_keypair_generate_prime",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "generate_prime()"
     },
     {
       "label": "generate_keypair()",
       "file_type": "code",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L63",
+      "source_location": "L77",
       "_origin": "ast",
       "id": "methods_modern_keypair_generate_keypair",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "generate_keypair()"
     },
     {
       "label": "generate_encrypted_keypair()",
       "file_type": "code",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L103",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "methods_modern_keypair_generate_encrypted_keypair",
       "community": 0,
@@ -7034,11 +7034,11 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L136",
+      "source_location": "L150",
       "_origin": "ast",
       "id": "methods_modern_keypair_main",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "main()"
     },
     {
@@ -7048,50 +7048,50 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_keypair_rationale_1",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "rsa keypair generation module in pure python.  this module provides functionalit"
     },
     {
-      "label": "Check if val is prime using Miller-Rabin primality test.",
+      "label": "Check if val is prime using Miller-Rabin primality test with small prime filteri",
       "file_type": "rationale",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L24",
+      "source_location": "L35",
       "_origin": "ast",
-      "id": "methods_modern_keypair_rationale_24",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
-      "norm_label": "check if val is prime using miller-rabin primality test."
+      "id": "methods_modern_keypair_rationale_35",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
+      "norm_label": "check if val is prime using miller-rabin primality test with small prime filteri"
     },
     {
       "label": "Generate a random prime number of specified bit length.",
       "file_type": "rationale",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L52",
+      "source_location": "L66",
       "_origin": "ast",
-      "id": "methods_modern_keypair_rationale_52",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "id": "methods_modern_keypair_rationale_66",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "generate a random prime number of specified bit length."
     },
     {
       "label": "Generate an RSA key pair.      Args:         key_size: The size of the key in bi",
       "file_type": "rationale",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L67",
+      "source_location": "L81",
       "_origin": "ast",
-      "id": "methods_modern_keypair_rationale_67",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "id": "methods_modern_keypair_rationale_81",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "generate an rsa key pair.      args:         key_size: the size of the key in bi"
     },
     {
       "label": "Generate an RSA key pair with an encrypted private key.      Args:         passp",
       "file_type": "rationale",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L108",
+      "source_location": "L122",
       "_origin": "ast",
-      "id": "methods_modern_keypair_rationale_108",
+      "id": "methods_modern_keypair_rationale_122",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "generate an rsa key pair with an encrypted private key.      args:         passp"
@@ -7100,11 +7100,11 @@
       "label": "Generate and print a sample RSA keypair.",
       "file_type": "rationale",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L137",
+      "source_location": "L151",
       "_origin": "ast",
-      "id": "methods_modern_keypair_rationale_137",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "id": "methods_modern_keypair_rationale_151",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "generate and print a sample rsa keypair."
     },
     {
@@ -7122,7 +7122,7 @@
       "label": "_parse_pem()",
       "file_type": "code",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L27",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "methods_modern_rsa_parse_pem",
       "community": 0,
@@ -7133,7 +7133,7 @@
       "label": "decrypt_private_key()",
       "file_type": "code",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L42",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "methods_modern_rsa_decrypt_private_key",
       "community": 0,
@@ -7144,7 +7144,7 @@
       "label": "encrypt()",
       "file_type": "code",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L63",
+      "source_location": "L90",
       "_origin": "ast",
       "id": "methods_modern_rsa_encrypt",
       "community": 0,
@@ -7155,7 +7155,7 @@
       "label": "decrypt()",
       "file_type": "code",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L96",
+      "source_location": "L130",
       "_origin": "ast",
       "id": "methods_modern_rsa_decrypt",
       "community": 0,
@@ -7166,7 +7166,7 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L136",
+      "source_location": "L177",
       "_origin": "ast",
       "id": "methods_modern_rsa_main",
       "community": 0,
@@ -7188,9 +7188,9 @@
       "label": "Helper to strip PEM wrapping, decode base64, and split by colon.",
       "file_type": "rationale",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L28",
+      "source_location": "L30",
       "_origin": "ast",
-      "id": "methods_modern_rsa_rationale_28",
+      "id": "methods_modern_rsa_rationale_30",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "helper to strip pem wrapping, decode base64, and split by colon."
@@ -7199,9 +7199,9 @@
       "label": "Decrypt an encrypted private key PEM using the passphrase.",
       "file_type": "rationale",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L43",
+      "source_location": "L55",
       "_origin": "ast",
-      "id": "methods_modern_rsa_rationale_43",
+      "id": "methods_modern_rsa_rationale_55",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "decrypt an encrypted private key pem using the passphrase."
@@ -7210,9 +7210,9 @@
       "label": "Encrypt a message using RSA public key.      Args:         message: Plaintext me",
       "file_type": "rationale",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L64",
+      "source_location": "L91",
       "_origin": "ast",
-      "id": "methods_modern_rsa_rationale_64",
+      "id": "methods_modern_rsa_rationale_91",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "encrypt a message using rsa public key.      args:         message: plaintext me"
@@ -7221,9 +7221,9 @@
       "label": "Decrypt a message using RSA private key.      Args:         ciphertext: Encrypte",
       "file_type": "rationale",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L97",
+      "source_location": "L131",
       "_origin": "ast",
-      "id": "methods_modern_rsa_rationale_97",
+      "id": "methods_modern_rsa_rationale_131",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "decrypt a message using rsa private key.      args:         ciphertext: encrypte"
@@ -7232,9 +7232,9 @@
       "label": "Demonstrate RSA keypair generation, encryption, and decryption.",
       "file_type": "rationale",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L137",
+      "source_location": "L178",
       "_origin": "ast",
-      "id": "methods_modern_rsa_rationale_137",
+      "id": "methods_modern_rsa_rationale_178",
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "demonstrate rsa keypair generation, encryption, and decryption."
@@ -7279,8 +7279,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "methods_modern_symmetric_key_expansion",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "key_expansion()"
     },
     {
@@ -7312,8 +7312,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "methods_modern_symmetric_inv_sub_bytes",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "inv_sub_bytes()"
     },
     {
@@ -7389,8 +7389,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "methods_modern_symmetric_encrypt_block",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "encrypt_block()"
     },
     {
@@ -7411,8 +7411,8 @@
       "source_location": "L366",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_pad",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "pkcs7_pad()"
     },
     {
@@ -7422,8 +7422,8 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_unpad",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "pkcs7_unpad()"
     },
     {
@@ -7532,8 +7532,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_67",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "expand the aes key into round keys. supports 16, 24, and 32 byte keys."
     },
     {
@@ -7565,8 +7565,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_107",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "substitute state bytes using the inverse s-box."
     },
     {
@@ -7642,8 +7642,8 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_184",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "encrypt a single 16-byte block using aes.      optimization: unrolls block state"
     },
     {
@@ -7664,8 +7664,8 @@
       "source_location": "L367",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_367",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "apply pkcs7 padding to raw bytes."
     },
     {
@@ -7675,8 +7675,8 @@
       "source_location": "L372",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_372",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "remove pkcs7 padding from raw bytes in constant time to prevent timing oracle at"
     },
     {
@@ -7950,8 +7950,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "modern/tests/test_digital_signatures.py"
     },
     {
@@ -7961,8 +7961,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_generate_key",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_generate_key()"
     },
     {
@@ -7972,8 +7972,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_generate_key_custom_length",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_generate_key_custom_length()"
     },
     {
@@ -7983,8 +7983,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_generate_key_invalid_inputs",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_generate_key_invalid_inputs()"
     },
     {
@@ -7994,8 +7994,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_create_hmac_invalid_inputs",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_create_hmac_invalid_inputs()"
     },
     {
@@ -8005,8 +8005,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_create_hmac",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_create_hmac()"
     },
     {
@@ -8016,8 +8016,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_create_hmac_unsupported_algorithm",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_create_hmac_unsupported_algorithm()"
     },
     {
@@ -8049,8 +8049,8 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_verify_hmac_failure_wrong_key",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_verify_hmac_failure_wrong_key()"
     },
     {
@@ -8071,8 +8071,8 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_test_hmac_compare_digest",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test_hmac_compare_digest()"
     },
     {
@@ -8082,8 +8082,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_1",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "unit tests for digital signatures and hmac verification."
     },
     {
@@ -8093,8 +8093,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_12",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test generating a random symmetric hmac key."
     },
     {
@@ -8104,8 +8104,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_21",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test generating a key with a custom byte length."
     },
     {
@@ -8115,8 +8115,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_27",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test generating key with invalid types and bounds raises appropriate exceptions."
     },
     {
@@ -8126,8 +8126,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_51",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test input validation for create_hmac on types and empty key."
     },
     {
@@ -8137,8 +8137,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_66",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test creating an hmac-sha256 signature for data."
     },
     {
@@ -8148,8 +8148,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_78",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test that unsupported hmac algorithms raise valueerror."
     },
     {
@@ -8181,8 +8181,8 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_104",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test hmac verification failure with mismatched key."
     },
     {
@@ -8203,8 +8203,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "methods_modern_tests_test_digital_signatures_rationale_124",
-      "community": 70,
-      "community_name": "keypair.py",
+      "community": 12,
+      "community_name": "HMAC and Digital Signature Utilities",
       "norm_label": "test constant-time digest comparison with secrets.compare_digest."
     },
     {
@@ -8467,8 +8467,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_helpers.py"
     },
     {
@@ -8533,8 +8533,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64encode_roundtrip",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_b64encode_roundtrip()"
     },
     {
@@ -8544,8 +8544,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64decode",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_b64decode()"
     },
     {
@@ -8555,8 +8555,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64decode_validation_errors",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_b64decode_validation_errors()"
     },
     {
@@ -8588,8 +8588,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_sha256_kat",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_sha256_kat()"
     },
     {
@@ -8599,8 +8599,8 @@
       "source_location": "L150",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_hmac_sha256_kat",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test_hmac_sha256_kat()"
     },
     {
@@ -8665,8 +8665,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_rationale_72",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "test roundtrip encoding and decoding for various byte payloads."
     },
     {
@@ -8676,8 +8676,8 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_rationale_97",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 35,
+      "community_name": "Lorenz Machine Core Unit Tests",
       "norm_label": "verify that b64decode raises valueerror on invalid characters or invalid lengths"
     },
     {
@@ -8687,8 +8687,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_keypair.py"
     },
     {
@@ -8698,8 +8698,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_is_prime_known_primes",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_is_prime_known_primes()"
     },
     {
@@ -8709,8 +8709,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_is_prime_known_composites",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_is_prime_known_composites()"
     },
     {
@@ -8720,8 +8720,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_is_prime_edge_cases",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_is_prime_edge_cases()"
     },
     {
@@ -8731,8 +8731,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_prime",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_prime()"
     },
     {
@@ -8742,8 +8742,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_prime_raises_runtime_error_if_failed",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_prime_raises_runtime_error_if_failed()"
     },
     {
@@ -8753,8 +8753,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_prime_invalid_bits",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_prime_invalid_bits()"
     },
     {
@@ -8764,8 +8764,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_keypair_invalid_key_size",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_keypair_invalid_key_size()"
     },
     {
@@ -8775,8 +8775,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_keypair_default_params",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_keypair_default_params()"
     },
     {
@@ -8786,8 +8786,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_encrypted_keypair",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_encrypted_keypair()"
     },
     {
@@ -8797,8 +8797,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_main_function",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_main_function()"
     },
     {
@@ -8808,8 +8808,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_fallback_imports",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_fallback_imports()"
     },
     {
@@ -8819,8 +8819,8 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_keypair_output_primality",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_keypair_output_primality()"
     },
     {
@@ -8830,8 +8830,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_rationale_80",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test fallback imports by masking the modern module temporarily."
     },
     {
@@ -8951,8 +8951,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_test_fallback_imports",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "test_fallback_imports()"
     },
     {
@@ -9028,8 +9028,8 @@
       "source_location": "L228",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_test_rsa_encrypt_small_modulus_error",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "test_rsa_encrypt_small_modulus_error()"
     },
     {
@@ -9039,8 +9039,8 @@
       "source_location": "L242",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_test_rsa_decrypt_small_modulus_error",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "test_rsa_decrypt_small_modulus_error()"
     },
     {
@@ -9072,8 +9072,8 @@
       "source_location": "L280",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_test_parse_pem_single_parameter_or_non_integer",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "test_parse_pem_single_parameter_or_non_integer()"
     },
     {
@@ -9088,14 +9088,25 @@
       "norm_label": "test_decrypt_private_key_payload_too_short()"
     },
     {
+      "label": "test_rsa_input_validation_and_bounds()",
+      "file_type": "code",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L313",
+      "_origin": "ast",
+      "id": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "norm_label": "test_rsa_input_validation_and_bounds()"
+    },
+    {
       "label": "Test fallback imports by masking the modern module temporarily.",
       "file_type": "rationale",
       "source_file": "methods/modern/tests/test_rsa.py",
       "source_location": "L117",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_rationale_117",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "test fallback imports by masking the modern module temporarily."
     },
     {
@@ -9138,8 +9149,8 @@
       "source_location": "L281",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_rationale_281",
-      "community": 0,
-      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "community": 31,
+      "community_name": "VercelPathMiddleware",
       "norm_label": "test that _parse_pem raises valueerror for single parameter or non-integer paylo"
     },
     {
@@ -9152,6 +9163,17 @@
       "community": 0,
       "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "test that decrypt_private_key raises valueerror when the payload is under 16 byt"
+    },
+    {
+      "label": "Test security input type and size bounds checks in RSA functions.",
+      "file_type": "rationale",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L314",
+      "_origin": "ast",
+      "id": "methods_modern_tests_test_rsa_rationale_314",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
+      "norm_label": "test security input type and size bounds checks in rsa functions."
     },
     {
       "label": "methods/tests/__init__.py",
@@ -9292,8 +9314,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "test_symmetric.py"
     },
     {
@@ -9303,8 +9325,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_padding",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "test_pkcs7_padding()"
     },
     {
@@ -9314,8 +9336,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_bytes",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "test_pkcs7_unpad_invalid_bytes()"
     },
     {
@@ -9325,8 +9347,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_value",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "test_pkcs7_unpad_invalid_value()"
     },
     {
@@ -9336,8 +9358,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_empty_and_unaligned_data",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "test_pkcs7_unpad_empty_and_unaligned_data()"
     },
     {
@@ -9424,8 +9446,8 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_single_block_encryption_decryption",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_single_block_encryption_decryption()"
     },
     {
@@ -9435,8 +9457,8 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_key_expansion_invalid_key_length",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_key_expansion_invalid_key_length()"
     },
     {
@@ -9457,8 +9479,8 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_sub_bytes_inv_sub_bytes_roundtrip",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_sub_bytes_inv_sub_bytes_roundtrip()"
     },
     {
@@ -9468,8 +9490,8 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_key_expansion_valid_key_lengths",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_key_expansion_valid_key_lengths()"
     },
     {
@@ -9589,8 +9611,8 @@
       "source_location": "L323",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_inv_sub_bytes()"
     },
     {
@@ -9897,8 +9919,8 @@
       "source_location": "L672",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_known_state",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_inv_sub_bytes_known_state()"
     },
     {
@@ -9908,8 +9930,8 @@
       "source_location": "L689",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_edge_cases",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_inv_sub_bytes_edge_cases()"
     },
     {
@@ -9919,8 +9941,8 @@
       "source_location": "L705",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_empty",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_inv_sub_bytes_empty()"
     },
     {
@@ -9930,8 +9952,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_40",
-      "community": 23,
-      "community_name": "Enigma Keyboard Component Routing",
+      "community": 80,
+      "community_name": "inv_shift_rows",
       "norm_label": "verify that empty bytes or unaligned block sizes raise expected valueerror."
     },
     {
@@ -9963,8 +9985,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_124",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test raw block encryption and decryption to ensure no data loss in core aes func"
     },
     {
@@ -9985,8 +10007,8 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_157",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test that applying sub_bytes followed by inv_sub_bytes returns the original stat"
     },
     {
@@ -10106,8 +10128,8 @@
       "source_location": "L324",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_324",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test inv_sub_bytes direct transformation and inverse relationship with sub_bytes"
     },
     {
@@ -10414,8 +10436,8 @@
       "source_location": "L673",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_673",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test inv_sub_bytes with fips 197 known state vector."
     },
     {
@@ -10425,8 +10447,8 @@
       "source_location": "L690",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_690",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test inv_sub_bytes on uniform state vectors and verify non-mutation."
     },
     {
@@ -10436,8 +10458,8 @@
       "source_location": "L706",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_706",
-      "community": 79,
-      "community_name": "sub_bytes",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test inv_sub_bytes with an empty state list."
     },
     {
@@ -11151,8 +11173,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "web_api_main_polybiusencryptinput",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "polybiusencryptinput"
     },
     {
@@ -11162,8 +11184,8 @@
       "source_location": "L366",
       "_origin": "ast",
       "id": "web_api_main_polybiusdecryptinput",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "polybiusdecryptinput"
     },
     {
@@ -11228,8 +11250,8 @@
       "source_location": "L439",
       "_origin": "ast",
       "id": "web_api_main_validate_polybius_key",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "validate_polybius_key()"
     },
     {
@@ -11250,8 +11272,8 @@
       "source_location": "L477",
       "_origin": "ast",
       "id": "web_api_main_polybius_encrypt",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "polybius_encrypt()"
     },
     {
@@ -11261,8 +11283,8 @@
       "source_location": "L494",
       "_origin": "ast",
       "id": "web_api_main_polybius_decrypt",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "polybius_decrypt()"
     },
     {
@@ -11437,8 +11459,8 @@
       "source_location": "L725",
       "_origin": "ast",
       "id": "web_api_main_sha256input",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "sha256input"
     },
     {
@@ -11536,8 +11558,8 @@
       "source_location": "L880",
       "_origin": "ast",
       "id": "web_api_main_sha256_endpoint",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "sha256_endpoint()"
     },
     {
@@ -11591,8 +11613,8 @@
       "source_location": "L440",
       "_origin": "ast",
       "id": "web_api_main_rationale_440",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "validates and returns normalized polybius grid key."
     },
     {
@@ -13802,8 +13824,8 @@
       "source_location": "L2198",
       "_origin": "ast",
       "id": "web_api_test_main_test_sha256_endpoint_direct",
-      "community": 18,
-      "community_name": "Symmetric Encryption Utilities",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "test_sha256_endpoint_direct()"
     },
     {
@@ -13917,10 +13939,21 @@
       "norm_label": "ciphers.ts"
     },
     {
+      "label": "CAESAR_TABLES",
+      "file_type": "code",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "web_app_utils_ciphers_caesar_tables",
+      "community": 28,
+      "community_name": "Frontend TypeScript Cipher Adapters",
+      "norm_label": "caesar_tables"
+    },
+    {
       "label": "caesarEncrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L4",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_caesarencrypt",
       "community": 28,
@@ -13931,7 +13964,7 @@
       "label": "caesarDecrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L22",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_caesardecrypt",
       "community": 28,
@@ -13942,7 +13975,7 @@
       "label": "vigenereTransform()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L34",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_vigeneretransform",
       "community": 28,
@@ -13953,7 +13986,7 @@
       "label": "vigenereEncrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L80",
+      "source_location": "L96",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_vigenereencrypt",
       "community": 28,
@@ -13964,7 +13997,7 @@
       "label": "vigenereDecrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L84",
+      "source_location": "L100",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_vigeneredecrypt",
       "community": 28,
@@ -13975,7 +14008,7 @@
       "label": "cleanPolybiusKey()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L91",
+      "source_location": "L107",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_cleanpolybiuskey",
       "community": 28,
@@ -13986,7 +14019,7 @@
       "label": "getPolybiusCoords()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L99",
+      "source_location": "L115",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_getpolybiuscoords",
       "community": 28,
@@ -13997,7 +14030,7 @@
       "label": "enigmaStepRotors()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L114",
+      "source_location": "L130",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_enigmasteprotors",
       "community": 28,
@@ -14008,7 +14041,7 @@
       "label": "validateAesKey()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L150",
+      "source_location": "L166",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_validateaeskey",
       "community": 28,
@@ -14019,7 +14052,7 @@
       "label": "isPrimeTypeScript()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L169",
+      "source_location": "L185",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_isprimetypescript",
       "community": 28,
@@ -14030,7 +14063,7 @@
       "label": "validateRsaParams()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L182",
+      "source_location": "L198",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_validatersaparams",
       "community": 28,
@@ -14041,7 +14074,7 @@
       "label": "sha256PadDescription()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L200",
+      "source_location": "L216",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_sha256paddescription",
       "community": 28,
@@ -14052,7 +14085,7 @@
       "label": "generatePlayfairGrid()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L221",
+      "source_location": "L237",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_generateplayfairgrid",
       "community": 28,
@@ -14063,7 +14096,7 @@
       "label": "playfairEncrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L244",
+      "source_location": "L260",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_playfairencrypt",
       "community": 28,
@@ -14074,7 +14107,7 @@
       "label": "playfairDecrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L293",
+      "source_location": "L309",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_playfairdecrypt",
       "community": 28,
@@ -14082,10 +14115,32 @@
       "norm_label": "playfairdecrypt()"
     },
     {
+      "label": "buildSubstitutionTable()",
+      "file_type": "code",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L345",
+      "_origin": "ast",
+      "id": "web_app_utils_ciphers_buildsubstitutiontable",
+      "community": 28,
+      "community_name": "Frontend TypeScript Cipher Adapters",
+      "norm_label": "buildsubstitutiontable()"
+    },
+    {
+      "label": "substitutionTransform()",
+      "file_type": "code",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L380",
+      "_origin": "ast",
+      "id": "web_app_utils_ciphers_substitutiontransform",
+      "community": 28,
+      "community_name": "Frontend TypeScript Cipher Adapters",
+      "norm_label": "substitutiontransform()"
+    },
+    {
       "label": "substitutionEncrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L325",
+      "source_location": "L393",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_substitutionencrypt",
       "community": 28,
@@ -14096,7 +14151,7 @@
       "label": "substitutionDecrypt()",
       "file_type": "code",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L343",
+      "source_location": "L398",
       "_origin": "ast",
       "id": "web_app_utils_ciphers_substitutiondecrypt",
       "community": 28,
@@ -31380,7 +31435,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L126",
+      "source_location": "L140",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_encrypted_keypair",
@@ -31392,7 +31447,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L86",
+      "source_location": "L100",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_keypair",
@@ -31595,7 +31650,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L51",
+      "source_location": "L75",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_decrypt_private_key",
@@ -31607,7 +31662,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L33",
+      "source_location": "L42",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_parse_pem",
@@ -32125,7 +32180,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L121",
+      "source_location": "L135",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_encrypted_keypair",
@@ -32149,7 +32204,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L59",
+      "source_location": "L86",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_decrypt_private_key",
@@ -32219,7 +32274,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L103",
+      "source_location": "L117",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair",
@@ -32230,7 +32285,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L63",
+      "source_location": "L77",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair",
@@ -32241,7 +32296,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L51",
+      "source_location": "L65",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair",
@@ -32252,7 +32307,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L23",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair",
@@ -32263,7 +32318,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L136",
+      "source_location": "L150",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair",
@@ -32358,7 +32413,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L59",
+      "source_location": "L73",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_prime",
@@ -32369,10 +32424,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L24",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_keypair_rationale_24",
+      "source": "methods_modern_keypair_rationale_35",
       "target": "methods_modern_keypair_is_prime",
       "confidence_score": 1.0
     },
@@ -32477,7 +32532,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L79",
+      "source_location": "L93",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_keypair",
@@ -32488,10 +32543,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L52",
+      "source_location": "L66",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_keypair_rationale_52",
+      "source": "methods_modern_keypair_rationale_66",
       "target": "methods_modern_keypair_generate_prime",
       "confidence_score": 1.0
     },
@@ -32548,7 +32603,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L118",
+      "source_location": "L132",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_encrypted_keypair",
@@ -32560,7 +32615,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L138",
+      "source_location": "L152",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_main",
@@ -32571,10 +32626,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L67",
+      "source_location": "L81",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_keypair_rationale_67",
+      "source": "methods_modern_keypair_rationale_81",
       "target": "methods_modern_keypair_generate_keypair",
       "confidence_score": 1.0
     },
@@ -32595,7 +32650,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L141",
+      "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -32759,6 +32814,18 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L315",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
+      "target": "methods_modern_keypair_generate_keypair",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -32787,7 +32854,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L123",
+      "source_location": "L137",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_encrypted_keypair",
@@ -32799,7 +32866,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L122",
+      "source_location": "L136",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_keypair_generate_encrypted_keypair",
@@ -32810,10 +32877,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L108",
+      "source_location": "L122",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_keypair_rationale_108",
+      "source": "methods_modern_keypair_rationale_122",
       "target": "methods_modern_keypair_generate_encrypted_keypair",
       "confidence_score": 1.0
     },
@@ -32834,7 +32901,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L155",
+      "source_location": "L196",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -32905,10 +32972,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/keypair.py",
-      "source_location": "L137",
+      "source_location": "L151",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_keypair_rationale_137",
+      "source": "methods_modern_keypair_rationale_151",
       "target": "methods_modern_keypair_main",
       "confidence_score": 1.0
     },
@@ -32940,7 +33007,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L96",
+      "source_location": "L130",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa",
@@ -32951,7 +33018,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L42",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa",
@@ -32962,7 +33029,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L63",
+      "source_location": "L90",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa",
@@ -32973,7 +33040,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L136",
+      "source_location": "L177",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa",
@@ -32984,7 +33051,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L27",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa",
@@ -33055,7 +33122,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L106",
+      "source_location": "L147",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_decrypt",
@@ -33067,7 +33134,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L73",
+      "source_location": "L107",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_encrypt",
@@ -33078,10 +33145,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_rsa_rationale_28",
+      "source": "methods_modern_rsa_rationale_30",
       "target": "methods_modern_rsa_parse_pem",
       "confidence_score": 1.0
     },
@@ -33185,8 +33252,20 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L333",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
+      "target": "methods_modern_rsa_parse_pem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L60",
+      "source_location": "L87",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_decrypt_private_key",
@@ -33198,7 +33277,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L156",
+      "source_location": "L197",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -33209,10 +33288,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_rsa_rationale_43",
+      "source": "methods_modern_rsa_rationale_55",
       "target": "methods_modern_rsa_decrypt_private_key",
       "confidence_score": 1.0
     },
@@ -33280,8 +33359,20 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L344",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
+      "target": "methods_modern_rsa_decrypt_private_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L142",
+      "source_location": "L183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -33292,10 +33383,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L64",
+      "source_location": "L91",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_rsa_rationale_64",
+      "source": "methods_modern_rsa_rationale_91",
       "target": "methods_modern_rsa_encrypt",
       "confidence_score": 1.0
     },
@@ -33423,6 +33514,18 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L319",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
+      "target": "methods_modern_rsa_encrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/api/main.py",
       "source_location": "L858",
@@ -33460,7 +33563,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L143",
+      "source_location": "L184",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_modern_rsa_main",
@@ -33471,10 +33574,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L97",
+      "source_location": "L131",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_rsa_rationale_97",
+      "source": "methods_modern_rsa_rationale_131",
       "target": "methods_modern_rsa_decrypt",
       "confidence_score": 1.0
     },
@@ -33590,6 +33693,18 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L326",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
+      "target": "methods_modern_rsa_decrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/api/main.py",
       "source_location": "L871",
@@ -33602,10 +33717,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/rsa.py",
-      "source_location": "L137",
+      "source_location": "L178",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_modern_rsa_rationale_137",
+      "source": "methods_modern_rsa_rationale_178",
       "target": "methods_modern_rsa_main",
       "confidence_score": 1.0
     },
@@ -36810,6 +36925,17 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L313",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa",
+      "target": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/modern/tests/test_rsa.py",
@@ -36873,6 +36999,17 @@
       "_origin": "ast",
       "source": "methods_modern_tests_test_rsa_rationale_301",
       "target": "methods_modern_tests_test_rsa_test_decrypt_private_key_payload_too_short",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/modern/tests/test_rsa.py",
+      "source_location": "L314",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_modern_tests_test_rsa_rationale_314",
+      "target": "methods_modern_tests_test_rsa_test_rsa_input_validation_and_bounds",
       "confidence_score": 1.0
     },
     {
@@ -43052,7 +43189,29 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L22",
+      "source_location": "L345",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_app_utils_ciphers",
+      "target": "web_app_utils_ciphers_buildsubstitutiontable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_app_utils_ciphers",
+      "target": "web_app_utils_ciphers_caesar_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43063,7 +43222,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L4",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43074,7 +43233,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L91",
+      "source_location": "L107",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43085,7 +43244,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L114",
+      "source_location": "L130",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43096,7 +43255,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L221",
+      "source_location": "L237",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43107,7 +43266,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L99",
+      "source_location": "L115",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43118,7 +43277,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L169",
+      "source_location": "L185",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43129,7 +43288,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L293",
+      "source_location": "L309",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43140,7 +43299,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L244",
+      "source_location": "L260",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43151,7 +43310,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L200",
+      "source_location": "L216",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43162,7 +43321,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L343",
+      "source_location": "L398",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43173,7 +43332,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L325",
+      "source_location": "L393",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43184,7 +43343,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L150",
+      "source_location": "L380",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_app_utils_ciphers",
+      "target": "web_app_utils_ciphers_substitutiontransform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L166",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43195,7 +43365,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L182",
+      "source_location": "L198",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43206,7 +43376,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L84",
+      "source_location": "L100",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43217,7 +43387,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L80",
+      "source_location": "L96",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43228,7 +43398,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L34",
+      "source_location": "L50",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers",
@@ -43252,7 +43422,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L24",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers_caesardecrypt",
@@ -43288,7 +43458,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L85",
+      "source_location": "L101",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers_vigeneredecrypt",
@@ -43300,7 +43470,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L81",
+      "source_location": "L97",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers_vigenereencrypt",
@@ -43336,7 +43506,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L101",
+      "source_location": "L117",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers_getpolybiuscoords",
@@ -43396,7 +43566,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L183",
+      "source_location": "L199",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers_validatersaparams",
@@ -43432,7 +43602,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L294",
+      "source_location": "L310",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers_playfairdecrypt",
@@ -43444,7 +43614,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/app/utils/ciphers.ts",
-      "source_location": "L245",
+      "source_location": "L261",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_app_utils_ciphers_playfairencrypt",
@@ -43485,6 +43655,54 @@
       "_origin": "ast",
       "source": "web_tests_unit_ciphers_test",
       "target": "web_app_utils_ciphers_playfairdecrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L399",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_app_utils_ciphers_substitutiondecrypt",
+      "target": "web_app_utils_ciphers_buildsubstitutiontable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L394",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_app_utils_ciphers_substitutionencrypt",
+      "target": "web_app_utils_ciphers_buildsubstitutiontable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L400",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_app_utils_ciphers_substitutiondecrypt",
+      "target": "web_app_utils_ciphers_substitutiontransform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/app/utils/ciphers.ts",
+      "source_location": "L395",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_app_utils_ciphers_substitutionencrypt",
+      "target": "web_app_utils_ciphers_substitutiontransform",
       "confidence_score": 1.0
     },
     {
@@ -44797,6 +45015,18 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/a11y.test.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_a11y_test",
+      "target": "web_src_components_museum_museumcanvas",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -44831,6 +45061,18 @@
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas_museumcanvas",
       "target": "web_src_components_museum_museumdata_museum_wings"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "web/tests/unit/a11y.test.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_tests_unit_a11y_test",
+      "target": "web_src_components_museum_museumcanvas_museumcanvas",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -46776,5 +47018,5 @@
       "source_file": "STYLE_GUIDE.md"
     }
   ],
-  "built_at_commit": "f92b3cacc5e4e8a9fbcd3d7354fc2047ae4b431d"
+  "built_at_commit": "ba37f12758edf11a821497373a723d970b08ba0a"
 }

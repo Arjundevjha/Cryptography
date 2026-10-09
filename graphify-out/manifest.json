@@ -240,13 +240,13 @@
     "semantic_hash": ""
   },
   "methods/modern/keypair.py": {
-    "mtime": 1789343985.624397,
-    "ast_hash": "00c9600a40ef952aafaec549845b5a2a",
+    "mtime": 1791508060.6441987,
+    "ast_hash": "659565c7d02434879fd98b8482957f83",
     "semantic_hash": ""
   },
   "methods/modern/rsa.py": {
-    "mtime": 1790987161.4385302,
-    "ast_hash": "9dd68cae007e28a48f15eb47710e9858",
+    "mtime": 1791508060.5973618,
+    "ast_hash": "18de8253b1ca1827c499cdc15d746114",
     "semantic_hash": ""
   },
   "methods/modern/symmetric.py": {
@@ -285,8 +285,8 @@
     "semantic_hash": ""
   },
   "methods/modern/tests/test_rsa.py": {
-    "mtime": 1790987168.849628,
-    "ast_hash": "d9d9a3111a0b5d119df24722ed7c8096",
+    "mtime": 1791508108.479373,
+    "ast_hash": "99d01723b9e2700c19809463e8362458",
     "semantic_hash": ""
   },
   "methods/tests/__init__.py": {
@@ -325,8 +325,8 @@
     "semantic_hash": "d011342da40a8f82597a09013e906cfc"
   },
   "web/api/main.py": {
-    "mtime": 1791009642.1678402,
-    "ast_hash": "24cdb03ab3e096ba2b61598173f4f63d",
+    "mtime": 1791508060.678675,
+    "ast_hash": "47ffa1802b0a4a67128fc880f54dfece",
     "semantic_hash": ""
   },
   "web/api/test_main.py": {
@@ -355,8 +355,8 @@
     "semantic_hash": "68e71565f986a64593ea412842c1227e"
   },
   "web/app/utils/ciphers.ts": {
-    "mtime": 1788446233.592,
-    "ast_hash": "af1e36a93fff6e360e057a3c5b93d8c7",
+    "mtime": 1791508156.3509622,
+    "ast_hash": "7a02ee7b1f62101a9ade4db8285190e3",
     "semantic_hash": ""
   },
   "web/jest.config.ts": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/MuseumCanvas.tsx": {
-    "mtime": 1788395672.2509127,
-    "ast_hash": "88c11fb17972c8bfbe80aa16526f4ccc",
+    "mtime": 1791508165.4760265,
+    "ast_hash": "74e3a8a3d4147ffe299339c3318646a9",
     "semantic_hash": ""
   },
   "web/src/components/museum/ThreeMuseumScene.tsx": {
@@ -415,8 +415,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/hud/MuseumHUD.tsx": {
-    "mtime": 1791009572.828377,
-    "ast_hash": "52c01b3ecac8302580e31d984814d105",
+    "mtime": 1791508165.447124,
+    "ast_hash": "46f4c1ec376662deda094160da3fec0b",
     "semantic_hash": ""
   },
   "web/src/components/museum/museumData.ts": {
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/WorkbenchPanel.tsx": {
-    "mtime": 1789950595.3475509,
-    "ast_hash": "f571cebb060aa046a0afe2323acc6ca1",
+    "mtime": 1791508180.552248,
+    "ast_hash": "fcca97719451816c865eec77b160073b",
     "semantic_hash": ""
   },
   "web/src/components/ui/ExhibitInput.tsx": {
@@ -510,8 +510,8 @@
     "semantic_hash": "1c06ba7292961575b45102f00433ce1c"
   },
   "handoff.md": {
-    "mtime": 1789950732.9137056,
-    "ast_hash": "9f794dbd7ccb0e6a7d95716a22fb26d1",
+    "mtime": 1791009874.3345306,
+    "ast_hash": "e3d9ea918750f273cbb0a983c261e29b",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "web/tests/unit/a11y.test.tsx": {
-    "mtime": 1791009604.8759308,
-    "ast_hash": "7cabaed061dee116ff02c8a194f2c9a0",
+    "mtime": 1791508254.2194378,
+    "ast_hash": "03501a03307a45bf0bd99db26e2dce2c",
     "semantic_hash": ""
   },
   ".Jules/bolt.md": {
@@ -555,13 +555,13 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx": {
-    "mtime": 1791009568.4666867,
-    "ast_hash": "10fe0b701c621912a04ea0513215caf6",
+    "mtime": 1791508165.5023506,
+    "ast_hash": "018f5fe17afeed728397dfbadb78c789",
     "semantic_hash": ""
   },
   "web/tests/unit/statues.test.tsx": {
-    "mtime": 1791009568.4670963,
-    "ast_hash": "6cba0af63faa55f714f9ea254a2b0913",
+    "mtime": 1791508165.5026639,
+    "ast_hash": "fde770c8a4f1d28702e590c2fa911f11",
     "semantic_hash": ""
   },
   ".Jules/sentinel.md": {
