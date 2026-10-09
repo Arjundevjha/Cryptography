@@ -719,7 +719,7 @@ class RsaEncryptInput(BaseModel):
     public_key: str = Field(..., max_length=10000, description="PEM formatted RSA public key")
 
 class RsaDecryptInput(BaseModel):
-    ciphertext: str = Field(..., max_length=100000, description="The hex ciphertext to decrypt")
+    ciphertext: str = Field(..., max_length=10000, description="The hex ciphertext to decrypt")
     private_key: str = Field(..., max_length=10000, description="PEM formatted RSA private key")
 
 class Sha256Input(BaseModel):

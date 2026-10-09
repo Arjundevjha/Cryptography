@@ -367,7 +367,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
               </div>
               <button
                 onClick={() => setShowMap(false)}
-                className="px-4 py-2 rounded-xl bg-amber-500 text-stone-950 font-bold hover:bg-amber-400 transition-colors"
+                className="px-4 py-2 rounded-xl bg-amber-500 text-stone-950 font-bold hover:bg-amber-400 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               >
                 CLOSE MAP
               </button>

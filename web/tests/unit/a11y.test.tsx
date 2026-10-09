@@ -7,6 +7,14 @@ import { AudioSystem } from '../../src/components/museum/AudioSystem';
 import { ApiStatusDot } from '../../src/components/museum/hud/ApiStatusDot';
 import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from '../../src/components/museum/museumData';
 import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/StatueCuratorialDrawer';
+import { MuseumCanvas } from '../../src/components/museum/MuseumCanvas';
+
+// Mock ThreeMuseumScene to prevent WebGL canvas initialization during unit tests
+jest.mock('../../src/components/museum/ThreeMuseumScene', () => {
+  return function DummyThreeMuseumScene() {
+    return <div data-testid="mock-three-scene" />;
+  };
+});
 
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
@@ -78,9 +86,14 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(dialog).toBeInTheDocument();
     expect(dialog).toHaveAttribute('aria-modal', 'true');
 
-    // Verify map close button accessible name
+    // Verify map close button accessible name and focus visible style
     const closeMapButton = screen.getByRole('button', { name: /close museum floorplan map/i });
     expect(closeMapButton).toBeInTheDocument();
+    expect(closeMapButton.className).toContain('focus-visible:ring-2');
+
+    const closeMapTextBtn = screen.getByRole('button', { name: /^close map$/i });
+    expect(closeMapTextBtn).toBeInTheDocument();
+    expect(closeMapTextBtn.className).toContain('focus-visible:ring-2');
 
     // Verify pressing Escape key closes the map modal
     fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
@@ -141,6 +154,23 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const unmutedButton = screen.getByRole('button', { name: /mute spatial audio/i });
     expect(unmutedButton).toBeInTheDocument();
     expect(unmutedButton).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('renders WorkbenchPanel input character counter and clear button action', () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    expect(screen.getByText('18 chars')).toBeInTheDocument();
+
+    const clearBtn = screen.getByRole('button', { name: /clear input text/i });
+    expect(clearBtn).toBeInTheDocument();
+    expect(clearBtn.className).toContain('focus-visible:ring-2');
+
+    fireEvent.click(clearBtn);
+
+    expect(inputArea).toHaveValue('');
+    expect(screen.getByText('0 chars')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear input text/i })).not.toBeInTheDocument();
   });
 
   it('renders WorkbenchPanel parameter inputs with accessible labels and ARIA attributes', () => {
@@ -284,5 +314,60 @@ describe('Accessibility (A11y) Unit Tests', () => {
     // Verify screen-reader live status element updates with polite feedback
     const liveStatus = screen.getByRole('status');
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
+  });
+
+  it('renders StatueCuratorialDrawer Pioneer Lab controls with accessible labels, ARIA attributes, and focus styles', () => {
+    const kindiStatue = MUSEUM_STATUES.find((s) => s.id === 'statue-alkindi')!;
+    render(<StatueCuratorialDrawer statue={kindiStatue} onClose={jest.fn()} />);
+
+    // Switch to Pioneer Lab tab
+    const labTab = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+    fireEvent.click(labTab);
+
+    // Al-Kindi Lab inputs
+    const kindiTextarea = screen.getByLabelText(/ciphertext sample/i);
+    expect(kindiTextarea).toBeInTheDocument();
+    expect(kindiTextarea).toHaveAttribute('id', 'kindi-ciphertext-input');
+    expect(kindiTextarea.className).toContain('focus-visible:ring-2');
+
+    const kindiShiftInput = screen.getByLabelText(/test caesar shift key/i);
+    expect(kindiShiftInput).toBeInTheDocument();
+    expect(kindiShiftInput).toHaveAttribute('id', 'kindi-shift-input');
+    expect(kindiShiftInput.className).toContain('focus-visible:ring-2');
+
+    const presetShiftBtn = screen.getByRole('button', { name: /set caesar shift key to default value of 3/i });
+    expect(presetShiftBtn).toBeInTheDocument();
+    expect(presetShiftBtn.className).toContain('focus-visible:ring-2');
+  });
+
+  it('renders MuseumCanvas lobby statue buttons and inspect buttons with focus-visible focus ring styles', () => {
+    render(<MuseumCanvas />);
+
+    // Verify monument button focus-visible styling
+    const alKindiMonumentBtn = screen.getByRole('button', { name: /al-kindi/i });
+    expect(alKindiMonumentBtn).toBeInTheDocument();
+    expect(alKindiMonumentBtn.className).toContain('focus-visible:ring-2');
+    expect(alKindiMonumentBtn.className).toContain('focus-visible:ring-amber-500');
+  });
+
+  it('renders Enigma rotor selectors with accessible group role, aria-labelledby, and assigned IDs', () => {
+    const enigmaExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'enigma')!;
+    render(<WorkbenchPanel exhibit={enigmaExhibit} />);
+
+    const rotorGroup = screen.getByRole('group', { name: /rotors \(select i - viii\):/i });
+    expect(rotorGroup).toBeInTheDocument();
+    expect(rotorGroup).toHaveAttribute('aria-labelledby', `param-rotors-label-${enigmaExhibit.id}`);
+
+    const rotor1 = screen.getByRole('combobox', { name: /enigma rotor 1/i });
+    const rotor2 = screen.getByRole('combobox', { name: /enigma rotor 2/i });
+    const rotor3 = screen.getByRole('combobox', { name: /enigma rotor 3/i });
+
+    expect(rotor1).toBeInTheDocument();
+    expect(rotor2).toBeInTheDocument();
+    expect(rotor3).toBeInTheDocument();
+
+    expect(rotor1).toHaveAttribute('id', `param-rotor-0-${enigmaExhibit.id}`);
+    expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
+    expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
   });
 });
