@@ -39,7 +39,7 @@ export function MuseumCanvas() {
   }, []);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden select-none" style={{ background: '#d4e5f7' }}>
+    <div id="main-content" tabIndex={-1} className="relative w-screen h-screen overflow-hidden select-none focus:outline-none" style={{ background: '#d4e5f7' }}>
       {/* === FULL-SCREEN 3D WEBGL CANVAS (Layer 0) === */}
       {isClient && (
         <ThreeMuseumScene
