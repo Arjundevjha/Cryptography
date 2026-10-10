@@ -81,3 +81,31 @@ def test_decrypt_non_coprime(a_key):
         decrypt("HELLO", a_key, 5)
     assert f"The key 'a' ({a_key}) must be coprime to 26." in str(exc.value)
 
+def test_encrypt_decrypt_type_validation():
+    """Test type validation for plaintext/ciphertext and key parameters."""
+    with pytest.raises(TypeError, match="Plaintext must be a string"):
+        encrypt(12345, 5, 8)
+
+    with pytest.raises(TypeError, match="Ciphertext must be a string"):
+        decrypt(["invalid"], 5, 8)
+
+    with pytest.raises(TypeError, match="Key 'a' must be an integer"):
+        encrypt("HELLO", True, 8)
+
+    with pytest.raises(TypeError, match="Key 'a' must be an integer"):
+        encrypt("HELLO", "5", 8)
+
+    with pytest.raises(TypeError, match="Key 'b' must be an integer"):
+        encrypt("HELLO", 5, False)
+
+    with pytest.raises(TypeError, match="Key 'b' must be an integer"):
+        decrypt("HELLO", 5, 8.5)
+
+def test_encrypt_decrypt_length_validation():
+    """Test input length limit enforcement."""
+    long_text = "A" * 100001
+    with pytest.raises(ValueError, match="Plaintext length exceeds maximum limit of 100000 characters"):
+        encrypt(long_text, 5, 8)
+
+    with pytest.raises(ValueError, match="Ciphertext length exceeds maximum limit of 100000 characters"):
+        decrypt(long_text, 5, 8)
