@@ -370,4 +370,21 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
     expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
   });
+
+  it('renders MuseumHUD with a Skip to Main Content link for keyboard accessibility', () => {
+    render(
+      <MuseumHUD
+        currentView="atrium"
+        isMacro={false}
+        onSelectRoom={jest.fn()}
+        onReturnToFoyer={jest.fn()}
+      />
+    );
+
+    const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+    expect(skipLink).toBeInTheDocument();
+    expect(skipLink).toHaveAttribute('href', '#main-content');
+    expect(skipLink.className).toContain('sr-only');
+    expect(skipLink.className).toContain('focus:not-sr-only');
+  });
 });

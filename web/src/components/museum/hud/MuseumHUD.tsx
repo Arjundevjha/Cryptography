@@ -39,6 +39,14 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
 
   return (
     <>
+      {/* Skip to Main Content Link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 px-4 py-2 rounded-2xl bg-amber-500 text-stone-950 font-mono text-xs font-bold shadow-2xl ring-2 ring-amber-300 outline-none transition-all"
+      >
+        Skip to main content
+      </a>
+
       {/* Top Left Branding & Navigation HUD */}
       <div className="fixed top-6 left-6 z-40 flex items-center gap-3">
         <div className="px-4 py-2.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-3">
