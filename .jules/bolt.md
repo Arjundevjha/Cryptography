@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Inline Wheel Positions and Stepping Rules in Lorenz SZ40/SZ42 Loop
+**Learning:** In multi-wheel stream cipher simulations like Lorenz SZ40/SZ42, invoking `stepping.step()` per character triggers multiple sub-method calls (`get_active_pin`), list indexing, and property accesses. Inlining wheel scalar position tracking (`c0_pos`–`c4_pos`, `m0_pos`, `m1_pos`, `p0_pos`–`p4_pos`) and stepping rules directly inside the `process_message` loop eliminates per-character method call stack overhead and list lookups, delivering a ~4x performance speedup.
+**Action:** Inline wheel scalar position tracking and stepping rules directly inside character processing loops for stateful multi-wheel ciphers.
