@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { CryptographicStatue } from '../museumData';
 import {
   X,
@@ -24,6 +24,16 @@ interface StatueCuratorialDrawerProps {
 
 export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDrawerProps) {
   const [activeTab, setActiveTab] = useState<'curation' | 'lab'>('curation');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   // ==========================================
   // AL-KINDI INTERACTIVE FREQUENCY ANALYSIS STATE
@@ -164,6 +174,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
 
         <button
           onClick={onClose}
+          title="Close statue details (Esc)"
           aria-label="Close statue details"
           className="p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-stone-100 hover:bg-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
         >
