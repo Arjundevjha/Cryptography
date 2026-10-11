@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { CipherExhibit } from '../museumData';
 import { X, BookOpen, ShieldAlert, History, ZoomOut } from 'lucide-react';
 
@@ -9,6 +10,16 @@ interface ArtifactMetadataDrawerProps {
 }
 
 export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDrawerProps) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
     <div
       role="dialog"
@@ -23,6 +34,7 @@ export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDra
         </div>
         <button
           onClick={onClose}
+          title="Close artifact details (Esc)"
           aria-label="Close artifact details"
           className="p-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-400 hover:text-stone-100 hover:bg-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
         >
