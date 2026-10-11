@@ -81,3 +81,13 @@ def test_decrypt_non_coprime(a_key):
         decrypt("HELLO", a_key, 5)
     assert f"The key 'a' ({a_key}) must be coprime to 26." in str(exc.value)
 
+def test_invalid_key_types():
+    """Test that non-integer or boolean key parameters raise TypeError."""
+    with pytest.raises(TypeError, match="Key 'a' must be an integer"):
+        encrypt("HELLO", True, 5)
+    with pytest.raises(TypeError, match="Key 'b' must be an integer"):
+        encrypt("HELLO", 5, False)
+    with pytest.raises(TypeError, match="Key 'a' must be an integer"):
+        decrypt("HELLO", "5", 5)
+    with pytest.raises(TypeError, match="Key 'b' must be an integer"):
+        decrypt("HELLO", 5, 3.14)
