@@ -6,8 +6,16 @@ import string
 
 def _check_coprime(a_key: int):
     """Check if the a_key is coprime to 26."""
+    if not isinstance(a_key, int) or isinstance(a_key, bool):
+        raise TypeError("Key 'a' must be an integer")
     if math.gcd(a_key, 26) != 1:
         raise ValueError(f"The key 'a' ({a_key}) must be coprime to 26.")
+
+def _check_keys(a_key: int, b_key: int):
+    """Validate key types and coprime constraint."""
+    _check_coprime(a_key)
+    if not isinstance(b_key, int) or isinstance(b_key, bool):
+        raise TypeError("Key 'b' must be an integer")
 
 def pick_keys():
     """Generate a random key pair (a, b) where a is coprime to 26 using CSPRNG."""
@@ -34,7 +42,7 @@ def encrypt(plaintext: str, a_key: int, b_key: int) -> str:
     Each letter is mapped to (a_key * x + b_key) % 26.
     Non-alphabetic characters are preserved.
     """
-    _check_coprime(a_key)
+    _check_keys(a_key, b_key)
     # Optimization: Pre-compute translation table using str.maketrans and ''.join() list comprehension.
     # Replaces O(N^2) loop string concatenation with C-level str.translate (~120x speedup).
     a_mod = a_key % 26
@@ -50,7 +58,7 @@ def decrypt(ciphertext: str, a_key: int, b_key: int) -> str:
     Each letter is decrypted using the modular inverse of a_key.
     Non-alphabetic characters are preserved.
     """
-    _check_coprime(a_key)
+    _check_keys(a_key, b_key)
     # Optimization: Pre-compute translation table using str.maketrans and ''.join() list comprehension.
     # Replaces O(N^2) loop string concatenation with C-level str.translate (~120x speedup).
     a_inverse = pow(a_key, -1, 26)
