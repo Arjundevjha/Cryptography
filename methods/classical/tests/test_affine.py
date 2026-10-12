@@ -81,3 +81,28 @@ def test_decrypt_non_coprime(a_key):
         decrypt("HELLO", a_key, 5)
     assert f"The key 'a' ({a_key}) must be coprime to 26." in str(exc.value)
 
+def test_invalid_text_type():
+    """Test that non-string text raises TypeError."""
+    with pytest.raises(TypeError, match="Text input must be a string."):
+        encrypt(12345, 5, 8)
+    with pytest.raises(TypeError, match="Text input must be a string."):
+        decrypt(None, 5, 8)
+
+def test_invalid_key_types():
+    """Test that non-integer or boolean keys raise TypeError."""
+    with pytest.raises(TypeError, match="Key 'a' must be an integer."):
+        encrypt("HELLO", "5", 8)
+    with pytest.raises(TypeError, match="Key 'a' must be an integer."):
+        encrypt("HELLO", True, 8)
+    with pytest.raises(TypeError, match="Key 'b' must be an integer."):
+        encrypt("HELLO", 5, "8")
+    with pytest.raises(TypeError, match="Key 'b' must be an integer."):
+        decrypt("HELLO", 5, False)
+
+def test_text_exceeds_max_length():
+    """Test that text exceeding MAX_TEXT_LENGTH raises ValueError."""
+    long_text = "A" * 100001
+    with pytest.raises(ValueError, match="Input text exceeds maximum length of 100000 characters."):
+        encrypt(long_text, 5, 8)
+    with pytest.raises(ValueError, match="Input text exceeds maximum length of 100000 characters."):
+        decrypt(long_text, 5, 8)
