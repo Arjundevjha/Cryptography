@@ -232,7 +232,7 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(merklePuzzleTab).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('renders RSA parameter inputs and keygen button with accessible labels and focus styles', () => {
+  it('renders RSA parameter inputs and keygen button with accessible labels, focus styles, and loading states', async () => {
     const rsaExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'rsa')!;
     render(<WorkbenchPanel exhibit={rsaExhibit} />);
 
@@ -250,6 +250,38 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(qInput.className).toContain('focus-visible:ring-2');
     expect(eInput.className).toContain('focus-visible:ring-2');
     expect(keygenBtn.className).toContain('focus-visible:ring-2');
+    expect(keygenBtn.className).toContain('disabled:cursor-not-allowed');
+
+    // Mock pending fetch request for RSA keygen
+    let resolveKeygen: any;
+    const keygenPromise = new Promise((resolve) => {
+      resolveKeygen = resolve;
+    });
+    global.fetch = jest.fn().mockImplementation(() =>
+      keygenPromise.then(() => ({
+        ok: true,
+        json: () => Promise.resolve({ public_key: 'pub_key', private_key: 'priv_key' }),
+      }))
+    ) as jest.Mock;
+
+    // Trigger keygen click
+    React.act(() => {
+      fireEvent.click(keygenBtn);
+    });
+
+    // Check loading state while request is pending
+    const loadingKeygenBtn = screen.getByRole('button', { name: /generating rsa keypair\.\.\./i });
+    expect(loadingKeygenBtn).toBeDisabled();
+    expect(loadingKeygenBtn).toHaveAttribute('aria-busy', 'true');
+    expect(loadingKeygenBtn).toHaveTextContent('Generating Keys...');
+
+    // Resolve keygen fetch
+    await React.act(async () => {
+      resolveKeygen();
+    });
+
+    // Verify button restored after loading completes
+    expect(screen.getByRole('button', { name: /generate rsa keypair/i })).not.toBeDisabled();
   });
 
   it('renders Lorenz wheel inputs and reset button with accessible labels and focus styles', () => {

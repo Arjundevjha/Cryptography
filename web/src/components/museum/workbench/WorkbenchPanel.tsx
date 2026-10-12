@@ -562,10 +562,13 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             </div>
             <button
               onClick={handleRSAKeygen}
-              aria-label="Generate RSA keypair"
-              className="w-full py-1 text-xs rounded bg-stone-800 hover:bg-stone-700 text-amber-300 font-mono flex items-center justify-center gap-1 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
+              disabled={loading}
+              aria-busy={loading}
+              aria-label={loading ? "Generating RSA keypair..." : "Generate RSA keypair"}
+              className="w-full py-1 text-xs rounded bg-stone-800 hover:bg-stone-700 text-amber-300 font-mono flex items-center justify-center gap-1 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <RefreshCw className="w-3 h-3" /> Generate Keys
+              <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+              {loading ? 'Generating Keys...' : 'Generate Keys'}
             </button>
           </div>
         )}
@@ -591,10 +594,11 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         onClick={handleExecute}
         disabled={loading}
         aria-busy={loading}
-        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+        aria-label={loading ? `Executing ${mode}...` : `Execute ${mode}`}
+        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-stone-950" />}
-        Execute {mode}
+        {loading ? `Executing ${mode}...` : `Execute ${mode}`}
       </button>
 
       {/* Standardized Error Banner */}
