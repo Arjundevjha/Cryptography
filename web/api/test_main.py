@@ -1552,6 +1552,11 @@ def test_vigenere_encrypt_decrypt_success():
     assert dec.status_code == 200
     assert dec.json() == {"plaintext": "ATTACKATDAWN"}
 
+def test_vigenere_non_alphabetic_key_api():
+    response = client.post("/api/vigenere/encrypt", json={"plaintext": "HELLO", "key": "12345"})
+    assert response.status_code == 400
+    assert "at least one alphabetic character" in response.json()["detail"].lower()
+
 def test_vigenere_empty_key():
     resp = client.post("/api/vigenere/encrypt", json={"plaintext": "HELLO", "key": ""})
     assert resp.status_code == 400
