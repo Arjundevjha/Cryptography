@@ -270,6 +270,45 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(resetBtn.className).toContain('focus-visible:ring-2');
   });
 
+  it('renders WorkbenchPanel swap button with accessible ARIA label, tooltip, focus styles and swaps input/output text', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    fireEvent.change(inputArea, { target: { value: 'SECRET MESSAGE' } });
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'VHFUHW PHVVDJH' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    const swapBtn = await screen.findByRole('button', { name: /swap input and output text and switch mode/i });
+    expect(swapBtn).toBeInTheDocument();
+    expect(swapBtn).toHaveAttribute('title', 'Swap input and output text and switch mode');
+    expect(swapBtn.className).toContain('focus-visible:ring-2');
+
+    // Click swap button
+    await React.act(async () => {
+      fireEvent.click(swapBtn);
+    });
+
+    // Check that input textarea now has the former ciphertext and mode is Decrypt
+    const swappedInputArea = screen.getByLabelText(/ciphertext input/i);
+    expect(swappedInputArea).toBeInTheDocument();
+    expect(swappedInputArea).toHaveValue('VHFUHW PHVVDJH');
+
+    // Check that output result now contains former plaintext input
+    const outputContainer = screen.getByTestId(`output-text-${sampleExhibit.id}`);
+    expect(outputContainer).toHaveTextContent('SECRET MESSAGE');
+  });
+
   it('renders WorkbenchPanel copy button with accessible mode-specific tooltip and aria-label', async () => {
     // Mock navigator.clipboard.writeText
     Object.assign(navigator, {
