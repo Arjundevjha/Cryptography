@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Pre-compute Typed Array Position Maps for Matrix Grid Lookups in TypeScript
+**Learning:** In matrix-based ciphers like Playfair, calling `gridChars.indexOf(char)` on every character performs linear array searching and allocates dynamic tuple objects `[row, col]` inside loops. Using 128-entry typed `Int8Array` position maps (`posRow` and `posCol`)indexed by ASCII code allows $O(1)$ coordinate lookups without garbage collection or array allocation overhead, delivering ~3.6x speedup for encryption and ~2.9x speedup for decryption.
+**Action:** Use 128-entry ASCII indexed `Int8Array` typed arrays for grid cipher coordinate lookups in TypeScript.
