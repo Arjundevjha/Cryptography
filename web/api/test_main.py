@@ -1562,6 +1562,15 @@ def test_vigenere_decrypt_empty_key():
     assert resp.status_code == 400
     assert "cannot be empty" in resp.json()["detail"].lower()
 
+def test_vigenere_non_alphabetic_key_api():
+    resp_enc = client.post("/api/vigenere/encrypt", json={"plaintext": "HELLO", "key": "12345"})
+    assert resp_enc.status_code == 400
+    assert "at least one alphabetic character" in resp_enc.json()["detail"].lower()
+
+    resp_dec = client.post("/api/vigenere/decrypt", json={"ciphertext": "HELLO", "key": "!@#$%"})
+    assert resp_dec.status_code == 400
+    assert "at least one alphabetic character" in resp_dec.json()["detail"].lower()
+
 @patch("methods.classical.vigenere.encrypt", side_effect=ValueError("Vigenere val error"))
 def test_vigenere_encrypt_value_error(mock_enc):
     resp = client.post("/api/vigenere/encrypt", json={"plaintext": "HELLO", "key": "LEMON"})
