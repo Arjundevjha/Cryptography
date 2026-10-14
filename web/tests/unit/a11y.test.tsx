@@ -19,12 +19,13 @@ jest.mock('../../src/components/museum/ThreeMuseumScene', () => {
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
 
-  it('renders ArtifactMetadataDrawer with accessible dialog role, aria-label, and focus styles', () => {
+  it('renders ArtifactMetadataDrawer with accessible dialog role, aria-modal, aria-label, and supports Escape key dismissal', () => {
     const handleClose = jest.fn();
     render(<ArtifactMetadataDrawer exhibit={sampleExhibit} onClose={handleClose} />);
 
     const dialog = screen.getByRole('dialog', { name: `Artifact details for ${sampleExhibit.name}` });
     expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
 
     const exitBtn = screen.getByRole('button', { name: /exit macro close-up view/i });
     expect(exitBtn).toBeInTheDocument();
@@ -35,6 +36,10 @@ describe('Accessibility (A11y) Unit Tests', () => {
 
     fireEvent.click(closeButton);
     expect(handleClose).toHaveBeenCalledTimes(1);
+
+    // Verify pressing Escape key triggers onClose
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(handleClose).toHaveBeenCalledTimes(2);
   });
 
   it('renders MuseumHUD top navigation with aria-current="page" on active item and focus-visible styles', () => {
