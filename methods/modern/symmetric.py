@@ -416,6 +416,9 @@ def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> str:
     """Decrypt ciphertext bytes using AES-256-CBC and remove PKCS7 padding."""
     if len(iv) != BLOCK_SIZE:
         raise ValueError(f"IV must be exactly {BLOCK_SIZE} bytes")
+    # Security: Validate non-empty ciphertext and block alignment to prevent unhandled unpacking errors
+    if not ciphertext or len(ciphertext) % BLOCK_SIZE != 0:
+        raise ValueError(f"Ciphertext length must be a non-empty multiple of {BLOCK_SIZE} bytes")
     round_keys = key_expansion(key)
     decrypted_blocks = []
     prev_block = iv
