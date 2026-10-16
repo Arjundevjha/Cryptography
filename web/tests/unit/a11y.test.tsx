@@ -19,12 +19,13 @@ jest.mock('../../src/components/museum/ThreeMuseumScene', () => {
 describe('Accessibility (A11y) Unit Tests', () => {
   const sampleExhibit = MUSEUM_EXHIBITS[0];
 
-  it('renders ArtifactMetadataDrawer with accessible dialog role, aria-label, and focus styles', () => {
+  it('renders ArtifactMetadataDrawer with accessible dialog role, aria-modal, aria-label, and Escape key dismissal', () => {
     const handleClose = jest.fn();
     render(<ArtifactMetadataDrawer exhibit={sampleExhibit} onClose={handleClose} />);
 
     const dialog = screen.getByRole('dialog', { name: `Artifact details for ${sampleExhibit.name}` });
     expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
 
     const exitBtn = screen.getByRole('button', { name: /exit macro close-up view/i });
     expect(exitBtn).toBeInTheDocument();
@@ -33,8 +34,11 @@ describe('Accessibility (A11y) Unit Tests', () => {
     const closeButton = screen.getByRole('button', { name: /close artifact details/i });
     expect(closeButton).toBeInTheDocument();
 
-    fireEvent.click(closeButton);
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
     expect(handleClose).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(closeButton);
+    expect(handleClose).toHaveBeenCalledTimes(2);
   });
 
   it('renders MuseumHUD top navigation with aria-current="page" on active item and focus-visible styles', () => {
@@ -193,9 +197,17 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(statusWidget.className).toContain('focus-visible:ring-2');
   });
 
-  it('renders StatueCuratorialDrawer tab switchers with accessible tab roles, aria-selected, and focus styles', () => {
+  it('renders StatueCuratorialDrawer tab switchers with accessible tab roles, aria-modal, aria-selected, and Escape key dismissal', () => {
+    const handleClose = jest.fn();
     const diffieHellman = MUSEUM_STATUES.find((s) => s.id === 'statue-diffie-hellman')!;
-    render(<StatueCuratorialDrawer statue={diffieHellman} onClose={jest.fn()} />);
+    render(<StatueCuratorialDrawer statue={diffieHellman} onClose={handleClose} />);
+
+    const dialog = screen.getByRole('dialog', { name: `Statue details for ${diffieHellman.name}` });
+    expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(handleClose).toHaveBeenCalledTimes(1);
 
     // Verify main tablist
     const mainTabList = screen.getByRole('tablist', { name: /statue details view mode/i });
