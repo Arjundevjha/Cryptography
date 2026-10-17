@@ -1,0 +1,3 @@
+## 2025-05-18 - Modal Overlay Dialog Keyboard Dismissal & ARIA Semantics
+**Learning:** Slide-over modal drawers (`ArtifactMetadataDrawer` and `StatueCuratorialDrawer`) in React/Next.js overlay components must include `aria-modal="true"` to signal screen readers that background content is inert, as well as a global `keydown` event listener for the `Escape` key to support expected accessible keyboard dismissal.
+**Action:** When implementing modal dialogs or slide-over drawer overlays in UI components, always pair `role="dialog"` with `aria-modal="true"` and a `useEffect` listener on `window` for `Escape` key dismissal.
