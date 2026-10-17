@@ -50,7 +50,13 @@ def _transform(text: str, key: str, mode: str = MODE_ENCRYPT) -> str:
     if not key or not text:
         return text
 
-    key_lower = key.lower()
+    # Security: Sanitize input key by filtering out non-alphabetic characters
+    # to prevent invalid ASCII shift calculations and corrupted key streams.
+    clean_key = [c.lower() for c in key if c.isalpha()]
+    if not clean_key:
+        raise ValueError("Vigenère key must contain at least one alphabetic character.")
+
+    key_lower = "".join(clean_key)
     key_len = len(key_lower)
     key_shifts = [ord(k) - 97 for k in key_lower]
 

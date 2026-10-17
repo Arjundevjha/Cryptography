@@ -117,6 +117,17 @@ def test_encrypt_decrypt_roundtrip():
     ciphertext = encrypt(plaintext, key)
     assert decrypt(ciphertext, key) == plaintext
 
+def test_non_alphabetic_key_validation():
+    import pytest
+    with pytest.raises(ValueError, match="Vigenère key must contain at least one alphabetic character"):
+        encrypt("HELLO", "12345")
+    with pytest.raises(ValueError, match="Vigenère key must contain at least one alphabetic character"):
+        decrypt("RIJVS", "!!@#$")
+
+    # Mixed key should strip non-alphabetic chars and encrypt/decrypt correctly
+    assert encrypt("HELLO", "KEY 123") == encrypt("HELLO", "KEY")
+    assert decrypt("RIJVS", "KEY 123") == decrypt("RIJVS", "KEY")
+
 def test_pick_keys():
     key = pick_keys()
     assert len(key) == 5
