@@ -101,6 +101,38 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(screen.queryByRole('dialog', { name: /interactive museum floorplan map/i })).not.toBeInTheDocument();
   });
 
+  it('toggles MuseumHUD 2D Map drawer with the "M" or "m" keyboard shortcut, ignoring input elements', () => {
+    render(
+      <div>
+        <input data-testid="test-text-input" type="text" />
+        <MuseumHUD
+          currentView="atrium"
+          isMacro={false}
+          onSelectRoom={jest.fn()}
+          onReturnToFoyer={jest.fn()}
+        />
+      </div>
+    );
+
+    const toggleMapButton = screen.getByRole('button', { name: /toggle 2d museum floorplan map/i });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
+
+    // Press 'm' while focused on document body
+    fireEvent.keyDown(window, { key: 'm', code: 'KeyM' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('dialog', { name: /interactive museum floorplan map/i })).toBeInTheDocument();
+
+    // Press 'M' while focused on document body to close map
+    fireEvent.keyDown(window, { key: 'M', code: 'KeyM' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
+
+    // Focus an input element and press 'm' - should NOT toggle map
+    const textInput = screen.getByTestId('test-text-input');
+    textInput.focus();
+    fireEvent.keyDown(textInput, { key: 'm', code: 'KeyM' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('allows keyboard navigation and activation of 2D floorplan interactive room markers', () => {
     const handleSelectRoom = jest.fn();
     render(

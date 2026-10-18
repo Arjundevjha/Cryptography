@@ -19,6 +19,21 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && showMap) {
         setShowMap(false);
+        return;
+      }
+      if ((e.key === 'm' || e.key === 'M') && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const target = e.target as HTMLElement | null;
+        if (
+          target &&
+          (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.tagName === 'SELECT' ||
+            target.isContentEditable)
+        ) {
+          return;
+        }
+        e.preventDefault();
+        setShowMap((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -91,12 +106,13 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         <button
           onClick={() => setShowMap(!showMap)}
           aria-expanded={showMap}
-          aria-label="Toggle 2D museum floorplan map"
+          aria-label="Toggle 2D museum floorplan map (Shortcut: M)"
+          title="Toggle 2D museum floorplan map (Shortcut: M)"
           className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             showMap ? 'bg-amber-400 text-stone-950' : 'bg-stone-900 hover:bg-stone-800 text-amber-400 border border-amber-500/30'
           }`}
         >
-          <Map className="w-3.5 h-3.5" /> 2D MAP
+          <Map className="w-3.5 h-3.5" /> 2D MAP <span className="text-[10px] opacity-75 font-normal">[M]</span>
         </button>
       </div>
 
@@ -379,7 +395,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
       {/* 3D Exploration Hint Badge */}
       <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 pointer-events-none px-4 py-2 rounded-full bg-stone-950/75 backdrop-blur-md border border-amber-500/20 text-stone-300 text-[11px] font-mono flex items-center gap-2 shadow-lg">
         <Compass className="w-3.5 h-3.5 text-amber-400 animate-spin" />
-        <span>3D EXPLORATION: WASD / Arrow Keys to Walk • Drag Mouse to Look • Scroll to Zoom • Click Exhibit to Focus</span>
+        <span>3D EXPLORATION: WASD / Arrow Keys to Walk • M for Map • Drag Mouse to Look • Scroll to Zoom</span>
       </div>
 
       {/* Footer Minimal API Status Dot */}
