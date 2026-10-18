@@ -117,6 +117,19 @@ def test_encrypt_decrypt_roundtrip():
     ciphertext = encrypt(plaintext, key)
     assert decrypt(ciphertext, key) == plaintext
 
+def test_key_sanitization_and_validation():
+    import pytest
+    # Key containing non-alphabetic characters should be sanitized to its alphabetic part ("L1E2M3O4N" -> "LEMON")
+    assert encrypt("ATTACKATDAWN", "L1E2M3O4N!") == "LXFOPVEFRNHR"
+    assert decrypt("LXFOPVEFRNHR", "L1E2M3O4N!") == "ATTACKATDAWN"
+
+    # Key containing no alphabetic characters should raise ValueError
+    with pytest.raises(ValueError, match="at least one alphabetic character"):
+        encrypt("HELLO", "12345!")
+
+    with pytest.raises(ValueError, match="at least one alphabetic character"):
+        decrypt("HELLO", "12345!")
+
 def test_pick_keys():
     key = pick_keys()
     assert len(key) == 5
