@@ -53,6 +53,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         {currentView !== 'atrium' && (
           <button
             onClick={onReturnToFoyer}
+            aria-label="Return to Grand Entrance Lobby"
             className="px-3.5 py-2.5 rounded-2xl bg-amber-500/90 hover:bg-amber-400 text-stone-950 font-mono text-xs font-bold flex items-center gap-2 shadow-lg transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           >
             <Home className="w-4 h-4" /> Lobby Entrance
@@ -65,6 +66,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         <button
           onClick={onReturnToFoyer}
           aria-current={currentView === 'atrium' ? 'page' : undefined}
+          aria-label="Navigate to Grand Entrance Lobby"
           className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             currentView === 'atrium' ? 'bg-amber-500 text-stone-950 shadow font-bold' : 'text-stone-300 hover:text-stone-100'
           }`}
@@ -77,6 +79,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
             key={wing.id}
             onClick={() => onSelectRoom(wing.id)}
             aria-current={currentView === wing.id ? 'page' : undefined}
+            aria-label={`Navigate to ${wing.name}`}
             className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               currentView === wing.id ? 'bg-amber-500 text-stone-950 shadow font-bold' : 'text-stone-300 hover:text-stone-100'
             }`}

@@ -47,9 +47,9 @@ describe('Accessibility (A11y) Unit Tests', () => {
       />
     );
 
-    const lobbyNavBtn = screen.getByRole('button', { name: /^lobby$/i });
-    const classicalWingBtn = screen.getByRole('button', { name: /classical wing/i });
-    const historicalWingBtn = screen.getByRole('button', { name: /historical wing/i });
+    const lobbyNavBtn = screen.getByRole('button', { name: /navigate to grand entrance lobby/i });
+    const classicalWingBtn = screen.getByRole('button', { name: /navigate to classical ciphers wing/i });
+    const historicalWingBtn = screen.getByRole('button', { name: /navigate to historical systems wing/i });
 
     expect(lobbyNavBtn).not.toHaveAttribute('aria-current');
     expect(classicalWingBtn).toHaveAttribute('aria-current', 'page');
@@ -58,8 +58,9 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(lobbyNavBtn.className).toContain('focus-visible:ring-2');
     expect(classicalWingBtn.className).toContain('focus-visible:ring-2');
 
-    // Return to lobby button should also have focus indicator
-    const returnToLobbyBtn = screen.getByRole('button', { name: /lobby entrance/i });
+    // Return to lobby button should also have focus indicator and accessible aria-label
+    const returnToLobbyBtn = screen.getByRole('button', { name: /return to grand entrance lobby/i });
+    expect(returnToLobbyBtn).toBeInTheDocument();
     expect(returnToLobbyBtn.className).toContain('focus-visible:ring-2');
   });
 
@@ -343,8 +344,8 @@ describe('Accessibility (A11y) Unit Tests', () => {
   it('renders MuseumCanvas lobby statue buttons and inspect buttons with focus-visible focus ring styles', () => {
     render(<MuseumCanvas />);
 
-    // Verify monument button focus-visible styling
-    const alKindiMonumentBtn = screen.getByRole('button', { name: /al-kindi/i });
+    // Verify monument button focus-visible styling and aria-label
+    const alKindiMonumentBtn = screen.getByRole('button', { name: /inspect al-kindi pioneer monument/i });
     expect(alKindiMonumentBtn).toBeInTheDocument();
     expect(alKindiMonumentBtn.className).toContain('focus-visible:ring-2');
     expect(alKindiMonumentBtn.className).toContain('focus-visible:ring-amber-500');

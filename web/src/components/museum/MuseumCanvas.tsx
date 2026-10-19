@@ -78,6 +78,7 @@ export function MuseumCanvas() {
                 <button
                   key={statue.id}
                   onClick={() => handleSelectRoom(statue.id)}
+                  aria-label={`Inspect ${statue.name} pioneer monument`}
                   className="p-2.5 rounded-xl bg-stone-950/85 backdrop-blur-md hover:bg-stone-900 border border-amber-500/40 hover:border-amber-400 shadow-lg hover:shadow-amber-500/20 transition-all text-left group focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 >
                   <div className="flex items-center justify-between text-[9px] font-mono text-amber-400 font-bold uppercase tracking-wider">
@@ -115,6 +116,7 @@ export function MuseumCanvas() {
                 <button
                   key={ex.id}
                   onClick={() => handleSelectRoom(ex.id)}
+                  aria-label={`Enter ${ex.name} exhibit room`}
                   className="p-2.5 rounded-xl bg-white/90 backdrop-blur-md hover:bg-white border border-stone-200 hover:border-amber-400 transition-all text-left group shadow-md focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 >
                   <div className="text-xs font-bold text-stone-900 group-hover:text-amber-700 transition-colors">{ex.name}</div>
