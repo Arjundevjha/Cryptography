@@ -151,3 +151,18 @@ def test_main_random_key(capsys):
     assert "Vigenere Key Utilized: abcde" in captured.out
     assert "Vigenere Encrypted Text: HFNOS" in captured.out
     assert "Vigenere Decrypted Result: HELLO" in captured.out
+
+import pytest
+
+def test_invalid_key_raises_value_error():
+    with pytest.raises(ValueError, match="Key must contain at least one alphabetic character"):
+        encrypt("HELLO", "123")
+    with pytest.raises(ValueError, match="Key must contain at least one alphabetic character"):
+        decrypt("RIJVS", "!@#")
+    with pytest.raises(ValueError, match="Key must contain at least one alphabetic character"):
+        encrypt("HELLO", "   ")
+
+def test_mixed_key_sanitization():
+    assert encrypt("HELLO", "K E Y") == encrypt("HELLO", "KEY")
+    assert encrypt("HELLO", "KEY 123") == encrypt("HELLO", "KEY")
+    assert decrypt("RIJVS", "K-E-Y") == decrypt("RIJVS", "KEY")
