@@ -1053,10 +1053,46 @@ def test_sha256_unicode_and_special_characters():
     assert "hash" in data
     assert len(data["hash"]) == 64
 
+def test_rsa_encrypt_public_key_too_long():
+    long_key = "-----BEGIN RSA PUBLIC KEY-----\n" + "A" * 10001 + "\n-----END RSA PUBLIC KEY-----"
+    enc_payload = {
+        "plaintext": "Secret Message",
+        "public_key": long_key
+    }
+    response = client.post("/api/rsa/encrypt", json=enc_payload)
+    assert response.status_code == 400
+
+def test_rsa_decrypt_private_key_too_long():
+    long_key = "-----BEGIN RSA PRIVATE KEY-----\n" + "A" * 10001 + "\n-----END RSA PRIVATE KEY-----"
+    dec_payload = {
+        "ciphertext": "00",
+        "private_key": long_key
+    }
+    response = client.post("/api/rsa/decrypt", json=dec_payload)
+    assert response.status_code == 400
+
+def test_rsa_encrypt_invalid_pem_structure():
+    enc_payload = {
+        "plaintext": "Secret Message",
+        "public_key": "INVALID_PEM_KEY_FORMAT"
+    }
+    response = client.post("/api/rsa/encrypt", json=enc_payload)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Encryption failed"}
+
+def test_rsa_decrypt_invalid_pem_structure():
+    dec_payload = {
+        "ciphertext": "00",
+        "private_key": "INVALID_PEM_KEY_FORMAT"
+    }
+    response = client.post("/api/rsa/decrypt", json=dec_payload)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Decryption failed"}
+
 def test_rsa_encrypt_exception(caplog):
     enc_payload = {
         "plaintext": "Secret Message",
-        "public_key": "dummy_public_key"
+        "public_key": "-----BEGIN RSA PUBLIC KEY-----\n323:17\n-----END RSA PUBLIC KEY-----"
     }
     with patch("methods.modern.rsa.encrypt", side_effect=Exception("Test mock exception")):
         with caplog.at_level("ERROR"):
@@ -1068,7 +1104,7 @@ def test_rsa_encrypt_exception(caplog):
 def test_rsa_decrypt_exception(caplog):
     dec_payload = {
         "ciphertext": "00",
-        "private_key": "dummy_private_key"
+        "private_key": "-----BEGIN RSA PRIVATE KEY-----\n323:17:275:17:19\n-----END RSA PRIVATE KEY-----"
     }
     with patch("methods.modern.rsa.decrypt", side_effect=Exception("Test mock exception")):
         with caplog.at_level("ERROR"):
