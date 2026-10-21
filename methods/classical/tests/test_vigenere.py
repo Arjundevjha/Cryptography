@@ -70,6 +70,20 @@ def test_encrypt_unmatching_length_and_edge_cases():
     # Single character text and single character key
     assert encrypt("A", "B") == "B"
 
+def test_vigenere_non_alphabetic_key_validation():
+    import pytest
+    # Non-alphabetic key containing numbers or symbols should raise ValueError
+    with pytest.raises(ValueError, match="at least one alphabetic character"):
+        encrypt("HELLO", "123")
+    with pytest.raises(ValueError, match="at least one alphabetic character"):
+        encrypt("HELLO", "!@#")
+    with pytest.raises(ValueError, match="at least one alphabetic character"):
+        decrypt("RIJVS", "123")
+
+    # Mixed key containing non-alphabetic chars should strip them and work correctly
+    assert encrypt("ATTACKATDAWN", "LEMON123") == "LXFOPVEFRNHR"
+    assert decrypt("LXFOPVEFRNHR", "LEMON123") == "ATTACKATDAWN"
+
 def test_decrypt():
     # Standard example
     assert decrypt("LXFOPVEFRNHR", "LEMON") == "ATTACKATDAWN"
