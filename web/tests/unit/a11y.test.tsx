@@ -316,6 +316,45 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(liveStatus).toHaveTextContent('Copied ciphertext to clipboard');
   });
 
+  it('renders WorkbenchPanel swap button and handles input/output swapping and mode toggle', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Initially swap button is not present because output is empty
+    expect(screen.queryByRole('button', { name: /swap input and output and switch mode/i })).not.toBeInTheDocument();
+
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    // Swap button should now appear
+    const swapBtn = screen.getByRole('button', { name: /swap input and output and switch mode/i });
+    expect(swapBtn).toBeInTheDocument();
+    expect(swapBtn.className).toContain('focus-visible:ring-2');
+
+    // Click swap button
+    await React.act(async () => {
+      fireEvent.click(swapBtn);
+    });
+
+    // Input text should now be 'KHOOR' (the previous output)
+    const newInputArea = screen.getByLabelText(/ciphertext input/i);
+    expect(newInputArea).toHaveValue('KHOOR');
+
+    // Encrypt mode should have toggled to decrypt mode
+    const decryptBtn = screen.getByTestId(`decrypt-btn-${sampleExhibit.id}`);
+    expect(decryptBtn).toHaveAttribute('aria-pressed', 'true');
+  });
+
   it('renders StatueCuratorialDrawer Pioneer Lab controls with accessible labels, ARIA attributes, and focus styles', () => {
     const kindiStatue = MUSEUM_STATUES.find((s) => s.id === 'statue-alkindi')!;
     render(<StatueCuratorialDrawer statue={kindiStatue} onClose={jest.fn()} />);

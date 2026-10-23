@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CipherExhibit } from '../museumData';
-import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check } from 'lucide-react';
+import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check, ArrowUpDown } from 'lucide-react';
 
 interface WorkbenchPanelProps {
   exhibit: CipherExhibit;
@@ -52,6 +52,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     } catch {
       // Fallback if clipboard API fails
     }
+  };
+
+  const handleSwap = () => {
+    if (!outputText) return;
+    const currentOutput = outputText;
+    setInputText(currentOutput);
+    setOutputText('');
+    setMode((prev) => (prev === 'encrypt' ? 'decrypt' : 'encrypt'));
   };
 
   const handleRSAKeygen = async () => {
@@ -207,6 +215,18 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           </label>
           <div className="flex items-center gap-2 text-[10px] font-mono text-stone-400">
             <span>{inputText.length} chars</span>
+            {outputText && (
+              <button
+                type="button"
+                onClick={handleSwap}
+                title="Swap input and output and switch mode"
+                aria-label="Swap input and output and switch mode"
+                className="text-amber-400 hover:text-amber-300 flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1"
+              >
+                <ArrowUpDown className="w-3 h-3" />
+                <span>Swap</span>
+              </button>
+            )}
             {inputText.length > 0 && (
               <button
                 type="button"
