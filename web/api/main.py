@@ -857,6 +857,12 @@ def rsa_encrypt(data: RsaEncryptInput):
         pub_key_bytes = data.public_key.strip().encode('utf-8')
         ciphertext_bytes = rsa.encrypt(data.plaintext, pub_key_bytes)
         return {"ciphertext": ciphertext_bytes.hex()}
+    except ValueError as ve:
+        logger.warning("RSA encryption validation error: %s", ve)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid RSA public key or input parameters"
+        )
     except Exception as e:
         logger.error("RSA encryption error: %s", e)
         raise HTTPException(status_code=400, detail="Encryption failed")
@@ -870,6 +876,12 @@ def rsa_decrypt(data: RsaDecryptInput):
         ciphertext_bytes = bytes.fromhex(data.ciphertext)
         plaintext = rsa.decrypt(ciphertext_bytes, priv_key_bytes)
         return {"plaintext": plaintext}
+    except ValueError as ve:
+        logger.warning("RSA decryption validation error: %s", ve)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid RSA private key or ciphertext parameters"
+        )
     except Exception as e:
         logger.error("RSA decryption error: %s", e)
         raise HTTPException(status_code=400, detail="Decryption failed")
