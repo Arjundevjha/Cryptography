@@ -41,9 +41,29 @@ def test_generate_prime_invalid_bits():
     with pytest.raises(ValueError, match="Bit length must be at least 2"):
         generate_prime(-5)
 
+def test_generate_prime_security_bounds_and_types():
+    with pytest.raises(ValueError, match="cannot exceed 4096 bits"):
+        generate_prime(10000)
+    with pytest.raises(TypeError, match="Bit length must be an integer"):
+        generate_prime(True)
+    with pytest.raises(TypeError, match="Bit length must be an integer"):
+        generate_prime("128")
+
 def test_generate_keypair_invalid_key_size():
     with pytest.raises(ValueError, match="Key size must be at least 16 bits"):
         generate_keypair(key_size=15)
+    with pytest.raises(ValueError, match="Key size cannot exceed 4096 bits"):
+        generate_keypair(key_size=10000)
+    with pytest.raises(TypeError, match="Key size must be an integer"):
+        generate_keypair(key_size=True)
+    with pytest.raises(TypeError, match="Key size must be an integer"):
+        generate_keypair(key_size="1024")
+
+def test_generate_encrypted_keypair_invalid_passphrase():
+    with pytest.raises(ValueError, match="Passphrase cannot be empty"):
+        generate_encrypted_keypair(b"", key_size=512)
+    with pytest.raises(TypeError, match="Passphrase must be bytes or bytearray"):
+        generate_encrypted_keypair("invalid_type_passphrase", key_size=512)
 
 def test_generate_keypair_default_params():
     public_key, private_key = generate_keypair(key_size=512)
