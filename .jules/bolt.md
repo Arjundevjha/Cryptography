@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Pre-compute Shift Lookup Tables for Polyalphabetic Character Shifts
+**Learning:** Even after vectorizing key shift arrays, calculating modulo arithmetic `(code - 97 + shift) % 26` and `chr()` conversions per character inside tight polyalphabetic cipher loops retains overhead. Pre-computing 26-element shift lookup tables for lowercase and uppercase alphabets at module scope enables $O(1)$ character substitution lookups (`tables[shift][index]`), achieving a ~1.5x speedup.
+**Action:** Pre-compute shift lookup tables for polyalphabetic ciphers to eliminate per-character modulo and `chr()` calls.
