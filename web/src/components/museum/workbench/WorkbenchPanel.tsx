@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CipherExhibit } from '../museumData';
-import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check } from 'lucide-react';
+import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check, ArrowUpDown } from 'lucide-react';
 
 interface WorkbenchPanelProps {
   exhibit: CipherExhibit;
@@ -15,6 +15,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [swapAnnounce, setSwapAnnounce] = useState('');
 
   // Cipher specific parameter states
   const [shift, setShift] = useState<number>(exhibit.defaultParams.shift ?? 3);
@@ -42,6 +43,16 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     setErrorMsg(null);
     setCopied(false);
   }, [exhibit.id]);
+
+  const handleSwap = () => {
+    if (!outputText) return;
+    const newMode = mode === 'encrypt' ? 'decrypt' : 'encrypt';
+    setInputText(outputText);
+    setOutputText('');
+    setMode(newMode);
+    setSwapAnnounce(`Swapped output text to input and switched mode to ${newMode}`);
+    setTimeout(() => setSwapAnnounce(''), 3000);
+  };
 
   const handleCopy = async () => {
     if (!outputText) return;
@@ -612,36 +623,49 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             {mode === 'encrypt' ? 'CIPHERTEXT RESULT' : 'DECRYPTED PLAINTEXT'}
           </label>
           {outputText && (
-            <button
-              onClick={handleCopy}
-              title={
-                copied
-                  ? 'Copied to clipboard!'
-                  : mode === 'encrypt'
-                  ? 'Copy ciphertext result to clipboard'
-                  : 'Copy decrypted plaintext to clipboard'
-              }
-              aria-label={
-                copied
-                  ? 'Copied to clipboard'
-                  : mode === 'encrypt'
-                  ? 'Copy ciphertext result to clipboard'
-                  : 'Copy decrypted plaintext to clipboard'
-              }
-              className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3 h-3 text-green-400" />
-                  <span className="text-green-400">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3 h-3" />
-                  <span>Copy</span>
-                </>
+            <div className="flex items-center gap-1.5">
+              {exhibit.id !== 'sha256' && (
+                <button
+                  onClick={handleSwap}
+                  title="Swap output text into input field and switch mode"
+                  aria-label="Swap output text into input field and switch mode"
+                  className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
+                >
+                  <ArrowUpDown className="w-3 h-3" />
+                  <span>Swap</span>
+                </button>
               )}
-            </button>
+              <button
+                onClick={handleCopy}
+                title={
+                  copied
+                    ? 'Copied to clipboard!'
+                    : mode === 'encrypt'
+                    ? 'Copy ciphertext result to clipboard'
+                    : 'Copy decrypted plaintext to clipboard'
+                }
+                aria-label={
+                  copied
+                    ? 'Copied to clipboard'
+                    : mode === 'encrypt'
+                    ? 'Copy ciphertext result to clipboard'
+                    : 'Copy decrypted plaintext to clipboard'
+                }
+                className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3 text-green-400" />
+                    <span className="text-green-400">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </div>
         <div
@@ -649,7 +673,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           aria-live="polite"
           className="sr-only"
         >
-          {copied ? `Copied ${mode === 'encrypt' ? 'ciphertext' : 'decrypted plaintext'} to clipboard` : ''}
+          {copied ? `Copied ${mode === 'encrypt' ? 'ciphertext' : 'decrypted plaintext'} to clipboard` : swapAnnounce}
         </div>
         <div
           data-testid={`output-text-${exhibit.id}`}

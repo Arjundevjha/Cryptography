@@ -350,6 +350,45 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(alKindiMonumentBtn.className).toContain('focus-visible:ring-amber-500');
   });
 
+  it('renders WorkbenchPanel swap button and verifies swapping ciphertext to input and toggling mode', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Execute encrypt to get output text
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    // Check swap button is present
+    const swapBtn = await screen.findByRole('button', { name: /swap output text into input field and switch mode/i });
+    expect(swapBtn).toBeInTheDocument();
+
+    // Click swap button
+    await React.act(async () => {
+      fireEvent.click(swapBtn);
+    });
+
+    // Verify input text updated to ciphertext 'KHOOR'
+    const inputArea = screen.getByLabelText(/ciphertext input/i);
+    expect(inputArea).toHaveValue('KHOOR');
+
+    // Verify mode switched to decrypt
+    const decryptModeBtn = screen.getByTestId(`decrypt-btn-${sampleExhibit.id}`);
+    expect(decryptModeBtn).toHaveAttribute('aria-pressed', 'true');
+
+    // Verify screen-reader live status element updates
+    const liveStatus = screen.getByRole('status');
+    expect(liveStatus).toHaveTextContent('Swapped output text to input and switched mode to decrypt');
+  });
+
   it('renders Enigma rotor selectors with accessible group role, aria-labelledby, and assigned IDs', () => {
     const enigmaExhibit = MUSEUM_EXHIBITS.find((e) => e.id === 'enigma')!;
     render(<WorkbenchPanel exhibit={enigmaExhibit} />);
