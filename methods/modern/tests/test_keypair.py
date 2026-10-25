@@ -138,3 +138,28 @@ def test_generate_keypair_output_primality():
     phi = (p - 1) * (q - 1)
     # Check if e and d are valid inverses
     assert (e * d) % phi == 1
+
+
+def test_generate_prime_security_validations():
+    with pytest.raises(ValueError, match="Bit length must be at least 2 and at most 4096 bits"):
+        generate_prime(8192)
+    with pytest.raises(TypeError, match="Bit length must be an integer"):
+        generate_prime(True)  # type: ignore
+    with pytest.raises(TypeError, match="Bit length must be an integer"):
+        generate_prime("256")  # type: ignore
+
+
+def test_generate_keypair_security_validations():
+    with pytest.raises(ValueError, match="Key size must be at least 16 bits and at most 4096 bits"):
+        generate_keypair(key_size=8192)
+    with pytest.raises(TypeError, match="Key size must be an integer"):
+        generate_keypair(key_size=True)  # type: ignore
+    with pytest.raises(TypeError, match="Key size must be an integer"):
+        generate_keypair(key_size="1024")  # type: ignore
+
+
+def test_generate_encrypted_keypair_security_validations():
+    with pytest.raises(ValueError, match="Passphrase cannot be empty"):
+        generate_encrypted_keypair(b"", key_size=128)
+    with pytest.raises(TypeError, match="Passphrase must be bytes or bytearray"):
+        generate_encrypted_keypair("string_passphrase", key_size=128)  # type: ignore

@@ -64,8 +64,11 @@ def is_prime(val: int, tests: int = 5) -> bool:
 
 def generate_prime(bits: int) -> int:
     """Generate a random prime number of specified bit length."""
-    if bits < 2:
-        raise ValueError("Bit length must be at least 2 to generate a prime number")
+    # Security: Validate type and bounds to prevent CPU resource exhaustion and DoS attacks
+    if not isinstance(bits, int) or isinstance(bits, bool):
+        raise TypeError("Bit length must be an integer")
+    if not 2 <= bits <= 4096:
+        raise ValueError("Bit length must be at least 2 and at most 4096 bits")
     # Practical upper bound to avoid while-used warning
     for _ in range(100000):
         n = secrets.randbits(bits)
@@ -87,8 +90,11 @@ def generate_keypair(
     Returns:
         Tuple containing (public_key_pem, private_key_pem) as bytes
     """
-    if key_size < 16:
-        raise ValueError("Key size must be at least 16 bits")
+    # Security: Validate type and bounds to prevent CPU resource exhaustion and DoS attacks
+    if not isinstance(key_size, int) or isinstance(key_size, bool):
+        raise TypeError("Key size must be an integer")
+    if not 16 <= key_size <= 4096:
+        raise ValueError("Key size must be at least 16 bits and at most 4096 bits")
     half_size = key_size // 2
     p = generate_prime(half_size)
     q = generate_prime(half_size)
@@ -129,6 +135,12 @@ def generate_encrypted_keypair(
     Returns:
         Tuple containing (public_key_pem, encrypted_private_key_pem) as bytes
     """
+    # Security: Validate passphrase type and length
+    if not isinstance(passphrase, (bytes, bytearray)):
+        raise TypeError("Passphrase must be bytes or bytearray")
+    if len(passphrase) == 0:
+        raise ValueError("Passphrase cannot be empty")
+
     public_key_pem, private_key_pem = generate_keypair(key_size, public_exponent)
 
     # Derive AES-256 key from passphrase using SHA-256 helper
