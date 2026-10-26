@@ -270,6 +270,44 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(resetBtn.className).toContain('focus-visible:ring-2');
   });
 
+  it('renders WorkbenchPanel swap button and swaps output to input, toggling mode state', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Execute mock cipher operation to produce output
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    // Find swap button
+    const swapBtn = await screen.findByRole('button', {
+      name: /swap output into input and switch to decrypt mode/i,
+    });
+    expect(swapBtn).toBeInTheDocument();
+    expect(swapBtn.className).toContain('focus-visible:ring-2');
+
+    // Click swap button
+    await React.act(async () => {
+      fireEvent.click(swapBtn);
+    });
+
+    // Verify input text updated to ciphertext 'KHOOR'
+    const inputArea = screen.getByLabelText(/ciphertext input/i);
+    expect(inputArea).toHaveValue('KHOOR');
+
+    // Verify mode switched to Decrypt
+    const decryptTabBtn = screen.getByTestId(`decrypt-btn-${sampleExhibit.id}`);
+    expect(decryptTabBtn).toHaveAttribute('aria-pressed', 'true');
+  });
+
   it('renders WorkbenchPanel copy button with accessible mode-specific tooltip and aria-label', async () => {
     // Mock navigator.clipboard.writeText
     Object.assign(navigator, {

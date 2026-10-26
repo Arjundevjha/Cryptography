@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CipherExhibit } from '../museumData';
-import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check } from 'lucide-react';
+import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check, ArrowUpDown } from 'lucide-react';
 
 interface WorkbenchPanelProps {
   exhibit: CipherExhibit;
@@ -52,6 +52,13 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     } catch {
       // Fallback if clipboard API fails
     }
+  };
+
+  const handleSwap = () => {
+    if (!outputText) return;
+    setInputText(outputText);
+    setOutputText('');
+    setMode((prev) => (prev === 'encrypt' ? 'decrypt' : 'encrypt'));
   };
 
   const handleRSAKeygen = async () => {
@@ -612,36 +619,49 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             {mode === 'encrypt' ? 'CIPHERTEXT RESULT' : 'DECRYPTED PLAINTEXT'}
           </label>
           {outputText && (
-            <button
-              onClick={handleCopy}
-              title={
-                copied
-                  ? 'Copied to clipboard!'
-                  : mode === 'encrypt'
-                  ? 'Copy ciphertext result to clipboard'
-                  : 'Copy decrypted plaintext to clipboard'
-              }
-              aria-label={
-                copied
-                  ? 'Copied to clipboard'
-                  : mode === 'encrypt'
-                  ? 'Copy ciphertext result to clipboard'
-                  : 'Copy decrypted plaintext to clipboard'
-              }
-              className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3 h-3 text-green-400" />
-                  <span className="text-green-400">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3 h-3" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleSwap}
+                title={`Swap output into input and switch to ${mode === 'encrypt' ? 'decrypt' : 'encrypt'} mode`}
+                aria-label={`Swap output into input and switch to ${mode === 'encrypt' ? 'decrypt' : 'encrypt'} mode`}
+                className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
+              >
+                <ArrowUpDown className="w-3 h-3" />
+                <span>Swap</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCopy}
+                title={
+                  copied
+                    ? 'Copied to clipboard!'
+                    : mode === 'encrypt'
+                    ? 'Copy ciphertext result to clipboard'
+                    : 'Copy decrypted plaintext to clipboard'
+                }
+                aria-label={
+                  copied
+                    ? 'Copied to clipboard'
+                    : mode === 'encrypt'
+                    ? 'Copy ciphertext result to clipboard'
+                    : 'Copy decrypted plaintext to clipboard'
+                }
+                className="flex items-center gap-1 text-[10px] font-mono text-amber-400 hover:text-amber-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5 bg-stone-900 border border-stone-800 transition-colors"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3 text-green-400" />
+                    <span className="text-green-400">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </div>
         <div
