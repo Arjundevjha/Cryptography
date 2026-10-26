@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2026-10-10 - Direct Codepoint Translation Table Construction for Substitution Cipher
+**Learning:** `str.maketrans()` with generator expressions (`"".join(k.upper() for k in key.keys())`) allocates 4 intermediate strings and invokes generator overhead on every call. Constructing an integer codepoint dictionary (`dict[int, int]`) directly for `str.translate()` bypasses intermediate string joins and `str.maketrans()` allocation, delivering a ~1.4x–1.8x speedup.
+**Action:** Construct integer codepoint dictionaries (`dict[int, int]`) directly when building mapping tables for `str.translate()`.
