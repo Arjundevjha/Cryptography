@@ -4,6 +4,7 @@ import secrets
 
 ALPHABET = "abcdefghiklmnopqrstuvwxyz"
 GRID_SIZE = 5
+MAX_TEXT_LENGTH = 100000
 
 def pick_keys() -> str:
     """Generate a random key grid by shuffling the alphabet using CSPRNG."""
@@ -20,7 +21,17 @@ def encrypt(plaintext: str, key: str = None) -> str:
     Maps each letter to a two-digit coordinate string (row and column).
     Non-alphabetic characters are preserved.
     """
-    if not key:
+    if not isinstance(plaintext, str):
+        raise TypeError("Plaintext must be a string")
+    if len(plaintext) > MAX_TEXT_LENGTH:
+        raise ValueError(f"Plaintext length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+
+    if key is not None:
+        if not isinstance(key, str):
+            raise TypeError("Key must be a string")
+        if len(key) != 25:
+            raise ValueError("Polybius key must be exactly 25 characters")
+    else:
         key = ALPHABET
     # OPTIMIZATION: Pre-calculate character coordinates in pos_map dict including
     # uppercase characters and 'j'/'J' aliases to avoid O(N) list index searches,
@@ -52,7 +63,17 @@ def decrypt(ciphertext: str, key: str = None) -> str:
     Parses two-digit coordinates back into characters.
     Non-digit/non-coordinate characters are preserved.
     """
-    if not key:
+    if not isinstance(ciphertext, str):
+        raise TypeError("Ciphertext must be a string")
+    if len(ciphertext) > MAX_TEXT_LENGTH:
+        raise ValueError(f"Ciphertext length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+
+    if key is not None:
+        if not isinstance(key, str):
+            raise TypeError("Key must be a string")
+        if len(key) != 25:
+            raise ValueError("Polybius key must be exactly 25 characters")
+    else:
         key = ALPHABET
     # OPTIMIZATION: Pre-compute two-digit coordinate lookup dict to avoid
     # per-character string/integer conversions inside the loop (~1.5x speedup).
