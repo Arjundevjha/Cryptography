@@ -38,6 +38,7 @@ def test_security_headers_present():
     assert response.headers["Permissions-Policy"] == "camera=(), microphone=(), geolocation=()"
     assert response.headers["Strict-Transport-Security"] == "max-age=31536000; includeSubDomains"
     assert response.headers["Content-Security-Policy"] == "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
+    assert response.headers["X-Permitted-Cross-Domain-Policies"] == "none"
 
 def test_validate_input_success():
     response = client.post("/api/validate", json={"text": "hello"})
