@@ -370,4 +370,37 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
     expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
   });
+
+  it('renders WorkbenchPanel swap button with accessible ARIA label and swaps output to input while toggling mode', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Mock global fetch for API execution
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    const swapBtn = await screen.findByRole('button', { name: /swap output text into input and toggle mode/i });
+    expect(swapBtn).toBeInTheDocument();
+    expect(swapBtn).toHaveAttribute('title', 'Swap output text into input and toggle mode');
+    expect(swapBtn.className).toContain('focus-visible:ring-2');
+
+    // Click swap button
+    await React.act(async () => {
+      fireEvent.click(swapBtn);
+    });
+
+    // Check that input now contains 'KHOOR', input label updated to CIPHERTEXT INPUT, and output is cleared
+    const ciphertextInput = screen.getByLabelText(/ciphertext input/i);
+    expect(ciphertextInput).toBeInTheDocument();
+    expect(ciphertextInput).toHaveValue('KHOOR');
+    expect(screen.queryByRole('button', { name: /swap output text into input and toggle mode/i })).not.toBeInTheDocument();
+  });
 });
