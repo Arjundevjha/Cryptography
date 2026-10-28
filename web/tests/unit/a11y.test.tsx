@@ -370,4 +370,37 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
     expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
   });
+
+  it('renders WorkbenchPanel swap button with accessible title/aria-label and swaps output into input while toggling mode', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    const swapButton = await screen.findByRole('button', { name: /swap result into input/i });
+    expect(swapButton).toBeInTheDocument();
+    expect(swapButton.className).toContain('focus-visible:ring-2');
+
+    await React.act(async () => {
+      fireEvent.click(swapButton);
+    });
+
+    // Check that input text is now "KHOOR" and input label is CIPHERTEXT INPUT (since mode switched to decrypt)
+    const inputArea = screen.getByLabelText(/ciphertext input/i);
+    expect(inputArea).toHaveValue('KHOOR');
+
+    // Output should be cleared
+    const outputContainer = screen.getByTestId(`output-text-${sampleExhibit.id}`);
+    expect(outputContainer).toHaveTextContent('Result will appear here...');
+  });
 });
