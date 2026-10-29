@@ -370,4 +370,27 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
     expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
   });
+
+  it('renders WorkbenchPanel error banner with accessible role="alert" and aria-live="assertive"', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Mock failed fetch response
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({ detail: 'Invalid parameters provided' }),
+      })
+    ) as jest.Mock;
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    const alertBanner = await screen.findByRole('alert');
+    expect(alertBanner).toBeInTheDocument();
+    expect(alertBanner).toHaveAttribute('aria-live', 'assertive');
+    expect(alertBanner).toHaveTextContent('Invalid parameters provided');
+  });
 });

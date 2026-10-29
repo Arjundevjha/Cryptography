@@ -599,7 +599,11 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
       {/* Standardized Error Banner */}
       {errorMsg && (
-        <div className="mt-3 p-3 rounded-lg bg-red-950/80 border border-red-500/50 text-red-200 text-xs font-mono flex items-start gap-2">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mt-3 p-3 rounded-lg bg-red-950/80 border border-red-500/50 text-red-200 text-xs font-mono flex items-start gap-2"
+        >
           <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
           <span>{errorMsg}</span>
         </div>
