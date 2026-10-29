@@ -65,3 +65,24 @@ def test_scytale_single_row():
     decrypted = decrypt(ciphertext, width)
     assert decrypted == plaintext
 
+def test_invalid_input_types():
+    with pytest.raises(TypeError, match="Text must be a string"):
+        encrypt(123, 3)
+    with pytest.raises(TypeError, match="Text must be a string"):
+        decrypt(None, 3)
+    with pytest.raises(TypeError, match="Diameter must be an integer"):
+        encrypt("HELLO", True)
+    with pytest.raises(TypeError, match="Diameter must be an integer"):
+        decrypt("HLEOL ", 3.14)
+
+def test_boundary_limits():
+    with pytest.raises(ValueError, match="Text length exceeds maximum limit"):
+        encrypt("A" * 100001, 3)
+    with pytest.raises(ValueError, match="Diameter exceeds maximum limit"):
+        encrypt("HELLO", 10001)
+
+def test_decrypt_edge_cases():
+    with pytest.raises(ValueError, match="Diameter cannot be greater than ciphertext length"):
+        decrypt("HELLO", 10)
+    with pytest.raises(ValueError, match="Ciphertext length must be a multiple of diameter"):
+        decrypt("HELLO", 2)
