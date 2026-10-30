@@ -68,7 +68,7 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(returnToLobbyBtn.className).toContain('focus-visible:ring-2');
   });
 
-  it('renders MuseumHUD 2D Map toggle, modal dialog role, aria-modal, and supports Escape key dismissal', () => {
+  it('renders MuseumHUD 2D Map toggle, modal dialog role, aria-modal, and supports Escape key dismissal and M keyboard shortcut toggle', () => {
     render(
       <MuseumHUD
         currentView="atrium"
@@ -104,6 +104,27 @@ describe('Accessibility (A11y) Unit Tests', () => {
     fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
     expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByRole('dialog', { name: /interactive museum floorplan map/i })).not.toBeInTheDocument();
+
+    // Verify pressing 'm' key opens the map modal
+    fireEvent.keyDown(window, { key: 'm', code: 'KeyM' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('dialog', { name: /interactive museum floorplan map/i })).toBeInTheDocument();
+
+    // Verify pressing 'M' key closes the map modal
+    fireEvent.keyDown(window, { key: 'M', code: 'KeyM' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('dialog', { name: /interactive museum floorplan map/i })).not.toBeInTheDocument();
+
+    // Verify pressing 'm' when focused inside an input element does not open the map modal
+    const inputEl = document.createElement('input');
+    document.body.appendChild(inputEl);
+    inputEl.focus();
+
+    fireEvent.keyDown(inputEl, { key: 'm', code: 'KeyM' });
+    expect(toggleMapButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('dialog', { name: /interactive museum floorplan map/i })).not.toBeInTheDocument();
+
+    document.body.removeChild(inputEl);
   });
 
   it('allows keyboard navigation and activation of 2D floorplan interactive room markers', () => {
