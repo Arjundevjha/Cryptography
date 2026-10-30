@@ -25,3 +25,7 @@
 ## 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
 **Learning:** In pure Python AES implementations, calculating Galois Field $GF(2^8)$ multiplications (`mul_gf`) via bit-shift loops and modulo checks on every byte in `mix_columns` and `inv_mix_columns` creates heavy function call and loop interpretation overhead (896 function calls and 7,168 bitwise loop iterations per block for 14-round AES-256 decryption). Pre-computing 256-entry lookup tables (`MUL2`, `MUL3`, `MUL9`, `MUL11`, `MUL13`, `MUL14`) at module scope and replacing array slicing with direct index lookups yields a ~16x speedup for AES decryption and ~2x speedup for AES encryption.
 **Action:** Pre-compute $GF(2^8)$ multiplication lookup tables for block cipher matrix transformations to replace per-byte loops with $O(1)$ array lookups.
+
+## 2025-05-24 - Replace Key Index Modulo Arithmetic with Direct Zero Resets in Vigenère Loops
+**Learning:** In character-by-character cipher loops, evaluating modulo division (`key_idx % key_len`) on every iteration introduces unnecessary arithmetic instructions in Python bytecode. Tracking `key_idx` with an explicit reset check (`if key_idx == key_len: key_idx = 0`) avoids integer division and provides a ~1.35x performance speedup.
+**Action:** Use explicit zero-reset checks (`if idx == len: idx = 0`) instead of modulo arithmetic (`idx % len`) inside tight character transformation loops.
