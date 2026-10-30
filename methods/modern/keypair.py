@@ -19,6 +19,8 @@ except ImportError:
 PRIME_BITS = 512
 RSA_EXPONENT = 65537
 MIN_PRIME = 2
+MAX_PRIME_BITS = 4096
+MAX_KEY_SIZE = 4096
 
 # Pre-computed small prime numbers up to 349 for fast trial division
 # BOLT OPTIMIZATION: Fast trial division filters ~88% of composite prime candidates
@@ -64,8 +66,13 @@ def is_prime(val: int, tests: int = 5) -> bool:
 
 def generate_prime(bits: int) -> int:
     """Generate a random prime number of specified bit length."""
+    # Security: Validate integer type and strict bounds to prevent DoS via large generation
+    if not isinstance(bits, int) or isinstance(bits, bool):
+        raise TypeError("Bit length must be an integer")
     if bits < 2:
         raise ValueError("Bit length must be at least 2 to generate a prime number")
+    if bits > MAX_PRIME_BITS:
+        raise ValueError(f"Bit length cannot exceed {MAX_PRIME_BITS} bits to prevent DoS")
     # Practical upper bound to avoid while-used warning
     for _ in range(100000):
         n = secrets.randbits(bits)
@@ -87,8 +94,13 @@ def generate_keypair(
     Returns:
         Tuple containing (public_key_pem, private_key_pem) as bytes
     """
+    # Security: Validate integer type and strict bounds to prevent resource exhaustion
+    if not isinstance(key_size, int) or isinstance(key_size, bool):
+        raise TypeError("Key size must be an integer")
     if key_size < 16:
         raise ValueError("Key size must be at least 16 bits")
+    if key_size > MAX_KEY_SIZE:
+        raise ValueError(f"Key size cannot exceed {MAX_KEY_SIZE} bits to prevent DoS")
     half_size = key_size // 2
     p = generate_prime(half_size)
     q = generate_prime(half_size)
@@ -129,6 +141,12 @@ def generate_encrypted_keypair(
     Returns:
         Tuple containing (public_key_pem, encrypted_private_key_pem) as bytes
     """
+    # Security: Validate passphrase type and ensure non-empty passphrase
+    if not isinstance(passphrase, (bytes, bytearray)):
+        raise TypeError("Passphrase must be bytes or bytearray")
+    if len(passphrase) == 0:
+        raise ValueError("Passphrase cannot be empty")
+
     public_key_pem, private_key_pem = generate_keypair(key_size, public_exponent)
 
     # Derive AES-256 key from passphrase using SHA-256 helper

@@ -4,6 +4,7 @@ import secrets
 
 ALPHABET = "abcdefghiklmnopqrstuvwxyz"
 GRID_SIZE = 5
+MAX_TEXT_LENGTH = 100000
 
 def pick_keys() -> str:
     """Generate a random key grid by shuffling the alphabet using CSPRNG."""
@@ -14,19 +15,38 @@ def pick_keys() -> str:
         chars[i], chars[j] = chars[j], chars[i]
     return "".join(chars)
 
+def _validate_key(key: str | None) -> str:
+    """Validate and return normalized Polybius key."""
+    if key is None:
+        return ALPHABET
+    if not isinstance(key, str):
+        raise TypeError("Key must be a string")
+    if len(key) != 25:
+        raise ValueError("Polybius key must be exactly 25 characters")
+    return key
+
+
+def _validate_text(text: str, name: str) -> None:
+    """Validate input text type and length limits."""
+    if not isinstance(text, str):
+        raise TypeError(f"{name} must be a string")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"{name} length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+
+
 def encrypt(plaintext: str, key: str = None) -> str:
     """Encrypt plaintext using the Polybius Square cipher.
 
     Maps each letter to a two-digit coordinate string (row and column).
     Non-alphabetic characters are preserved.
     """
-    if not key:
-        key = ALPHABET
+    _validate_text(plaintext, "Plaintext")
+    clean_key = _validate_key(key)
     # OPTIMIZATION: Pre-calculate character coordinates in pos_map dict including
     # uppercase characters and 'j'/'J' aliases to avoid O(N) list index searches,
-    # per-character .lower()/.isalpha() checks, and string formatting inside loop (~4.8x speedup over unoptimized baseline).
+    # per-character checks, and string formatting inside loop (~4.8x speedup).
     pos_map = {}
-    for i, char in enumerate(key):
+    for i, char in enumerate(clean_key):
         coords = f"{(i // GRID_SIZE) + 1}{(i % GRID_SIZE) + 1}"
         pos_map[char.lower()] = coords
         pos_map[char.upper()] = coords
@@ -52,12 +72,12 @@ def decrypt(ciphertext: str, key: str = None) -> str:
     Parses two-digit coordinates back into characters.
     Non-digit/non-coordinate characters are preserved.
     """
-    if not key:
-        key = ALPHABET
+    _validate_text(ciphertext, "Ciphertext")
+    clean_key = _validate_key(key)
     # OPTIMIZATION: Pre-compute two-digit coordinate lookup dict to avoid
     # per-character string/integer conversions inside the loop (~1.5x speedup).
     coord_map = {
-        f"{(i // GRID_SIZE) + 1}{(i % GRID_SIZE) + 1}": key[i]
+        f"{(i // GRID_SIZE) + 1}{(i % GRID_SIZE) + 1}": clean_key[i]
         for i in range(25)
     }
     plaintext_parts = []

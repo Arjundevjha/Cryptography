@@ -68,6 +68,15 @@ def test_decrypt_invalid_iv_length():
     with pytest.raises(ValueError, match="IV must be exactly 16 bytes"):
         decrypt(b"ciphertext_bytes", key, invalid_iv)
 
+def test_decrypt_empty_and_unaligned_ciphertext():
+    key = generate_key()
+    iv = generate_iv()
+    with pytest.raises(ValueError, match="Ciphertext length must be a non-empty multiple of 16 bytes"):
+        decrypt(b"", key, iv)
+
+    with pytest.raises(ValueError, match="Ciphertext length must be a non-empty multiple of 16 bytes"):
+        decrypt(b"unaligned_15_bt", key, iv)
+
 def test_encrypt_empty_message():
     message = ""
     key = generate_key()

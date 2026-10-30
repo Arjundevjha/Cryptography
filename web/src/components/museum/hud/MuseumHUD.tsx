@@ -96,7 +96,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
             showMap ? 'bg-amber-400 text-stone-950' : 'bg-stone-900 hover:bg-stone-800 text-amber-400 border border-amber-500/30'
           }`}
         >
-          <Map className="w-3.5 h-3.5" /> 2D MAP
+          <Map className="w-3.5 h-3.5" /> 2D MAP <span className="text-[10px] opacity-75 font-normal">[M]</span>
         </button>
       </div>
 

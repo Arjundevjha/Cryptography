@@ -38,6 +38,7 @@ def test_security_headers_present():
     assert response.headers["Permissions-Policy"] == "camera=(), microphone=(), geolocation=()"
     assert response.headers["Strict-Transport-Security"] == "max-age=31536000; includeSubDomains"
     assert response.headers["Content-Security-Policy"] == "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
+    assert response.headers["X-Permitted-Cross-Domain-Policies"] == "none"
 
 def test_validate_input_success():
     response = client.post("/api/validate", json={"text": "hello"})
@@ -1053,6 +1054,17 @@ def test_sha256_unicode_and_special_characters():
     assert "hash" in data
     assert len(data["hash"]) == 64
 
+def test_rsa_encrypt_value_error(caplog):
+    enc_payload = {
+        "plaintext": "Secret Message",
+        "public_key": "INVALID_PEM_HEADER"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/rsa/encrypt", json=enc_payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid RSA public key or input parameters"
+    assert "RSA encryption validation error" in caplog.text
+
 def test_rsa_encrypt_exception(caplog):
     enc_payload = {
         "plaintext": "Secret Message",
@@ -1064,6 +1076,17 @@ def test_rsa_encrypt_exception(caplog):
     assert response.status_code == 400
     assert response.json()["detail"] == "Encryption failed"
     assert "RSA encryption error" in caplog.text
+
+def test_rsa_decrypt_value_error(caplog):
+    dec_payload = {
+        "ciphertext": "INVALID_HEX_STRING",
+        "private_key": "INVALID_PEM_HEADER"
+    }
+    with caplog.at_level("WARNING"):
+        response = client.post("/api/rsa/decrypt", json=dec_payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid RSA private key or ciphertext parameters"
+    assert "RSA decryption validation error" in caplog.text
 
 def test_rsa_decrypt_exception(caplog):
     dec_payload = {

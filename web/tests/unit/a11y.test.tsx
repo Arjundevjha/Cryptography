@@ -25,6 +25,7 @@ describe('Accessibility (A11y) Unit Tests', () => {
 
     const dialog = screen.getByRole('dialog', { name: `Artifact details for ${sampleExhibit.name}` });
     expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
 
     const exitBtn = screen.getByRole('button', { name: /exit macro close-up view/i });
     expect(exitBtn).toBeInTheDocument();
@@ -35,6 +36,10 @@ describe('Accessibility (A11y) Unit Tests', () => {
 
     fireEvent.click(closeButton);
     expect(handleClose).toHaveBeenCalledTimes(1);
+
+    // Verify pressing Escape key triggers onClose
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(handleClose).toHaveBeenCalledTimes(2);
   });
 
   it('renders MuseumHUD top navigation with aria-current="page" on active item and focus-visible styles', () => {
@@ -369,5 +374,61 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(rotor1).toHaveAttribute('id', `param-rotor-0-${enigmaExhibit.id}`);
     expect(rotor2).toHaveAttribute('id', `param-rotor-1-${enigmaExhibit.id}`);
     expect(rotor3).toHaveAttribute('id', `param-rotor-2-${enigmaExhibit.id}`);
+  });
+
+  it('renders WorkbenchPanel swap button with accessible title/aria-label and swaps output into input while toggling mode', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    const swapButton = await screen.findByRole('button', { name: /swap output/i });
+    expect(swapButton).toBeInTheDocument();
+    expect(swapButton.className).toContain('focus-visible:ring-2');
+
+    await React.act(async () => {
+      fireEvent.click(swapButton);
+    });
+
+    // Check that input text is now "KHOOR" and input label is CIPHERTEXT INPUT (since mode switched to decrypt)
+    const inputArea = screen.getByLabelText(/ciphertext input/i);
+    expect(inputArea).toHaveValue('KHOOR');
+
+    // Output should be cleared
+    const outputContainer = screen.getByTestId(`output-text-${sampleExhibit.id}`);
+    expect(outputContainer).toHaveTextContent('Result will appear here...');
+  });
+
+  it('renders WorkbenchPanel error banner with accessible role="alert" and aria-live="assertive"', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Mock failed fetch response
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({ detail: 'Invalid parameters provided' }),
+      })
+    ) as jest.Mock;
+
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    await React.act(async () => {
+      fireEvent.click(executeBtn);
+    });
+
+    const alertBanner = await screen.findByRole('alert');
+    expect(alertBanner).toBeInTheDocument();
+    expect(alertBanner).toHaveAttribute('aria-live', 'assertive');
+    expect(alertBanner).toHaveTextContent('Invalid parameters provided');
   });
 });

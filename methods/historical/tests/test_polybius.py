@@ -60,3 +60,31 @@ def test_encrypt_uppercase_key():
     key = ALPHABET.upper()
     plaintext = "juliet"
     assert encrypt(plaintext, key=key) == "24 45 31 24 15 44"
+
+def test_input_validation():
+    """Test type checks, key bounds, and text length limits."""
+    import pytest
+
+    # Non-string input
+    with pytest.raises(TypeError):
+        encrypt(123)
+    with pytest.raises(TypeError):
+        decrypt(123)
+
+    # Non-string key
+    with pytest.raises(TypeError):
+        encrypt("hello", key=123)
+    with pytest.raises(TypeError):
+        decrypt("23 15", key=123)
+
+    # Invalid key length
+    with pytest.raises(ValueError):
+        encrypt("hello", key="shortkey")
+    with pytest.raises(ValueError):
+        decrypt("23 15", key="shortkey")
+
+    # Text length exceeding limit
+    with pytest.raises(ValueError):
+        encrypt("a" * 100001)
+    with pytest.raises(ValueError):
+        decrypt("1" * 100001)
