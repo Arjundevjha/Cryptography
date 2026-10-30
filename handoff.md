@@ -1,10 +1,10 @@
-# Session Handoff: Unified Batch PR Integration (#337 – #354)
+# Session Handoff: Unified Batch PR Integration (#391 – #415)
 
 ## Executive Summary
-Completed automated PR triage, review, and Unified Batch Integration (Single-Push Workflow) across all 18 open Pull Requests (#337 through #354) in the Cryptography repository (`Arjundevjha/Cryptography`). All 18 pull requests are now 100% resolved and closed:
+Completed automated PR triage, review, and Unified Batch Integration (Single-Push Workflow) across all 25 open Pull Requests (#391 through #415) in the Cryptography repository (`Arjundevjha/Cryptography`). All 25 pull requests are now 100% resolved and cleared:
 - **0 PRs Remaining**: `gh pr list` confirms exactly **0** open PRs in the repository.
-- **10 PRs Integrated in 1 Unified Batch Commit**: Checked out locally, conflicts reconciled, verified across all test suites, committed (`ba37f127`), and pushed to `origin main` in **exactly 1 single push**.
-- **8 PRs Rejected**: Redundant, duplicates, or subsets cleanly closed with clear explanations and `--delete-branch`.
+- **15 PRs Integrated in 1 Unified Batch Commit**: Checked out locally, conflicts reconciled, verified across all test suites, committed (`9f05f4c5`), and pushed to `origin main` in **exactly 1 single push**.
+- **10 PRs Rejected**: Redundant duplicates or superseded variants cleanly closed with clear explanations and `--delete-branch`.
 - **All PR Branches Closed & Deleted**: Closed with `--delete-branch`, and swept all remaining remote branches via GitHub API.
 - **Strictly Single Branch**: Remote and local have strictly 1 branch: `main`. All orphaned tracking references pruned (`git remote prune origin`).
 
@@ -12,78 +12,103 @@ Completed automated PR triage, review, and Unified Batch Integration (Single-Pus
 
 ### Key Technical Highlights in This Batch
 1. **Cryptographic Security Hardening & Input Bounds**:
-   - **RSA Message & Ciphertext Bounds & Input Validation** (`methods/modern/rsa.py` & `methods/modern/tests/test_rsa.py` from PR #346): Enforced `MAX_MESSAGE_SIZE = 10000` chars and `MAX_CIPHERTEXT_SIZE = 100000` bytes to prevent CPU/memory DoS attacks during modular exponentiation. Added strict type checks (`str` for plaintext, `bytes`/`bytearray` for ciphertext and PEM), explicit UTF-8 `UnicodeDecodeError` / Base64 decode error handling, and non-empty passphrase validation in `decrypt_private_key`.
-   - **RSA Decryption API Input Bound** (`web/api/main.py` from PR #338): Restricted `RsaDecryptInput.ciphertext` `max_length` from 100,000 to 10,000 characters to prevent request flood DoS at the API boundary.
+   - **Scytale Input Validation & Resource Bounds** (`methods/historical/scytale.py`, `methods/historical/tests/test_scytale.py` from PR #415): Enforced `MAX_TEXT_LENGTH = 100000`, `MAX_DIAMETER = 10000`, strict integer type checks (excluding `bool`), positive diameter validation, and ciphertext divisibility checks to prevent DoS (10.00/10 pylint).
+   - **Polybius Cipher Bounds & Type Validation** (`methods/historical/polybius.py`, `methods/historical/tests/test_polybius.py` from PR #405): Extracted `_validate_key` and `_validate_text` helper functions enforcing `MAX_TEXT_LENGTH = 100000` bounds and 25-character key checks (10.00/10 pylint).
+   - **RSA Keypair Generation DoS Bounds & Type Validation** (`methods/modern/keypair.py`, `methods/modern/tests/test_keypair.py` from PR #399): Enforced `MAX_PRIME_BITS = 4096`, `MAX_KEY_SIZE = 4096`, strict integer/bool type validation, and non-empty passphrase validation in `generate_encrypted_keypair` (10.00/10 pylint).
+   - **Symmetric AES Decryption Block Alignment Validation** (`methods/modern/symmetric.py`, `methods/tests/test_symmetric.py` from PR #411): Enforced non-empty and 16-byte block alignment validation on input ciphertext (10.00/10 pylint).
+   - **Vigenère Key Sanitization** (`methods/classical/vigenere.py`, `methods/classical/tests/test_vigenere.py` from PR #392): Stripped non-alphabetic characters and added `ValueError` validation when no valid alphabetic characters exist in the key (10.00/10 pylint).
+   - **RSA API Endpoint Error Handling** (`web/api/main.py`, `web/api/test_main.py` from PR #396): Explicitly trapped `ValueError` in `rsa_encrypt` and `rsa_decrypt`, returning sanitized HTTP 400 responses.
+   - **API Security Headers** (`web/api/main.py`, `web/api/test_main.py` from PR #409): Added `X-Permitted-Cross-Domain-Policies: none` security header to FastAPI middleware.
 
 2. **Algorithmic Performance Optimizations**:
-   - **Small Prime Trial Division in Primality Testing** (`methods/modern/keypair.py` from PR #349): Implemented fast trial division with 70 precomputed primes (`SMALL_PRIMES` up to 349) filtering ~88% of composite candidates before Miller-Rabin modular exponentiations, plus bitwise power-of-two decomposition (`(v_minus_1 & -v_minus_1).bit_length() - 1`), delivering ~5.2x speedup for RSA keypair generation.
-   - **Caesar Cipher 128-Entry ASCII Precomputed Lookup Tables** (`web/app/utils/ciphers.ts` from PR #347): Precomputed 128-entry ASCII transformation arrays (`CAESAR_TABLES`) across all 26 shift values, eliminating per-character RegExp testing, case conversion allocations, and modulo arithmetic inside character loops.
-   - **Vectorized Substitution Cipher ASCII Lookup Table** (`web/app/utils/ciphers.ts` from PR #342): Replaced $O(N \cdot K)$ linear alphabet searches (`indexOf`) with a precomputed 128-entry ASCII translation table and single-pass array join (~1.5x speedup).
+   - **BLAKE2b & BLAKE2s Struct.unpack & Scalar Inlining** (`methods/modern/hash_functions.py` from PR #395): Replaced per-block byte slice extraction with `struct.unpack('<16Q')` and `struct.unpack('<16I')`, inlined round transformations into scalar variables, and digest serialization via `struct.pack` (~1.31x speedup, 10.00/10 pylint).
+   - **Vigenère Precomputed Immutable Shift Tables** (`methods/classical/vigenere.py` from PR #398): Pre-computed 26-element shift lookup tables for lowercase and uppercase alphabets at module scope, eliminating per-character modulo and `chr()` conversions in loops (~1.5x speedup, 10.00/10 pylint).
+   - **Direct Codepoint Translation Table Construction for Substitution Cipher** (`methods/classical/substitution.py` from PR #404): Constructed integer codepoint dictionaries (`dict[int, int]`) directly for `str.translate()`, bypassing 4 intermediate string joins and `str.maketrans()` (~1.4x–1.8x speedup, 10.00/10 pylint).
+   - **Client-Side Playfair Cipher Typed Array Position Maps** (`web/app/utils/ciphers.ts` from PR #413): Used 128-entry `Uint8Array` bitmask for grid duplicate tracking and 128-entry `Int32Array` coordinate maps for $O(1)$ row/col coordinate lookups, eliminating linear search and tuple allocations (~2.4x–2.8x speedup).
 
 3. **Accessibility (A11y) & Interactive Controls**:
-   - **Pioneer Lab Interactive Controls & Focus Rings** (`web/src/components/museum/workbench/StatueCuratorialDrawer.tsx` & `web/tests/unit/statues.test.tsx` from PR #337): Bound semantic `htmlFor` / `id` attributes (`kindi-ciphertext-input`, `kindi-shift-input`, `shannon-message-input`, `dh-alice-private`, `dh-bob-private`), explicit `aria-label`s, and high-visibility keyboard focus rings (`focus-visible:ring-2 focus-visible:ring-amber-500`).
-   - **Workbench Input Character Counter & Clear Action** (`web/src/components/museum/workbench/WorkbenchPanel.tsx` from PR #345): Added dynamic character counter (`{inputText.length} chars`) and accessible Clear button with focus-visible styling.
-   - **MuseumCanvas Lobby & Case Inspection Focus Rings** (`web/src/components/museum/MuseumCanvas.tsx` from PR #348): Added `focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none` across lobby statue navigation buttons and display case inspection buttons.
-   - **Interactive 2D Floorplan Close Button Focus Styles** (`web/src/components/museum/hud/MuseumHUD.tsx` from PR #351): Added focus-visible styling to the 2D map modal close button.
-   - **Enigma Rotor Selectors Semantic Grouping & IDs** (`web/src/components/museum/workbench/WorkbenchPanel.tsx` from PR #354): Added `role="group"`, `aria-labelledby`, and individual rotor IDs for Enigma comboboxes.
+   - **Artifact Metadata Drawer Escape Dismissal** (`web/src/components/museum/workbench/ArtifactMetadataDrawer.tsx` from PR #391): Added keyboard Escape event listener and semantic `aria-modal="true"`.
+   - **2D Floorplan Keyboard Shortcut Hint** (`web/src/components/museum/hud/MuseumHUD.tsx` from PR #403): Added visual `[M]` keyboard shortcut indicator to the 2D MAP button.
+   - **WorkbenchPanel Swap Input & Output** (`web/src/components/museum/workbench/WorkbenchPanel.tsx` from PR #408): Added accessible Swap button next to Copy button to move result into input and toggle mode.
+   - **Workbench Error Alert Role** (`web/src/components/museum/workbench/WorkbenchPanel.tsx` from PR #414): Added `role="alert"` and `aria-live="assertive"` to the Workbench error banner.
+
+4. **Diagnostic Tooling**:
+   - **Persistent Diagnostic Tooling** (`scripts/diagnose.py`): Created a standalone diagnostic CLI with `--check` and `--verbose` flags to test the Python suite, web suite, production build, and git tree cleanliness.
 
 ---
 
 ## Active State of Codebase
 - **Zero Open PRs**: `gh pr list` confirms exactly **0** open PRs.
 - **Strictly Single Branch**: Remote and local have strictly 1 branch: `main`.
-- **Python Test Suite**: **791 / 791** tests passing (`pytest` / `bash run_tests.sh`, 100% pass rate).
-- **Frontend Test Suite**: **59 / 59** tests passing (`npm test` in `web/`, 100% pass rate, up from 55).
-- **Frontend Production Build**: `npm run build` compiled successfully via Next.js Turbopack in 1.02s with 0 errors.
-- **Pylint Score**: **10.00/10** across modified modern cryptography modules (`methods/modern/keypair.py`, `methods/modern/rsa.py`).
-- **Graphify Knowledge Graph**: Re-indexed and updated (`graphify update .` -> 1,519 nodes, 2,636 edges, 94 communities).
+- **Python Test Suite**: **801 / 801** tests passing (`pytest`, 100% pass rate, up from 791).
+- **Frontend Test Suite**: **61 / 61** tests passing (`npm test` in `web/`, 100% pass rate, up from 59).
+- **Frontend Production Build**: `npm run build` compiled successfully via Next.js Turbopack in 1.1s with 0 errors.
+- **Pylint Score**: **10.00/10** across all modified modules (`methods/classical/vigenere.py`, `methods/classical/substitution.py`, `methods/historical/polybius.py`, `methods/historical/scytale.py`, `methods/modern/keypair.py`, `methods/modern/symmetric.py`, `methods/modern/hash_functions.py`).
+- **Graphify Knowledge Graph**: Re-indexed and updated (`graphify update .` -> 1,543 nodes, 2,682 edges, 93 communities).
 
 ---
 
-## PR Summary Table (Batch: #337 – #354)
+## PR Summary Table (Batch: #391 – #415)
 | PR # | Title | Type | Status | Action Taken |
 |---|---|---|---|---|
-| [#337](https://github.com/Arjundevjha/Cryptography/pull/337) | 🎨 Palette: Improve interactive controls accessibility in StatueCuratorialDrawer | Accessibility | Integrated | Added semantic labels, IDs, ARIA attributes, and focus rings; updated statues unit tests; stripped extraneous lockfile |
-| [#338](https://github.com/Arjundevjha/Cryptography/pull/338) | 🛡️ Sentinel: Fix unrestricted input length in RSA decryption API endpoint | Security | Integrated | Restricted `RsaDecryptInput.ciphertext` max_length to 10,000 |
-| [#339](https://github.com/Arjundevjha/Cryptography/pull/339) | ⚡ Bolt: Pre-compute ASCII shift lookup tables for Caesar cipher | Optimization | Rejected | Duplicate of PR #347; introduced stray `.jules/bolt.md` |
-| [#340](https://github.com/Arjundevjha/Cryptography/pull/340) | 🛡️ Sentinel: Fix DoS risk in RSA decryption via ciphertext length limits | Security | Rejected | Redundant subset of PR #346 |
-| [#341](https://github.com/Arjundevjha/Cryptography/pull/341) | 🎨 Palette: Enhance accessibility & keyboard focus in Pioneer Lab | Accessibility | Rejected | Duplicate/competing with PR #337; introduced stray `.Jules/` directory |
-| [#342](https://github.com/Arjundevjha/Cryptography/pull/342) | ⚡ Bolt: Vectorize substitution cipher via 128-entry ASCII lookup table | Optimization | Integrated | Integrated 128-entry ASCII lookup table in `ciphers.ts` (~1.5x speedup); stripped stray `.jules/bolt.md` |
-| [#343](https://github.com/Arjundevjha/Cryptography/pull/343) | 🛡️ Sentinel: add input length limit to RSA encrypt | Security | Rejected | Redundant subset of PR #346 |
-| [#344](https://github.com/Arjundevjha/Cryptography/pull/344) | ⚡ Bolt: optimize Caesar cipher in web/app/utils/ciphers.ts with pre-computed ASCII lookup tables | Optimization | Rejected | Duplicate of PR #347; introduced stray `.jules/bolt.md` |
-| [#345](https://github.com/Arjundevjha/Cryptography/pull/345) | 🎨 Palette: Add character counter and clear button to Workbench input | UX/A11y | Integrated | Added input character counter and clear button in WorkbenchPanel, added unit tests |
-| [#346](https://github.com/Arjundevjha/Cryptography/pull/346) | 🛡️ Sentinel: Fix RSA input type validation and DoS payload size limits | Security | Integrated | Comprehensive RSA type checks, UTF-8/base64 decode error handling, payload bounds, unit tests |
-| [#347](https://github.com/Arjundevjha/Cryptography/pull/347) | ⚡ Bolt: Pre-compute 128-entry ASCII lookup tables for Caesar cipher | Optimization | Integrated | Precomputed 128-entry ASCII lookup arrays across all 26 shift values in `ciphers.ts` |
-| [#348](https://github.com/Arjundevjha/Cryptography/pull/348) | 🎨 Palette: Add focus-visible focus ring accessibility to MuseumCanvas interactive controls | Accessibility | Integrated | Added focus ring styles to MuseumCanvas monument & case inspection buttons, added unit test; stripped lockfile |
-| [#349](https://github.com/Arjundevjha/Cryptography/pull/349) | ⚡ Bolt: Optimize is_prime with small prime trial division (~5.2x speedup) | Optimization | Integrated | Implemented small prime trial division (primes up to 349) and bitwise power-of-two decomposition (10/10 pylint) |
-| [#350](https://github.com/Arjundevjha/Cryptography/pull/350) | 🛡️ Sentinel: Enforce input size limits in RSA encrypt and decrypt to prevent DoS | Security | Rejected | Redundant subset of PR #346 |
-| [#351](https://github.com/Arjundevjha/Cryptography/pull/351) | 🎨 Palette: Add focus visible styles to 2D map close button | Accessibility | Integrated | Added focus-visible styles to 2D map modal close button in MuseumHUD, added test |
-| [#352](https://github.com/Arjundevjha/Cryptography/pull/352) | ⚡ Bolt: Pre-compute ASCII lookup tables for Caesar cipher in TS | Optimization | Rejected | Duplicate of PR #347 |
-| [#353](https://github.com/Arjundevjha/Cryptography/pull/353) | 🛡️ Sentinel: enforce RSA message and ciphertext size limits | Security | Rejected | Redundant subset of PR #346 |
-| [#354](https://github.com/Arjundevjha/Cryptography/pull/354) | 🎨 Palette: Add accessible grouping and IDs for Enigma rotor selectors | Accessibility | Integrated | Added role="group", aria-labelledby, and IDs for Enigma rotors in WorkbenchPanel, added unit test; stripped lockfile |
+| [#391](https://github.com/Arjundevjha/Cryptography/pull/391) | 🎨 Palette: Add Escape key dismissal for Artifact Metadata Drawer | Accessibility | Integrated | Added Escape key listener and `aria-modal="true"`; added a11y unit test; stripped lockfile |
+| [#392](https://github.com/Arjundevjha/Cryptography/pull/392) | 🛡️ Sentinel: Fix non-alphabetic key handling in Vigenère cipher | Security | Integrated | Sanitized Vigenère keys, enforced alphabetic validation, added unit tests (10/10 pylint) |
+| [#393](https://github.com/Arjundevjha/Cryptography/pull/393) | ⚡ Bolt: Optimize Playfair Cipher Digraph Processing in TypeScript | Optimization | Rejected | Superseded by PR #413; introduced stray `.jules/bolt.md` |
+| [#394](https://github.com/Arjundevjha/Cryptography/pull/394) | ⚡ Bolt: Optimize Playfair Cipher with Typed Array Position Maps and Bitmasks | Optimization | Rejected | Superseded by PR #413; introduced stray `.jules/bolt.md` |
+| [#395](https://github.com/Arjundevjha/Cryptography/pull/395) | ⚡ Bolt: Optimize BLAKE2b and BLAKE2s hash functions via struct.unpack and inlined scalar transformations | Optimization | Integrated | Optimized BLAKE2b/s with `struct.unpack`, inlined scalar variables, `struct.pack` (10/10 pylint); stripped `.jules/bolt.md` |
+| [#396](https://github.com/Arjundevjha/Cryptography/pull/396) | 🛡️ Sentinel: Fix RSA endpoint error handling to sanitize input validation errors | Security | Integrated | Sanitized RSA endpoint `ValueError` handling with HTTP 400 responses, added unit tests |
+| [#397](https://github.com/Arjundevjha/Cryptography/pull/397) | 🎨 Palette: Add Swap input/output action to WorkbenchPanel | Accessibility | Rejected | Duplicate of PR #408; introduced stray lockfile |
+| [#398](https://github.com/Arjundevjha/Cryptography/pull/398) | ⚡ Bolt: Pre-compute shift lookup tables for Vigenere cipher | Optimization | Integrated | Precomputed immutable shift tables for lowercase/uppercase alphabets (~1.5x speedup, 10/10 pylint); stripped `.jules/bolt.md` |
+| [#399](https://github.com/Arjundevjha/Cryptography/pull/399) | 🛡️ Sentinel: Fix DoS risk and validate inputs in RSA key generation | Security | Integrated | Enforced `MAX_PRIME_BITS = 4096`, `MAX_KEY_SIZE = 4096`, type checks, passphrase validation (10/10 pylint) |
+| [#400](https://github.com/Arjundevjha/Cryptography/pull/400) | 🎨 Palette: add Swap Input & Output button to WorkbenchPanel | Accessibility | Rejected | Duplicate of PR #408; introduced stray `.Jules/palette.md` |
+| [#401](https://github.com/Arjundevjha/Cryptography/pull/401) | 🛡️ Sentinel: Add type and range validation to RSA key generation | Security | Rejected | Duplicate of PR #399 |
+| [#402](https://github.com/Arjundevjha/Cryptography/pull/402) | ⚡ Bolt: Optimize Playfair cipher in web/app/utils/ciphers.ts | Optimization | Rejected | Superseded by PR #413 |
+| [#403](https://github.com/Arjundevjha/Cryptography/pull/403) | Palette: add keyboard shortcut hint to 2D Map button | Accessibility | Integrated | Added `[M]` keyboard shortcut indicator to 2D MAP button |
+| [#404](https://github.com/Arjundevjha/Cryptography/pull/404) | ⚡ Bolt: optimize substitution cipher translation table construction | Optimization | Integrated | Built integer codepoint translation dict directly for `str.translate()` (10/10 pylint); stripped `.jules/bolt.md` |
+| [#405](https://github.com/Arjundevjha/Cryptography/pull/405) | 🛡️ Sentinel: Add input validation and DoS protection to Polybius cipher | Security | Integrated | Enforced `MAX_TEXT_LENGTH = 100000`, 25-char key checks, refactored validation helpers (10/10 pylint) |
+| [#406](https://github.com/Arjundevjha/Cryptography/pull/406) | 🎨 Palette: Add Swap Input & Output feature to WorkbenchPanel | Accessibility | Rejected | Duplicate of PR #408; introduced stray `.jules/palette.md` |
+| [#407](https://github.com/Arjundevjha/Cryptography/pull/407) | ⚡ Bolt: Optimize client-side Playfair cipher via Int32Array position map | Optimization | Rejected | Superseded by PR #413; introduced stray `.jules/bolt.md` |
+| [#408](https://github.com/Arjundevjha/Cryptography/pull/408) | 🎨 Palette: Add Swap Input & Output button to WorkbenchPanel | Accessibility | Integrated | Added accessible Swap button next to Copy button, added unit tests |
+| [#409](https://github.com/Arjundevjha/Cryptography/pull/409) | 🛡️ Sentinel: [security enhancement] Add X-Permitted-Cross-Domain-Policies security header | Security | Integrated | Added `X-Permitted-Cross-Domain-Policies: none` header to API middleware, added unit test |
+| [#410](https://github.com/Arjundevjha/Cryptography/pull/410) | 🎨 Palette: Add Swap Input & Output button to Workbench panel | Accessibility | Rejected | Duplicate of PR #408; introduced stray `.jules/palette.md` and lockfile |
+| [#411](https://github.com/Arjundevjha/Cryptography/pull/411) | 🛡️ Sentinel: Add ciphertext length validation to symmetric AES decrypt | Security | Integrated | Enforced non-empty and 16-byte block alignment validation on AES decrypt (10/10 pylint) |
+| [#412](https://github.com/Arjundevjha/Cryptography/pull/412) | ⚡ Bolt: optimize Vigenere cipher using pre-computed shift lookup tables | Optimization | Rejected | Duplicate of PR #398 |
+| [#413](https://github.com/Arjundevjha/Cryptography/pull/413) | ⚡ Bolt: optimize Playfair cipher grid generation and coordinate lookups | Optimization | Integrated | Implemented Uint8Array bitmask and 128-entry Int32Array coordinate maps in `ciphers.ts` (~2.6x speedup) |
+| [#414](https://github.com/Arjundevjha/Cryptography/pull/414) | 🎨 Palette: Add ARIA alert role to Workbench error messages | Accessibility | Integrated | Added `role="alert"` and `aria-live="assertive"` to Workbench error banner, added unit test; stripped lockfile |
+| [#415](https://github.com/Arjundevjha/Cryptography/pull/415) | 🛡️ Sentinel: Add strict input validation and resource bounds to Scytale cipher | Security | Integrated | Added `MAX_TEXT_LENGTH = 100000`, `MAX_DIAMETER = 10000`, strict type checks, ciphertext length checks (10/10 pylint) |
 
 ---
 
 ## File Modification Summary
-1. `methods/modern/keypair.py`: Implemented `SMALL_PRIMES` trial division and bitwise power-of-two decomposition in `is_prime()` (10.00/10 pylint).
-2. `methods/modern/rsa.py`: Enforced `MAX_MESSAGE_SIZE`, `MAX_CIPHERTEXT_SIZE`, parameter type validation, UTF-8/base64 exception handling, and passphrase validation (10.00/10 pylint).
-3. `methods/modern/tests/test_rsa.py`: Added security input validation and bounds unit tests (`test_rsa_input_validation_and_bounds`).
-4. `web/api/main.py`: Enforced `max_length=10000` on `RsaDecryptInput.ciphertext`.
-5. `web/app/utils/ciphers.ts`: Vectorized `caesarEncrypt` using precomputed 128-entry lookup tables and vectorized `substitutionEncrypt` / `substitutionDecrypt` using ASCII translation table.
-6. `web/src/components/museum/MuseumCanvas.tsx`: Added focus-visible rings to lobby monument buttons and display case inspection buttons.
-7. `web/src/components/museum/hud/MuseumHUD.tsx`: Added focus-visible styling to 2D map close button.
-8. `web/src/components/museum/workbench/StatueCuratorialDrawer.tsx`: Enforced semantic form labeling, IDs, ARIA attributes, and focus rings across all Pioneer Lab inputs.
-9. `web/src/components/museum/workbench/WorkbenchPanel.tsx`: Added character counter, clear button, and accessible Enigma rotor grouping with IDs.
-10. `web/tests/unit/a11y.test.tsx`: Added test coverage for MuseumCanvas focus styles, Workbench character counter/clear, StatueCuratorialDrawer Pioneer Lab controls, and Enigma rotor grouping.
-11. `web/tests/unit/statues.test.tsx`: Updated regex for re-roll keystream button to match ARIA label.
+1. `methods/classical/substitution.py`: Direct codepoint translation table construction for `str.translate()` (10.00/10 pylint).
+2. `methods/classical/vigenere.py`: Key sanitization and immutable shift lookup tables (10.00/10 pylint).
+3. `methods/classical/tests/test_vigenere.py`: Unit tests for non-alphabetic key handling.
+4. `methods/historical/polybius.py`: `MAX_TEXT_LENGTH = 100000` bounds, key length validation, helper functions (10.00/10 pylint).
+5. `methods/historical/tests/test_polybius.py`: Input validation unit tests for Polybius cipher.
+6. `methods/historical/scytale.py`: `MAX_TEXT_LENGTH = 100000`, `MAX_DIAMETER = 10000`, strict type checks, decryption divisibility checks (10.00/10 pylint).
+7. `methods/historical/tests/test_scytale.py`: Input validation and edge case unit tests for Scytale cipher.
+8. `methods/modern/hash_functions.py`: `struct.unpack('<16Q')` / `struct.unpack('<16I')` and inlined scalar variables in BLAKE2b/s (10.00/10 pylint).
+9. `methods/modern/keypair.py`: `MAX_PRIME_BITS = 4096`, `MAX_KEY_SIZE = 4096`, strict integer/bool type validation, passphrase validation (10.00/10 pylint).
+10. `methods/modern/tests/test_keypair.py`: Security bounds and type validation unit tests for keypair generation.
+11. `methods/modern/symmetric.py`: Non-empty and 16-byte multiple validation for AES decrypt (10.00/10 pylint).
+12. `methods/tests/test_symmetric.py`: Empty and unaligned ciphertext unit tests for AES decrypt.
+13. `web/api/main.py`: `X-Permitted-Cross-Domain-Policies: none` header and sanitized `ValueError` handling for RSA endpoints.
+14. `web/api/test_main.py`: Unit tests for security header and RSA `ValueError` handling.
+15. `web/app/utils/ciphers.ts`: Optimized Playfair grid generation with bitmask and coordinate lookups via `Int32Array`.
+16. `web/src/components/museum/hud/MuseumHUD.tsx`: Added `[M]` keyboard shortcut indicator to 2D MAP button.
+17. `web/src/components/museum/workbench/ArtifactMetadataDrawer.tsx`: Escape key dismissal and `aria-modal="true"`.
+18. `web/src/components/museum/workbench/WorkbenchPanel.tsx`: Added Swap Input & Output button and `role="alert"` / `aria-live="assertive"` on error banner.
+19. `web/tests/unit/a11y.test.tsx`: Added test coverage for Escape key dismissal, Swap button action, and error alert banner.
+20. `scripts/diagnose.py`: Persistent diagnostic CLI for repository health, tests, and git tree status.
 
 ---
 
 ## Final Verification Checklist
-- [x] Python test suite: 791/791 passed (100%)
-- [x] Frontend test suite: 59/59 passed (100%)
+- [x] Python test suite: 801/801 passed (100%)
+- [x] Frontend test suite: 61/61 passed (100%)
 - [x] Production build: compiled cleanly with 0 errors (`npm run build`)
 - [x] 0 open PRs remain (`gh pr list`)
 - [x] Strictly `main` branch exists locally and on remote
-- [x] Pylint 10.00/10 across all modified modern cryptography modules
-- [x] Knowledge graph updated via `graphify update .` (1,519 nodes, 2,636 edges, 94 communities)
+- [x] Pylint 10.00/10 across all modified cryptography modules
+- [x] Knowledge graph updated via `graphify update .` (1,543 nodes, 2,682 edges, 93 communities)
+- [x] Diagnostic CLI verified (`python3 scripts/diagnose.py --check`)
