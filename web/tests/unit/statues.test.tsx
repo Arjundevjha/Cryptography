@@ -37,15 +37,20 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
 
     render(<StatueCuratorialDrawer statue={alkindi} onClose={handleClose} />);
 
-    // Accessible dialog check
+    // Accessible dialog check with aria-modal="true"
     const dialog = screen.getByRole('dialog', { name: new RegExp(`Statue details for ${alkindi.name}`, 'i') });
     expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
 
     // Close button accessibility
     const closeBtn = screen.getByRole('button', { name: /close statue details/i });
     expect(closeBtn).toBeInTheDocument();
     fireEvent.click(closeBtn);
     expect(handleClose).toHaveBeenCalledTimes(1);
+
+    // Escape key modal dismissal check
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(handleClose).toHaveBeenCalledTimes(2);
 
     // Initial Historical Curation Tab contains the citation
     expect(screen.getByText(/Curatorial Landmark Citation/i)).toBeInTheDocument();
