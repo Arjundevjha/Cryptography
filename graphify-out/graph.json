@@ -4,20 +4,6 @@
   "graph": {
     "hyperedges": [
       {
-        "id": "cryptography_museum_testing_flow",
-        "label": "Museum Testing Flow",
-        "nodes": [
-          "test_infra_philosophy",
-          "test_ready_coverage",
-          "web_quality_log_tracks",
-          "web_security_log_scans"
-        ],
-        "relation": "participate_in",
-        "confidence": "INFERRED",
-        "confidence_score": 0.85,
-        "source_file": "TEST_INFRA.md"
-      },
-      {
         "id": "cryptography_museum_guidelines",
         "label": "Cryptography Project Guidelines",
         "nodes": [
@@ -2615,8 +2601,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "keyboard.py"
     },
     {
@@ -2626,8 +2612,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "keyboard"
     },
     {
@@ -2637,8 +2623,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard_init",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": ".__init__()"
     },
     {
@@ -2648,8 +2634,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard_forward",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": ".forward()"
     },
     {
@@ -2659,8 +2645,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard_backward",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": ".backward()"
     },
     {
@@ -2670,8 +2656,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_1",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "keyboard component for enigma machine."
     },
     {
@@ -2681,8 +2667,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_4",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "keyboard simulator for enigma machine."
     },
     {
@@ -2692,8 +2678,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_7",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "initialize the keyboard layout."
     },
     {
@@ -2703,8 +2689,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_12",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "map a letter to its alphabetical signal index (0-25)."
     },
     {
@@ -2714,8 +2700,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_16",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "map an alphabetical signal index (0-25) back to a letter."
     },
     {
@@ -3330,8 +3316,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_keyboard.py"
     },
     {
@@ -3341,8 +3327,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_initialization",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_keyboard_initialization()"
     },
     {
@@ -3352,8 +3338,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_forward",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_keyboard_forward()"
     },
     {
@@ -3363,8 +3349,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_backward",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_keyboard_backward()"
     },
     {
@@ -3374,8 +3360,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_all_letters_and_signals",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_keyboard_all_letters_and_signals()"
     },
     {
@@ -3385,8 +3371,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_forward_not_found",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_keyboard_forward_not_found()"
     },
     {
@@ -3396,8 +3382,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_backward_index_error",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_keyboard_backward_index_error()"
     },
     {
@@ -3407,8 +3393,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_5",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test the standard initialization of the keyboard."
     },
     {
@@ -3418,8 +3404,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_10",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test the forward logic: letter to signal."
     },
     {
@@ -3429,8 +3415,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_17",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test the backward logic: signal to letter."
     },
     {
@@ -3440,8 +3426,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_24",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test all valid letters and signals."
     },
     {
@@ -3451,8 +3437,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_31",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test forward method with characters not in the alphabet."
     },
     {
@@ -3462,8 +3448,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_39",
-      "community": 20,
-      "community_name": "Enigma Cipher Machine Implementation",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test backward method with invalid indices."
     },
     {
@@ -3913,8 +3899,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_init",
-      "community": 92,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": ".__init__()"
     },
     {
@@ -3924,8 +3910,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_set_positions",
-      "community": 92,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": ".set_positions()"
     },
     {
@@ -4056,8 +4042,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_19",
-      "community": 92,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": "initialize the 12-wheel lorenz cipher machine.          args:             chi_pi"
     },
     {
@@ -4067,8 +4053,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_52",
-      "community": 92,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": "set positions for all 12 wheels.          args:             positions: position"
     },
     {
@@ -4177,8 +4163,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_lorenz_main",
-      "community": 34,
-      "community_name": "Lorenz Text Processing Procedures",
+      "community": 78,
+      "community_name": "run_cli",
       "norm_label": "lorenz/main.py"
     },
     {
@@ -4199,8 +4185,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_lorenz_main_rationale_1",
-      "community": 34,
-      "community_name": "Lorenz Text Processing Procedures",
+      "community": 78,
+      "community_name": "run_cli",
       "norm_label": "main simulation runner and interactive cli for the lorenz sz40/sz42 machine."
     },
     {
@@ -4243,8 +4229,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_steppingcontroller_init",
-      "community": 21,
-      "community_name": "Lorenz Stepping Controller Engine",
+      "community": 15,
+      "community_name": "Lorenz Wheels Components Testing",
       "norm_label": ".__init__()"
     },
     {
@@ -4254,8 +4240,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_steppingcontroller_init_wheels",
-      "community": 21,
-      "community_name": "Lorenz Stepping Controller Engine",
+      "community": 15,
+      "community_name": "Lorenz Wheels Components Testing",
       "norm_label": "._init_wheels()"
     },
     {
@@ -4320,8 +4306,8 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_steppingcontroller_set_positions",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": ".set_positions()"
     },
     {
@@ -4331,8 +4317,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_steppingcontroller_set_positions_from_dict",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": "._set_positions_from_dict()"
     },
     {
@@ -4342,8 +4328,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_steppingcontroller_set_positions_from_sequence",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": "._set_positions_from_sequence()"
     },
     {
@@ -4353,8 +4339,8 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_steppingcontroller_apply_positions",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": "._apply_positions()"
     },
     {
@@ -4386,8 +4372,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_rationale_21",
-      "community": 21,
-      "community_name": "Lorenz Stepping Controller Engine",
+      "community": 15,
+      "community_name": "Lorenz Wheels Components Testing",
       "norm_label": "initialize stepping controller with 12 lorenz wheels.          args:"
     },
     {
@@ -4397,8 +4383,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_rationale_39",
-      "community": 21,
-      "community_name": "Lorenz Stepping Controller Engine",
+      "community": 15,
+      "community_name": "Lorenz Wheels Components Testing",
       "norm_label": "initialize or validate a set of wheels."
     },
     {
@@ -4463,8 +4449,8 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_rationale_103",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": "set positions for all 12 wheels.          args:             positions: dict cont"
     },
     {
@@ -4474,8 +4460,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_rationale_116",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": "set wheel positions from a dictionary."
     },
     {
@@ -4485,8 +4471,8 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_rationale_125",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": "set wheel positions from a flat 12-element list or tuple."
     },
     {
@@ -4496,8 +4482,8 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "methods_historical_lorenz_stepping_rationale_137",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 21,
+      "community_name": "Lorenz Stepping Controller Engine",
       "norm_label": "apply target position values to a list of wheel instances."
     },
     {
@@ -6069,8 +6055,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern/__init__.py"
     },
     {
@@ -6080,8 +6066,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init_rationale_1",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern cryptography methods package."
     },
     {
@@ -6839,8 +6825,8 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "methods_modern_helpers_b64decode",
-      "community": 35,
-      "community_name": "Lorenz Machine Core Unit Tests",
+      "community": 74,
+      "community_name": "._apply_positions",
       "norm_label": "b64decode()"
     },
     {
@@ -7004,8 +6990,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "methods_modern_helpers_rationale_88",
-      "community": 35,
-      "community_name": "Lorenz Machine Core Unit Tests",
+      "community": 74,
+      "community_name": "._apply_positions",
       "norm_label": "decode a base64 string to bytes.      bolt optimization: processes 4-character b"
     },
     {
@@ -7136,8 +7122,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_keypair",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "keypair.py"
     },
     {
@@ -7180,8 +7166,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "methods_modern_keypair_generate_encrypted_keypair",
-      "community": 32,
-      "community_name": "PlayfairEncryptInput",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "generate_encrypted_keypair()"
     },
     {
@@ -7202,8 +7188,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_keypair_rationale_1",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "rsa keypair generation module in pure python.  this module provides functionalit"
     },
     {
@@ -7246,8 +7232,8 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "methods_modern_keypair_rationale_134",
-      "community": 32,
-      "community_name": "PlayfairEncryptInput",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "generate an rsa key pair with an encrypted private key.      args:         passp"
     },
     {
@@ -7268,8 +7254,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_rsa",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "rsa.py"
     },
     {
@@ -7334,8 +7320,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_rsa_rationale_1",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "rsa asymmetric encryption and decryption module in pure python.  this module pro"
     },
     {
@@ -7433,8 +7419,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "methods_modern_symmetric_key_expansion",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "key_expansion()"
     },
     {
@@ -7466,8 +7452,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "methods_modern_symmetric_inv_sub_bytes",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "inv_sub_bytes()"
     },
     {
@@ -7543,8 +7529,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "methods_modern_symmetric_encrypt_block",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "encrypt_block()"
     },
     {
@@ -7554,8 +7540,8 @@
       "source_location": "L268",
       "_origin": "ast",
       "id": "methods_modern_symmetric_decrypt_block",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "decrypt_block()"
     },
     {
@@ -7565,8 +7551,8 @@
       "source_location": "L366",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_pad",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "pkcs7_pad()"
     },
     {
@@ -7576,8 +7562,8 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_unpad",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "pkcs7_unpad()"
     },
     {
@@ -7686,8 +7672,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_67",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "expand the aes key into round keys. supports 16, 24, and 32 byte keys."
     },
     {
@@ -7719,8 +7705,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_107",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "substitute state bytes using the inverse s-box."
     },
     {
@@ -7796,8 +7782,8 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_184",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "encrypt a single 16-byte block using aes.      optimization: unrolls block state"
     },
     {
@@ -7807,8 +7793,8 @@
       "source_location": "L269",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_269",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "decrypt a single 16-byte block using aes.      optimization: unrolls block state"
     },
     {
@@ -7818,8 +7804,8 @@
       "source_location": "L367",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_367",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "apply pkcs7 padding to raw bytes."
     },
     {
@@ -7829,8 +7815,8 @@
       "source_location": "L372",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_372",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "remove pkcs7 padding from raw bytes in constant time to prevent timing oracle at"
     },
     {
@@ -8687,8 +8673,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64encode_roundtrip",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 74,
+      "community_name": "._apply_positions",
       "norm_label": "test_b64encode_roundtrip()"
     },
     {
@@ -8698,8 +8684,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64decode",
-      "community": 35,
-      "community_name": "Lorenz Machine Core Unit Tests",
+      "community": 74,
+      "community_name": "._apply_positions",
       "norm_label": "test_b64decode()"
     },
     {
@@ -8709,8 +8695,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_test_b64decode_validation_errors",
-      "community": 35,
-      "community_name": "Lorenz Machine Core Unit Tests",
+      "community": 74,
+      "community_name": "._apply_positions",
       "norm_label": "test_b64decode_validation_errors()"
     },
     {
@@ -8819,8 +8805,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_rationale_72",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 74,
+      "community_name": "._apply_positions",
       "norm_label": "test roundtrip encoding and decoding for various byte payloads."
     },
     {
@@ -8830,8 +8816,8 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "methods_modern_tests_test_helpers_rationale_97",
-      "community": 35,
-      "community_name": "Lorenz Machine Core Unit Tests",
+      "community": 74,
+      "community_name": "._apply_positions",
       "norm_label": "verify that b64decode raises valueerror on invalid characters or invalid lengths"
     },
     {
@@ -8940,8 +8926,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_encrypted_keypair_invalid_passphrase",
-      "community": 32,
-      "community_name": "PlayfairEncryptInput",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_encrypted_keypair_invalid_passphrase()"
     },
     {
@@ -8962,8 +8948,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_encrypted_keypair",
-      "community": 32,
-      "community_name": "PlayfairEncryptInput",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_encrypted_keypair()"
     },
     {
@@ -9490,8 +9476,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_symmetric.py"
     },
     {
@@ -9501,8 +9487,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_padding",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_padding()"
     },
     {
@@ -9512,8 +9498,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_bytes",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_unpad_invalid_bytes()"
     },
     {
@@ -9523,8 +9509,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_value",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_unpad_invalid_value()"
     },
     {
@@ -9534,8 +9520,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_empty_and_unaligned_data",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_unpad_empty_and_unaligned_data()"
     },
     {
@@ -9633,8 +9619,8 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_single_block_encryption_decryption",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_single_block_encryption_decryption()"
     },
     {
@@ -9644,8 +9630,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_key_expansion_invalid_key_length",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_key_expansion_invalid_key_length()"
     },
     {
@@ -9666,8 +9652,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_sub_bytes_inv_sub_bytes_roundtrip",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test_sub_bytes_inv_sub_bytes_roundtrip()"
     },
     {
@@ -9677,8 +9663,8 @@
       "source_location": "L172",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_key_expansion_valid_key_lengths",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test_key_expansion_valid_key_lengths()"
     },
     {
@@ -9798,8 +9784,8 @@
       "source_location": "L332",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test_inv_sub_bytes()"
     },
     {
@@ -10106,8 +10092,8 @@
       "source_location": "L681",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_known_state",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test_inv_sub_bytes_known_state()"
     },
     {
@@ -10117,8 +10103,8 @@
       "source_location": "L698",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_edge_cases",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test_inv_sub_bytes_edge_cases()"
     },
     {
@@ -10128,8 +10114,8 @@
       "source_location": "L714",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_empty",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test_inv_sub_bytes_empty()"
     },
     {
@@ -10139,8 +10125,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_40",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "verify that empty bytes or unaligned block sizes raise expected valueerror."
     },
     {
@@ -10172,8 +10158,8 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_133",
-      "community": 81,
-      "community_name": "xtime",
+      "community": 16,
+      "community_name": "Vigenere Cipher Core & Helpers",
       "norm_label": "test raw block encryption and decryption to ensure no data loss in core aes func"
     },
     {
@@ -10194,8 +10180,8 @@
       "source_location": "L166",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_166",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test that applying sub_bytes followed by inv_sub_bytes returns the original stat"
     },
     {
@@ -10315,8 +10301,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_333",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test inv_sub_bytes direct transformation and inverse relationship with sub_bytes"
     },
     {
@@ -10623,8 +10609,8 @@
       "source_location": "L682",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_682",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test inv_sub_bytes with fips 197 known state vector."
     },
     {
@@ -10634,8 +10620,8 @@
       "source_location": "L699",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_699",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test inv_sub_bytes on uniform state vectors and verify non-mutation."
     },
     {
@@ -10645,174 +10631,9 @@
       "source_location": "L715",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_715",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 40,
+      "community_name": "E2E Testing Script with Dependencies",
       "norm_label": "test inv_sub_bytes with an empty state list."
-    },
-    {
-      "label": "run_e2e_no_install.sh",
-      "file_type": "code",
-      "source_file": "run_e2e_no_install.sh",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "file"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_no_install",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
-      "norm_label": "run_e2e_no_install.sh"
-    },
-    {
-      "label": "run_e2e_no_install.sh script",
-      "file_type": "code",
-      "source_file": "run_e2e_no_install.sh",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_entrypoint"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_no_install_sh__entry",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
-      "norm_label": "run_e2e_no_install.sh script"
-    },
-    {
-      "label": "PYTHONPATH",
-      "file_type": "code",
-      "source_file": "run_e2e_no_install.sh",
-      "source_location": "L27",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_no_install_pythonpath",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
-      "norm_label": "pythonpath"
-    },
-    {
-      "label": "cleanup()",
-      "file_type": "code",
-      "source_file": "run_e2e_no_install.sh",
-      "source_location": "L42",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_function"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_no_install_cleanup",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
-      "norm_label": "cleanup()"
-    },
-    {
-      "label": "run_e2e_tests.sh",
-      "file_type": "code",
-      "source_file": "run_e2e_tests.sh",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "file"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_tests",
-      "community": 40,
-      "community_name": "E2E Testing Script with Dependencies",
-      "norm_label": "run_e2e_tests.sh"
-    },
-    {
-      "label": "run_e2e_tests.sh script",
-      "file_type": "code",
-      "source_file": "run_e2e_tests.sh",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_entrypoint"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_tests_sh__entry",
-      "community": 40,
-      "community_name": "E2E Testing Script with Dependencies",
-      "norm_label": "run_e2e_tests.sh script"
-    },
-    {
-      "label": "PYTHONPATH",
-      "file_type": "code",
-      "source_file": "run_e2e_tests.sh",
-      "source_location": "L25",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_tests_pythonpath",
-      "community": 40,
-      "community_name": "E2E Testing Script with Dependencies",
-      "norm_label": "pythonpath"
-    },
-    {
-      "label": "cleanup()",
-      "file_type": "code",
-      "source_file": "run_e2e_tests.sh",
-      "source_location": "L37",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_function"
-      },
-      "_origin": "ast",
-      "id": "run_e2e_tests_cleanup",
-      "community": 40,
-      "community_name": "E2E Testing Script with Dependencies",
-      "norm_label": "cleanup()"
-    },
-    {
-      "label": "run_tests.sh",
-      "file_type": "code",
-      "source_file": "run_tests.sh",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "file"
-      },
-      "_origin": "ast",
-      "id": "run_tests",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
-      "norm_label": "run_tests.sh"
-    },
-    {
-      "label": "run_tests.sh script",
-      "file_type": "code",
-      "source_file": "run_tests.sh",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_entrypoint"
-      },
-      "_origin": "ast",
-      "id": "run_tests_sh__entry",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
-      "norm_label": "run_tests.sh script"
-    },
-    {
-      "label": "PYTHONPATH",
-      "file_type": "code",
-      "source_file": "run_tests.sh",
-      "source_location": "L2",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "run_tests_pythonpath",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
-      "norm_label": "pythonpath"
     },
     {
       "label": "diagnose.py",
@@ -10857,6 +10678,66 @@
       "community": 79,
       "community_name": "sub_bytes",
       "norm_label": "main()"
+    },
+    {
+      "label": "run_e2e.sh",
+      "file_type": "code",
+      "source_file": "scripts/run_e2e.sh",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "file"
+      },
+      "_origin": "ast",
+      "id": "scripts_run_e2e",
+      "community": 92,
+      "community_name": ".__init__",
+      "norm_label": "run_e2e.sh"
+    },
+    {
+      "label": "run_e2e.sh script",
+      "file_type": "code",
+      "source_file": "scripts/run_e2e.sh",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_entrypoint"
+      },
+      "_origin": "ast",
+      "id": "scripts_run_e2e_sh__entry",
+      "community": 92,
+      "community_name": ".__init__",
+      "norm_label": "run_e2e.sh script"
+    },
+    {
+      "label": "PYTHONPATH",
+      "file_type": "code",
+      "source_file": "scripts/run_e2e.sh",
+      "source_location": "L63",
+      "metadata": {
+        "language": "bash",
+        "kind": "code"
+      },
+      "_origin": "ast",
+      "id": "scripts_run_e2e_pythonpath",
+      "community": 92,
+      "community_name": ".__init__",
+      "norm_label": "pythonpath"
+    },
+    {
+      "label": "cleanup()",
+      "file_type": "code",
+      "source_file": "scripts/run_e2e.sh",
+      "source_location": "L84",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_function"
+      },
+      "_origin": "ast",
+      "id": "scripts_run_e2e_cleanup",
+      "community": 92,
+      "community_name": ".__init__",
+      "norm_label": "cleanup()"
     },
     {
       "label": ".fallowrc.json",
@@ -11404,8 +11285,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "web_api_main_polybiusencryptinput",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "polybiusencryptinput"
     },
     {
@@ -11415,8 +11296,8 @@
       "source_location": "L367",
       "_origin": "ast",
       "id": "web_api_main_polybiusdecryptinput",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "polybiusdecryptinput"
     },
     {
@@ -11437,8 +11318,8 @@
       "source_location": "L385",
       "_origin": "ast",
       "id": "web_api_main_lorenzencryptinput",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "lorenzencryptinput"
     },
     {
@@ -11481,8 +11362,8 @@
       "source_location": "L440",
       "_origin": "ast",
       "id": "web_api_main_validate_polybius_key",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "validate_polybius_key()"
     },
     {
@@ -11503,8 +11384,8 @@
       "source_location": "L478",
       "_origin": "ast",
       "id": "web_api_main_polybius_encrypt",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "polybius_encrypt()"
     },
     {
@@ -11514,8 +11395,8 @@
       "source_location": "L495",
       "_origin": "ast",
       "id": "web_api_main_polybius_decrypt",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "polybius_decrypt()"
     },
     {
@@ -11613,8 +11494,8 @@
       "source_location": "L638",
       "_origin": "ast",
       "id": "web_api_main_lorenz_encrypt",
-      "community": 88,
-      "community_name": "PolybiusDecryptInput",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "lorenz_encrypt()"
     },
     {
@@ -11635,8 +11516,8 @@
       "source_location": "L701",
       "_origin": "ast",
       "id": "web_api_main_aesencryptinput",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "aesencryptinput"
     },
     {
@@ -11646,8 +11527,8 @@
       "source_location": "L707",
       "_origin": "ast",
       "id": "web_api_main_aesdecryptinput",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "aesdecryptinput"
     },
     {
@@ -11690,8 +11571,8 @@
       "source_location": "L726",
       "_origin": "ast",
       "id": "web_api_main_sha256input",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 94,
+      "community_name": "Sha256Input",
       "norm_label": "sha256input"
     },
     {
@@ -11701,8 +11582,8 @@
       "source_location": "L730",
       "_origin": "ast",
       "id": "web_api_main_decode_aes_key",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "_decode_aes_key()"
     },
     {
@@ -11712,8 +11593,8 @@
       "source_location": "L744",
       "_origin": "ast",
       "id": "web_api_main_parse_aes_key",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "parse_aes_key()"
     },
     {
@@ -11723,8 +11604,8 @@
       "source_location": "L754",
       "_origin": "ast",
       "id": "web_api_main_aes_encrypt",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "aes_encrypt()"
     },
     {
@@ -11734,8 +11615,8 @@
       "source_location": "L781",
       "_origin": "ast",
       "id": "web_api_main_aes_decrypt_endpoint",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "aes_decrypt_endpoint()"
     },
     {
@@ -11789,8 +11670,8 @@
       "source_location": "L893",
       "_origin": "ast",
       "id": "web_api_main_sha256_endpoint",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 94,
+      "community_name": "Sha256Input",
       "norm_label": "sha256_endpoint()"
     },
     {
@@ -11844,8 +11725,8 @@
       "source_location": "L441",
       "_origin": "ast",
       "id": "web_api_main_rationale_441",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 88,
+      "community_name": "PolybiusDecryptInput",
       "norm_label": "validates and returns normalized polybius grid key."
     },
     {
@@ -11921,8 +11802,8 @@
       "source_location": "L731",
       "_origin": "ast",
       "id": "web_api_main_rationale_731",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "helper to decode raw string or hex string key representation."
     },
     {
@@ -13197,8 +13078,8 @@
       "source_location": "L1317",
       "_origin": "ast",
       "id": "web_api_test_main_test_aes_decrypt_endpoint_direct_function_call",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 42,
+      "community_name": "Test Suites Execution Script",
       "norm_label": "test_aes_decrypt_endpoint_direct_function_call()"
     },
     {
@@ -14077,8 +13958,8 @@
       "source_location": "L2221",
       "_origin": "ast",
       "id": "web_api_test_main_test_sha256_endpoint_direct",
-      "community": 64,
-      "community_name": "Plugboard",
+      "community": 94,
+      "community_name": "Sha256Input",
       "norm_label": "test_sha256_endpoint_direct()"
     },
     {
@@ -14643,26 +14524,26 @@
       "norm_label": "test"
     },
     {
-      "label": "e2e",
+      "label": "test:e2e",
       "file_type": "code",
       "source_file": "web/package.json",
       "source_location": "L13",
+      "_origin": "ast",
+      "id": "web_package_scripts_test_e2e",
+      "community": 4,
+      "community_name": "Frontend App Third-Party Dependencies",
+      "norm_label": "test:e2e"
+    },
+    {
+      "label": "e2e",
+      "file_type": "code",
+      "source_file": "web/package.json",
+      "source_location": "L14",
       "_origin": "ast",
       "id": "web_package_scripts_e2e",
       "community": 4,
       "community_name": "Frontend App Third-Party Dependencies",
       "norm_label": "e2e"
-    },
-    {
-      "label": "run-e2e-script",
-      "file_type": "code",
-      "source_file": "web/package.json",
-      "source_location": "L14",
-      "_origin": "ast",
-      "id": "web_package_scripts_run_e2e_script",
-      "community": 4,
-      "community_name": "Frontend App Third-Party Dependencies",
-      "norm_label": "run-e2e-script"
     },
     {
       "label": "pytest",
@@ -14676,32 +14557,10 @@
       "norm_label": "pytest"
     },
     {
-      "label": "debug-aes",
-      "file_type": "code",
-      "source_file": "web/package.json",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "web_package_scripts_debug_aes",
-      "community": 4,
-      "community_name": "Frontend App Third-Party Dependencies",
-      "norm_label": "debug-aes"
-    },
-    {
-      "label": "run-e2e-full",
-      "file_type": "code",
-      "source_file": "web/package.json",
-      "source_location": "L17",
-      "_origin": "ast",
-      "id": "web_package_scripts_run_e2e_full",
-      "community": 4,
-      "community_name": "Frontend App Third-Party Dependencies",
-      "norm_label": "run-e2e-full"
-    },
-    {
       "label": "dependencies",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L19",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "web_package_dependencies",
       "community": 4,
@@ -14712,7 +14571,7 @@
       "label": "@react-three/drei",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L20",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "web_package_dependencies_react_three_drei",
       "community": 4,
@@ -14723,7 +14582,7 @@
       "label": "@react-three/drei",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L20",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "react_three_drei",
       "community": 4,
@@ -14734,7 +14593,7 @@
       "label": "@react-three/fiber",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L21",
+      "source_location": "L19",
       "_origin": "ast",
       "id": "web_package_dependencies_react_three_fiber",
       "community": 4,
@@ -14745,7 +14604,7 @@
       "label": "@react-three/fiber",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L21",
+      "source_location": "L19",
       "_origin": "ast",
       "id": "react_three_fiber",
       "community": 4,
@@ -14756,7 +14615,7 @@
       "label": "@react-three/postprocessing",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L22",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "web_package_dependencies_react_three_postprocessing",
       "community": 4,
@@ -14767,7 +14626,7 @@
       "label": "@react-three/postprocessing",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L22",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "react_three_postprocessing",
       "community": 4,
@@ -14778,7 +14637,7 @@
       "label": "@vercel/analytics",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L23",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "web_package_dependencies_vercel_analytics",
       "community": 4,
@@ -14789,7 +14648,7 @@
       "label": "@vercel/analytics",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L23",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "vercel_analytics",
       "community": 4,
@@ -14800,7 +14659,7 @@
       "label": "canvas-confetti",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L24",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "web_package_dependencies_canvas_confetti",
       "community": 4,
@@ -14811,7 +14670,7 @@
       "label": "canvas-confetti",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L24",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "canvas_confetti",
       "community": 4,
@@ -14822,7 +14681,7 @@
       "label": "clsx",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L25",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "web_package_dependencies_clsx",
       "community": 4,
@@ -14833,7 +14692,7 @@
       "label": "clsx",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L25",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "clsx",
       "community": 4,
@@ -14844,7 +14703,7 @@
       "label": "framer-motion",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L26",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "web_package_dependencies_framer_motion",
       "community": 4,
@@ -14855,7 +14714,7 @@
       "label": "framer-motion",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L26",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "framer_motion",
       "community": 4,
@@ -14866,7 +14725,7 @@
       "label": "lucide-react",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L27",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "web_package_dependencies_lucide_react",
       "community": 4,
@@ -14877,7 +14736,7 @@
       "label": "lucide-react",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L27",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "lucide_react",
       "community": 4,
@@ -14888,7 +14747,7 @@
       "label": "next",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L28",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "web_package_dependencies_next",
       "community": 4,
@@ -14899,7 +14758,7 @@
       "label": "next",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L28",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "next",
       "community": 4,
@@ -14910,7 +14769,7 @@
       "label": "postprocessing",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L29",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "web_package_dependencies_postprocessing",
       "community": 4,
@@ -14921,7 +14780,7 @@
       "label": "postprocessing",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L29",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "postprocessing",
       "community": 4,
@@ -14932,7 +14791,7 @@
       "label": "react",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L30",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "web_package_dependencies_react",
       "community": 4,
@@ -14943,7 +14802,7 @@
       "label": "react",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L30",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "react",
       "community": 4,
@@ -14954,7 +14813,7 @@
       "label": "react-dom",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L31",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "web_package_dependencies_react_dom",
       "community": 4,
@@ -14965,7 +14824,7 @@
       "label": "react-dom",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L31",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "react_dom",
       "community": 4,
@@ -14976,7 +14835,7 @@
       "label": "tailwind-merge",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L32",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "web_package_dependencies_tailwind_merge",
       "community": 4,
@@ -14987,7 +14846,7 @@
       "label": "tailwind-merge",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L32",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "tailwind_merge",
       "community": 4,
@@ -14998,7 +14857,7 @@
       "label": "three",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L33",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "web_package_dependencies_three",
       "community": 4,
@@ -15009,7 +14868,7 @@
       "label": "three",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L33",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "three",
       "community": 4,
@@ -15020,7 +14879,7 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L35",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "web_package_devdependencies",
       "community": 5,
@@ -15031,7 +14890,7 @@
       "label": "@playwright/test",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L36",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "web_package_devdependencies_playwright_test",
       "community": 5,
@@ -15042,7 +14901,7 @@
       "label": "@playwright/test",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L36",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "playwright_test",
       "community": 5,
@@ -15053,7 +14912,7 @@
       "label": "@testing-library/dom",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L37",
+      "source_location": "L35",
       "_origin": "ast",
       "id": "web_package_devdependencies_testing_library_dom",
       "community": 5,
@@ -15064,7 +14923,7 @@
       "label": "@testing-library/dom",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L37",
+      "source_location": "L35",
       "_origin": "ast",
       "id": "testing_library_dom",
       "community": 5,
@@ -15075,7 +14934,7 @@
       "label": "@testing-library/jest-dom",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L38",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "web_package_devdependencies_testing_library_jest_dom",
       "community": 5,
@@ -15086,7 +14945,7 @@
       "label": "@testing-library/jest-dom",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L38",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "testing_library_jest_dom",
       "community": 5,
@@ -15097,7 +14956,7 @@
       "label": "@testing-library/react",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L39",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "web_package_devdependencies_testing_library_react",
       "community": 5,
@@ -15108,7 +14967,7 @@
       "label": "@testing-library/react",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L39",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "testing_library_react",
       "community": 5,
@@ -15119,7 +14978,7 @@
       "label": "@types/canvas-confetti",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L40",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "web_package_devdependencies_types_canvas_confetti",
       "community": 5,
@@ -15130,7 +14989,7 @@
       "label": "@types/canvas-confetti",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L40",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "types_canvas_confetti",
       "community": 5,
@@ -15141,7 +15000,7 @@
       "label": "@types/jest",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L41",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "web_package_devdependencies_types_jest",
       "community": 5,
@@ -15152,7 +15011,7 @@
       "label": "@types/jest",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L41",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "types_jest",
       "community": 5,
@@ -15163,7 +15022,7 @@
       "label": "@types/node",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L42",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "web_package_devdependencies_types_node",
       "community": 5,
@@ -15174,7 +15033,7 @@
       "label": "@types/node",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L42",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "types_node",
       "community": 5,
@@ -15185,7 +15044,7 @@
       "label": "@types/react",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L43",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "web_package_devdependencies_types_react",
       "community": 5,
@@ -15196,7 +15055,7 @@
       "label": "@types/react",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L43",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "types_react",
       "community": 5,
@@ -15207,7 +15066,7 @@
       "label": "@types/react-dom",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L44",
+      "source_location": "L42",
       "_origin": "ast",
       "id": "web_package_devdependencies_types_react_dom",
       "community": 5,
@@ -15218,7 +15077,7 @@
       "label": "@types/react-dom",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L44",
+      "source_location": "L42",
       "_origin": "ast",
       "id": "types_react_dom",
       "community": 5,
@@ -15229,7 +15088,7 @@
       "label": "@types/three",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L45",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "web_package_devdependencies_types_three",
       "community": 5,
@@ -15240,7 +15099,7 @@
       "label": "@types/three",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L45",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "types_three",
       "community": 5,
@@ -15251,7 +15110,7 @@
       "label": "autoprefixer",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L46",
+      "source_location": "L44",
       "_origin": "ast",
       "id": "web_package_devdependencies_autoprefixer",
       "community": 5,
@@ -15262,7 +15121,7 @@
       "label": "autoprefixer",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L46",
+      "source_location": "L44",
       "_origin": "ast",
       "id": "autoprefixer",
       "community": 5,
@@ -15273,7 +15132,7 @@
       "label": "concurrently",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L47",
+      "source_location": "L45",
       "_origin": "ast",
       "id": "web_package_devdependencies_concurrently",
       "community": 5,
@@ -15284,7 +15143,7 @@
       "label": "concurrently",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L47",
+      "source_location": "L45",
       "_origin": "ast",
       "id": "concurrently",
       "community": 5,
@@ -15295,7 +15154,7 @@
       "label": "jest",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L48",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "web_package_devdependencies_jest",
       "community": 5,
@@ -15306,7 +15165,7 @@
       "label": "jest",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L48",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "jest",
       "community": 5,
@@ -15317,7 +15176,7 @@
       "label": "jest-environment-jsdom",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L49",
+      "source_location": "L47",
       "_origin": "ast",
       "id": "web_package_devdependencies_jest_environment_jsdom",
       "community": 5,
@@ -15328,7 +15187,7 @@
       "label": "jest-environment-jsdom",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L49",
+      "source_location": "L47",
       "_origin": "ast",
       "id": "jest_environment_jsdom",
       "community": 5,
@@ -15339,7 +15198,7 @@
       "label": "jsdom",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L50",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "web_package_devdependencies_jsdom",
       "community": 5,
@@ -15350,7 +15209,7 @@
       "label": "jsdom",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L50",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "jsdom",
       "community": 5,
@@ -15361,7 +15220,7 @@
       "label": "postcss",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L51",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "web_package_devdependencies_postcss",
       "community": 5,
@@ -15372,7 +15231,7 @@
       "label": "postcss",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L51",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "postcss",
       "community": 5,
@@ -15383,7 +15242,7 @@
       "label": "tailwindcss",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L52",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "web_package_devdependencies_tailwindcss",
       "community": 5,
@@ -15394,7 +15253,7 @@
       "label": "tailwindcss",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L52",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "tailwindcss",
       "community": 5,
@@ -15405,7 +15264,7 @@
       "label": "ts-jest",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L53",
+      "source_location": "L51",
       "_origin": "ast",
       "id": "web_package_devdependencies_ts_jest",
       "community": 5,
@@ -15416,7 +15275,7 @@
       "label": "ts-jest",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L53",
+      "source_location": "L51",
       "_origin": "ast",
       "id": "ts_jest",
       "community": 5,
@@ -15427,7 +15286,7 @@
       "label": "ts-node",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L54",
+      "source_location": "L52",
       "_origin": "ast",
       "id": "web_package_devdependencies_ts_node",
       "community": 5,
@@ -15438,7 +15297,7 @@
       "label": "ts-node",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L54",
+      "source_location": "L52",
       "_origin": "ast",
       "id": "ts_node",
       "community": 5,
@@ -15449,7 +15308,7 @@
       "label": "typescript",
       "file_type": "code",
       "source_file": "web/package.json",
-      "source_location": "L55",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "web_package_devdependencies_typescript",
       "community": 5,
@@ -15460,7 +15319,7 @@
       "label": "typescript",
       "file_type": "concept",
       "source_file": "web/package.json",
-      "source_location": "L55",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "typescript",
       "community": 5,
@@ -16704,76 +16563,6 @@
       "id": "contributing_new_algorithm_steps"
     },
     {
-      "label": "ORIGINAL_REQUEST.md",
-      "file_type": "document",
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "original_request.md",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "original_request"
-    },
-    {
-      "label": "Timeline Layout Requirements",
-      "file_type": "concept",
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "timeline layout requirements",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "original_request_museum_timeline"
-    },
-    {
-      "label": "Cipher Exhibit Specifications",
-      "file_type": "concept",
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "cipher exhibit specifications",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "original_request_cipher_exhibits"
-    },
-    {
-      "label": "FastAPI Integration Requirements",
-      "file_type": "concept",
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "fastapi integration requirements",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "original_request_api_bridge"
-    },
-    {
-      "label": "Verification and Security Standards",
-      "file_type": "concept",
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "verification and security standards",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "original_request_quality_standards"
-    },
-    {
       "label": "README.md",
       "file_type": "document",
       "source_file": "README.md",
@@ -16900,90 +16689,6 @@
       "id": "style_guide_functional_pattern"
     },
     {
-      "label": "TEST_INFRA.md",
-      "file_type": "document",
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "test_infra.md",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "test_infra"
-    },
-    {
-      "label": "Opaque-box Testing Methodology",
-      "file_type": "concept",
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "opaque-box testing methodology",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "test_infra_philosophy"
-    },
-    {
-      "label": "UI Selector Test Contracts",
-      "file_type": "concept",
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "ui selector test contracts",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "test_infra_selectors"
-    },
-    {
-      "label": "Real-World Test Scenarios",
-      "file_type": "concept",
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "real-world test scenarios",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "test_infra_scenarios"
-    },
-    {
-      "label": "TEST_READY.md",
-      "file_type": "document",
-      "source_file": "TEST_READY.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "test_ready.md",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "test_ready"
-    },
-    {
-      "label": "Test Coverage Summary",
-      "file_type": "concept",
-      "source_file": "TEST_READY.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 6,
-      "norm_label": "test coverage summary",
-      "community_name": "Project Documentation & Handoff Guidelines",
-      "id": "test_ready_coverage"
-    },
-    {
       "label": "handoff.md",
       "file_type": "document",
       "source_file": "handoff.md",
@@ -16992,9 +16697,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 93,
       "norm_label": "handoff.md",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "handoff.md",
       "id": "handoff"
     },
     {
@@ -17006,9 +16711,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 93,
       "norm_label": "lorenz sz42 integration scope",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "handoff.md",
       "id": "handoff_lorenz_sz42"
     },
     {
@@ -17020,9 +16725,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 93,
       "norm_label": "verification audit status",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "handoff.md",
       "id": "handoff_active_state"
     },
     {
@@ -17034,9 +16739,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 96,
       "norm_label": "quality_log.md",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "QUALITY_LOG.md",
       "id": "web_quality_log"
     },
     {
@@ -17048,9 +16753,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 96,
       "norm_label": "quality audit tracks",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "QUALITY_LOG.md",
       "id": "web_quality_log_tracks"
     },
     {
@@ -17062,9 +16767,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 89,
       "norm_label": "web/readme.md",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "web/README.md",
       "id": "web_readme"
     },
     {
@@ -17076,9 +16781,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 89,
       "norm_label": "installation commands",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "web/README.md",
       "id": "web_readme_installation"
     },
     {
@@ -17090,9 +16795,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 89,
       "norm_label": "execution environment setup",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "web/README.md",
       "id": "web_readme_running_servers"
     },
     {
@@ -17104,9 +16809,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 89,
       "norm_label": "testing framework verification",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "web/README.md",
       "id": "web_readme_testing"
     },
     {
@@ -17118,9 +16823,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 97,
       "norm_label": "security_log.md",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "SECURITY_LOG.md",
       "id": "web_security_log"
     },
     {
@@ -17132,9 +16837,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 97,
       "norm_label": "snyk audit log records",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "SECURITY_LOG.md",
       "id": "web_security_log_scans"
     },
     {
@@ -17146,9 +16851,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 89,
       "norm_label": "web/requirements.txt",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "web/README.md",
       "id": "web_requirements"
     },
     {
@@ -17160,9 +16865,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 6,
+      "community": 89,
       "norm_label": "fastapi dependencies list",
-      "community_name": "Project Documentation & Handoff Guidelines",
+      "community_name": "web/README.md",
       "id": "web_requirements_deps"
     }
   ],
@@ -38946,94 +38651,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": "run_e2e_no_install.sh",
-      "source_location": "L42",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_e2e_no_install",
-      "target": "run_e2e_no_install_cleanup",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": "run_e2e_no_install.sh",
-      "source_location": "L27",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_e2e_no_install",
-      "target": "run_e2e_no_install_pythonpath",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "run_e2e_no_install.sh",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_e2e_no_install",
-      "target": "run_e2e_no_install_sh__entry",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": "run_e2e_tests.sh",
-      "source_location": "L37",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_e2e_tests",
-      "target": "run_e2e_tests_cleanup",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": "run_e2e_tests.sh",
-      "source_location": "L25",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_e2e_tests",
-      "target": "run_e2e_tests_pythonpath",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "run_e2e_tests.sh",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_e2e_tests",
-      "target": "run_e2e_tests_sh__entry",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": "run_tests.sh",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_tests",
-      "target": "run_tests_pythonpath",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "run_tests.sh",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "run_tests",
-      "target": "run_tests_sh__entry",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "scripts/diagnose.py",
@@ -39089,6 +38706,39 @@
       "_origin": "ast",
       "source": "scripts_diagnose_main",
       "target": "path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run_e2e.sh",
+      "source_location": "L84",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_run_e2e",
+      "target": "scripts_run_e2e_cleanup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run_e2e.sh",
+      "source_location": "L63",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_run_e2e",
+      "target": "scripts_run_e2e_pythonpath",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run_e2e.sh",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_run_e2e",
+      "target": "scripts_run_e2e_sh__entry",
       "confidence_score": 1.0
     },
     {
@@ -44583,7 +44233,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L19",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package",
@@ -44594,7 +44244,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L35",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package",
@@ -44660,17 +44310,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L16",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_scripts",
-      "target": "web_package_scripts_debug_aes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
@@ -44693,7 +44332,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_scripts",
@@ -44720,28 +44359,6 @@
       "_origin": "ast",
       "source": "web_package_scripts",
       "target": "web_package_scripts_pytest",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L17",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_scripts",
-      "target": "web_package_scripts_run_e2e_full",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L14",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_scripts",
-      "target": "web_package_scripts_run_e2e_script",
       "confidence_score": 1.0
     },
     {
@@ -44781,110 +44398,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L24",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_canvas_confetti",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L25",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_clsx",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L26",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_framer_motion",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L27",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_lucide_react",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L28",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_next",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L29",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_postprocessing",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L30",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_react",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L31",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_react_dom",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_react_three_drei",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_react_three_fiber",
+      "source": "web_package_scripts",
+      "target": "web_package_scripts_test_e2e",
       "confidence_score": 1.0
     },
     {
@@ -44895,29 +44413,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_dependencies",
-      "target": "web_package_dependencies_react_three_postprocessing",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L32",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_tailwind_merge",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "web/package.json",
-      "source_location": "L33",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_package_dependencies",
-      "target": "web_package_dependencies_three",
+      "target": "web_package_dependencies_canvas_confetti",
       "confidence_score": 1.0
     },
     {
@@ -44928,6 +44424,138 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_dependencies",
+      "target": "web_package_dependencies_clsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_framer_motion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_lucide_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_next",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_postprocessing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react_dom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react_three_drei",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react_three_fiber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react_three_postprocessing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L30",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_tailwind_merge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_three",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/package.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_package_dependencies",
       "target": "web_package_dependencies_vercel_analytics",
       "confidence_score": 1.0
     },
@@ -44935,7 +44563,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L20",
+      "source_location": "L18",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -44947,7 +44575,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L21",
+      "source_location": "L19",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -44959,7 +44587,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L22",
+      "source_location": "L20",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -44971,7 +44599,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L23",
+      "source_location": "L21",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -44983,7 +44611,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L24",
+      "source_location": "L22",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -44995,7 +44623,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L25",
+      "source_location": "L23",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45007,7 +44635,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L26",
+      "source_location": "L24",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45019,7 +44647,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L27",
+      "source_location": "L25",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45031,7 +44659,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L28",
+      "source_location": "L26",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45043,7 +44671,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L29",
+      "source_location": "L27",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45055,7 +44683,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L30",
+      "source_location": "L28",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45067,7 +44695,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L31",
+      "source_location": "L29",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45079,7 +44707,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L32",
+      "source_location": "L30",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45091,7 +44719,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L33",
+      "source_location": "L31",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45103,7 +44731,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L46",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45114,7 +44742,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L47",
+      "source_location": "L45",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45125,7 +44753,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L48",
+      "source_location": "L46",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45136,7 +44764,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L49",
+      "source_location": "L47",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45147,7 +44775,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L50",
+      "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45158,7 +44786,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L36",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45169,7 +44797,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L51",
+      "source_location": "L49",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45180,7 +44808,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L52",
+      "source_location": "L50",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45191,7 +44819,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L37",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45202,7 +44830,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L38",
+      "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45213,7 +44841,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L39",
+      "source_location": "L37",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45224,7 +44852,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L53",
+      "source_location": "L51",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45235,7 +44863,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L54",
+      "source_location": "L52",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45246,7 +44874,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L40",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45257,7 +44885,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L41",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45268,7 +44896,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L42",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45279,7 +44907,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L43",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45290,7 +44918,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L44",
+      "source_location": "L42",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45301,7 +44929,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L45",
+      "source_location": "L43",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45312,7 +44940,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L55",
+      "source_location": "L53",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_package_devdependencies",
@@ -45323,7 +44951,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L36",
+      "source_location": "L34",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45335,7 +44963,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L37",
+      "source_location": "L35",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45347,7 +44975,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L38",
+      "source_location": "L36",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45359,7 +44987,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L39",
+      "source_location": "L37",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45371,7 +44999,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L40",
+      "source_location": "L38",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45383,7 +45011,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L41",
+      "source_location": "L39",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45395,7 +45023,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L42",
+      "source_location": "L40",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45407,7 +45035,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L43",
+      "source_location": "L41",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45419,7 +45047,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L44",
+      "source_location": "L42",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45431,7 +45059,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L45",
+      "source_location": "L43",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45443,7 +45071,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L46",
+      "source_location": "L44",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45455,7 +45083,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L47",
+      "source_location": "L45",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45467,7 +45095,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L48",
+      "source_location": "L46",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45479,7 +45107,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L49",
+      "source_location": "L47",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45491,7 +45119,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L50",
+      "source_location": "L48",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45503,7 +45131,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L51",
+      "source_location": "L49",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45515,7 +45143,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L52",
+      "source_location": "L50",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45527,7 +45155,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L53",
+      "source_location": "L51",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45539,7 +45167,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L54",
+      "source_location": "L52",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -45551,7 +45179,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "web/package.json",
-      "source_location": "L55",
+      "source_location": "L53",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -47475,96 +47103,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "original_request_api_bridge",
-      "target": "original_request"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "original_request_cipher_exhibits",
-      "target": "original_request"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "original_request_museum_timeline",
-      "target": "original_request"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ORIGINAL_REQUEST.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "original_request_quality_standards",
-      "target": "original_request"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "web/QUALITY_LOG.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "web_quality_log_tracks",
-      "target": "original_request"
-    },
-    {
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "handoff.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "handoff_lorenz_sz42",
-      "target": "original_request_cipher_exhibits"
-    },
-    {
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "README.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "readme_algorithm_reference",
-      "target": "original_request_cipher_exhibits"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "test_infra_scenarios",
-      "target": "original_request_cipher_exhibits"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/SECURITY_LOG.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "web_security_log_scans",
-      "target": "original_request_quality_standards"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "README.md",
       "source_location": null,
       "weight": 1.0,
@@ -47630,66 +47168,6 @@
       "weight": 1.0,
       "source": "style_guide_no_external_libs",
       "target": "style_guide"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "test_infra_philosophy",
-      "target": "test_infra"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "test_infra_scenarios",
-      "target": "test_infra"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "TEST_INFRA.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "test_infra_selectors",
-      "target": "test_infra"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "TEST_READY.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "test_ready_coverage",
-      "target": "test_infra_philosophy"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/README.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "web_readme_testing",
-      "target": "test_infra_scenarios"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "TEST_READY.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "test_ready_coverage",
-      "target": "test_ready"
     },
     {
       "relation": "references",
@@ -47784,20 +47262,6 @@
   ],
   "hyperedges": [
     {
-      "id": "cryptography_museum_testing_flow",
-      "label": "Museum Testing Flow",
-      "nodes": [
-        "test_infra_philosophy",
-        "test_ready_coverage",
-        "web_quality_log_tracks",
-        "web_security_log_scans"
-      ],
-      "relation": "participate_in",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "TEST_INFRA.md"
-    },
-    {
       "id": "cryptography_museum_guidelines",
       "label": "Cryptography Project Guidelines",
       "nodes": [
@@ -47812,5 +47276,5 @@
       "source_file": "STYLE_GUIDE.md"
     }
   ],
-  "built_at_commit": "9f05f4c595eca6113713ffabafd12c1d5b0a0605"
+  "built_at_commit": "f7f6b665f7980a1b30747e5870df2f6238eef914"
 }

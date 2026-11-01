@@ -88,8 +88,13 @@
   "86": "md5",
   "87": "sub_word",
   "88": "PolybiusDecryptInput",
+  "89": "web/README.md",
   "90": "blake2s",
   "91": "sha3_256",
   "92": ".__init__",
-  "95": "validate_polybius_ciphertext"
+  "93": "handoff.md",
+  "94": "Sha256Input",
+  "95": "validate_polybius_ciphertext",
+  "96": "QUALITY_LOG.md",
+  "97": "SECURITY_LOG.md"
 }

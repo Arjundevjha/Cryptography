@@ -96,13 +96,15 @@ The project provides a consolidated script that automates starting the backend a
 
 From the **repository root**:
 ```bash
-bash run_e2e_tests.sh
+bash scripts/run_e2e.sh
 ```
 
-Logs will be written to:
-- `playwright.log`
-- `backend.log`
-- `frontend.log`
+Or from the **web/** directory:
+```bash
+npm run test:e2e
+```
+
+Logs will be written to `test-results/logs/`.
 
 ### Option 2: Manually Running Tests
 

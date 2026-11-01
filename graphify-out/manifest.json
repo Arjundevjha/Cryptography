@@ -304,21 +304,6 @@
     "ast_hash": "f6305d0eb6dd99d709669bca8b548463",
     "semantic_hash": ""
   },
-  "run_e2e_no_install.sh": {
-    "mtime": 1781509162.5601845,
-    "ast_hash": "8969579f8795d3e210a052ba219138fb",
-    "semantic_hash": "8969579f8795d3e210a052ba219138fb"
-  },
-  "run_e2e_tests.sh": {
-    "mtime": 1783292985.2005775,
-    "ast_hash": "d6cf06b86f4d5a57ce286539f8d3c2a1",
-    "semantic_hash": "d6cf06b86f4d5a57ce286539f8d3c2a1"
-  },
-  "run_tests.sh": {
-    "mtime": 1783939756.3120952,
-    "ast_hash": "3203e7dc77c723a96f8d5188c3447149",
-    "semantic_hash": "3203e7dc77c723a96f8d5188c3447149"
-  },
   "web/.fallowrc.json": {
     "mtime": 1784681680.5335712,
     "ast_hash": "d011342da40a8f82597a09013e906cfc",
@@ -380,8 +365,8 @@
     "semantic_hash": ""
   },
   "web/package.json": {
-    "mtime": 1789046693.8049023,
-    "ast_hash": "4d8530fc8ed6a66eb4f84806d05442b4",
+    "mtime": 1793525187.9042714,
+    "ast_hash": "0c73386de4db47460f817610924c8c49",
     "semantic_hash": ""
   },
   "web/playwright.config.ts": {
@@ -484,14 +469,9 @@
     "ast_hash": "c1c1c4a0d58630b443a0e152c51a614d",
     "semantic_hash": "c1c1c4a0d58630b443a0e152c51a614d"
   },
-  "ORIGINAL_REQUEST.md": {
-    "mtime": 1781405462.7806392,
-    "ast_hash": "84075d0d22d57960f09ef805475f8205",
-    "semantic_hash": "84075d0d22d57960f09ef805475f8205"
-  },
   "README.md": {
-    "mtime": 1785038599.9856465,
-    "ast_hash": "8ecc6560fba6efb0678eb0eba2334d40",
+    "mtime": 1793525279.3184526,
+    "ast_hash": "954347f4077a7914c0bd5e8d8622daff",
     "semantic_hash": ""
   },
   "STYLE_GUIDE.md": {
@@ -499,19 +479,9 @@
     "ast_hash": "2fc986daf0f711c65eac02247407f034",
     "semantic_hash": ""
   },
-  "TEST_INFRA.md": {
-    "mtime": 1781236159.7171383,
-    "ast_hash": "a0b5b59226d6e861b9d4e9aad21580a7",
-    "semantic_hash": "a0b5b59226d6e861b9d4e9aad21580a7"
-  },
-  "TEST_READY.md": {
-    "mtime": 1781236534.5772955,
-    "ast_hash": "1c06ba7292961575b45102f00433ce1c",
-    "semantic_hash": "1c06ba7292961575b45102f00433ce1c"
-  },
   "handoff.md": {
-    "mtime": 1793318759.4978366,
-    "ast_hash": "6d300b0c373102c15df74cfb0d1ee641",
+    "mtime": 1793319615.8284538,
+    "ast_hash": "274000db2d68d40b038d28798696b85a",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
@@ -520,9 +490,9 @@
     "semantic_hash": "c204c1a5b010cc2b5d52dc297b0e4e4f"
   },
   "web/README.md": {
-    "mtime": 1781358406.0467238,
-    "ast_hash": "d09ac4ffa6b7fcc67050f751ea267cd7",
-    "semantic_hash": "d09ac4ffa6b7fcc67050f751ea267cd7"
+    "mtime": 1793525303.844675,
+    "ast_hash": "95515ea884a885d064ffa013b758d1ee",
+    "semantic_hash": ""
   },
   "web/SECURITY_LOG.md": {
     "mtime": 1781405749.264485,
@@ -582,6 +552,11 @@
   "scripts/diagnose.py": {
     "mtime": 1793319333.528651,
     "ast_hash": "5ea6ae7506eb9320ce00d18b7d1866fa",
+    "semantic_hash": ""
+  },
+  "scripts/run_e2e.sh": {
+    "mtime": 1793525177.9039404,
+    "ast_hash": "f8052a41ff8eb8b06485ce1e2be018c0",
     "semantic_hash": ""
   }
 }

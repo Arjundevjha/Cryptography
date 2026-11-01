@@ -10,11 +10,9 @@
     "start:all": "concurrently \"npm run start\" \"PYTHONPATH=.. uvicorn api.main:app --port 8000\"",
     "lint": "next lint",
     "test": "jest",
+    "test:e2e": "bash ../scripts/run_e2e.sh",
     "e2e": "playwright test",
-    "run-e2e-script": "bash ../run_e2e_no_install.sh",
-    "pytest": "python3 -m pytest api",
-    "debug-aes": "PYTHONPATH=.. python3 -c \"from methods.modern import aes; from api.main import parse_aes_key; kb = parse_aes_key('1234567890123456', 'text'); c, n = aes.encrypt('Secret Message', kb); p = aes.decrypt(c, kb, n); print('Success decrypted:', p)\"",
-    "run-e2e-full": "bash ../run_e2e_tests.sh"
+    "pytest": "python3 -m pytest api"
   },
   "dependencies": {
     "@react-three/drei": "9.121.0",
