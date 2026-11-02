@@ -198,6 +198,19 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(statusWidget.className).toContain('focus-visible:ring-2');
   });
 
+  it('renders StatueCuratorialDrawer with aria-modal="true" and supports Escape key dismissal', () => {
+    const handleClose = jest.fn();
+    const diffieHellman = MUSEUM_STATUES.find((s) => s.id === 'statue-diffie-hellman')!;
+    render(<StatueCuratorialDrawer statue={diffieHellman} onClose={handleClose} />);
+
+    const dialog = screen.getByRole('dialog', { name: `Statue details for ${diffieHellman.name}` });
+    expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
   it('renders StatueCuratorialDrawer tab switchers with accessible tab roles, aria-selected, and focus styles', () => {
     const diffieHellman = MUSEUM_STATUES.find((s) => s.id === 'statue-diffie-hellman')!;
     render(<StatueCuratorialDrawer statue={diffieHellman} onClose={jest.fn()} />);
