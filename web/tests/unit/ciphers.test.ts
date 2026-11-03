@@ -251,3 +251,18 @@ describe('Substitution Cipher', () => {
     expect(substitutionDecrypt('siaa zq lkba! 123', keyAlphabet)).toBe('flee at once! 123');
   });
 });
+
+describe('Security Input Length & Sanitization', () => {
+  it('should throw error when input length exceeds MAX_INPUT_LENGTH limit', () => {
+    const longText = 'a'.repeat(100001);
+    expect(() => caesarEncrypt(longText, 3)).toThrow('Input text exceeds maximum length limit');
+    expect(() => vigenereEncrypt(longText, 'KEY')).toThrow('Input text exceeds maximum length limit');
+    expect(() => playfairEncrypt(longText, 'KEY')).toThrow('Input text exceeds maximum length limit');
+    expect(() => substitutionEncrypt(longText, 'zebrascdfghijklmnopqtuvwxy')).toThrow('Input text exceeds maximum length limit');
+  });
+
+  it('should sanitize non-alphabetic characters in Vigenère key', () => {
+    expect(vigenereEncrypt('HELLO', 'K!E@Y#')).toBe(vigenereEncrypt('HELLO', 'KEY'));
+    expect(vigenereEncrypt('HELLO', '12345')).toBe('HELLO');
+  });
+});

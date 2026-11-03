@@ -1,3 +1,11 @@
+const MAX_INPUT_LENGTH = 100000;
+
+function validateInputLength(text: string): void {
+  if (text && text.length > MAX_INPUT_LENGTH) {
+    throw new Error(`Input text exceeds maximum length limit of ${MAX_INPUT_LENGTH} characters`);
+  }
+}
+
 /**
  * Pre-computed 128-entry ASCII lookup tables for all 26 possible shift values (0-25).
  *
@@ -24,6 +32,7 @@ const CAESAR_TABLES: string[][] = Array.from({ length: 26 }, (_, shift) => {
  */
 export function caesarEncrypt(plaintext: string, shift: number): string {
   if (!plaintext) return '';
+  validateInputLength(plaintext);
   const normalizedShift = ((shift % 26) + 26) % 26;
   const table = CAESAR_TABLES[normalizedShift];
   const len = plaintext.length;
@@ -49,13 +58,15 @@ export function caesarDecrypt(ciphertext: string, shift: number): string {
  */
 function vigenereTransform(text: string, key: string, isEncrypt: boolean): string {
   if (!key || !text) return text;
-  const keyLen = key.length;
-  if (keyLen === 0) return text;
+  validateInputLength(text);
+  const cleanKey = key.replace(/[^a-zA-Z]/g, '');
+  if (cleanKey.length === 0) return text;
+  const keyLen = cleanKey.length;
 
   // Pre-calculate key shifts to eliminate per-character key character conversions
   const keyShifts = new Array<number>(keyLen);
   for (let i = 0; i < keyLen; i++) {
-    const kChar = key[i].toLowerCase();
+    const kChar = cleanKey[i].toLowerCase();
     keyShifts[i] = kChar.charCodeAt(0) - 97;
   }
 
@@ -285,6 +296,7 @@ function buildPlayfairPosMap(gridChars: string[]): { rowMap: Int32Array; colMap:
  * digraph string array creation, and string concatenation in loops (~2.4x–2.8x speedup).
  */
 export function playfairEncrypt(plaintext: string, key: string): string {
+  validateInputLength(plaintext);
   const gridChars = generatePlayfairGrid(key);
   const { rowMap, colMap } = buildPlayfairPosMap(gridChars);
 
@@ -329,6 +341,7 @@ export function playfairEncrypt(plaintext: string, key: string): string {
 }
 
 export function playfairDecrypt(ciphertext: string, key: string): string {
+  validateInputLength(ciphertext);
   const gridChars = generatePlayfairGrid(key);
   const { rowMap, colMap } = buildPlayfairPosMap(gridChars);
 
@@ -416,11 +429,13 @@ function substitutionTransform(text: string, table: string[]): string {
  * Substitution cipher implementation.
  */
 export function substitutionEncrypt(plaintext: string, keyAlphabet: string): string {
+  validateInputLength(plaintext);
   const table = buildSubstitutionTable(keyAlphabet, true);
   return substitutionTransform(plaintext, table);
 }
 
 export function substitutionDecrypt(ciphertext: string, keyAlphabet: string): string {
+  validateInputLength(ciphertext);
   const table = buildSubstitutionTable(keyAlphabet, false);
   return substitutionTransform(ciphertext, table);
 }

@@ -19,6 +19,21 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && showMap) {
         setShowMap(false);
+        return;
+      }
+      if (e.key === 'm' || e.key === 'M') {
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        const target = e.target as HTMLElement | null;
+        if (
+          target &&
+          (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.tagName === 'SELECT' ||
+            target.isContentEditable)
+        ) {
+          return;
+        }
+        setShowMap((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);

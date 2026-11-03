@@ -4,8 +4,25 @@ import secrets
 import math
 import string
 
+MAX_TEXT_LENGTH = 100000
+
+def _validate_inputs(text: str, a_key: int, b_key: int, text_name: str) -> None:
+    """Validate input types, key parameters, and maximum length to prevent DoS."""
+    if not isinstance(text, str):
+        raise TypeError(f"{text_name} must be a string")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"{text_name} length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+    if not isinstance(a_key, int) or isinstance(a_key, bool):
+        raise TypeError("Key 'a' must be an integer")
+    if not isinstance(b_key, int) or isinstance(b_key, bool):
+        raise TypeError("Key 'b' must be an integer")
+    if math.gcd(a_key, 26) != 1:
+        raise ValueError(f"The key 'a' ({a_key}) must be coprime to 26.")
+
 def _check_coprime(a_key: int):
     """Check if the a_key is coprime to 26."""
+    if not isinstance(a_key, int) or isinstance(a_key, bool):
+        raise TypeError("Key 'a' must be an integer")
     if math.gcd(a_key, 26) != 1:
         raise ValueError(f"The key 'a' ({a_key}) must be coprime to 26.")
 
@@ -34,8 +51,8 @@ def encrypt(plaintext: str, a_key: int, b_key: int) -> str:
     Each letter is mapped to (a_key * x + b_key) % 26.
     Non-alphabetic characters are preserved.
     """
-    _check_coprime(a_key)
-    # Optimization: Pre-compute translation table using str.maketrans and ''.join() list comprehension.
+    _validate_inputs(plaintext, a_key, b_key, "Plaintext")
+    # Optimization: Pre-compute translation table using str.maketrans and ''.join().
     # Replaces O(N^2) loop string concatenation with C-level str.translate (~120x speedup).
     a_mod = a_key % 26
     b_mod = b_key % 26
@@ -50,8 +67,8 @@ def decrypt(ciphertext: str, a_key: int, b_key: int) -> str:
     Each letter is decrypted using the modular inverse of a_key.
     Non-alphabetic characters are preserved.
     """
-    _check_coprime(a_key)
-    # Optimization: Pre-compute translation table using str.maketrans and ''.join() list comprehension.
+    _validate_inputs(ciphertext, a_key, b_key, "Ciphertext")
+    # Optimization: Pre-compute translation table using str.maketrans and ''.join().
     # Replaces O(N^2) loop string concatenation with C-level str.translate (~120x speedup).
     a_inverse = pow(a_key, -1, 26)
     b_mod = b_key % 26
