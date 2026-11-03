@@ -8,16 +8,21 @@ import { WorkbenchPanel } from './workbench/WorkbenchPanel';
 import { ArtifactMetadataDrawer } from './workbench/ArtifactMetadataDrawer';
 import { StatueCuratorialDrawer } from './workbench/StatueCuratorialDrawer';
 import { AudioSystem } from './AudioSystem';
-import { BookOpen, History, ShieldAlert, ZoomIn, ZoomOut, ArrowRight, Sparkles, Eye, Compass } from 'lucide-react';
+import { BookOpen, History, ShieldAlert, ZoomIn, ZoomOut, ArrowRight, Sparkles, Eye, Compass, X } from 'lucide-react';
 
 export function MuseumCanvas() {
   const [isClient, setIsClient] = useState(false);
   const [currentView, setCurrentView] = useState<string>('atrium');
   const [isMacro, setIsMacro] = useState(false);
+  const [showCuratorial, setShowCuratorial] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    setShowCuratorial(true);
+  }, [currentView]);
 
   const activeExhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
@@ -133,13 +138,23 @@ export function MuseumCanvas() {
 
       {/* === CURATORIAL EXHIBITION PANEL (Left side, inside exhibit rooms) === */}
       {activeExhibit && !activeWing && currentView !== 'atrium' && !isMacro && (
-        <div className="fixed top-24 left-4 z-20 w-80 max-h-[calc(100vh-140px)] overflow-y-auto pointer-events-auto">
-          <div className="bg-white/90 backdrop-blur-xl border border-stone-200 shadow-2xl rounded-2xl p-5 space-y-3 text-stone-800">
-            <div className="pb-2 border-b border-stone-200">
-              <span className="text-[9px] font-mono tracking-widest text-amber-600 uppercase font-bold">{activeExhibit.wing}</span>
-              <h2 className="text-lg font-extrabold text-stone-900 mt-0.5">{activeExhibit.name}</h2>
-              <p className="text-[11px] text-stone-500 italic">{activeExhibit.subtitle}</p>
-            </div>
+        showCuratorial ? (
+          <div className="fixed top-24 left-4 z-20 w-80 max-h-[calc(100vh-140px)] overflow-y-auto pointer-events-auto">
+            <div className="bg-white/90 backdrop-blur-xl border border-stone-200 shadow-2xl rounded-2xl p-5 space-y-3 text-stone-800">
+              <div className="flex items-start justify-between pb-2 border-b border-stone-200">
+                <div>
+                  <span className="text-[9px] font-mono tracking-widest text-amber-600 uppercase font-bold">{activeExhibit.wing}</span>
+                  <h2 className="text-lg font-extrabold text-stone-900 mt-0.5">{activeExhibit.name}</h2>
+                  <p className="text-[11px] text-stone-500 italic">{activeExhibit.subtitle}</p>
+                </div>
+                <button
+                  onClick={() => setShowCuratorial(false)}
+                  aria-label="Close curatorial exhibition panel"
+                  className="p-1 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
             <div className="space-y-1">
               <h3 className="text-[11px] font-mono text-amber-700 uppercase tracking-wider flex items-center gap-1.5 font-bold">
@@ -165,14 +180,26 @@ export function MuseumCanvas() {
               <p className="text-[11px] text-red-700/80 leading-relaxed">{activeExhibit.vulnerabilities}</p>
             </div>
 
+              <button
+                onClick={() => handleCaseClick(activeExhibit.id)}
+                className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-[11px] uppercase tracking-wider font-mono flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+              >
+                <ZoomIn className="w-3.5 h-3.5" /> Inspect Display Case
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="fixed top-24 left-4 z-20 pointer-events-auto">
             <button
-              onClick={() => handleCaseClick(activeExhibit.id)}
-              className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-[11px] uppercase tracking-wider font-mono flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+              onClick={() => setShowCuratorial(true)}
+              aria-label="Show curatorial exhibition panel"
+              className="px-3 py-2 rounded-xl bg-white/90 backdrop-blur-xl border border-stone-200 text-stone-800 text-xs font-mono font-bold flex items-center gap-2 shadow-lg hover:bg-white focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all"
             >
-              <ZoomIn className="w-3.5 h-3.5" /> Inspect Display Case
+              <BookOpen className="w-4 h-4 text-amber-500" />
+              <span>CURATORIAL NOTES</span>
             </button>
           </div>
-        </div>
+        )
       )}
 
       {/* === WORKBENCH PANEL (Right side, inside exhibit rooms) === */}

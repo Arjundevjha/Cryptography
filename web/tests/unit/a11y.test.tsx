@@ -465,4 +465,36 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(alertBanner).toHaveAttribute('aria-live', 'assertive');
     expect(alertBanner).toHaveTextContent('Invalid parameters provided');
   });
+
+  it('renders Curatorial Exhibition Panel with accessible close button and can toggle collapsed notes view', () => {
+    render(<MuseumCanvas />);
+
+    // Open map and navigate to Caesar exhibit
+    const toggleMapButton = screen.getByRole('button', { name: /toggle 2d museum floorplan map/i });
+    fireEvent.click(toggleMapButton);
+
+    const caesarMarker = screen.getByRole('button', { name: /navigate to exhibit caesar cipher/i });
+    fireEvent.click(caesarMarker);
+
+    // Curatorial overview should be visible with close button
+    expect(screen.getByText(/curatorial overview/i)).toBeInTheDocument();
+    const closeBtn = screen.getByRole('button', { name: /close curatorial exhibition panel/i });
+    expect(closeBtn).toBeInTheDocument();
+    expect(closeBtn.className).toContain('focus-visible:ring-2');
+
+    // Click close button
+    fireEvent.click(closeBtn);
+
+    // Curatorial overview content should now be hidden
+    expect(screen.queryByText(/curatorial overview/i)).not.toBeInTheDocument();
+
+    // Collapsed toggle button should be visible
+    const showBtn = screen.getByRole('button', { name: /show curatorial exhibition panel/i });
+    expect(showBtn).toBeInTheDocument();
+    expect(showBtn.className).toContain('focus-visible:ring-2');
+
+    // Click show button to restore panel
+    fireEvent.click(showBtn);
+    expect(screen.getByText(/curatorial overview/i)).toBeInTheDocument();
+  });
 });
