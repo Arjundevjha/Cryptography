@@ -465,4 +465,38 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(alertBanner).toHaveAttribute('aria-live', 'assertive');
     expect(alertBanner).toHaveTextContent('Invalid parameters provided');
   });
+
+  it('triggers cipher execution via Ctrl+Enter or Cmd+Enter keyboard shortcut in WorkbenchPanel textarea', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KEYBOARD_SHORTCUT_SUCCESS' }),
+      })
+    ) as jest.Mock;
+
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    // Verify button has shortcut indicator badge and accessible title/aria-label
+    expect(screen.getByText('[Ctrl+↵]')).toBeInTheDocument();
+    expect(executeBtn).toHaveAttribute('title', 'Execute encrypt (Ctrl+Enter)');
+    expect(executeBtn).toHaveAttribute('aria-label', expect.stringContaining('Ctrl+Enter or Cmd+Enter'));
+
+    // Trigger Ctrl+Enter on textarea
+    await React.act(async () => {
+      fireEvent.keyDown(inputArea, { key: 'Enter', ctrlKey: true });
+    });
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText('KEYBOARD_SHORTCUT_SUCCESS')).toBeInTheDocument();
+
+    // Trigger Meta+Enter (Cmd+Enter on macOS) on textarea
+    await React.act(async () => {
+      fireEvent.keyDown(inputArea, { key: 'Enter', metaKey: true });
+    });
+
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
 });

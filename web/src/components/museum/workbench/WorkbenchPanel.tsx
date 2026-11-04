@@ -232,6 +232,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           data-testid={`input-text-${exhibit.id}`}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+              e.preventDefault();
+              if (!loading) {
+                handleExecute();
+              }
+            }
+          }}
           className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-all"
         />
       </div>
@@ -598,10 +606,13 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         onClick={handleExecute}
         disabled={loading}
         aria-busy={loading}
+        title={`Execute ${mode} (Ctrl+Enter)`}
+        aria-label={`Execute ${mode} (Press Ctrl+Enter or Cmd+Enter to execute)`}
         className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-stone-950" />}
-        Execute {mode}
+        <span>Execute {mode}</span>
+        <span className="text-[10px] font-mono opacity-70 font-normal ml-0.5 tracking-normal">[Ctrl+↵]</span>
       </button>
 
       {/* Standardized Error Banner */}
