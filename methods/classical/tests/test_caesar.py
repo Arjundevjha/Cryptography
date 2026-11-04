@@ -1,5 +1,6 @@
 import string
-from methods.classical.caesar import encrypt, decrypt, pick_keys
+import pytest
+from methods.classical.caesar import encrypt, decrypt, pick_keys, MAX_TEXT_LENGTH
 
 def test_pick_keys():
     """Test that pick_keys generates a valid shift key between 1 and 25."""
@@ -97,3 +98,25 @@ def test_all_shifts():
         encrypted = encrypt(text, shift)
         decrypted = decrypt(encrypted, shift)
         assert decrypted == text
+
+def test_input_validation_types():
+    """Test that invalid types for text or shift raise TypeError."""
+    for invalid_text in [123, None, ["a"], {"a": 1}]:
+        with pytest.raises(TypeError, match="must be a string"):
+            encrypt(invalid_text, 3)
+        with pytest.raises(TypeError, match="must be a string"):
+            decrypt(invalid_text, 3)
+
+    for invalid_shift in ["3", 3.5, None, [3], True, False]:
+        with pytest.raises(TypeError, match="Shift must be an integer"):
+            encrypt("HELLO", invalid_shift)
+        with pytest.raises(TypeError, match="Shift must be an integer"):
+            decrypt("HELLO", invalid_shift)
+
+def test_input_validation_max_length():
+    """Test that inputs exceeding MAX_TEXT_LENGTH raise ValueError to mitigate DoS."""
+    oversized = "A" * (MAX_TEXT_LENGTH + 1)
+    with pytest.raises(ValueError, match="exceeds maximum allowed limit"):
+        encrypt(oversized, 3)
+    with pytest.raises(ValueError, match="exceeds maximum allowed limit"):
+        decrypt(oversized, 3)
