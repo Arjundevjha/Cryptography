@@ -309,6 +309,41 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(resetBtn.className).toContain('focus-visible:ring-2');
   });
 
+  it('renders WorkbenchPanel execute button with keyboard shortcut hint badge and supports Ctrl+Enter / Cmd+Enter', async () => {
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KHOOR' }),
+      })
+    ) as jest.Mock;
+
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    // Verify execute button has shortcut in aria-label, title, and renders kbd hint
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt \(ctrl\+enter\)/i });
+    expect(executeBtn).toBeInTheDocument();
+    expect(executeBtn).toHaveAttribute('title', 'Execute encrypt (Ctrl+Enter)');
+    expect(screen.getByText('Ctrl+↵')).toBeInTheDocument();
+
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+
+    // Pressing a regular key or normal Enter does not execute cipher
+    fireEvent.keyDown(inputArea, { key: 'Enter', code: 'Enter' });
+    expect(global.fetch).not.toHaveBeenCalled();
+
+    // Trigger Ctrl+Enter shortcut in textarea
+    await React.act(async () => {
+      fireEvent.keyDown(inputArea, { key: 'Enter', code: 'Enter', ctrlKey: true });
+    });
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+
+    // Trigger Cmd+Enter (metaKey) shortcut in textarea
+    await React.act(async () => {
+      fireEvent.keyDown(inputArea, { key: 'Enter', code: 'Enter', metaKey: true });
+    });
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+
   it('renders WorkbenchPanel copy button with accessible mode-specific tooltip and aria-label', async () => {
     // Mock navigator.clipboard.writeText
     Object.assign(navigator, {
