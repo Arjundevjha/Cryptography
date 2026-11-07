@@ -63,118 +63,127 @@ export function MuseumHUD({
 
   return (
     <>
-      {/* Top Left Branding & Navigation HUD */}
-      <div className="select-none fixed top-5 left-5 z-40 flex items-center gap-2.5">
-        <div className="px-4 py-2.5 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-3">
-          <span className="text-amber-400 text-sm leading-none" aria-hidden="true">
-            ◈
-          </span>
-          <div>
-            <h1 className="font-display text-xs sm:text-sm font-semibold tracking-wider text-amber-300">
-              CRYPTOGRAPHY MUSEUM
-            </h1>
-            <p className="text-[11px] text-stone-300 font-sans">{getSubtext()}</p>
+      {/* Unified Non-Overlapping 3-Zone Top Header HUD */}
+      <header className="select-none fixed top-4 inset-x-4 sm:inset-x-5 z-40 flex items-center justify-between gap-2 pointer-events-none">
+        {/* Left Zone: Branding & Return to Lobby */}
+        <div className="pointer-events-auto flex items-center gap-2 min-w-0">
+          <div className="px-3.5 py-2 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2.5 min-w-0">
+            <span className="text-amber-400 text-sm leading-none shrink-0" aria-hidden="true">
+              ◈
+            </span>
+            <div className="min-w-0">
+              <h1 className="font-display text-xs sm:text-sm font-semibold tracking-wider text-amber-300 truncate">
+                CRYPTOGRAPHY MUSEUM
+              </h1>
+              <p className="text-[11px] text-stone-300 font-sans truncate max-w-[200px] xl:max-w-[260px]">
+                {getSubtext()}
+              </p>
+            </div>
           </div>
+
+          {/* Return to Lobby Button */}
+          {currentView !== 'atrium' && (
+            <button
+              onClick={onReturnToFoyer}
+              aria-label="Lobby Entrance"
+              title="Return to Lobby Entrance"
+              className="px-3 py-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-sans text-xs font-semibold flex items-center gap-1.5 shadow-lg transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+            >
+              <Home className="w-4 h-4 shrink-0" />
+              <span className="hidden 2xl:inline">Lobby Entrance</span>
+              <span className="inline 2xl:hidden">Foyer</span>
+            </button>
+          )}
         </div>
 
-        {/* Return to Lobby Button */}
-        {currentView !== 'atrium' && (
+        {/* Center Zone: Wing & Navigation Bar */}
+        <nav
+          aria-label="Museum wings and tools"
+          className="pointer-events-auto hidden lg:flex items-center gap-1 p-1.5 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/25 shadow-2xl shrink-0"
+        >
           <button
             onClick={onReturnToFoyer}
-            className="px-3.5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-sans text-xs font-semibold flex items-center gap-2 shadow-lg transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-          >
-            <Home className="w-4 h-4" /> Lobby Entrance
-          </button>
-        )}
-      </div>
-
-      {/* Top Center Wing & Navigation Bar */}
-      <nav
-        aria-label="Museum wings and tools"
-        className="select-none fixed top-5 left-1/2 -translate-x-1/2 z-40 hidden lg:flex items-center gap-1 p-1.5 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/25 shadow-2xl"
-      >
-        <button
-          onClick={onReturnToFoyer}
-          aria-current={currentView === 'atrium' ? 'page' : undefined}
-          className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-            currentView === 'atrium' ? 'bg-amber-500 text-stone-950 shadow-sm font-bold' : 'text-stone-300 hover:text-stone-100'
-          }`}
-        >
-          Lobby
-        </button>
-
-        {MUSEUM_WINGS.map((wing) => (
-          <button
-            key={wing.id}
-            onClick={() => onSelectRoom(wing.id)}
-            aria-current={currentView === wing.id ? 'page' : undefined}
+            aria-current={currentView === 'atrium' ? 'page' : undefined}
             className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-              currentView === wing.id ? 'bg-amber-500 text-stone-950 shadow-sm font-bold' : 'text-stone-300 hover:text-stone-100'
+              currentView === 'atrium' ? 'bg-amber-500 text-stone-950 shadow-sm font-bold' : 'text-stone-300 hover:text-stone-100'
             }`}
           >
-            {wing.category} Wing
+            Lobby
           </button>
-        ))}
 
-        <div className="w-px h-4 bg-stone-800 mx-1" />
+          {MUSEUM_WINGS.map((wing) => (
+            <button
+              key={wing.id}
+              onClick={() => onSelectRoom(wing.id)}
+              aria-current={currentView === wing.id ? 'page' : undefined}
+              className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                currentView === wing.id ? 'bg-amber-500 text-stone-950 shadow-sm font-bold' : 'text-stone-300 hover:text-stone-100'
+              }`}
+            >
+              {wing.category} Wing
+            </button>
+          ))}
 
-        {onToggleTour && (
+          <div className="w-px h-4 bg-stone-800 mx-1" />
+
+          {onToggleTour && (
+            <button
+              onClick={onToggleTour}
+              aria-pressed={isTourActive}
+              aria-label="Toggle guided historical tour"
+              className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                isTourActive
+                  ? 'bg-amber-400 text-stone-950 font-bold'
+                  : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
+              }`}
+            >
+              <GraduationCap className="w-3.5 h-3.5" /> Guided Tour
+            </button>
+          )}
+
+          {/* Toggle 2D Mini-Map */}
           <button
-            onClick={onToggleTour}
-            aria-pressed={isTourActive}
-            aria-label="Toggle guided historical tour"
+            onClick={() => setShowMap(!showMap)}
+            aria-expanded={showMap}
+            aria-label="Toggle 2D museum floorplan map"
             className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-              isTourActive
-                ? 'bg-amber-400 text-stone-950 font-bold'
-                : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
+              showMap ? 'bg-amber-400 text-stone-950 font-bold' : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
             }`}
           >
-            <GraduationCap className="w-3.5 h-3.5" /> Guided Tour
+            <Map className="w-3.5 h-3.5" /> 2D Map <span className="text-[10px] font-mono opacity-80">[M]</span>
           </button>
-        )}
+        </nav>
 
-        {/* Toggle 2D Mini-Map */}
-        <button
-          onClick={() => setShowMap(!showMap)}
-          aria-expanded={showMap}
-          aria-label="Toggle 2D museum floorplan map"
-          className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-            showMap ? 'bg-amber-400 text-stone-950 font-bold' : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
-          }`}
-        >
-          <Map className="w-3.5 h-3.5" /> 2D Map <span className="text-[10px] font-mono opacity-80">[M]</span>
-        </button>
-      </nav>
+        {/* Right Zone: Floating HUD Links & Compact Mobile Actions */}
+        <div className="pointer-events-auto flex items-center gap-2 shrink-0">
+          {onToggleTour && (
+            <button
+              onClick={onToggleTour}
+              aria-pressed={isTourActive}
+              aria-label="Start or stop guided tour"
+              className={`lg:hidden px-3 py-2 rounded-2xl text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-xl border shadow-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                isTourActive
+                  ? 'bg-amber-400 text-stone-950 border-amber-300'
+                  : 'bg-[#0c0e14]/90 text-amber-300 border-amber-500/30'
+              }`}
+            >
+              <GraduationCap className="w-4 h-4" />
+              <span className="hidden sm:inline">Tour</span>
+            </button>
+          )}
 
-      {/* Top Right Floating HUD Links & Compact Mobile Actions */}
-      <div className="select-none fixed top-5 right-5 z-40 flex items-center gap-2">
-        {onToggleTour && (
-          <button
-            onClick={onToggleTour}
-            aria-pressed={isTourActive}
-            aria-label="Start or stop guided tour"
-            className={`lg:hidden px-3 py-2.5 rounded-2xl text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-xl border shadow-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-              isTourActive
-                ? 'bg-amber-400 text-stone-950 border-amber-300'
-                : 'bg-[#0c0e14]/90 text-amber-300 border-amber-500/30'
-            }`}
+          <a
+            href="https://github.com/Arjundevjha/Cryptography"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View repository on GitHub"
+            className="px-3 py-2 rounded-2xl bg-[#0c0e14]/90 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-sans font-medium flex items-center gap-2 shadow-2xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           >
-            <GraduationCap className="w-4 h-4" />
-            <span className="hidden sm:inline">Tour</span>
-          </button>
-        )}
-
-        <a
-          href="https://github.com/Arjundevjha/Cryptography"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="View repository on GitHub"
-          className="px-3.5 py-2.5 rounded-2xl bg-[#0c0e14]/90 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-sans font-medium flex items-center gap-2 shadow-2xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-        >
-          <Github className="w-4 h-4 text-stone-300" />
-          <span className="hidden sm:inline">View Repository</span>
-        </a>
-      </div>
+            <Github className="w-4 h-4 text-stone-300" />
+            <span className="hidden xl:inline">View Repository</span>
+          </a>
+        </div>
+      </header>
 
       {/* 2D INTERACTIVE MUSEUM FLOORPLAN MAP DRAWER */}
       {showMap && (

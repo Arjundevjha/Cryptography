@@ -859,13 +859,17 @@ export default function ThreeMuseumScene({
       vitrineCrown.position.set(0, 3.44, 0);
       roomGroup.add(vitrineCrown);
 
-      // Calibrated Exhibit Pin-Spotlight with Realistic Decay & Soft Penumbra
-      const spot = new THREE.SpotLight(0xfff6e5, 6.2, 24, 0.48, 0.55, 1.4);
-      spot.position.set(0, 8.1, 1.4);
+      // Calibrated Exhibit Pin-Spotlight with Realistic Decay & Soft Penumbra + Warm Chamber Wash
+      const spot = new THREE.SpotLight(0xfff6e5, 8.5, 24, 0.54, 0.5, 1.3);
+      spot.position.set(0, 8.1, 1.8);
       spot.castShadow = false;
       spot.target = pedestal;
       roomGroup.add(spot);
       roomGroup.add(spot.target);
+
+      const chamberWash = new THREE.PointLight(0xffedd5, 2.4, 15, 1.4);
+      chamberWash.position.set(0, 6.2, 1.5);
+      roomGroup.add(chamberWash);
 
       // Elevated Rotating Physical Cryptographic Artifact
       const artifactGroup = new THREE.Group();
@@ -972,7 +976,8 @@ export default function ThreeMuseumScene({
     let lastTime = performance.now();
 
     const animate = (time: number) => {
-      const delta = Math.min((time - lastTime) / 1000, 0.1);
+      const rawDelta = Math.max((time - lastTime) / 1000, 0.001);
+      const delta = Math.min(rawDelta, 0.1);
       lastTime = time;
 
       // --- A. WASD & ARROW KEYS FIRST-PERSON EYE-LEVEL WALKING CONTROL ---
@@ -1083,9 +1088,10 @@ export default function ThreeMuseumScene({
         glyph.position.y = (glyph.userData.baseY || 4.3) + Math.sin(time * 0.003 + idx * 1.2) * 0.15;
       });
 
-      // Smooth camera lerp during button room selection jumps
+      // Smooth frame-rate-independent camera lerp during button room selection jumps
       if (isAnimatingRef.current) {
-        camera.position.lerp(targetCamPos.current, Math.min(delta * 7.0, 0.22));
+        const lerpAlpha = 1 - Math.exp(-8.5 * Math.min(rawDelta, 0.35));
+        camera.position.lerp(targetCamPos.current, lerpAlpha);
         const lookDir = targetLookAt.current.clone().sub(camera.position).normalize();
         if (lookDir.lengthSq() > 0.001) {
           controls.target.copy(camera.position).addScaledVector(lookDir, 0.2);
@@ -1093,6 +1099,7 @@ export default function ThreeMuseumScene({
         }
 
         if (camera.position.distanceTo(targetCamPos.current) < 0.05) {
+          camera.position.copy(targetCamPos.current);
           isAnimatingRef.current = false;
         }
       }
@@ -1187,8 +1194,8 @@ export default function ThreeMuseumScene({
           targetLookAt.current.set(...exhibit.macroTarget);
           isAnimatingRef.current = true;
         } else {
-          targetCamPos.current.set(exhibit.cameraPosition[0], 2.2, exhibit.cameraPosition[2]);
-          targetLookAt.current.set(exhibit.cameraTarget[0], 1.6, exhibit.cameraTarget[2]);
+          targetCamPos.current.set(exhibit.cameraPosition[0], 2.25, exhibit.cameraPosition[2]);
+          targetLookAt.current.set(exhibit.cameraTarget[0], 1.88, exhibit.cameraTarget[2]);
         }
       }
     }
