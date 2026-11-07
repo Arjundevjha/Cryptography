@@ -5,8 +5,8 @@ import { StatueCuratorialDrawer } from '../../src/components/museum/workbench/St
 import { MuseumHUD } from '../../src/components/museum/hud/MuseumHUD';
 
 describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
-  it('defines valid data and citations for all three founding pioneers', () => {
-    expect(MUSEUM_STATUES).toHaveLength(3);
+  it('defines valid data and citations for all founding pioneers', () => {
+    expect(MUSEUM_STATUES).toHaveLength(4);
 
     const alkindi = MUSEUM_STATUES.find((s) => s.id === 'statue-alkindi');
     expect(alkindi).toBeDefined();
@@ -14,6 +14,13 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(alkindi?.description).toContain('Manuscript on Deciphering Cryptographic Messages');
     expect(alkindi?.description).toContain('frequency analysis');
     expect(alkindi?.description).toContain('monoalphabetic substitution ciphers could be systematically broken');
+
+    const turing = MUSEUM_STATUES.find((s) => s.id === 'statue-turing');
+    expect(turing).toBeDefined();
+    expect(turing?.description).toContain('titan of electromechanical cryptanalysis');
+    expect(turing?.description).toContain('Bletchley Park');
+    expect(turing?.description).toContain('Bombe machine');
+    expect(turing?.description).toContain('Enigma');
 
     const shannon = MUSEUM_STATUES.find((s) => s.id === 'statue-shannon');
     expect(shannon).toBeDefined();

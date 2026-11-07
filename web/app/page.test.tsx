@@ -6,7 +6,7 @@ import { ApiStatusDot } from '@/src/components/museum/hud/ApiStatusDot';
 describe('Cryptography Museum Page Tests', () => {
   it('renders loading state for 3D Digital Museum canvas', () => {
     render(<Home />);
-    expect(screen.getByText(/INITIALIZING 3D DIGITAL MUSEUM/i)).toBeInTheDocument();
+    expect(screen.getByText(/CRYPTOGRAPHY MUSEUM/i)).toBeInTheDocument();
   });
 
   it('renders ApiStatusDot with correct data-testid', async () => {
