@@ -230,10 +230,21 @@
       "norm_label": "caesar.py"
     },
     {
+      "label": "_validate_inputs()",
+      "file_type": "code",
+      "source_file": "methods/classical/caesar.py",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "methods_classical_caesar_validate_inputs",
+      "community": 9,
+      "community_name": "Caesar Cipher Core & Unit Tests",
+      "norm_label": "_validate_inputs()"
+    },
+    {
       "label": "pick_keys()",
       "file_type": "code",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L6",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "methods_classical_caesar_pick_keys",
       "community": 9,
@@ -244,7 +255,7 @@
       "label": "encrypt()",
       "file_type": "code",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L23",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "methods_classical_caesar_encrypt",
       "community": 9,
@@ -255,7 +266,7 @@
       "label": "decrypt()",
       "file_type": "code",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L31",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "methods_classical_caesar_decrypt",
       "community": 9,
@@ -266,7 +277,7 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L39",
+      "source_location": "L52",
       "_origin": "ast",
       "id": "methods_classical_caesar_main",
       "community": 9,
@@ -285,12 +296,23 @@
       "norm_label": "caesar cipher implementation."
     },
     {
+      "label": "Validate input types and enforce maximum length to mitigate Denial of Service (D",
+      "file_type": "rationale",
+      "source_file": "methods/classical/caesar.py",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "methods_classical_caesar_rationale_9",
+      "community": 9,
+      "community_name": "Caesar Cipher Core & Unit Tests",
+      "norm_label": "validate input types and enforce maximum length to mitigate denial of service (d"
+    },
+    {
       "label": "Generate a random shift key for Caesar cipher (1-25).",
       "file_type": "rationale",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L7",
+      "source_location": "L18",
       "_origin": "ast",
-      "id": "methods_classical_caesar_rationale_7",
+      "id": "methods_classical_caesar_rationale_18",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "generate a random shift key for caesar cipher (1-25)."
@@ -299,9 +321,9 @@
       "label": "Encrypt plaintext using Caesar cipher.      Each letter is shifted forward by th",
       "file_type": "rationale",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L24",
+      "source_location": "L35",
       "_origin": "ast",
-      "id": "methods_classical_caesar_rationale_24",
+      "id": "methods_classical_caesar_rationale_35",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "encrypt plaintext using caesar cipher.      each letter is shifted forward by th"
@@ -310,9 +332,9 @@
       "label": "Decrypt ciphertext using Caesar cipher.      Each letter is shifted backward by",
       "file_type": "rationale",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L32",
+      "source_location": "L44",
       "_origin": "ast",
-      "id": "methods_classical_caesar_rationale_32",
+      "id": "methods_classical_caesar_rationale_44",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "decrypt ciphertext using caesar cipher.      each letter is shifted backward by"
@@ -321,9 +343,9 @@
       "label": "Run an interactive test of the Caesar cipher.",
       "file_type": "rationale",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L40",
+      "source_location": "L53",
       "_origin": "ast",
-      "id": "methods_classical_caesar_rationale_40",
+      "id": "methods_classical_caesar_rationale_53",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "run an interactive test of the caesar cipher."
@@ -1058,7 +1080,7 @@
       "label": "test_pick_keys()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L4",
+      "source_location": "L5",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_pick_keys",
       "community": 9,
@@ -1069,7 +1091,7 @@
       "label": "test_encrypt_basic()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L10",
+      "source_location": "L11",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_encrypt_basic",
       "community": 9,
@@ -1080,7 +1102,7 @@
       "label": "test_decrypt_basic()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L16",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_decrypt_basic",
       "community": 9,
@@ -1091,7 +1113,7 @@
       "label": "test_encrypt_no_shift()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_encrypt_no_shift",
       "community": 9,
@@ -1102,7 +1124,7 @@
       "label": "test_decrypt_no_shift()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L26",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_decrypt_no_shift",
       "community": 9,
@@ -1113,7 +1135,7 @@
       "label": "test_case_preservation()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L30",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_case_preservation",
       "community": 9,
@@ -1124,7 +1146,7 @@
       "label": "test_negative_shift()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L35",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_negative_shift",
       "community": 9,
@@ -1135,7 +1157,7 @@
       "label": "test_decrypt_negative_shift_boundary()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L42",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_decrypt_negative_shift_boundary",
       "community": 9,
@@ -1146,7 +1168,7 @@
       "label": "test_large_shift()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L61",
+      "source_location": "L62",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_large_shift",
       "community": 9,
@@ -1157,7 +1179,7 @@
       "label": "test_empty_string()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L68",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_empty_string",
       "community": 9,
@@ -1168,7 +1190,7 @@
       "label": "test_non_alphabetic()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L73",
+      "source_location": "L74",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_non_alphabetic",
       "community": 9,
@@ -1179,7 +1201,7 @@
       "label": "test_full_alphabet()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L80",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_full_alphabet",
       "community": 9,
@@ -1190,7 +1212,7 @@
       "label": "test_all_shifts()",
       "file_type": "code",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L93",
+      "source_location": "L94",
       "_origin": "ast",
       "id": "methods_classical_tests_test_caesar_test_all_shifts",
       "community": 9,
@@ -1198,12 +1220,34 @@
       "norm_label": "test_all_shifts()"
     },
     {
+      "label": "test_input_validation_types()",
+      "file_type": "code",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L102",
+      "_origin": "ast",
+      "id": "methods_classical_tests_test_caesar_test_input_validation_types",
+      "community": 9,
+      "community_name": "Caesar Cipher Core & Unit Tests",
+      "norm_label": "test_input_validation_types()"
+    },
+    {
+      "label": "test_input_validation_max_length()",
+      "file_type": "code",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L116",
+      "_origin": "ast",
+      "id": "methods_classical_tests_test_caesar_test_input_validation_max_length",
+      "community": 9,
+      "community_name": "Caesar Cipher Core & Unit Tests",
+      "norm_label": "test_input_validation_max_length()"
+    },
+    {
       "label": "Test that pick_keys generates a valid shift key between 1 and 25.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L5",
+      "source_location": "L6",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_5",
+      "id": "methods_classical_tests_test_caesar_rationale_6",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test that pick_keys generates a valid shift key between 1 and 25."
@@ -1212,9 +1256,9 @@
       "label": "Test standard encryption cases.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L11",
+      "source_location": "L12",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_11",
+      "id": "methods_classical_tests_test_caesar_rationale_12",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test standard encryption cases."
@@ -1223,9 +1267,9 @@
       "label": "Test standard decryption cases.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L17",
+      "source_location": "L18",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_17",
+      "id": "methods_classical_tests_test_caesar_rationale_18",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test standard decryption cases."
@@ -1234,9 +1278,9 @@
       "label": "Test encryption with a shift of 0.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L23",
+      "source_location": "L24",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_23",
+      "id": "methods_classical_tests_test_caesar_rationale_24",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test encryption with a shift of 0."
@@ -1245,9 +1289,9 @@
       "label": "Test decryption with a shift of 0.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L27",
+      "source_location": "L28",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_27",
+      "id": "methods_classical_tests_test_caesar_rationale_28",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test decryption with a shift of 0."
@@ -1256,9 +1300,9 @@
       "label": "Test that uppercase and lowercase letters are preserved.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L31",
+      "source_location": "L32",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_31",
+      "id": "methods_classical_tests_test_caesar_rationale_32",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test that uppercase and lowercase letters are preserved."
@@ -1267,9 +1311,9 @@
       "label": "Test handling of negative shift values.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L36",
+      "source_location": "L37",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_36",
+      "id": "methods_classical_tests_test_caesar_rationale_37",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test handling of negative shift values."
@@ -1278,9 +1322,9 @@
       "label": "Test boundary cases for caesar decrypt with negative and multiple-of-26 shifts.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_43",
+      "id": "methods_classical_tests_test_caesar_rationale_44",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test boundary cases for caesar decrypt with negative and multiple-of-26 shifts."
@@ -1289,9 +1333,9 @@
       "label": "Test handling of shifts larger than 26.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L62",
+      "source_location": "L63",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_62",
+      "id": "methods_classical_tests_test_caesar_rationale_63",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test handling of shifts larger than 26."
@@ -1300,9 +1344,9 @@
       "label": "Test encryption and decryption of an empty string.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L69",
+      "source_location": "L70",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_69",
+      "id": "methods_classical_tests_test_caesar_rationale_70",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test encryption and decryption of an empty string."
@@ -1311,9 +1355,9 @@
       "label": "Test that non-alphabetic characters are unmodified.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L74",
+      "source_location": "L75",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_74",
+      "id": "methods_classical_tests_test_caesar_rationale_75",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test that non-alphabetic characters are unmodified."
@@ -1322,9 +1366,9 @@
       "label": "Test that every character in the alphabet shifts correctly.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L81",
+      "source_location": "L82",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_81",
+      "id": "methods_classical_tests_test_caesar_rationale_82",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test that every character in the alphabet shifts correctly."
@@ -1333,12 +1377,34 @@
       "label": "Test round-trip encryption/decryption for all valid shifts.",
       "file_type": "rationale",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L94",
+      "source_location": "L95",
       "_origin": "ast",
-      "id": "methods_classical_tests_test_caesar_rationale_94",
+      "id": "methods_classical_tests_test_caesar_rationale_95",
       "community": 9,
       "community_name": "Caesar Cipher Core & Unit Tests",
       "norm_label": "test round-trip encryption/decryption for all valid shifts."
+    },
+    {
+      "label": "Test that invalid types for text or shift raise TypeError.",
+      "file_type": "rationale",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L103",
+      "_origin": "ast",
+      "id": "methods_classical_tests_test_caesar_rationale_103",
+      "community": 9,
+      "community_name": "Caesar Cipher Core & Unit Tests",
+      "norm_label": "test that invalid types for text or shift raise typeerror."
+    },
+    {
+      "label": "Test that inputs exceeding MAX_TEXT_LENGTH raise ValueError to mitigate DoS.",
+      "file_type": "rationale",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L117",
+      "_origin": "ast",
+      "id": "methods_classical_tests_test_caesar_rationale_117",
+      "community": 9,
+      "community_name": "Caesar Cipher Core & Unit Tests",
+      "norm_label": "test that inputs exceeding max_text_length raise valueerror to mitigate dos."
     },
     {
       "label": "test_playfair.py",
@@ -1347,8 +1413,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test_playfair.py"
     },
     {
@@ -1358,8 +1424,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_test_create_grid_basic",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test_create_grid_basic()"
     },
     {
@@ -1545,8 +1611,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_test_decrypt_odd_length_ciphertext",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test_decrypt_odd_length_ciphertext()"
     },
     {
@@ -1644,8 +1710,8 @@
       "source_location": "L227",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_test_decrypt_odd_length_various",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test_decrypt_odd_length_various()"
     },
     {
@@ -1666,8 +1732,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_rationale_14",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test grid generation with a simple key."
     },
     {
@@ -1853,8 +1919,8 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_rationale_160",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test decrypt behavior with an odd-length ciphertext input."
     },
     {
@@ -1952,8 +2018,8 @@
       "source_location": "L228",
       "_origin": "ast",
       "id": "methods_classical_tests_test_playfair_rationale_228",
-      "community": 1,
-      "community_name": "Playfair Cipher Implementation & Benchmarks",
+      "community": 68,
+      "community_name": "test_playfair.py",
       "norm_label": "test decrypt handling of various odd-length inputs."
     },
     {
@@ -2667,8 +2733,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "keyboard.py"
     },
     {
@@ -2678,8 +2744,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "keyboard"
     },
     {
@@ -2689,8 +2755,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard_init",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": ".__init__()"
     },
     {
@@ -2700,8 +2766,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard_forward",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": ".forward()"
     },
     {
@@ -2711,8 +2777,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_keyboard_backward",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": ".backward()"
     },
     {
@@ -2722,8 +2788,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_1",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "keyboard component for enigma machine."
     },
     {
@@ -2733,8 +2799,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_4",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "keyboard simulator for enigma machine."
     },
     {
@@ -2744,8 +2810,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_7",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "initialize the keyboard layout."
     },
     {
@@ -2755,8 +2821,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_12",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "map a letter to its alphabetical signal index (0-25)."
     },
     {
@@ -2766,8 +2832,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "methods_historical_enigma_keyboard_rationale_16",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "map an alphabetical signal index (0-25) back to a letter."
     },
     {
@@ -3382,8 +3448,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test_keyboard.py"
     },
     {
@@ -3393,8 +3459,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_initialization",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test_keyboard_initialization()"
     },
     {
@@ -3404,8 +3470,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_forward",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test_keyboard_forward()"
     },
     {
@@ -3415,8 +3481,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_backward",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test_keyboard_backward()"
     },
     {
@@ -3426,8 +3492,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_all_letters_and_signals",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test_keyboard_all_letters_and_signals()"
     },
     {
@@ -3437,8 +3503,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_forward_not_found",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test_keyboard_forward_not_found()"
     },
     {
@@ -3448,8 +3514,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_test_keyboard_backward_index_error",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test_keyboard_backward_index_error()"
     },
     {
@@ -3459,8 +3525,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_5",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test the standard initialization of the keyboard."
     },
     {
@@ -3470,8 +3536,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_10",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test the forward logic: letter to signal."
     },
     {
@@ -3481,8 +3547,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_17",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test the backward logic: signal to letter."
     },
     {
@@ -3492,8 +3558,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_24",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test all valid letters and signals."
     },
     {
@@ -3503,8 +3569,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_31",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test forward method with characters not in the alphabet."
     },
     {
@@ -3514,8 +3580,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "methods_historical_enigma_tests_test_keyboard_rationale_39",
-      "community": 39,
-      "community_name": "No-Install E2E Testing Script",
+      "community": 20,
+      "community_name": "Enigma Cipher Machine Implementation",
       "norm_label": "test backward method with invalid indices."
     },
     {
@@ -3965,8 +4031,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_init",
-      "community": 40,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": ".__init__()"
     },
     {
@@ -3976,8 +4042,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_set_positions",
-      "community": 40,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": ".set_positions()"
     },
     {
@@ -4061,7 +4127,7 @@
       "label": ".encrypt_text()",
       "file_type": "code",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L169",
+      "source_location": "L222",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_encrypt_text",
       "community": 34,
@@ -4072,7 +4138,7 @@
       "label": ".decrypt_text()",
       "file_type": "code",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L173",
+      "source_location": "L226",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_lorenz_decrypt_text",
       "community": 34,
@@ -4108,8 +4174,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_19",
-      "community": 40,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": "initialize the 12-wheel lorenz cipher machine.          args:             chi_pi"
     },
     {
@@ -4119,8 +4185,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "methods_historical_lorenz_lorenz_rationale_52",
-      "community": 40,
-      "community_name": ".__init__",
+      "community": 34,
+      "community_name": "Lorenz Text Processing Procedures",
       "norm_label": "set positions for all 12 wheels.          args:             positions: position"
     },
     {
@@ -4204,9 +4270,9 @@
       "label": "Alias for process_message.",
       "file_type": "rationale",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L170",
+      "source_location": "L223",
       "_origin": "ast",
-      "id": "methods_historical_lorenz_lorenz_rationale_170",
+      "id": "methods_historical_lorenz_lorenz_rationale_223",
       "community": 34,
       "community_name": "Lorenz Text Processing Procedures",
       "norm_label": "alias for process_message."
@@ -4215,9 +4281,9 @@
       "label": "Alias for process_message.",
       "file_type": "rationale",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L174",
+      "source_location": "L227",
       "_origin": "ast",
-      "id": "methods_historical_lorenz_lorenz_rationale_174",
+      "id": "methods_historical_lorenz_lorenz_rationale_227",
       "community": 34,
       "community_name": "Lorenz Text Processing Procedures",
       "norm_label": "alias for process_message."
@@ -6121,8 +6187,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern/__init__.py"
     },
     {
@@ -6132,8 +6198,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_modern_init_rationale_1",
-      "community": 24,
-      "community_name": "Manual AES CTR Cipher Core",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "modern cryptography methods package."
     },
     {
@@ -6627,8 +6693,8 @@
       "source_location": "L1089",
       "_origin": "ast",
       "id": "methods_modern_hash_functions_main",
-      "community": 7,
-      "community_name": "Manual Hash Function Implementations",
+      "community": 75,
+      "community_name": "stepping.py",
       "norm_label": "main()"
     },
     {
@@ -6847,8 +6913,8 @@
       "source_location": "L1090",
       "_origin": "ast",
       "id": "methods_modern_hash_functions_rationale_1090",
-      "community": 7,
-      "community_name": "Manual Hash Function Implementations",
+      "community": 75,
+      "community_name": "stepping.py",
       "norm_label": "run the interactive hash command line interface."
     },
     {
@@ -7518,8 +7584,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "methods_modern_symmetric_inv_sub_bytes",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "inv_sub_bytes()"
     },
     {
@@ -7606,8 +7672,8 @@
       "source_location": "L268",
       "_origin": "ast",
       "id": "methods_modern_symmetric_decrypt_block",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 81,
+      "community_name": "xtime",
       "norm_label": "decrypt_block()"
     },
     {
@@ -7617,8 +7683,8 @@
       "source_location": "L366",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_pad",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "pkcs7_pad()"
     },
     {
@@ -7628,8 +7694,8 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "methods_modern_symmetric_pkcs7_unpad",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "pkcs7_unpad()"
     },
     {
@@ -7771,8 +7837,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_107",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "substitute state bytes using the inverse s-box."
     },
     {
@@ -7859,8 +7925,8 @@
       "source_location": "L269",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_269",
-      "community": 16,
-      "community_name": "Vigenere Cipher Core & Helpers",
+      "community": 81,
+      "community_name": "xtime",
       "norm_label": "decrypt a single 16-byte block using aes.      optimization: unrolls block state"
     },
     {
@@ -7870,8 +7936,8 @@
       "source_location": "L367",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_367",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "apply pkcs7 padding to raw bytes."
     },
     {
@@ -7881,8 +7947,8 @@
       "source_location": "L372",
       "_origin": "ast",
       "id": "methods_modern_symmetric_rationale_372",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "remove pkcs7 padding from raw bytes in constant time to prevent timing oracle at"
     },
     {
@@ -8442,8 +8508,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "methods_modern_tests_test_hash_functions_test_sha256_kats",
-      "community": 75,
-      "community_name": "stepping.py",
+      "community": 76,
+      "community_name": "parse_aes_key",
       "norm_label": "test_sha256_kats()"
     },
     {
@@ -8464,8 +8530,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "methods_modern_tests_test_hash_functions_test_sha512_block_boundaries_and_unicode",
-      "community": 75,
-      "community_name": "stepping.py",
+      "community": 87,
+      "community_name": "sub_word",
       "norm_label": "test_sha512_block_boundaries_and_unicode()"
     },
     {
@@ -8563,8 +8629,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "methods_modern_tests_test_hash_functions_rationale_27",
-      "community": 75,
-      "community_name": "stepping.py",
+      "community": 76,
+      "community_name": "parse_aes_key",
       "norm_label": "test sha-256 implementation against known-answer vectors."
     },
     {
@@ -8585,8 +8651,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "methods_modern_tests_test_hash_functions_rationale_65",
-      "community": 75,
-      "community_name": "stepping.py",
+      "community": 87,
+      "community_name": "sub_word",
       "norm_label": "test sha-512 against standard hashlib for various block sizes, boundaries, and u"
     },
     {
@@ -9047,8 +9113,8 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "methods_modern_tests_test_keypair_test_generate_keypair_output_primality",
-      "community": 74,
-      "community_name": "._apply_positions",
+      "community": 18,
+      "community_name": "Symmetric Encryption Utilities",
       "norm_label": "test_generate_keypair_output_primality()"
     },
     {
@@ -9300,8 +9366,8 @@
       "source_location": "L280",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_test_parse_pem_single_parameter_or_non_integer",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "test_parse_pem_single_parameter_or_non_integer()"
     },
     {
@@ -9377,8 +9443,8 @@
       "source_location": "L281",
       "_origin": "ast",
       "id": "methods_modern_tests_test_rsa_rationale_281",
-      "community": 31,
-      "community_name": "VercelPathMiddleware",
+      "community": 0,
+      "community_name": "Cryptographic Helpers & Base64 Utilities",
       "norm_label": "test that _parse_pem raises valueerror for single parameter or non-integer paylo"
     },
     {
@@ -9542,8 +9608,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_symmetric.py"
     },
     {
@@ -9553,8 +9619,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_padding",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_padding()"
     },
     {
@@ -9564,8 +9630,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_bytes",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_unpad_invalid_bytes()"
     },
     {
@@ -9575,8 +9641,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_invalid_value",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_unpad_invalid_value()"
     },
     {
@@ -9586,8 +9652,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_pkcs7_unpad_empty_and_unaligned_data",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "test_pkcs7_unpad_empty_and_unaligned_data()"
     },
     {
@@ -9718,8 +9784,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_sub_bytes_inv_sub_bytes_roundtrip",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_sub_bytes_inv_sub_bytes_roundtrip()"
     },
     {
@@ -9850,8 +9916,8 @@
       "source_location": "L332",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_inv_sub_bytes()"
     },
     {
@@ -10158,8 +10224,8 @@
       "source_location": "L681",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_known_state",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_inv_sub_bytes_known_state()"
     },
     {
@@ -10169,8 +10235,8 @@
       "source_location": "L698",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_edge_cases",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_inv_sub_bytes_edge_cases()"
     },
     {
@@ -10180,8 +10246,8 @@
       "source_location": "L714",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_test_inv_sub_bytes_empty",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test_inv_sub_bytes_empty()"
     },
     {
@@ -10191,8 +10257,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_40",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 70,
+      "community_name": "keypair.py",
       "norm_label": "verify that empty bytes or unaligned block sizes raise expected valueerror."
     },
     {
@@ -10246,8 +10312,8 @@
       "source_location": "L166",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_166",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test that applying sub_bytes followed by inv_sub_bytes returns the original stat"
     },
     {
@@ -10367,8 +10433,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_333",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test inv_sub_bytes direct transformation and inverse relationship with sub_bytes"
     },
     {
@@ -10675,8 +10741,8 @@
       "source_location": "L682",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_682",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test inv_sub_bytes with fips 197 known state vector."
     },
     {
@@ -10686,8 +10752,8 @@
       "source_location": "L699",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_699",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test inv_sub_bytes on uniform state vectors and verify non-mutation."
     },
     {
@@ -10697,8 +10763,8 @@
       "source_location": "L715",
       "_origin": "ast",
       "id": "methods_tests_test_symmetric_rationale_715",
-      "community": 80,
-      "community_name": "inv_shift_rows",
+      "community": 39,
+      "community_name": "No-Install E2E Testing Script",
       "norm_label": "test inv_sub_bytes with an empty state list."
     },
     {
@@ -11582,8 +11648,8 @@
       "source_location": "L701",
       "_origin": "ast",
       "id": "web_api_main_aesencryptinput",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "aesencryptinput"
     },
     {
@@ -11593,8 +11659,8 @@
       "source_location": "L707",
       "_origin": "ast",
       "id": "web_api_main_aesdecryptinput",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "aesdecryptinput"
     },
     {
@@ -11615,8 +11681,8 @@
       "source_location": "L718",
       "_origin": "ast",
       "id": "web_api_main_rsaencryptinput",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 40,
+      "community_name": ".__init__",
       "norm_label": "rsaencryptinput"
     },
     {
@@ -11637,8 +11703,8 @@
       "source_location": "L726",
       "_origin": "ast",
       "id": "web_api_main_sha256input",
-      "community": 94,
-      "community_name": "Sha256Input",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "sha256input"
     },
     {
@@ -11648,8 +11714,8 @@
       "source_location": "L730",
       "_origin": "ast",
       "id": "web_api_main_decode_aes_key",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "_decode_aes_key()"
     },
     {
@@ -11659,8 +11725,8 @@
       "source_location": "L744",
       "_origin": "ast",
       "id": "web_api_main_parse_aes_key",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "parse_aes_key()"
     },
     {
@@ -11670,8 +11736,8 @@
       "source_location": "L754",
       "_origin": "ast",
       "id": "web_api_main_aes_encrypt",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "aes_encrypt()"
     },
     {
@@ -11681,8 +11747,8 @@
       "source_location": "L781",
       "_origin": "ast",
       "id": "web_api_main_aes_decrypt_endpoint",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "aes_decrypt_endpoint()"
     },
     {
@@ -11714,8 +11780,8 @@
       "source_location": "L855",
       "_origin": "ast",
       "id": "web_api_main_rsa_encrypt",
-      "community": 2,
-      "community_name": "FastAPI Backend Routes & Schema Models",
+      "community": 40,
+      "community_name": ".__init__",
       "norm_label": "rsa_encrypt()"
     },
     {
@@ -11736,8 +11802,8 @@
       "source_location": "L893",
       "_origin": "ast",
       "id": "web_api_main_sha256_endpoint",
-      "community": 94,
-      "community_name": "Sha256Input",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "sha256_endpoint()"
     },
     {
@@ -11868,8 +11934,8 @@
       "source_location": "L731",
       "_origin": "ast",
       "id": "web_api_main_rationale_731",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "helper to decode raw string or hex string key representation."
     },
     {
@@ -13144,8 +13210,8 @@
       "source_location": "L1317",
       "_origin": "ast",
       "id": "web_api_test_main_test_aes_decrypt_endpoint_direct_function_call",
-      "community": 42,
-      "community_name": "Test Suites Execution Script",
+      "community": 2,
+      "community_name": "FastAPI Backend Routes & Schema Models",
       "norm_label": "test_aes_decrypt_endpoint_direct_function_call()"
     },
     {
@@ -14024,8 +14090,8 @@
       "source_location": "L2221",
       "_origin": "ast",
       "id": "web_api_test_main_test_sha256_endpoint_direct",
-      "community": 94,
-      "community_name": "Sha256Input",
+      "community": 64,
+      "community_name": "Plugboard",
       "norm_label": "test_sha256_endpoint_direct()"
     },
     {
@@ -17721,7 +17787,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L31",
+      "source_location": "L43",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_caesar",
@@ -17732,7 +17798,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L23",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_caesar",
@@ -17743,7 +17809,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L39",
+      "source_location": "L52",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_caesar",
@@ -17754,11 +17820,22 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L6",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_caesar",
       "target": "methods_classical_caesar_pick_keys",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/caesar.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_caesar",
+      "target": "methods_classical_caesar_validate_inputs",
       "confidence_score": 1.0
     },
     {
@@ -17777,7 +17854,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar",
@@ -17801,7 +17878,42 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L42",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_caesar_decrypt",
+      "target": "methods_classical_caesar_validate_inputs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/caesar.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_caesar_encrypt",
+      "target": "methods_classical_caesar_validate_inputs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/caesar.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_caesar_rationale_9",
+      "target": "methods_classical_caesar_validate_inputs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/caesar.py",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_caesar_main",
@@ -17812,10 +17924,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L7",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_caesar_rationale_7",
+      "source": "methods_classical_caesar_rationale_18",
       "target": "methods_classical_caesar_pick_keys",
       "confidence_score": 1.0
     },
@@ -17824,7 +17936,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar",
@@ -17836,7 +17948,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_pick_keys",
@@ -17848,7 +17960,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L43",
+      "source_location": "L56",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_caesar_main",
@@ -17859,10 +17971,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L24",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_caesar_rationale_24",
+      "source": "methods_classical_caesar_rationale_35",
       "target": "methods_classical_caesar_encrypt",
       "confidence_score": 1.0
     },
@@ -17871,7 +17983,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar",
@@ -17883,7 +17995,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L97",
+      "source_location": "L98",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_all_shifts",
@@ -17895,7 +18007,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_case_preservation",
@@ -17907,7 +18019,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L53",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_decrypt_negative_shift_boundary",
@@ -17919,7 +18031,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L70",
+      "source_location": "L71",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_empty_string",
@@ -17931,7 +18043,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_encrypt_basic",
@@ -17943,7 +18055,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_encrypt_no_shift",
@@ -17955,7 +18067,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L86",
+      "source_location": "L87",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_full_alphabet",
@@ -17967,7 +18079,31 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L64",
+      "source_location": "L120",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_test_input_validation_max_length",
+      "target": "methods_classical_caesar_encrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L106",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_test_input_validation_types",
+      "target": "methods_classical_caesar_encrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L65",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_large_shift",
@@ -17979,7 +18115,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L38",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_negative_shift",
@@ -17991,7 +18127,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L76",
+      "source_location": "L77",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_non_alphabetic",
@@ -18015,7 +18151,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L44",
+      "source_location": "L57",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_caesar_main",
@@ -18026,10 +18162,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L32",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_caesar_rationale_32",
+      "source": "methods_classical_caesar_rationale_44",
       "target": "methods_classical_caesar_decrypt",
       "confidence_score": 1.0
     },
@@ -18038,7 +18174,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar",
@@ -18050,7 +18186,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L98",
+      "source_location": "L99",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_all_shifts",
@@ -18062,7 +18198,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_case_preservation",
@@ -18074,7 +18210,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_decrypt_basic",
@@ -18086,7 +18222,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_decrypt_negative_shift_boundary",
@@ -18098,7 +18234,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_decrypt_no_shift",
@@ -18110,7 +18246,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L71",
+      "source_location": "L72",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_empty_string",
@@ -18122,7 +18258,31 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L66",
+      "source_location": "L122",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_test_input_validation_max_length",
+      "target": "methods_classical_caesar_decrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L108",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_test_input_validation_types",
+      "target": "methods_classical_caesar_decrypt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L67",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_large_shift",
@@ -18134,7 +18294,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L40",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_negative_shift",
@@ -18146,7 +18306,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L78",
+      "source_location": "L79",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar_test_non_alphabetic",
@@ -18169,10 +18329,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/caesar.py",
-      "source_location": "L40",
+      "source_location": "L53",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_caesar_rationale_40",
+      "source": "methods_classical_caesar_rationale_53",
       "target": "methods_classical_caesar_main",
       "confidence_score": 1.0
     },
@@ -19798,7 +19958,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L93",
+      "source_location": "L94",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_classical_tests_test_caesar",
@@ -19807,199 +19967,221 @@
     },
     {
       "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L30",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_case_preservation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L16",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_decrypt_basic",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L42",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_decrypt_negative_shift_boundary",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L26",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_decrypt_no_shift",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L68",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_empty_string",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_encrypt_basic",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_encrypt_no_shift",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L80",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_full_alphabet",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L61",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_large_shift",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L35",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_negative_shift",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L73",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_non_alphabetic",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar",
-      "target": "methods_classical_tests_test_caesar_test_pick_keys",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L5",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_5",
-      "target": "methods_classical_tests_test_caesar_test_pick_keys",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L11",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_11",
-      "target": "methods_classical_tests_test_caesar_test_encrypt_basic",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L17",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_17",
-      "target": "methods_classical_tests_test_caesar_test_decrypt_basic",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L23",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_23",
-      "target": "methods_classical_tests_test_caesar_test_encrypt_no_shift",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L27",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_27",
-      "target": "methods_classical_tests_test_caesar_test_decrypt_no_shift",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
       "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_31",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_case_preservation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_decrypt_basic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L43",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_decrypt_negative_shift_boundary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_decrypt_no_shift",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_empty_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_encrypt_basic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_encrypt_no_shift",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_full_alphabet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L116",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_input_validation_max_length",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L102",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_input_validation_types",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L62",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_large_shift",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_negative_shift",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_non_alphabetic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar",
+      "target": "methods_classical_tests_test_caesar_test_pick_keys",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_6",
+      "target": "methods_classical_tests_test_caesar_test_pick_keys",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_12",
+      "target": "methods_classical_tests_test_caesar_test_encrypt_basic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_18",
+      "target": "methods_classical_tests_test_caesar_test_decrypt_basic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_24",
+      "target": "methods_classical_tests_test_caesar_test_encrypt_no_shift",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_28",
+      "target": "methods_classical_tests_test_caesar_test_decrypt_no_shift",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_32",
       "target": "methods_classical_tests_test_caesar_test_case_preservation",
       "confidence_score": 1.0
     },
@@ -20007,10 +20189,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_36",
+      "source": "methods_classical_tests_test_caesar_rationale_37",
       "target": "methods_classical_tests_test_caesar_test_negative_shift",
       "confidence_score": 1.0
     },
@@ -20018,10 +20200,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_43",
+      "source": "methods_classical_tests_test_caesar_rationale_44",
       "target": "methods_classical_tests_test_caesar_test_decrypt_negative_shift_boundary",
       "confidence_score": 1.0
     },
@@ -20029,10 +20211,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L62",
+      "source_location": "L63",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_62",
+      "source": "methods_classical_tests_test_caesar_rationale_63",
       "target": "methods_classical_tests_test_caesar_test_large_shift",
       "confidence_score": 1.0
     },
@@ -20040,10 +20222,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L69",
+      "source_location": "L70",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_69",
+      "source": "methods_classical_tests_test_caesar_rationale_70",
       "target": "methods_classical_tests_test_caesar_test_empty_string",
       "confidence_score": 1.0
     },
@@ -20051,10 +20233,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L74",
+      "source_location": "L75",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_74",
+      "source": "methods_classical_tests_test_caesar_rationale_75",
       "target": "methods_classical_tests_test_caesar_test_non_alphabetic",
       "confidence_score": 1.0
     },
@@ -20062,10 +20244,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L81",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_81",
+      "source": "methods_classical_tests_test_caesar_rationale_82",
       "target": "methods_classical_tests_test_caesar_test_full_alphabet",
       "confidence_score": 1.0
     },
@@ -20073,11 +20255,33 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/classical/tests/test_caesar.py",
-      "source_location": "L94",
+      "source_location": "L95",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_classical_tests_test_caesar_rationale_94",
+      "source": "methods_classical_tests_test_caesar_rationale_95",
       "target": "methods_classical_tests_test_caesar_test_all_shifts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L103",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_103",
+      "target": "methods_classical_tests_test_caesar_test_input_validation_types",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "methods/classical/tests/test_caesar.py",
+      "source_location": "L117",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "methods_classical_tests_test_caesar_rationale_117",
+      "target": "methods_classical_tests_test_caesar_test_input_validation_max_length",
       "confidence_score": 1.0
     },
     {
@@ -25834,7 +26038,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L173",
+      "source_location": "L226",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_lorenz_lorenz_lorenz",
@@ -25867,7 +26071,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L169",
+      "source_location": "L222",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_lorenz_lorenz_lorenz",
@@ -26631,7 +26835,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L175",
+      "source_location": "L228",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_lorenz_lorenz_lorenz_decrypt_text",
@@ -26643,7 +26847,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L171",
+      "source_location": "L224",
       "weight": 1.0,
       "_origin": "ast",
       "source": "methods_historical_lorenz_lorenz_lorenz_encrypt_text",
@@ -26665,10 +26869,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L170",
+      "source_location": "L223",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_lorenz_lorenz_rationale_170",
+      "source": "methods_historical_lorenz_lorenz_rationale_223",
       "target": "methods_historical_lorenz_lorenz_lorenz_encrypt_text",
       "confidence_score": 1.0
     },
@@ -26676,10 +26880,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "methods/historical/lorenz/lorenz.py",
-      "source_location": "L174",
+      "source_location": "L227",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "methods_historical_lorenz_lorenz_rationale_174",
+      "source": "methods_historical_lorenz_lorenz_rationale_227",
       "target": "methods_historical_lorenz_lorenz_lorenz_decrypt_text",
       "confidence_score": 1.0
     },
@@ -45894,7 +46098,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L108",
+      "source_location": "L112",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas_museumcanvas",
@@ -45906,7 +46110,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L110",
+      "source_location": "L114",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas_museumcanvas",
@@ -45918,7 +46122,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/museum/MuseumCanvas.tsx",
-      "source_location": "L109",
+      "source_location": "L113",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_src_components_museum_museumcanvas_museumcanvas",
@@ -47796,5 +48000,5 @@
       "source_file": "STYLE_GUIDE.md"
     }
   ],
-  "built_at_commit": "767ac1680e2b088e4b1c9a9cb2057acfb81aebd4"
+  "built_at_commit": "a2337de95af636267c409cafcb99f7de17012d88"
 }

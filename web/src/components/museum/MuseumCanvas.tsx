@@ -105,6 +105,10 @@ export function MuseumCanvas() {
     setIsClient(true);
   }, []);
 
+  useEffect(() => {
+    setIsCuratorialCollapsed(false);
+  }, [currentView]);
+
   const activeExhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
   const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
@@ -336,7 +340,7 @@ export function MuseumCanvas() {
             <button
               onClick={() => setIsCuratorialCollapsed(false)}
               aria-expanded="false"
-              aria-label="Expand curatorial plaque"
+              aria-label="Expand curatorial plaque / show curatorial exhibition panel"
               className="select-none px-3.5 py-2.5 rounded-2xl bg-[#161412]/94 hover:bg-[#221e1a] backdrop-blur-2xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2 text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             >
               <PanelLeftOpen className="w-4 h-4 text-amber-400" />
@@ -359,7 +363,7 @@ export function MuseumCanvas() {
                 <button
                   onClick={() => setIsCuratorialCollapsed(true)}
                   aria-expanded="true"
-                  aria-label="Collapse curatorial plaque"
+                  aria-label="Collapse curatorial plaque / close curatorial exhibition panel"
                   title="Collapse plaque [C]"
                   className="select-none p-1.5 rounded-lg bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 hover:text-stone-100 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors shrink-0"
                 >

@@ -505,4 +505,70 @@ describe('Accessibility (A11y) Unit Tests', () => {
     fireEvent.keyDown(window, { key: 'c', code: 'KeyC' });
     expect(screen.getByRole('button', { name: /collapse curatorial plaque/i })).toBeInTheDocument();
   });
+
+  it('renders Curatorial Exhibition Panel with accessible close button and can toggle collapsed notes view', () => {
+    render(<MuseumCanvas />);
+
+    // Open map and navigate to Caesar exhibit
+    const toggleMapButton = screen.getByRole('button', { name: /toggle 2d museum floorplan map/i });
+    fireEvent.click(toggleMapButton);
+
+    const caesarMarker = screen.getByRole('button', { name: /navigate to exhibit caesar cipher/i });
+    fireEvent.click(caesarMarker);
+
+    // Curatorial overview should be visible with close button
+    expect(screen.getByText(/curatorial overview/i)).toBeInTheDocument();
+    const closeBtn = screen.getByRole('button', { name: /close curatorial exhibition panel/i });
+    expect(closeBtn).toBeInTheDocument();
+    expect(closeBtn.className).toContain('focus-visible:ring-2');
+
+    // Click close button
+    fireEvent.click(closeBtn);
+
+    // Curatorial overview content should now be hidden
+    expect(screen.queryByText(/curatorial overview/i)).not.toBeInTheDocument();
+
+    // Collapsed toggle button should be visible
+    const showBtn = screen.getByRole('button', { name: /show curatorial exhibition panel/i });
+    expect(showBtn).toBeInTheDocument();
+    expect(showBtn.className).toContain('focus-visible:ring-2');
+
+    // Click show button to restore panel
+    fireEvent.click(showBtn);
+    expect(screen.getByText(/curatorial overview/i)).toBeInTheDocument();
+  });
+
+  it('triggers cipher execution via Ctrl+Enter or Cmd+Enter keyboard shortcut in WorkbenchPanel textarea', async () => {
+    render(<WorkbenchPanel exhibit={sampleExhibit} />);
+
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ciphertext: 'KEYBOARD_SHORTCUT_SUCCESS' }),
+      })
+    ) as jest.Mock;
+
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    const executeBtn = screen.getByRole('button', { name: /execute encrypt/i });
+
+    // Verify button has shortcut indicator badge and accessible title/aria-label
+    expect(screen.getByText('[Ctrl+↵]')).toBeInTheDocument();
+    expect(executeBtn).toHaveAttribute('title', 'Execute encrypt (Ctrl+Enter)');
+    expect(executeBtn).toHaveAttribute('aria-label', expect.stringContaining('Ctrl+Enter or Cmd+Enter'));
+
+    // Trigger Ctrl+Enter on textarea
+    await React.act(async () => {
+      fireEvent.keyDown(inputArea, { key: 'Enter', ctrlKey: true });
+    });
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText('KEYBOARD_SHORTCUT_SUCCESS')).toBeInTheDocument();
+
+    // Trigger Meta+Enter (Cmd+Enter on macOS) on textarea
+    await React.act(async () => {
+      fireEvent.keyDown(inputArea, { key: 'Enter', metaKey: true });
+    });
+
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
 });

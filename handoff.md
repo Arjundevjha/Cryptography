@@ -41,12 +41,19 @@ Completed a comprehensive 3D architectural, cryptographic artifact, educational 
    - Added **10-Stop Chronological Guided Historical Tour** (*500 BC Sparta → 2001 AES*) accessible from `MuseumHUD.tsx` and the Grand Rotunda strip.
    - Unified top HUD into a non-overlapping 3-zone flex `<header>` (`justify-between`).
 
+5. **Unified Batch PR Integration & Backlog Zero**:
+   - **PR #429 (Bolt: Lorenz Inlined Stepping)**: Inlined wheel position tracking and Lorenz stepping rules into scalar registers in `methods/historical/lorenz/lorenz.py` with single-pass wheel state synchronization.
+   - **PR #427 (Sentinel: Caesar DoS & Type Validation)**: Added `_validate_inputs` to `methods/classical/caesar.py` enforcing `MAX_TEXT_LENGTH = 100000` and strict type checks for plaintext/ciphertext and shift values, with comprehensive pytest coverage in `methods/classical/tests/test_caesar.py`.
+   - **PR #423 (Palette: Workbench Ctrl+Enter Shortcut)**: Added `onKeyDown` shortcut (Ctrl+Enter / Cmd+Enter) to `WorkbenchPanel.tsx` textarea, with accessible button titles/badges and unit test verification in `a11y.test.tsx`.
+   - **PR #422 (Palette: Accessible Curatorial Panel Toggle)**: Unified accessible show/collapse aria-labels and toggle behavior in `MuseumCanvas.tsx` with full unit test coverage in `a11y.test.tsx`.
+   - **Rejections & Cleanup**: Rejected invalid/duplicate PRs #424, #425, #426, #428 (removing non-standard `.jules/` external journal artifacts), swept all remote branches, and achieved 0 open PRs.
+
 ---
 
 ## Active State of Codebase
-- **Branch**: `main` (pushed to `origin/main` at commit `271ef5e1`, working tree 100% clean).
-- **Python Test Suite**: **803 / 803** tests passing (`pytest -q`, 100%).
-- **Frontend Test Suite**: **66 / 66** tests passing across 5 suites (`cd web && npm test`, 100%).
+- **Branch**: `main` (clean working tree).
+- **Python Test Suite**: **805 / 805** tests passing (`pytest -q`, 100%).
+- **Frontend Test Suite**: **68 / 68** tests passing across 5 suites (`cd web && npm test`, 100%).
 - **Production Build**: `cd web && npm run build` passes cleanly in Next.js 16.2.9 (Turbopack) with 0 TypeScript or bundle errors.
 - **Diagnostic CLI**: `python3 scripts/diagnose.py --check` passing across all checks.
 - **Knowledge Graph**: Synchronized via `graphify update .` (`graphify-out/graph.json`).
@@ -57,9 +64,10 @@ Completed a comprehensive 3D architectural, cryptographic artifact, educational 
 - **High-FPS Dynamic Scoping**: Scoping spotlights and matrix updates to the active room allows complex multi-part exhibits to run at high frame rates on both discrete and integrated/software WebGL graphics.
 - **Warm Classical Museum Palette**: Honed cream Botticino marble, French oak runners, and travertine walls with an oculus skylight lift the space into an illuminated architectural gallery without any pitch-black cave feeling.
 - **Non-Overlapping 3-Zone Header**: Unified `justify-between` flex header ensures branding, wing navigation, and action pills never collide across desktop widths.
+- **Unified Batch Integration**: Integrated all 4 approved PRs (#422, #423, #427, #429) simultaneously in a single atomic commit, eliminating intermediate build thrashing and ensuring complete cross-feature compatibility.
 
 ---
 
 ## Immediate Next Steps
-1. Monitor live Vercel production deployment triggered by `main` push (`271ef5e1`).
-2. Triage or review the 8 open PRs whenever you'd like to clear the backlog.
+1. All PRs cleared (0 open pull requests).
+2. Codebase is in production-ready state on `main`.

@@ -3,6 +3,17 @@
 import secrets
 import string
 
+MAX_TEXT_LENGTH = 100000
+
+def _validate_inputs(text: str, shift: int, text_name: str) -> None:
+    """Validate input types and enforce maximum length to mitigate Denial of Service (DoS)."""
+    if not isinstance(text, str):
+        raise TypeError(f"{text_name} must be a string")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"{text_name} length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+    if not isinstance(shift, int) or isinstance(shift, bool):
+        raise TypeError("Shift must be an integer")
+
 def pick_keys() -> int:
     """Generate a random shift key for Caesar cipher (1-25)."""
     return secrets.randbelow(25) + 1
@@ -26,6 +37,7 @@ def encrypt(plaintext: str, shift: int) -> str:
     Each letter is shifted forward by the shift amount in the alphabet.
     Non-alphabetic characters are preserved.
     """
+    _validate_inputs(plaintext, shift, "Plaintext")
     return plaintext.translate(_CAESAR_TABLES[shift % 26])
 
 def decrypt(ciphertext: str, shift: int) -> str:
@@ -34,6 +46,7 @@ def decrypt(ciphertext: str, shift: int) -> str:
     Each letter is shifted backward by the shift amount in the alphabet.
     Non-alphabetic characters are preserved.
     """
+    _validate_inputs(ciphertext, shift, "Ciphertext")
     return ciphertext.translate(_CAESAR_TABLES[(26 - (shift % 26)) % 26])
 
 def main():

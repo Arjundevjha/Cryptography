@@ -385,13 +385,13 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/MuseumCanvas.tsx": {
-    "mtime": 1794046953.9840305,
-    "ast_hash": "5a94c06000d72cf864691226a1eab7c7",
+    "mtime": 1794054642.9992964,
+    "ast_hash": "cdc8d8d588f22eff9fd87906e35fd722",
     "semantic_hash": ""
   },
   "web/src/components/museum/ThreeMuseumScene.tsx": {
-    "mtime": 1794047560.7797978,
-    "ast_hash": "26809396df57e2d2a55a188f5e48335a",
+    "mtime": 1794054580.9716384,
+    "ast_hash": "606e1d8089823d22573f159dabf897e1",
     "semantic_hash": ""
   },
   "web/src/components/museum/hud/ApiStatusDot.tsx": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/hud/MuseumHUD.tsx": {
-    "mtime": 1794047562.361861,
-    "ast_hash": "d4bc02f134e7f42cd470f73d9ba75065",
+    "mtime": 1794054702.9883075,
+    "ast_hash": "93a473e765cb0087f77d301c630fae9b",
     "semantic_hash": ""
   },
   "web/src/components/museum/museumData.ts": {
@@ -410,13 +410,13 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/ArtifactMetadataDrawer.tsx": {
-    "mtime": 1794046590.6396816,
-    "ast_hash": "5444d681135ca996a5ba3433b48546a1",
+    "mtime": 1794054869.8761914,
+    "ast_hash": "51cb2656643d7f2273cc4acd4bf1c3fb",
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/WorkbenchPanel.tsx": {
-    "mtime": 1794046726.5157423,
-    "ast_hash": "ab38a0a3ff78272077730f1e1e9f6486",
+    "mtime": 1794054846.0462196,
+    "ast_hash": "e20c34a53431c48c4cb70b1ab3433989",
     "semantic_hash": ""
   },
   "web/src/components/ui/ExhibitInput.tsx": {
@@ -525,8 +525,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/workbench/StatueCuratorialDrawer.tsx": {
-    "mtime": 1794047139.6353712,
-    "ast_hash": "af47f948125374eda7961e1e5731c76b",
+    "mtime": 1794054889.0209074,
+    "ast_hash": "813393d2d5c586b048c9604d2be85560",
     "semantic_hash": ""
   },
   "web/tests/unit/statues.test.tsx": {
