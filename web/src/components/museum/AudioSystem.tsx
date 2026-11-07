@@ -96,11 +96,11 @@ export function AudioSystem({ currentView }: AudioSystemProps) {
       onClick={toggleMute}
       aria-label={muted ? 'Unmute spatial audio' : 'Mute spatial audio'}
       aria-pressed={!muted}
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-stone-900/80 backdrop-blur-md border border-amber-500/30 text-amber-200 hover:bg-stone-800 transition-all text-xs font-mono shadow-lg focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+      className="select-none fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#0c0e14]/90 backdrop-blur-md border border-amber-500/25 text-stone-200 hover:bg-stone-900 transition-colors text-xs font-sans font-medium shadow-lg focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       title={muted ? 'Unmute Spatial Audio' : 'Mute Spatial Audio'}
     >
-      {muted ? <VolumeX className="w-4 h-4 text-amber-400/60" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
-      <span>{muted ? 'AUDIO OFF' : 'SPATIAL AUDIO'}</span>
+      {muted ? <VolumeX className="w-4 h-4 text-stone-400" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
+      <span>{muted ? 'Audio Off' : 'Spatial Audio'}</span>
     </button>
   );
 }

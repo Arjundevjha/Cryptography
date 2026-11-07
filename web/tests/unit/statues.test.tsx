@@ -72,6 +72,27 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     expect(screen.getByText(/STATISTICAL DECRYPT PREVIEW:/i)).toBeInTheDocument();
   });
 
+  it('renders Alan Turing interactive Bletchley Park Bombe Crib Alignment lab', () => {
+    const handleClose = jest.fn();
+    const turing = MUSEUM_STATUES.find((s) => s.id === 'statue-turing')!;
+
+    render(<StatueCuratorialDrawer statue={turing} onClose={handleClose} />);
+
+    // Switch to Lab tab
+    const labTabBtn = screen.getByRole('tab', { name: /interactive pioneer lab/i });
+    fireEvent.click(labTabBtn);
+
+    expect(screen.getByText(/Naval Intercept Crib Alignment/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Slide Crib Offset Position/i)).toBeInTheDocument();
+
+    // Sweep Bombe drums to the valid rotor stop (offset 4 -> B-K-F)
+    const sweepBtn = screen.getByRole('button', { name: /sweep bombe drums to valid rotor stop/i });
+    fireEvent.click(sweepBtn);
+
+    expect(screen.getByText(/Bombe Drum Stop Registered/i)).toBeInTheDocument();
+    expect(screen.getByText(/WETTERVORHERSAGE NORDATLANTIK KONVOI/i)).toBeInTheDocument();
+  });
+
   it('renders Claude Shannon interactive Information Entropy and OTP stream lab', () => {
     const handleClose = jest.fn();
     const shannon = MUSEUM_STATUES.find((s) => s.id === 'statue-shannon')!;
@@ -133,8 +154,9 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     const toggleMapButton = screen.getByRole('button', { name: /toggle 2d museum floorplan map/i });
     fireEvent.click(toggleMapButton);
 
-    // Verify map markers exist for the statues
+    // Verify map markers exist for all 4 founding pioneers
     expect(screen.getByText('Al-Kindi')).toBeInTheDocument();
+    expect(screen.getByText('Alan')).toBeInTheDocument();
     expect(screen.getByText('Claude')).toBeInTheDocument();
     expect(screen.getByText('Whitfield')).toBeInTheDocument();
 

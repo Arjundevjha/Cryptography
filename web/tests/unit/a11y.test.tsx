@@ -465,4 +465,44 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(alertBanner).toHaveAttribute('aria-live', 'assertive');
     expect(alertBanner).toHaveTextContent('Invalid parameters provided');
   });
+
+  it('supports guided historical tour navigation and collapsible curatorial plaque with C shortcut', () => {
+    render(<MuseumCanvas />);
+
+    // Start guided tour from Rotunda button
+    const startTourBtn = screen.getByRole('button', { name: /begin chronological tour/i });
+    fireEvent.click(startTourBtn);
+
+    const tourRegion = screen.getByRole('region', { name: /guided historical tour/i });
+    expect(tourRegion).toBeInTheDocument();
+    expect(screen.getByText(/The Spartan Ephor Scytale/i)).toBeInTheDocument();
+
+    // Advance to stop 2 (Polybius)
+    const nextBtn = screen.getByRole('button', { name: /next tour stop/i });
+    fireEvent.click(nextBtn);
+    expect(screen.getByText(/Polybius Fire-Beacon Coordinates/i)).toBeInTheDocument();
+
+    // End tour (remains in Polybius exhibit chamber)
+    const endTourBtn = screen.getByRole('button', { name: /end guided historical tour/i });
+    fireEvent.click(endTourBtn);
+    expect(screen.queryByRole('region', { name: /guided historical tour/i })).not.toBeInTheDocument();
+
+    // Verify collapsible curatorial plaque inside exhibit chamber
+    const collapseBtn = screen.getByRole('button', { name: /collapse curatorial plaque/i });
+    expect(collapseBtn).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(collapseBtn);
+
+    const expandBtn = screen.getByRole('button', { name: /expand curatorial plaque/i });
+    expect(expandBtn).toHaveAttribute('aria-expanded', 'false');
+
+    // Verify 'c' keyboard shortcut expands plaque, but is ignored inside textarea
+    const inputArea = screen.getByLabelText(/plaintext input/i);
+    inputArea.focus();
+    fireEvent.keyDown(inputArea, { key: 'c', code: 'KeyC' });
+    expect(screen.getByRole('button', { name: /expand curatorial plaque/i })).toBeInTheDocument();
+
+    inputArea.blur();
+    fireEvent.keyDown(window, { key: 'c', code: 'KeyC' });
+    expect(screen.getByRole('button', { name: /collapse curatorial plaque/i })).toBeInTheDocument();
+  });
 });

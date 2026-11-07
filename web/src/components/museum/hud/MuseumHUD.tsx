@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ApiStatusDot } from './ApiStatusDot';
-import { Github, Home, Compass, Map, X, Sparkles, Navigation } from 'lucide-react';
+import { Github, Home, Compass, Map, X, Navigation, GraduationCap } from 'lucide-react';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from '../museumData';
 
 interface MuseumHUDProps {
@@ -10,9 +10,18 @@ interface MuseumHUDProps {
   isMacro: boolean;
   onSelectRoom: (roomId: string) => void;
   onReturnToFoyer: () => void;
+  isTourActive?: boolean;
+  onToggleTour?: () => void;
 }
 
-export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer }: MuseumHUDProps) {
+export function MuseumHUD({
+  currentView,
+  isMacro,
+  onSelectRoom,
+  onReturnToFoyer,
+  isTourActive = false,
+  onToggleTour,
+}: MuseumHUDProps) {
   const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
@@ -45,22 +54,26 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
   const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
 
   const getSubtext = () => {
-    if (currentView === 'atrium') return 'Grand Entrance Lobby';
+    if (currentView === 'atrium') return 'Grand Entrance Rotunda';
     if (activeStatue) return `Pioneer Monument • ${activeStatue.name} (${activeStatue.lifespan})`;
     if (activeWing) return activeWing.name;
     if (activeExhibit) return `${activeExhibit.wing} • ${activeExhibit.name}`;
-    return '3D Museum Gallery';
+    return 'Permanent Collection';
   };
 
   return (
     <>
       {/* Top Left Branding & Navigation HUD */}
-      <div className="fixed top-6 left-6 z-40 flex items-center gap-3">
-        <div className="px-4 py-2.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
+      <div className="select-none fixed top-5 left-5 z-40 flex items-center gap-2.5">
+        <div className="px-4 py-2.5 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-3">
+          <span className="text-amber-400 text-sm leading-none" aria-hidden="true">
+            ◈
+          </span>
           <div>
-            <h1 className="text-xs font-bold font-mono tracking-widest text-amber-400 uppercase">CRYPTOGRAPHY MUSEUM</h1>
-            <p className="text-[10px] text-stone-400 font-sans">{getSubtext()}</p>
+            <h1 className="font-display text-xs sm:text-sm font-semibold tracking-wider text-amber-300">
+              CRYPTOGRAPHY MUSEUM
+            </h1>
+            <p className="text-[11px] text-stone-300 font-sans">{getSubtext()}</p>
           </div>
         </div>
 
@@ -68,7 +81,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
         {currentView !== 'atrium' && (
           <button
             onClick={onReturnToFoyer}
-            className="px-3.5 py-2.5 rounded-2xl bg-amber-500/90 hover:bg-amber-400 text-stone-950 font-mono text-xs font-bold flex items-center gap-2 shadow-lg transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+            className="px-3.5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-sans text-xs font-semibold flex items-center gap-2 shadow-lg transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           >
             <Home className="w-4 h-4" /> Lobby Entrance
           </button>
@@ -76,15 +89,18 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
       </div>
 
       {/* Top Center Wing & Navigation Bar */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex items-center gap-1.5 p-1.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/20 shadow-2xl">
+      <nav
+        aria-label="Museum wings and tools"
+        className="select-none fixed top-5 left-1/2 -translate-x-1/2 z-40 hidden lg:flex items-center gap-1 p-1.5 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/25 shadow-2xl"
+      >
         <button
           onClick={onReturnToFoyer}
           aria-current={currentView === 'atrium' ? 'page' : undefined}
-          className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-            currentView === 'atrium' ? 'bg-amber-500 text-stone-950 shadow font-bold' : 'text-stone-300 hover:text-stone-100'
+          className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+            currentView === 'atrium' ? 'bg-amber-500 text-stone-950 shadow-sm font-bold' : 'text-stone-300 hover:text-stone-100'
           }`}
         >
-          LOBBY
+          Lobby
         </button>
 
         {MUSEUM_WINGS.map((wing) => (
@@ -92,37 +108,68 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
             key={wing.id}
             onClick={() => onSelectRoom(wing.id)}
             aria-current={currentView === wing.id ? 'page' : undefined}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-              currentView === wing.id ? 'bg-amber-500 text-stone-950 shadow font-bold' : 'text-stone-300 hover:text-stone-100'
+            className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+              currentView === wing.id ? 'bg-amber-500 text-stone-950 shadow-sm font-bold' : 'text-stone-300 hover:text-stone-100'
             }`}
           >
-            {wing.category.toUpperCase()} WING
+            {wing.category} Wing
           </button>
         ))}
 
         <div className="w-px h-4 bg-stone-800 mx-1" />
+
+        {onToggleTour && (
+          <button
+            onClick={onToggleTour}
+            aria-pressed={isTourActive}
+            aria-label="Toggle guided historical tour"
+            className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+              isTourActive
+                ? 'bg-amber-400 text-stone-950 font-bold'
+                : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
+            }`}
+          >
+            <GraduationCap className="w-3.5 h-3.5" /> Guided Tour
+          </button>
+        )}
 
         {/* Toggle 2D Mini-Map */}
         <button
           onClick={() => setShowMap(!showMap)}
           aria-expanded={showMap}
           aria-label="Toggle 2D museum floorplan map"
-          className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-            showMap ? 'bg-amber-400 text-stone-950' : 'bg-stone-900 hover:bg-stone-800 text-amber-400 border border-amber-500/30'
+          className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+            showMap ? 'bg-amber-400 text-stone-950 font-bold' : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
           }`}
         >
-          <Map className="w-3.5 h-3.5" /> 2D MAP <span className="text-[10px] opacity-75 font-normal">[M]</span>
+          <Map className="w-3.5 h-3.5" /> 2D Map <span className="text-[10px] font-mono opacity-80">[M]</span>
         </button>
-      </div>
+      </nav>
 
-      {/* Top Right Floating HUD Links */}
-      <div className="fixed top-6 right-6 z-40 flex items-center gap-3">
+      {/* Top Right Floating HUD Links & Compact Mobile Actions */}
+      <div className="select-none fixed top-5 right-5 z-40 flex items-center gap-2">
+        {onToggleTour && (
+          <button
+            onClick={onToggleTour}
+            aria-pressed={isTourActive}
+            aria-label="Start or stop guided tour"
+            className={`lg:hidden px-3 py-2.5 rounded-2xl text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-xl border shadow-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+              isTourActive
+                ? 'bg-amber-400 text-stone-950 border-amber-300'
+                : 'bg-[#0c0e14]/90 text-amber-300 border-amber-500/30'
+            }`}
+          >
+            <GraduationCap className="w-4 h-4" />
+            <span className="hidden sm:inline">Tour</span>
+          </button>
+        )}
+
         <a
           href="https://github.com/Arjundevjha/Cryptography"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="View repository on GitHub"
-          className="px-3.5 py-2.5 rounded-2xl bg-stone-950/85 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-mono flex items-center gap-2 shadow-2xl transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+          className="px-3.5 py-2.5 rounded-2xl bg-[#0c0e14]/90 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-sans font-medium flex items-center gap-2 shadow-2xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
         >
           <Github className="w-4 h-4 text-stone-300" />
           <span className="hidden sm:inline">View Repository</span>
@@ -138,62 +185,66 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowMap(false);
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
         >
-          <div className="relative w-full max-w-4xl bg-stone-900 border border-amber-500/40 rounded-3xl p-6 shadow-2xl text-stone-100 space-y-4">
+          <div className="relative w-full max-w-4xl bg-[#0c0e14] border border-amber-500/35 rounded-3xl p-6 shadow-2xl text-stone-100 space-y-4">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-stone-800 pb-3">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+              <div className="flex items-center gap-2.5">
                 <Navigation className="w-5 h-5 text-amber-400" />
-                <h2 className="text-sm font-extrabold font-mono text-amber-400 tracking-widest uppercase">
-                  INTERACTIVE MUSEUM FLOORPLAN MAP
-                </h2>
+                <div>
+                  <h2 className="font-display text-base font-semibold text-amber-300 tracking-wide">
+                    Architectural Floorplan Blueprint
+                  </h2>
+                  <p className="text-xs text-stone-400 font-sans">
+                    Select any gallery chamber or rotunda monument to travel directly inside
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setShowMap(false)}
                 aria-label="Close museum floorplan map"
-                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+                className="p-2 rounded-xl bg-[#111520] hover:bg-stone-800 border border-stone-800 text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* SVG Floorplan Graphic */}
-            <div className="relative w-full h-80 bg-stone-950 rounded-2xl border border-stone-800 p-4 flex items-center justify-center overflow-hidden select-none">
+            {/* SVG Architectural Floorplan Graphic */}
+            <div className="relative w-full h-80 bg-[#080a0f] rounded-2xl border border-amber-500/20 p-4 flex items-center justify-center overflow-hidden select-none">
               <svg viewBox="0 0 800 400" className="w-full h-full">
-                {/* Background Grid */}
-                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.5" />
+                {/* Architectural Blueprint Grid */}
+                <pattern id="blueprint-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                  <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#182030" strokeWidth="0.6" />
                 </pattern>
-                <rect width="800" height="400" fill="url(#grid)" />
+                <rect width="800" height="400" fill="url(#blueprint-grid)" />
 
-                {/* Grand Entrance Lobby Box */}
-                <rect x="300" y="300" width="200" height="80" rx="10" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
-                <text x="400" y="345" fill="#f59e0b" fontSize="13" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-                  GRAND ENTRANCE LOBBY
+                {/* Grand Entrance Rotunda Box */}
+                <rect x="275" y="294" width="250" height="88" rx="12" fill="#10141f" stroke="#d4af37" strokeWidth="1.8" />
+                <text x="400" y="312" fill="#d4af37" fontSize="11" fontFamily="Georgia, serif" fontWeight="bold" textAnchor="middle">
+                  GRAND ENTRANCE ROTUNDA
                 </text>
 
                 {/* Classical Corridor (Left) */}
-                <rect x="50" y="50" width="200" height="220" rx="10" fill="#0f172a" stroke="#0284c7" strokeWidth="1.5" />
-                <text x="150" y="75" fill="#38bdf8" fontSize="12" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                <rect x="45" y="45" width="205" height="225" rx="10" fill="#0d1320" stroke="#e2c792" strokeWidth="1.4" />
+                <text x="147" y="70" fill="#f3e5ab" fontSize="11" fontFamily="Georgia, serif" fontWeight="bold" textAnchor="middle">
                   CLASSICAL CIPHERS WING
                 </text>
-                {/* Connector line to lobby */}
-                <path d="M 250 160 L 350 300" stroke="#0284c7" strokeWidth="2" strokeDasharray="4 4" />
+                <path d="M 250 160 L 330 294" stroke="#e2c792" strokeWidth="1.5" strokeDasharray="4 4" />
 
                 {/* Historical Corridor (Center) */}
-                <rect x="310" y="50" width="180" height="200" rx="10" fill="#0f172a" stroke="#d97706" strokeWidth="1.5" />
-                <text x="400" y="75" fill="#fbbf24" fontSize="12" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                <rect x="305" y="45" width="190" height="205" rx="10" fill="#0d1320" stroke="#d4af37" strokeWidth="1.4" />
+                <text x="400" y="70" fill="#fcd34d" fontSize="11" fontFamily="Georgia, serif" fontWeight="bold" textAnchor="middle">
                   HISTORICAL SYSTEMS WING
                 </text>
-                <path d="M 400 250 L 400 300" stroke="#d97706" strokeWidth="2" strokeDasharray="4 4" />
+                <path d="M 400 250 L 400 294" stroke="#d4af37" strokeWidth="1.5" strokeDasharray="4 4" />
 
                 {/* Modern Corridor (Right) */}
-                <rect x="550" y="50" width="200" height="220" rx="10" fill="#0f172a" stroke="#9333ea" strokeWidth="1.5" />
-                <text x="650" y="75" fill="#c084fc" fontSize="12" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                <rect x="550" y="45" width="205" height="225" rx="10" fill="#0d1320" stroke="#34d399" strokeWidth="1.4" />
+                <text x="652" y="70" fill="#6ee7b7" fontSize="11" fontFamily="Georgia, serif" fontWeight="bold" textAnchor="middle">
                   MODERN CRYPTOGRAPHY WING
                 </text>
-                <path d="M 550 160 L 450 300" stroke="#9333ea" strokeWidth="2" strokeDasharray="4 4" />
+                <path d="M 550 160 L 470 294" stroke="#34d399" strokeWidth="1.5" strokeDasharray="4 4" />
 
                 {/* Interactive Clickable Room Dots */}
                 {MUSEUM_EXHIBITS.map((ex) => {
@@ -201,21 +252,21 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                   let cy = 200;
                   if (ex.category === 'Classical') {
                     if (['caesar', 'affine'].includes(ex.id)) {
-                      cx = ex.id === 'caesar' ? 100 : 200;
-                      cy = 110;
+                      cx = ex.id === 'caesar' ? 100 : 195;
+                      cy = 108;
                     } else if (['vigenere', 'playfair'].includes(ex.id)) {
-                      cx = ex.id === 'vigenere' ? 100 : 200;
+                      cx = ex.id === 'vigenere' ? 100 : 195;
                       cy = 160;
                     } else {
-                      cx = ex.id === 'polybius' ? 100 : 200;
-                      cy = 210;
+                      cx = ex.id === 'polybius' ? 100 : 195;
+                      cy = 212;
                     }
                   } else if (ex.category === 'Historical') {
                     cx = ex.id === 'enigma' ? 355 : 445;
-                    cy = 150;
+                    cy = 152;
                   } else {
-                    cx = ex.id === 'rsa' ? 600 : ex.id === 'aes' ? 700 : 650;
-                    cy = ex.id === 'sha256' ? 200 : 120;
+                    cx = ex.id === 'rsa' ? 600 : ex.id === 'aes' ? 705 : 652;
+                    cy = ex.id === 'sha256' ? 202 : 122;
                   }
 
                   const isActive = currentView === ex.id;
@@ -242,22 +293,21 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                       <circle
                         cx={cx}
                         cy={cy}
-                        r={isActive ? "10" : "7"}
-                        fill={isActive ? "#f59e0b" : "#334155"}
-                        stroke={isActive ? "#ffffff" : "#64748b"}
-                        strokeWidth="2"
-                        className="transition-all group-hover:scale-125"
+                        r={isActive ? '9' : '7'}
+                        fill={isActive ? '#d4af37' : '#1e293b'}
+                        stroke={isActive ? '#fef3c7' : '#94a3b8'}
+                        strokeWidth="1.8"
                       />
                       {isActive && (
-                        <circle cx={cx} cy={cy} r="16" fill="none" stroke="#f59e0b" strokeWidth="1.5" className="animate-ping" />
+                        <circle cx={cx} cy={cy} r="14" fill="none" stroke="#d4af37" strokeWidth="1.2" />
                       )}
                       <text
                         x={cx}
-                        y={cy + 18}
-                        fill={isActive ? "#f59e0b" : "#94a3b8"}
-                        fontSize="9"
-                        fontFamily="monospace"
-                        fontWeight="bold"
+                        y={cy + 19}
+                        fill={isActive ? '#fcd34d' : '#cbd5e1'}
+                        fontSize="9.5"
+                        fontFamily="sans-serif"
+                        fontWeight="600"
                         textAnchor="middle"
                       >
                         {ex.name.split(' ')[0]}
@@ -266,19 +316,22 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                   );
                 })}
 
-                {/* Founding Fathers Statue Markers in Lobby */}
+                {/* All 4 Founding Pioneer Monuments in the Grand Rotunda */}
                 {MUSEUM_STATUES.map((statue) => {
                   let sx = 400;
-                  let sy = 330;
+                  let sy = 335;
                   if (statue.id === 'statue-alkindi') {
-                    sx = 340;
-                    sy = 335;
+                    sx = 310;
+                    sy = 338;
+                  } else if (statue.id === 'statue-turing') {
+                    sx = 368;
+                    sy = 328;
                   } else if (statue.id === 'statue-shannon') {
-                    sx = 400;
-                    sy = 325;
+                    sx = 432;
+                    sy = 328;
                   } else if (statue.id === 'statue-diffie-hellman') {
-                    sx = 460;
-                    sy = 335;
+                    sx = 490;
+                    sy = 338;
                   }
 
                   const isActive = currentView === statue.id;
@@ -303,26 +356,25 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                       className="cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                     >
                       <rect
-                        x={sx - (isActive ? 7 : 5)}
-                        y={sy - (isActive ? 7 : 5)}
-                        width={isActive ? 14 : 10}
-                        height={isActive ? 14 : 10}
+                        x={sx - (isActive ? 6.5 : 5)}
+                        y={sy - (isActive ? 6.5 : 5)}
+                        width={isActive ? 13 : 10}
+                        height={isActive ? 13 : 10}
                         transform={`rotate(45 ${sx} ${sy})`}
-                        fill={isActive ? '#f59e0b' : '#d97706'}
-                        stroke="#ffffff"
-                        strokeWidth="1.5"
-                        className="transition-all group-hover:scale-125"
+                        fill={isActive ? '#fcd34d' : '#b45309'}
+                        stroke="#fef3c7"
+                        strokeWidth="1.3"
                       />
                       {isActive && (
-                        <circle cx={sx} cy={sy} r="14" fill="none" stroke="#f59e0b" strokeWidth="1.5" className="animate-ping" />
+                        <circle cx={sx} cy={sy} r="12" fill="none" stroke="#fcd34d" strokeWidth="1.2" />
                       )}
                       <text
                         x={sx}
-                        y={sy + 14}
-                        fill={isActive ? '#f59e0b' : '#fbbf24'}
-                        fontSize="8"
-                        fontFamily="monospace"
-                        fontWeight="bold"
+                        y={sy + 15}
+                        fill={isActive ? '#fcd34d' : '#fde68a'}
+                        fontSize="8.5"
+                        fontFamily="sans-serif"
+                        fontWeight="600"
                         textAnchor="middle"
                       >
                         {statue.name.split(' ')[0]}
@@ -331,7 +383,7 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                   );
                 })}
 
-                {/* Lobby Point */}
+                {/* Lobby Foyer Point */}
                 <g
                   role="button"
                   tabIndex={0}
@@ -351,51 +403,48 @@ export function MuseumHUD({ currentView, isMacro, onSelectRoom, onReturnToFoyer 
                 >
                   <circle
                     cx="400"
-                    cy="365"
-                    r={currentView === 'atrium' ? "8" : "6"}
-                    fill={currentView === 'atrium' ? "#f59e0b" : "#334155"}
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
+                    cy="364"
+                    r={currentView === 'atrium' ? '7' : '5.5'}
+                    fill={currentView === 'atrium' ? '#d4af37' : '#334155'}
+                    stroke="#fef3c7"
+                    strokeWidth="1.4"
                   />
-                  {currentView === 'atrium' && (
-                    <circle cx="400" cy="365" r="14" fill="none" stroke="#f59e0b" strokeWidth="1.5" className="animate-ping" />
-                  )}
                   <text
                     x="400"
-                    y="376"
-                    fill={currentView === 'atrium' ? "#f59e0b" : "#94a3b8"}
-                    fontSize="7"
-                    fontFamily="monospace"
+                    y="377"
+                    fill={currentView === 'atrium' ? '#fcd34d' : '#cbd5e1'}
+                    fontSize="7.5"
+                    fontFamily="sans-serif"
+                    fontWeight="600"
                     textAnchor="middle"
                   >
-                    ENTRANCE
+                    FOYER
                   </text>
                 </g>
               </svg>
             </div>
 
             {/* Quick Navigation Action Footer */}
-            <div className="flex items-center justify-between text-xs font-mono text-stone-400">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                <span>Click any room marker on the floorplan to fly camera directly inside</span>
-              </div>
+            <div className="flex items-center justify-between text-xs font-sans text-stone-300">
+              <span>Diamonds mark Pioneer Monuments in the Rotunda; circles mark Exhibit Chambers.</span>
               <button
                 onClick={() => setShowMap(false)}
-                className="px-4 py-2 rounded-xl bg-amber-500 text-stone-950 font-bold hover:bg-amber-400 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+                className="px-4 py-2 rounded-xl bg-amber-500 text-stone-950 font-semibold hover:bg-amber-400 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               >
-                CLOSE MAP
+                Close Map
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 3D Exploration Hint Badge */}
-      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 pointer-events-none px-4 py-2 rounded-full bg-stone-950/75 backdrop-blur-md border border-amber-500/20 text-stone-300 text-[11px] font-mono flex items-center gap-2 shadow-lg">
-        <Compass className="w-3.5 h-3.5 text-amber-400 animate-spin" />
-        <span>3D EXPLORATION: WASD / Arrow Keys to Walk • Drag Mouse to Look • Scroll to Zoom • Click Exhibit to Focus</span>
-      </div>
+      {/* Subtle Gallery Exploration Hint (only inside exhibit chambers when not in guided tour) */}
+      {!isTourActive && activeExhibit && !isMacro && (
+        <div className="select-none fixed bottom-6 left-1/2 -translate-x-1/2 z-30 hidden xl:flex pointer-events-none px-4 py-1.5 rounded-full bg-[#0c0e14]/85 backdrop-blur-md border border-amber-500/20 text-stone-300 text-xs font-sans items-center gap-2 shadow-lg">
+          <Compass className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span>WASD / Arrows to Walk · Drag to Orbit · Click Vitrine Case to Inspect</span>
+        </div>
+      )}
 
       {/* Footer Minimal API Status Dot */}
       <div className="fixed bottom-6 left-6 z-40">

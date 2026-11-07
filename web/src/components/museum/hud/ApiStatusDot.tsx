@@ -36,21 +36,21 @@ export function ApiStatusDot() {
       tabIndex={0}
       role="status"
       aria-label={statusText}
-      className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-stone-950/80 backdrop-blur-md border border-stone-800 shadow-lg text-[11px] font-mono text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all cursor-help"
+      className="select-none flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0c0e14]/90 backdrop-blur-md border border-stone-800 shadow-lg text-xs font-sans text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors cursor-help"
       title={statusText}
     >
       <span
         data-testid="api-status-dot"
-        className={`w-2.5 h-2.5 rounded-full shrink-0 transition-all ${
+        className={`w-2 h-2 rounded-full shrink-0 transition-colors ${
           online === true
-            ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]'
+            ? 'bg-emerald-400'
             : online === false
-            ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]'
-            : 'bg-amber-500 animate-pulse'
+            ? 'bg-rose-400'
+            : 'bg-amber-400'
         }`}
       />
-      <span className="sr-only sm:not-sr-only text-[10px] uppercase tracking-wider text-stone-400 font-bold">
-        {online === true ? 'API ONLINE' : online === false ? 'API OFFLINE' : 'CONNECTING...'}
+      <span className="sr-only sm:not-sr-only text-[11px] text-stone-300 font-medium">
+        {online === true ? 'Cipher Service · Online' : online === false ? 'Cipher Service · Offline' : 'Connecting…'}
       </span>
     </div>
   );
