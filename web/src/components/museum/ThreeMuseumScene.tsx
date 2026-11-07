@@ -119,10 +119,10 @@ export default function ThreeMuseumScene({
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // === 2. BRIGHT ARCHITECTURAL SCENE & FOG ===
+    // === 2. ATMOSPHERIC OBSIDIAN VAULT SCENE & FOG ===
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1e293b);
-    scene.fog = new THREE.FogExp2(0x1e293b, 0.003);
+    scene.background = new THREE.Color(0x0a0c10);
+    scene.fog = new THREE.FogExp2(0x0a0c10, 0.005);
     sceneRef.current = scene;
 
     // === 3. FIRST-PERSON EYE-LEVEL CAMERA & IN-PLACE CONTROLS ===
@@ -162,31 +162,50 @@ export default function ThreeMuseumScene({
     window.addEventListener('keyup', handleKeyUp);
 
     // ============================
-    // 5. ELEGANT BRIGHT ARCHITECTURAL MATERIALS
+    // 5. ARCHIVAL MUSEUM ARCHITECTURAL MATERIALS
     // ============================
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25 });
-    const trimMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.2, metalness: 0.5 });
-    const woodBeamMat = new THREE.MeshStandardMaterial({ color: 0x451a03, roughness: 0.4 });
-    const marbleFloorMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.12, metalness: 0.1 });
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0x1b1e27, roughness: 0.55 });
+    const wainscotMat = new THREE.MeshStandardMaterial({ color: 0x261912, roughness: 0.45 });
+    const trimMat = new THREE.MeshStandardMaterial({ color: 0xc59f3d, metalness: 0.88, roughness: 0.22 });
+    const woodBeamMat = new THREE.MeshStandardMaterial({ color: 0x231710, roughness: 0.45 });
+    const terrazzoFloorMat = new THREE.MeshPhysicalMaterial({
+      color: 0x12141a,
+      roughness: 0.18,
+      metalness: 0.08,
+      clearcoat: 0.35,
+      clearcoatRoughness: 0.12,
+    });
+    const neroMarquinaMat = new THREE.MeshPhysicalMaterial({
+      color: 0x08090d,
+      roughness: 0.12,
+      metalness: 0.06,
+      clearcoat: 0.45,
+    });
+    const brassInlayMat = new THREE.MeshStandardMaterial({ color: 0xc99a3e, metalness: 0.88, roughness: 0.2 });
+    const travertineMat = new THREE.MeshStandardMaterial({ color: 0xd6cfc2, roughness: 0.42, metalness: 0.04 });
+    const wartimeBronzeMat = new THREE.MeshStandardMaterial({ color: 0x4a3728, metalness: 0.82, roughness: 0.32 });
+    const titaniumMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.92, roughness: 0.18 });
+    const matteBlackMat = new THREE.MeshStandardMaterial({ color: 0x0b0d12, roughness: 0.5, metalness: 0.3 });
+    const leatherMat = new THREE.MeshStandardMaterial({ color: 0x2c1810, roughness: 0.65, metalness: 0.05 });
     const glassMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      transmission: 0.92,
+      transmission: 0.94,
       transparent: true,
-      opacity: 0.3,
-      roughness: 0.04,
-      ior: 1.5,
+      opacity: 0.32,
+      roughness: 0.02,
+      ior: 1.52,
     });
-    const goldMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.15 });
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.92, roughness: 0.16 });
 
     // ============================
-    // 6. VIBRANT MULTI-ZONE MUSEUM LIGHTING
+    // 6. CALIBRATED GALLERY EXHIBITION LIGHTING
     // ============================
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xcbd5e1, 2.2);
+    const hemiLight = new THREE.HemisphereLight(0xfff7ea, 0x101218, 0.58);
     hemiLight.position.set(0, 50, 0);
     scene.add(hemiLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfffbeb, 3.2);
-    sunLight.position.set(30, 45, 30);
+    const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.65);
+    sunLight.position.set(25, 42, 28);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 1024;
     sunLight.shadow.mapSize.height = 1024;
@@ -199,70 +218,117 @@ export default function ThreeMuseumScene({
     sunLight.shadow.bias = -0.0001;
     scene.add(sunLight);
 
-    const lobbyChandelier = new THREE.PointLight(0xfffbeb, 6.0, 60);
-    lobbyChandelier.position.set(0, 10, 10);
-    scene.add(lobbyChandelier);
-
-    // Dedicated Rotunda Portrait Key Light (Illuminates Founding Fathers statues from the front)
-    const rotundaKeyLight = new THREE.DirectionalLight(0xfffbeb, 2.6);
+    // Dedicated Rotunda Portrait Key Light (Illuminates Founding Pioneers from the front)
+    const rotundaKeyLight = new THREE.DirectionalLight(0xffedd5, 2.3);
     rotundaKeyLight.position.set(0, 14, 24);
-    rotundaKeyLight.target.position.set(0, 2.5, 6);
+    rotundaKeyLight.target.position.set(0, 2.3, 6);
     scene.add(rotundaKeyLight);
     scene.add(rotundaKeyLight.target);
 
-    const classicalLight = new THREE.PointLight(0x38bdf8, 6.0, 70);
-    classicalLight.position.set(-45, 10, -40);
-    scene.add(classicalLight);
+    // Physical Multi-Tier Brass & Frosted Crystal Chandelier in Grand Rotunda
+    const chandelierGroup = new THREE.Group();
+    chandelierGroup.position.set(0, 11.2, 8);
+    const suspensionRod = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.8, 16), trimMat);
+    suspensionRod.position.y = 0.4;
+    chandelierGroup.add(suspensionRod);
 
-    const historicalLight = new THREE.PointLight(0xf59e0b, 6.0, 70);
-    historicalLight.position.set(0, 10, -45);
-    scene.add(historicalLight);
+    const crystalMat = new THREE.MeshStandardMaterial({
+      color: 0xfffbeb,
+      emissive: 0xf59e0b,
+      emissiveIntensity: 0.95,
+      roughness: 0.15,
+    });
+    [3.0, 2.0, 1.1].forEach((rad, rIdx) => {
+      const tierY = -rIdx * 0.52;
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(rad, 0.045, 16, 48), goldMat);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = tierY;
+      chandelierGroup.add(ring);
 
-    const modernLight = new THREE.PointLight(0xc084fc, 6.0, 70);
-    modernLight.position.set(45, 10, -40);
-    scene.add(modernLight);
+      // Brass suspension cables
+      for (let c = 0; c < 4; c++) {
+        const cAngle = (c * Math.PI) / 2;
+        const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1.4, 8), trimMat);
+        strut.position.set(Math.cos(cAngle) * (rad * 0.5), tierY + 0.5, Math.sin(cAngle) * (rad * 0.5));
+        strut.rotation.z = Math.cos(cAngle) * 0.45;
+        strut.rotation.x = -Math.sin(cAngle) * 0.45;
+        chandelierGroup.add(strut);
+      }
+
+      const crystalCount = Math.round(rad * 6);
+      for (let l = 0; l < crystalCount; l++) {
+        const theta = (l / crystalCount) * Math.PI * 2;
+        const crystal = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.035, 0.36, 12), crystalMat);
+        crystal.position.set(Math.cos(theta) * rad, tierY - 0.18, Math.sin(theta) * rad);
+        chandelierGroup.add(crystal);
+      }
+    });
+    const lobbyChandelier = new THREE.PointLight(0xffeedb, 4.2, 48);
+    lobbyChandelier.position.set(0, -1.2, 0);
+    chandelierGroup.add(lobbyChandelier);
+    scene.add(chandelierGroup);
 
     // ============================
-    // 7. ACTUAL MUSEUM BUILDING ARCHITECTURE
+    // 7. MUSEUM BUILDING ARCHITECTURE (TERRAZZO, INLAYS, COFFERED CEILING)
     // ============================
     const floorGeo = new THREE.PlaneGeometry(180, 200);
-    const floor = new THREE.Mesh(floorGeo, marbleFloorMat);
+    const floor = new THREE.Mesh(floorGeo, terrazzoFloorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
 
-    const gridHelper = new THREE.GridHelper(180, 90, 0x94a3b8, 0xcbd5e1);
-    (gridHelper.material as THREE.Material).opacity = 0.4;
-    (gridHelper.material as THREE.Material).transparent = true;
-    gridHelper.position.y = 0.01;
-    scene.add(gridHelper);
+    // Nero Marquina Marble Corridor Runners leading from Rotunda to Wings
+    const mainRunner = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 56), neroMarquinaMat);
+    mainRunner.rotation.x = -Math.PI / 2;
+    mainRunner.position.set(0, 0.008, -14);
+    scene.add(mainRunner);
 
-    // Roof & Ceiling
+    // Architectural Inlaid Brass Expansion Joints (Replaces debug GridHelper)
+    for (let x = -72; x <= 72; x += 18) {
+      const joint = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.004, 150), brassInlayMat);
+      joint.position.set(x, 0.012, -25);
+      scene.add(joint);
+    }
+    for (let z = -86; z <= 28; z += 18) {
+      const crossJoint = new THREE.Mesh(new THREE.BoxGeometry(150, 0.004, 0.035), brassInlayMat);
+      crossJoint.position.set(0, 0.012, z);
+      scene.add(crossJoint);
+    }
+
+    // Coffered Dark Acoustic Ceiling & Walnut Structural Cross-Beams
     const ceilingGeo = new THREE.PlaneGeometry(180, 200);
-    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x10131b, roughness: 0.65 });
     const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
     ceiling.position.y = 12;
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
     for (let x = -80; x <= 80; x += 20) {
-      const beamGeo = new THREE.BoxGeometry(0.6, 0.8, 200);
+      const beamGeo = new THREE.BoxGeometry(0.65, 0.85, 200);
       const beam = new THREE.Mesh(beamGeo, woodBeamMat);
-      beam.position.set(x, 11.6, -10);
+      beam.position.set(x, 11.55, -10);
       scene.add(beam);
     }
     for (let z = -90; z <= 30; z += 20) {
-      const crossBeamGeo = new THREE.BoxGeometry(160, 0.8, 0.6);
+      const crossBeamGeo = new THREE.BoxGeometry(160, 0.85, 0.65);
       const crossBeam = new THREE.Mesh(crossBeamGeo, woodBeamMat);
-      crossBeam.position.set(0, 11.6, z);
+      crossBeam.position.set(0, 11.55, z);
       scene.add(crossBeam);
     }
 
-    // Perimeter Building Walls
+    // Perimeter Acoustic Limestone Walls with Dark Walnut Wainscoting & Brass Rails
     const rearWallGeo = new THREE.BoxGeometry(180, 12, 0.8);
     const rearWall = new THREE.Mesh(rearWallGeo, wallMat);
     rearWall.position.set(0, 6, 32);
     scene.add(rearWall);
+
+    const rearWainscot = new THREE.Mesh(new THREE.BoxGeometry(180, 1.4, 0.88), wainscotMat);
+    rearWainscot.position.set(0, 0.7, 32);
+    scene.add(rearWainscot);
+
+    const rearBrassRail = new THREE.Mesh(new THREE.BoxGeometry(180, 0.06, 0.92), trimMat);
+    rearBrassRail.position.set(0, 1.42, 32);
+    scene.add(rearBrassRail);
 
     const frontWall = new THREE.Mesh(rearWallGeo, wallMat);
     frontWall.position.set(0, 6, -95);
@@ -277,8 +343,54 @@ export default function ThreeMuseumScene({
     rightExteriorWall.position.set(85, 6, -30);
     scene.add(rightExteriorWall);
 
+    // Architectural Wall Sconces along Perimeter & Rotunda
+    const buildWallSconce = (sx: number, sy: number, sz: number, rotY: number) => {
+      const sconce = new THREE.Group();
+      sconce.position.set(sx, sy, sz);
+      sconce.rotation.y = rotY;
+      const backplate = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.65, 0.06), trimMat);
+      sconce.add(backplate);
+      const diffuser = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.5, 16), crystalMat);
+      diffuser.position.z = 0.09;
+      sconce.add(diffuser);
+      scene.add(sconce);
+    };
+    [-22, -10, 10, 22].forEach((sx) => buildWallSconce(sx, 5.2, 31.5, Math.PI));
+
+    // Museum Walnut & Tufted Leather Gallery Benches
+    const buildGalleryBench = (bx: number, bz: number, rotY: number = 0) => {
+      const bench = new THREE.Group();
+      bench.position.set(bx, 0, bz);
+      bench.rotation.y = rotY;
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.12, 0.95), wainscotMat);
+      frame.position.y = 0.42;
+      bench.add(frame);
+      const cushion = new THREE.Mesh(new THREE.BoxGeometry(2.72, 0.14, 0.88), leatherMat);
+      cushion.position.y = 0.54;
+      cushion.castShadow = true;
+      bench.add(cushion);
+      const brassTrim = new THREE.Mesh(new THREE.BoxGeometry(2.82, 0.03, 0.97), trimMat);
+      brassTrim.position.y = 0.36;
+      bench.add(brassTrim);
+      [
+        [-1.15, -0.35],
+        [1.15, -0.35],
+        [-1.15, 0.35],
+        [1.15, 0.35],
+      ].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.36, 0.12), matteBlackMat);
+        leg.position.set(lx, 0.18, lz);
+        bench.add(leg);
+      });
+      scene.add(bench);
+    };
+    buildGalleryBench(-13.5, 16, Math.PI / 5);
+    buildGalleryBench(13.5, 16, -Math.PI / 5);
+    buildGalleryBench(-20, -16, Math.PI / 4);
+    buildGalleryBench(20, -16, -Math.PI / 4);
+
     // ============================
-    // 8. GRAND ENTRANCE LOBBY FOYER
+    // 8. GRAND ENTRANCE FOYER, COLONNADE, PORTRAITS & TIMELINE FRIEZE
     // ============================
     const doorFrameGeo = new THREE.BoxGeometry(12, 9, 1.2);
     const doorFrame = new THREE.Mesh(doorFrameGeo, trimMat);
@@ -294,23 +406,191 @@ export default function ThreeMuseumScene({
     rightDoor.position.set(2.8, 4.3, 31.5);
     scene.add(rightDoor);
 
-    // Inlaid Brass Floor Medallion in Entrance Foyer
+    // Inlaid Astronomical Brass & Nero Marquina Compass Medallion in Entrance Foyer
     const medallionRingGeo = new THREE.RingGeometry(2.5, 3.2, 64);
-    const medallionRingMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.15, side: THREE.DoubleSide });
-    const medallionRing = new THREE.Mesh(medallionRingGeo, medallionRingMat);
+    const medallionRing = new THREE.Mesh(
+      medallionRingGeo,
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.92, roughness: 0.16, side: THREE.DoubleSide })
+    );
     medallionRing.rotation.x = -Math.PI / 2;
     medallionRing.position.set(0, 0.02, 16);
     scene.add(medallionRing);
 
-    const medallionInnerGeo = new THREE.CircleGeometry(2.4, 64);
-    const medallionInnerMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, side: THREE.DoubleSide });
-    const medallionInner = new THREE.Mesh(medallionInnerGeo, medallionInnerMat);
+    const medallionInner = new THREE.Mesh(
+      new THREE.CircleGeometry(2.48, 64),
+      new THREE.MeshStandardMaterial({ color: 0x08090d, roughness: 0.2, side: THREE.DoubleSide })
+    );
     medallionInner.rotation.x = -Math.PI / 2;
     medallionInner.position.set(0, 0.018, 16);
     scene.add(medallionInner);
 
+    const compassInnerRing = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.25, 48), brassInlayMat);
+    compassInnerRing.rotation.x = -Math.PI / 2;
+    compassInnerRing.position.set(0, 0.021, 16);
+    scene.add(compassInnerRing);
+
+    for (let s = 0; s < 8; s++) {
+      const needle = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.004, 4.6), brassInlayMat);
+      needle.rotation.y = (s * Math.PI) / 8;
+      needle.position.set(0, 0.022, 16);
+      scene.add(needle);
+    }
+
+    // Monumental 8-Pillar Neoclassical Fluted Rotunda Colonnade
+    const colonnadeAngles = [
+      -0.88 * Math.PI,
+      -0.68 * Math.PI,
+      -0.32 * Math.PI,
+      -0.12 * Math.PI,
+      0.12 * Math.PI,
+      0.32 * Math.PI,
+      0.68 * Math.PI,
+      0.88 * Math.PI,
+    ];
+    colonnadeAngles.forEach((ang) => {
+      const colR = 15.2;
+      const cx = Math.sin(ang) * colR;
+      const cz = 8.0 + Math.cos(ang) * colR;
+      const pGroup = new THREE.Group();
+      pGroup.position.set(cx, 0, cz);
+
+      const basePlinth = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.45, 1.5), neroMarquinaMat);
+      basePlinth.position.y = 0.225;
+      pGroup.add(basePlinth);
+
+      const baseRing = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.07, 16, 36), goldMat);
+      baseRing.rotation.x = Math.PI / 2;
+      baseRing.position.y = 0.48;
+      pGroup.add(baseRing);
+
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.56, 10.2, 32), travertineMat);
+      shaft.position.y = 5.55;
+      shaft.castShadow = true;
+      shaft.receiveShadow = true;
+      pGroup.add(shaft);
+
+      const capRing = new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.06, 16, 36), goldMat);
+      capRing.rotation.x = Math.PI / 2;
+      capRing.position.y = 10.65;
+      pGroup.add(capRing);
+
+      const abacus = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.35, 1.45), travertineMat);
+      abacus.position.y = 10.88;
+      pGroup.add(abacus);
+
+      scene.add(pGroup);
+    });
+
+    // "THE CHRONICLES OF CRYPTOGRAPHY" — 2,500-Year Illuminated Timeline Frieze Entablature
+    const friezeTex = getTimelineFriezeTexture();
+    const friezeBacking = new THREE.Mesh(new THREE.BoxGeometry(21.6, 2.45, 0.45), wainscotMat);
+    friezeBacking.position.set(0, 9.65, -4.6);
+    scene.add(friezeBacking);
+
+    const friezeTrim = new THREE.Mesh(new THREE.BoxGeometry(21.8, 2.58, 0.38), trimMat);
+    friezeTrim.position.set(0, 9.65, -4.62);
+    scene.add(friezeTrim);
+
+    const friezeFace = new THREE.Mesh(
+      new THREE.PlaneGeometry(21.2, 2.25),
+      new THREE.MeshStandardMaterial({
+        map: friezeTex,
+        roughness: 0.25,
+        metalness: 0.15,
+        emissive: 0x291d09,
+        emissiveIntensity: 0.45,
+      })
+    );
+    friezeFace.position.set(0, 9.65, -4.36);
+    scene.add(friezeFace);
+
+    // Archival Framed Portrait Gallery (5 Great Cryptologists on Gallery Steles with Picture Lamps)
+    const archivalPortraits = [
+      {
+        name: 'Leon Battista Alberti',
+        lifespan: '1404–1472',
+        legacy: 'Inventor of the Polyalphabetic Cipher Disc',
+        pos: [-16.8, 0, 12.5] as [number, number, number],
+        rotY: Math.PI * 0.38,
+      },
+      {
+        name: 'Blaise de Vigenère',
+        lifespan: '1523–1596',
+        legacy: 'Architect of Le Chiffre Indéchiffrable',
+        pos: [-15.2, 0, 5.2] as [number, number, number],
+        rotY: Math.PI * 0.28,
+      },
+      {
+        name: 'Marian Rejewski',
+        lifespan: '1905–1980',
+        legacy: 'First Mathematical Breaker of Enigma (1932)',
+        pos: [-12.5, 0, 31.2] as [number, number, number],
+        rotY: Math.PI,
+      },
+      {
+        name: 'Charles Wheatstone',
+        lifespan: '1802–1875',
+        legacy: 'Creator of the Playfair Digraph Matrix',
+        pos: [15.2, 0, 5.2] as [number, number, number],
+        rotY: -Math.PI * 0.28,
+      },
+      {
+        name: 'Auguste Kerckhoffs',
+        lifespan: '1835–1903',
+        legacy: 'Author of Kerckhoffs’s Cryptographic Principle',
+        pos: [16.8, 0, 12.5] as [number, number, number],
+        rotY: -Math.PI * 0.38,
+      },
+    ];
+
+    archivalPortraits.forEach((pt) => {
+      const steleGroup = new THREE.Group();
+      steleGroup.position.set(...pt.pos);
+      steleGroup.rotation.y = pt.rotY;
+
+      // Freestanding acoustic stone display wall stele
+      const steleWall = new THREE.Mesh(new THREE.BoxGeometry(3.4, 6.2, 0.38), wallMat);
+      steleWall.position.y = 3.1;
+      steleWall.castShadow = true;
+      steleWall.receiveShadow = true;
+      steleGroup.add(steleWall);
+
+      const steleBase = new THREE.Mesh(new THREE.BoxGeometry(3.55, 0.85, 0.48), wainscotMat);
+      steleBase.position.y = 0.425;
+      steleGroup.add(steleBase);
+
+      // Ornate gilded portrait frame
+      const outerFrame = new THREE.Mesh(new THREE.BoxGeometry(2.35, 2.95, 0.12), goldMat);
+      outerFrame.position.set(0, 3.45, 0.22);
+      steleGroup.add(outerFrame);
+
+      const portraitTex = getArchivalPortraitTexture(pt.name, pt.lifespan, pt.legacy);
+      const canvasMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.15, 2.75),
+        new THREE.MeshStandardMaterial({ map: portraitTex, roughness: 0.38 })
+      );
+      canvasMesh.position.set(0, 3.45, 0.29);
+      steleGroup.add(canvasMesh);
+
+      // Over-frame Brass Museum Picture Lamp
+      const lampArm = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.42), trimMat);
+      lampArm.position.set(0, 5.08, 0.32);
+      steleGroup.add(lampArm);
+
+      const lampHood = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 1.1, 16), goldMat);
+      lampHood.rotation.z = Math.PI / 2;
+      lampHood.position.set(0, 5.05, 0.52);
+      steleGroup.add(lampHood);
+
+      const lampGlow = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.03, 0.06), crystalMat);
+      lampGlow.position.set(0, 4.98, 0.52);
+      steleGroup.add(lampGlow);
+
+      scene.add(steleGroup);
+    });
+
     // ============================
-    // 8.5. GRAND ROTUNDA OF CRYPTOGRAPHIC PIONEERS (FOUNDING FATHERS)
+    // 8.5. GRAND ROTUNDA OF CRYPTOGRAPHIC PIONEERS (THE 4 PILLARS)
     // ============================
     const statueGlyphs: THREE.Object3D[] = [];
 
@@ -327,19 +607,42 @@ export default function ThreeMuseumScene({
     statueGlyphsRef.current = statueGlyphs;
 
     // ============================
-    // 9. GRAND WING PORTALS & BANNERS
+    // 9. THEMATIC GRAND WING PORTALS & ARCHWAYS
     // ============================
     interface WingPortalData {
       id: string;
       title: string;
       pos: [number, number, number];
       rotY: number;
+      pillarMat: THREE.Material;
+      accentColor: number;
     }
 
     const wingPortalsData: WingPortalData[] = [
-      { id: 'wing-classical', title: 'CLASSICAL CIPHERS WING', pos: [-30, 0, 0], rotY: Math.PI * 0.25 },
-      { id: 'wing-historical', title: 'HISTORICAL SYSTEMS WING', pos: [0, 0, -12], rotY: 0 },
-      { id: 'wing-modern', title: 'MODERN CRYPTOGRAPHY WING', pos: [30, 0, 0], rotY: -Math.PI * 0.25 },
+      {
+        id: 'wing-classical',
+        title: 'CLASSICAL CIPHERS WING',
+        pos: [-30, 0, 0],
+        rotY: Math.PI * 0.25,
+        pillarMat: travertineMat,
+        accentColor: 0x38bdf8,
+      },
+      {
+        id: 'wing-historical',
+        title: 'HISTORICAL SYSTEMS WING',
+        pos: [0, 0, -12],
+        rotY: 0,
+        pillarMat: wartimeBronzeMat,
+        accentColor: 0xf59e0b,
+      },
+      {
+        id: 'wing-modern',
+        title: 'MODERN CRYPTOGRAPHY WING',
+        pos: [30, 0, 0],
+        rotY: -Math.PI * 0.25,
+        pillarMat: titaniumMat,
+        accentColor: 0xc084fc,
+      },
     ];
 
     wingPortalsData.forEach((portal) => {
@@ -347,24 +650,57 @@ export default function ThreeMuseumScene({
       portalGroup.position.set(...portal.pos);
       portalGroup.rotation.y = portal.rotY;
 
-      const pillarGeo = new THREE.CylinderGeometry(0.5, 0.55, 11, 32);
-      const leftPillar = new THREE.Mesh(pillarGeo, trimMat);
-      leftPillar.position.set(-4.5, 5.5, 0);
+      const pillarGeo = new THREE.CylinderGeometry(0.52, 0.58, 9.6, 32);
+      const leftPillar = new THREE.Mesh(pillarGeo, portal.pillarMat);
+      leftPillar.position.set(-4.6, 4.8, 0);
+      leftPillar.castShadow = true;
       portalGroup.add(leftPillar);
 
-      const rightPillar = new THREE.Mesh(pillarGeo, trimMat);
-      rightPillar.position.set(4.5, 5.5, 0);
+      const rightPillar = new THREE.Mesh(pillarGeo, portal.pillarMat);
+      rightPillar.position.set(4.6, 4.8, 0);
+      rightPillar.castShadow = true;
       portalGroup.add(rightPillar);
 
-      const beamGeo = new THREE.BoxGeometry(10, 1.4, 1.2);
-      const beam = new THREE.Mesh(beamGeo, trimMat);
-      beam.position.set(0, 10.5, 0);
+      // Brass plinth & capital rings on portal columns
+      [-4.6, 4.6].forEach((px) => {
+        const pBase = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.4, 1.4), neroMarquinaMat);
+        pBase.position.set(px, 0.2, 0);
+        portalGroup.add(pBase);
+        const pRing = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.05, 16, 32), goldMat);
+        pRing.rotation.x = Math.PI / 2;
+        pRing.position.set(px, 9.5, 0);
+        portalGroup.add(pRing);
+      });
+
+      const beamGeo = new THREE.BoxGeometry(10.8, 1.2, 1.3);
+      const beam = new THREE.Mesh(beamGeo, portal.pillarMat);
+      beam.position.set(0, 10.1, 0);
       portalGroup.add(beam);
 
+      const corniceTrim = new THREE.Mesh(new THREE.BoxGeometry(11.1, 0.14, 1.42), goldMat);
+      corniceTrim.position.set(0, 10.75, 0);
+      portalGroup.add(corniceTrim);
+
+      // Accent cornice wash strip & physical brass uplight housing
+      const washStrip = new THREE.Mesh(
+        new THREE.BoxGeometry(8.6, 0.08, 0.12),
+        new THREE.MeshStandardMaterial({
+          color: portal.accentColor,
+          emissive: portal.accentColor,
+          emissiveIntensity: 0.9,
+        })
+      );
+      washStrip.position.set(0, 9.46, 0.55);
+      portalGroup.add(washStrip);
+
+      const portalGlow = new THREE.PointLight(portal.accentColor, 2.2, 22);
+      portalGlow.position.set(0, 8.2, 1.5);
+      portalGroup.add(portalGlow);
+
       const signTex = getPortalBannerTexture(portal.title);
-      const signMat = new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.2, metalness: 0.1 });
-      const signMesh = new THREE.Mesh(new THREE.BoxGeometry(8.5, 1.6, 0.25), signMat);
-      signMesh.position.set(0, 9.0, 0);
+      const signMat = new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.22, metalness: 0.25 });
+      const signMesh = new THREE.Mesh(new THREE.BoxGeometry(8.6, 1.65, 0.28), signMat);
+      signMesh.position.set(0, 8.2, 0);
       signMesh.userData = { wingId: portal.id };
       portalGroup.add(signMesh);
 
@@ -372,10 +708,19 @@ export default function ThreeMuseumScene({
     });
 
     // ============================
-    // 10. ENCLOSED ROOM GALLERIES & THRESHOLDS
+    // 10. GALLERY DISPLAY ALCOVES, TRACK LIGHTS & ARCHIVAL VITRINES
     // ============================
     const rotatingArtifacts: THREE.Object3D[] = [];
     const floatingMarkers: THREE.Object3D[] = [];
+    const roomWallMat = new THREE.MeshStandardMaterial({ color: 0x181b24, roughness: 0.55 });
+    const roomRoofMat = new THREE.MeshStandardMaterial({ color: 0x0f1219, roughness: 0.6 });
+    const plinthObsidianMat = new THREE.MeshPhysicalMaterial({
+      color: 0x12151e,
+      roughness: 0.22,
+      metalness: 0.15,
+      clearcoat: 0.35,
+    });
+    const velvetBedMat = new THREE.MeshStandardMaterial({ color: 0x2a1018, roughness: 0.88, metalness: 0.04 });
 
     MUSEUM_EXHIBITS.forEach((exhibit, exIdx) => {
       const roomGroup = new THREE.Group();
@@ -383,17 +728,30 @@ export default function ThreeMuseumScene({
       roomGroup.rotation.y = exhibit.rotationY;
       roomGroup.userData = { exhibitId: exhibit.id };
 
-      const roomWallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2 });
-      const roomRoofMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 });
-
-      // Back Wall
-      const backWallGeo = new THREE.BoxGeometry(14, 8.5, 0.4);
-      const backWall = new THREE.Mesh(backWallGeo, roomWallMat);
+      // Back Wall with Walnut Wainscoting & Recessed Cove Backlight
+      const backWall = new THREE.Mesh(new THREE.BoxGeometry(14, 8.5, 0.4), roomWallMat);
       backWall.position.set(0, 4.25, -6);
       backWall.receiveShadow = true;
       roomGroup.add(backWall);
 
-      // Side Walls
+      const backWainscot = new THREE.Mesh(new THREE.BoxGeometry(13.6, 1.2, 0.46), wainscotMat);
+      backWainscot.position.set(0, 0.6, -5.96);
+      roomGroup.add(backWainscot);
+
+      const backRail = new THREE.Mesh(new THREE.BoxGeometry(13.6, 0.05, 0.5), trimMat);
+      backRail.position.set(0, 1.22, -5.96);
+      roomGroup.add(backRail);
+
+      // Warm Recessed Alcove Frame on Back Wall
+      const alcoveFrame = new THREE.Mesh(new THREE.BoxGeometry(5.6, 5.2, 0.12), trimMat);
+      alcoveFrame.position.set(0, 4.2, -5.78);
+      roomGroup.add(alcoveFrame);
+
+      const alcoveInner = new THREE.Mesh(new THREE.BoxGeometry(5.3, 4.9, 0.14), neroMarquinaMat);
+      alcoveInner.position.set(0, 4.2, -5.76);
+      roomGroup.add(alcoveInner);
+
+      // Side Walls with Walnut Wainscoting
       const sideWallGeo = new THREE.BoxGeometry(0.4, 8.5, 12);
       const leftWall = new THREE.Mesh(sideWallGeo, roomWallMat);
       leftWall.position.set(-7, 4.25, 0);
@@ -405,7 +763,13 @@ export default function ThreeMuseumScene({
       rightWall.receiveShadow = true;
       roomGroup.add(rightWall);
 
-      // Front Wall with Doorway Arch
+      [-6.95, 6.95].forEach((wx) => {
+        const sWainscot = new THREE.Mesh(new THREE.BoxGeometry(0.46, 1.2, 11.8), wainscotMat);
+        sWainscot.position.set(wx, 0.6, 0);
+        roomGroup.add(sWainscot);
+      });
+
+      // Front Wall with Doorway Arch & Brass Pilaster Trim
       const frontPartGeo = new THREE.BoxGeometry(3.8, 8.5, 0.4);
       const frontLeft = new THREE.Mesh(frontPartGeo, roomWallMat);
       frontLeft.position.set(-5.1, 4.25, 6);
@@ -415,77 +779,97 @@ export default function ThreeMuseumScene({
       frontRight.position.set(5.1, 4.25, 6);
       roomGroup.add(frontRight);
 
-      // Header Beam
-      const headerGeo = new THREE.BoxGeometry(6.6, 2.2, 0.45);
-      const header = new THREE.Mesh(headerGeo, roomWallMat);
+      const header = new THREE.Mesh(new THREE.BoxGeometry(6.6, 2.2, 0.45), roomWallMat);
       header.position.set(0, 7.4, 6);
       roomGroup.add(header);
 
-      // Roof Ceiling Beam
-      const roomRoofGeo = new THREE.BoxGeometry(14.4, 0.3, 12.4);
-      const roomRoof = new THREE.Mesh(roomRoofGeo, roomRoofMat);
+      // Coffered Ceiling Roof
+      const roomRoof = new THREE.Mesh(new THREE.BoxGeometry(14.4, 0.3, 12.4), roomRoofMat);
       roomRoof.position.set(0, 8.6, 0);
       roomGroup.add(roomRoof);
 
-      // Overhead 3D Signboard
+      // Physical Ceiling Spotlight Track Rail & Angled Brass Cans
+      const trackRail = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.08, 0.14), matteBlackMat);
+      trackRail.position.set(0, 8.38, 1.4);
+      roomGroup.add(trackRail);
+
+      [-1.3, 1.3].forEach((tx) => {
+        const can = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.14, 0.34, 16), goldMat);
+        can.position.set(tx, 8.18, 1.4);
+        can.rotation.x = -0.35;
+        can.rotation.z = tx > 0 ? 0.22 : -0.22;
+        roomGroup.add(can);
+      });
+
+      // Overhead 3D Etched Bronze Signboard
       const roomSignTex = getSignboardTexture(exhibit.name, exhibit.timeline);
-      const signBoardMat = new THREE.MeshStandardMaterial({ map: roomSignTex, roughness: 0.15, metalness: 0.2 });
-      const signBoardGeo = new THREE.BoxGeometry(6.2, 1.4, 0.3);
-      const signBoard = new THREE.Mesh(signBoardGeo, signBoardMat);
+      const signBoardMat = new THREE.MeshStandardMaterial({ map: roomSignTex, roughness: 0.22, metalness: 0.28 });
+      const signBoard = new THREE.Mesh(new THREE.BoxGeometry(6.2, 1.4, 0.3), signBoardMat);
       signBoard.position.set(0, 7.6, 6.3);
       roomGroup.add(signBoard);
 
-      // Animated Waypoint Gem over doorway threshold
-      const waymarkerGeo = new THREE.OctahedronGeometry(0.45, 0);
-      const waymarkerMat = new THREE.MeshStandardMaterial({ color: 0xd97706, emissive: 0xb45309, emissiveIntensity: 0.8 });
-      const waymarker = new THREE.Mesh(waymarkerGeo, waymarkerMat);
-      waymarker.position.set(0, 9.6, 6.3);
-      waymarker.userData = { baseY: 9.6, exIdx };
+      // Subtle Floating Brass Octahedron Finial above Chamber
+      const waymarker = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.38, 0),
+        new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.15, emissive: 0x78350f, emissiveIntensity: 0.45 })
+      );
+      waymarker.position.set(0, 9.5, 6.3);
+      waymarker.userData = { baseY: 9.5, exIdx };
       roomGroup.add(waymarker);
       floatingMarkers.push(waymarker);
 
-      // Threshold Light Strip
-      const thresholdStripGeo = new THREE.BoxGeometry(6.0, 0.05, 0.8);
-      const thresholdMat = new THREE.MeshBasicMaterial({ color: 0xd97706 });
-      const thresholdStrip = new THREE.Mesh(thresholdStripGeo, thresholdMat);
-      thresholdStrip.position.set(0, 0.02, 6.3);
+      // Inlaid Brass Threshold Medallion Bar
+      const thresholdStrip = new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.03, 0.45), brassInlayMat);
+      thresholdStrip.position.set(0, 0.016, 6.1);
       roomGroup.add(thresholdStrip);
 
-      // Curatorial Plaque
+      // Wall-Mounted Archival Accession Plaque
       const plaqueTex = getPlaqueTexture(exhibit.name, exhibit.subtitle);
-      const plaqueMat = new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.3 });
+      const plaqueMat = new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.28, metalness: 0.2 });
       const plaqueMesh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2.0, 3.2), plaqueMat);
-      plaqueMesh.position.set(-6.8, 3.8, -1);
+      plaqueMesh.position.set(-6.75, 3.8, -1);
       roomGroup.add(plaqueMesh);
 
-      // Marble Pedestal
-      const pedestalGeo = new THREE.CylinderGeometry(1.2, 1.35, 1.2, 48);
-      const pedestalMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.08, metalness: 0.05, clearcoat: 0.4 });
-      const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
-      pedestal.position.set(0, 0.6, 0);
+      // Museum-Grade Multi-Tier Beveled Obsidian Vitrine Plinth
+      const toeKick = new THREE.Mesh(new THREE.CylinderGeometry(1.26, 1.3, 0.12, 48), goldMat);
+      toeKick.position.set(0, 0.06, 0);
+      roomGroup.add(toeKick);
+
+      const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.24, 1.02, 48), plinthObsidianMat);
+      pedestal.position.set(0, 0.63, 0);
       pedestal.receiveShadow = true;
       roomGroup.add(pedestal);
 
-      // Glass Case
-      const glassGeo = new THREE.CylinderGeometry(1.1, 1.1, 2.2, 48);
-      const glass = new THREE.Mesh(glassGeo, glassMat);
-      glass.position.set(0, 2.3, 0);
+      const plinthBezel = new THREE.Mesh(new THREE.TorusGeometry(1.16, 0.032, 16, 48), goldMat);
+      plinthBezel.rotation.x = Math.PI / 2;
+      plinthBezel.position.set(0, 1.15, 0);
+      roomGroup.add(plinthBezel);
+
+      const velvetBed = new THREE.Mesh(new THREE.CylinderGeometry(1.06, 1.1, 0.08, 48), velvetBedMat);
+      velvetBed.position.set(0, 1.18, 0);
+      roomGroup.add(velvetBed);
+
+      // Ultra-Clear Museum Vitrine Glass Case & Brass Crown Cap
+      const glass = new THREE.Mesh(new THREE.CylinderGeometry(1.12, 1.12, 2.22, 48), glassMat);
+      glass.position.set(0, 2.31, 0);
       glass.userData = { isDisplayCase: true, exhibitId: exhibit.id };
       roomGroup.add(glass);
 
-      // Exhibit Spotlight
-      const spot = new THREE.SpotLight(0xfffbeb, 8.0);
-      spot.position.set(0, 7.8, 1);
-      spot.angle = 0.6;
-      spot.penumbra = 0.3;
+      const vitrineCrown = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.16, 0.08, 48), goldMat);
+      vitrineCrown.position.set(0, 3.44, 0);
+      roomGroup.add(vitrineCrown);
+
+      // Calibrated Exhibit Pin-Spotlight with Realistic Decay & Soft Penumbra
+      const spot = new THREE.SpotLight(0xfff6e5, 6.2, 24, 0.48, 0.55, 1.4);
+      spot.position.set(0, 8.1, 1.4);
       spot.castShadow = false;
       spot.target = pedestal;
       roomGroup.add(spot);
       roomGroup.add(spot.target);
 
-      // Artifact
+      // Elevated Rotating Physical Cryptographic Artifact
       const artifactGroup = new THREE.Group();
-      artifactGroup.position.set(0, 1.8, 0);
+      artifactGroup.position.set(0, 1.92, 0);
       buildHighQualityArtifact(exhibit.id, artifactGroup);
       roomGroup.add(artifactGroup);
       rotatingArtifacts.push(artifactGroup);
@@ -501,7 +885,7 @@ export default function ThreeMuseumScene({
       const geo = sharedBustGeometry;
       if (!scene || !geo) return;
       scene.traverse((obj) => {
-        if (obj.userData?.isPortraitHead && ((obj as any).isGroup || obj instanceof THREE.Group || obj.type === 'Group')) {
+        if (obj.userData?.isPortraitHead && ((obj as any).isGroup || obj.type === 'Group')) {
           const mat = obj.userData.material;
           const s = obj.userData.scale || 0.088;
           while (obj.children.length > 0) {
@@ -830,20 +1214,30 @@ function getPortalBannerTexture(title: string): THREE.CanvasTexture {
   canvas.height = 256;
   const ctx = canvas.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#0f172a';
+    // Deep obsidian bronze plate
+    ctx.fillStyle = '#0c0e14';
     ctx.fillRect(0, 0, 1024, 256);
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = '#d97706';
-    ctx.strokeRect(12, 12, 1000, 232);
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = '#c59f3d';
+    ctx.strokeRect(10, 10, 1004, 236);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e6c875';
+    ctx.strokeRect(20, 20, 984, 216);
 
-    ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 36px monospace';
+    ctx.fillStyle = '#d4af37';
+    ctx.font = '600 24px Georgia, serif';
     ctx.textAlign = 'center';
-    ctx.fillText('MUSEUM GALLERY PORTAL', 512, 70);
+    ctx.letterSpacing = '6px';
+    ctx.fillText('GALLERY PORTAL', 512, 68);
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 56px sans-serif';
-    ctx.fillText(title, 512, 155);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 52px Georgia, serif';
+    ctx.letterSpacing = '3px';
+    ctx.fillText(title, 512, 145);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'italic 20px Georgia, serif';
+    ctx.fillText('Permanent Cryptographic Exhibition', 512, 195);
   }
   const texture = new THREE.CanvasTexture(canvas);
   textureCache.set(title, texture);
@@ -859,24 +1253,24 @@ function getSignboardTexture(title: string, timeline: string): THREE.CanvasTextu
   canvas.height = 128;
   const ctx = canvas.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = '#0c0e14';
     ctx.fillRect(0, 0, 512, 128);
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = '#d97706';
-    ctx.strokeRect(6, 6, 500, 116);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#c59f3d';
+    ctx.strokeRect(4, 4, 504, 120);
 
-    ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 18px monospace';
+    ctx.fillStyle = '#d4af37';
+    ctx.font = 'bold 13px Georgia, serif';
     ctx.textAlign = 'center';
-    ctx.fillText('EXHIBIT ROOM', 256, 34);
+    ctx.fillText('EXHIBIT CHAMBER', 256, 28);
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 32px sans-serif';
-    ctx.fillText(title.toUpperCase(), 256, 75);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 30px Georgia, serif';
+    ctx.fillText(title.toUpperCase(), 256, 68);
 
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '16px monospace';
-    ctx.fillText(timeline, 256, 106);
+    ctx.font = 'italic 16px Georgia, serif';
+    ctx.fillText(timeline, 256, 102);
   }
   const texture = new THREE.CanvasTexture(canvas);
   textureCache.set(key, texture);
@@ -892,23 +1286,23 @@ function getPlaqueTexture(title: string, subtitle: string): THREE.CanvasTexture 
   canvas.height = 160;
   const ctx = canvas.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = '#12151c';
     ctx.fillRect(0, 0, 256, 160);
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#c59f3d';
     ctx.strokeRect(4, 4, 248, 152);
 
-    ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 14px monospace';
-    ctx.fillText('CURATORIAL PLAQUE', 16, 30);
+    ctx.fillStyle = '#d4af37';
+    ctx.font = 'bold 12px Georgia, serif';
+    ctx.fillText('ARCHIVAL ACCESSION', 16, 28);
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillText(title, 16, 65);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 18px Georgia, serif';
+    ctx.fillText(title, 16, 62);
 
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = '12px sans-serif';
-    ctx.fillText(subtitle.slice(0, 30), 16, 95);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'italic 12px Georgia, serif';
+    ctx.fillText(subtitle.slice(0, 32), 16, 92);
   }
   const texture = new THREE.CanvasTexture(canvas);
   textureCache.set(key, texture);
@@ -924,36 +1318,234 @@ function getStatuePlaqueTexture(name: string, lifespan: string, title: string): 
   canvas.height = 256;
   const ctx = canvas.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#1c1917';
+    ctx.fillStyle = '#10131a';
     ctx.fillRect(0, 0, 512, 256);
 
     ctx.lineWidth = 6;
-    ctx.strokeStyle = '#d97706';
+    ctx.strokeStyle = '#c59f3d';
     ctx.strokeRect(8, 8, 496, 240);
 
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeStyle = '#e6c875';
     ctx.strokeRect(16, 16, 480, 224);
 
-    ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 20px monospace';
+    ctx.fillStyle = '#d4af37';
+    ctx.font = '600 18px Georgia, serif';
     ctx.textAlign = 'center';
-    ctx.fillText('FOUNDING FATHER OF CRYPTOGRAPHY', 256, 48);
+    ctx.fillText('PIONEER OF SECRET WRITING', 256, 48);
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px sans-serif';
-    ctx.fillText(name.toUpperCase(), 256, 108);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 36px Georgia, serif';
+    ctx.fillText(name.toUpperCase(), 256, 105);
 
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 22px monospace';
-    ctx.fillText(lifespan, 256, 150);
+    ctx.fillStyle = '#d4af37';
+    ctx.font = 'italic 20px Georgia, serif';
+    ctx.fillText(lifespan, 256, 148);
 
     ctx.fillStyle = '#cbd5e1';
-    ctx.font = 'italic 18px sans-serif';
-    ctx.fillText(title, 256, 195);
+    ctx.font = '16px Georgia, serif';
+    ctx.fillText(title, 256, 192);
 
-    ctx.fillStyle = '#d97706';
-    ctx.fillRect(156, 215, 200, 3);
+    ctx.fillStyle = '#c59f3d';
+    ctx.fillRect(166, 212, 180, 2);
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  textureCache.set(key, texture);
+  return texture;
+}
+
+function getArchivalPortraitTexture(name: string, lifespan: string, legacy: string): THREE.CanvasTexture {
+  const key = `portrait_${name}`;
+  if (textureCache.has(key)) return textureCache.get(key)!;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 640;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    // Rich dark museum oil canvas background with vignette
+    const bgGrad = ctx.createRadialGradient(256, 240, 40, 256, 240, 320);
+    bgGrad.addColorStop(0, '#2c251e');
+    bgGrad.addColorStop(0.7, '#161311');
+    bgGrad.addColorStop(1, '#0a0908');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 512, 640);
+
+    // Ornate gilded picture frame border
+    ctx.lineWidth = 14;
+    ctx.strokeStyle = '#b48a3c';
+    ctx.strokeRect(7, 7, 498, 626);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#f3d98d';
+    ctx.strokeRect(18, 18, 476, 604);
+
+    // Stylized silhouette / classical cameo portrait
+    ctx.fillStyle = '#3a3229';
+    ctx.beginPath();
+    ctx.arc(256, 200, 110, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#d8c29d';
+    // Head silhouette
+    ctx.beginPath();
+    ctx.arc(256, 180, 52, 0, Math.PI * 2);
+    ctx.fill();
+    // Shoulder & bust drapery silhouette
+    ctx.beginPath();
+    ctx.ellipse(256, 280, 95, 65, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Soft warm glaze overlay
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.08)';
+    ctx.fillRect(20, 20, 472, 600);
+
+    // Nameplate at bottom of frame
+    ctx.fillStyle = '#14110e';
+    ctx.fillRect(40, 470, 432, 120);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#c59f3d';
+    ctx.strokeRect(42, 472, 428, 116);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 26px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(name, 256, 512);
+
+    ctx.fillStyle = '#d4af37';
+    ctx.font = 'italic 18px Georgia, serif';
+    ctx.fillText(lifespan, 256, 542);
+
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '14px Georgia, serif';
+    ctx.fillText(legacy, 256, 570);
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  textureCache.set(key, texture);
+  return texture;
+}
+
+function getTimelineFriezeTexture(): THREE.CanvasTexture {
+  const key = 'timeline_frieze_texture';
+  if (textureCache.has(key)) return textureCache.get(key)!;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 2048;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#0c0e14';
+    ctx.fillRect(0, 0, 2048, 256);
+
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#c59f3d';
+    ctx.strokeRect(8, 8, 2032, 240);
+
+    ctx.fillStyle = '#d4af37';
+    ctx.font = 'bold 22px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE CHRONICLES OF CRYPTOGRAPHY • 2,500 YEARS OF SECRET WRITING', 1024, 46);
+
+    const epochs = [
+      { year: '400 BC', name: 'Spartan Scytale', desc: 'Military Transposition' },
+      { year: '50 BC', name: 'Caesar Cipher', desc: 'Monoalphabetic Shift' },
+      { year: '850 AD', name: 'Al-Kindi (Baghdad)', desc: 'Frequency Analysis' },
+      { year: '1586', name: 'Blaise de Vigenère', desc: 'Le Chiffre Indéchiffrable' },
+      { year: '1940', name: 'Turing & Bletchley', desc: 'The Bombe & Enigma' },
+      { year: '1948', name: 'Claude Shannon', desc: 'Mathematical Secrecy' },
+      { year: '1976', name: 'Diffie & Hellman', desc: 'Public-Key Revolution' },
+      { year: '2001', name: 'Rijndael (AES)', desc: 'Global Standard' },
+    ];
+
+    // Horizontal baseline
+    ctx.strokeStyle = '#c59f3d';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(60, 130);
+    ctx.lineTo(1988, 130);
+    ctx.stroke();
+
+    epochs.forEach((ep, i) => {
+      const x = 110 + i * 260;
+      // Gold node
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(x, 130, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 18px Georgia, serif';
+      ctx.fillText(ep.year, x, 105);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 17px Georgia, serif';
+      ctx.fillText(ep.name, x, 168);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'italic 13px Georgia, serif';
+      ctx.fillText(ep.desc, x, 192);
+    });
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  textureCache.set(key, texture);
+  return texture;
+}
+
+function getTuringBombeTexture(): THREE.CanvasTexture {
+  const key = 'turing_bombe_texture';
+  if (textureCache.has(key)) return textureCache.get(key)!;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    // Weathered British wartime parchment
+    ctx.fillStyle = '#f4ebd0';
+    ctx.fillRect(0, 0, 512, 512);
+
+    ctx.strokeStyle = '#7c2d12';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(16, 16, 480, 480);
+
+    ctx.fillStyle = '#991b1b';
+    ctx.font = 'bold 24px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('TOP SECRET — ULTRA', 256, 56);
+
+    ctx.fillStyle = '#1c1917';
+    ctx.font = 'bold 18px Courier New, monospace';
+    ctx.fillText('GOVERNMENT CODE & CYPHER SCHOOL', 256, 92);
+    ctx.fillText('BLETCHLEY PARK • HUT 8', 256, 116);
+
+    ctx.fillStyle = '#44403c';
+    ctx.font = '14px Courier New, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('INTERCEPT REF: BP/1941/NAVAL-ENIGMA', 40, 160);
+    ctx.fillText('CRIB: W E T T E R V O R H E R S A G E', 40, 190);
+    ctx.fillText('CIPHERTEXT: Q M X K P Z W L Y N V B T R S', 40, 220);
+
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(40, 250, 432, 160);
+
+    ctx.fillStyle = '#78350f';
+    ctx.font = 'bold 16px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE TURING-WELCHMAN BOMBE', 256, 280);
+
+    ctx.fillStyle = '#1c1917';
+    ctx.font = '13px Courier New, monospace';
+    ctx.fillText('36 Concurrent Enigma Virtual Rotor Banks', 256, 310);
+    ctx.fillText('Diagonal Board Electrical Contradiction Check', 256, 335);
+    ctx.fillText('STOP REGISTERED: STELLUNG [B - K - F]', 256, 365);
+    ctx.fillText('KEY DEDUCED • DISPATCH SENT TO ADMIRALTY', 256, 390);
+
+    ctx.fillStyle = '#991b1b';
+    ctx.font = 'bold 15px Georgia, serif';
+    ctx.fillText('MOST SECRET • BURN BEFORE READING', 256, 460);
   }
   const texture = new THREE.CanvasTexture(canvas);
   textureCache.set(key, texture);
@@ -1545,6 +2137,145 @@ function buildStatueMonument(
 
     group.add(alkindiGroup);
 
+  } else if (statue.id === 'statue-turing') {
+    // ===================================================
+    // ALAN TURING: TITAN OF WARTIME CRYPTANALYSIS (BRONZE BUST, BOMBE DRUMS & ULTRA DISPATCH)
+    // ===================================================
+    const turingGroup = new THREE.Group();
+    turingGroup.position.set(0, 1.74, 0);
+
+    // 1. Turned Belgian Black Granite Socle with Gilded Collar
+    const socle = buildClassicalSocle(0.35, 0.38, darkGranite);
+    turingGroup.add(socle);
+
+    const socleCollar = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.018, 12, 36), gildedGold);
+    socleCollar.rotation.x = Math.PI / 2;
+    socleCollar.position.set(0, 0.38, 0);
+    turingGroup.add(socleCollar);
+
+    // 2. Sculpted 1940s Bletchley Park Jacket Herm Torso in Florentine Bronze
+    const hermTorso = buildSculptedHermTorso(0.7, 0.48, 0.37, museumBronze);
+    turingGroup.add(hermTorso);
+
+    // Tailored Jacket Lapels & Wartime Tie
+    const lapelLeft = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.42, 0.03), darkWoolBronze);
+    lapelLeft.position.set(-0.11, 0.62, 0.19);
+    lapelLeft.rotation.z = -0.18;
+    turingGroup.add(lapelLeft);
+
+    const lapelRight = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.42, 0.03), darkWoolBronze);
+    lapelRight.position.set(0.11, 0.62, 0.19);
+    lapelRight.rotation.z = 0.18;
+    turingGroup.add(lapelRight);
+
+    const tie = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.34, 0.025), gildedGold);
+    tie.position.set(0, 0.58, 0.195);
+    turingGroup.add(tie);
+
+    // 3. Portrait Head of Alan Turing with Side-Parted Hair
+    const head = createPortraitHead(museumBronze, 0.09);
+    head.position.set(0, 1.14, 0.02);
+    turingGroup.add(head);
+
+    const hairSweep = new THREE.Mesh(
+      new THREE.SphereGeometry(0.165, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.52),
+      darkWoolBronze
+    );
+    hairSweep.position.set(0.01, 1.24, -0.01);
+    hairSweep.rotation.z = -0.12;
+    turingGroup.add(hairSweep);
+
+    // 4. Historic Relic Right: Miniature 3-Drum Turing-Welchman Bombe Cabinet
+    const bombeGroup = new THREE.Group();
+    bombeGroup.position.set(0.52, 0.18, 0.22);
+    bombeGroup.rotation.y = -0.32;
+
+    const bombeCabinet = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.34, 0.22), mahoganyWood);
+    bombeCabinet.castShadow = true;
+    bombeGroup.add(bombeCabinet);
+
+    const bombeFaceplate = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.31, 0.02), darkWoolBronze);
+    bombeFaceplate.position.z = 0.11;
+    bombeGroup.add(bombeFaceplate);
+
+    const drumColors = [0x991b1b, 0xd97706, 0x065f46];
+    drumColors.forEach((dColor, dIdx) => {
+      const dx = -0.1 + dIdx * 0.1;
+      const drumMat = new THREE.MeshStandardMaterial({ color: dColor, roughness: 0.35, metalness: 0.25 });
+      const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.05, 24), drumMat);
+      drum.rotation.x = Math.PI / 2;
+      drum.position.set(dx, 0.05, 0.13);
+      bombeGroup.add(drum);
+
+      const commutator = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.06, 16), gildedGold);
+      commutator.rotation.x = Math.PI / 2;
+      commutator.position.set(dx, 0.05, 0.14);
+      bombeGroup.add(commutator);
+
+      // Lower secondary bank drum
+      const lowerDrum = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.05, 24), drumMat);
+      lowerDrum.rotation.x = Math.PI / 2;
+      lowerDrum.position.set(dx, -0.06, 0.13);
+      bombeGroup.add(lowerDrum);
+    });
+    turingGroup.add(bombeGroup);
+
+    // 5. Historic Relic Left: "TOP SECRET — ULTRA" Bletchley Park Crib Dispatch on Brass Easel
+    const dispatchGroup = new THREE.Group();
+    dispatchGroup.position.set(-0.5, 0.2, 0.24);
+    dispatchGroup.rotation.y = 0.35;
+    dispatchGroup.rotation.x = -0.28;
+
+    const dispatchBacking = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.38, 0.02), gildedGold);
+    dispatchGroup.add(dispatchBacking);
+
+    const bombeTex = getTuringBombeTexture();
+    const dispatchSheet = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.31, 0.35),
+      new THREE.MeshStandardMaterial({ map: bombeTex, roughness: 0.55 })
+    );
+    dispatchSheet.position.z = 0.015;
+    dispatchGroup.add(dispatchSheet);
+    turingGroup.add(dispatchGroup);
+
+    // 6. Perforated Wartime Teleprinter Tape Ribbon
+    const punchTapeCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0.36, 0.04, 0.34),
+      new THREE.Vector3(0.12, 0.08, 0.42),
+      new THREE.Vector3(-0.15, 0.03, 0.38),
+      new THREE.Vector3(-0.34, 0.05, 0.32),
+    ]);
+    const punchTape = new THREE.Mesh(
+      new THREE.TubeGeometry(punchTapeCurve, 28, 0.022, 8, false),
+      new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.65 })
+    );
+    turingGroup.add(punchTape);
+
+    // 7. Floating Bombe Electromechanical Rotor Contradiction Glyph
+    const glyphGroup = new THREE.Group();
+    glyphGroup.position.set(0, 4.35, 0);
+    glyphGroup.userData = { baseY: 4.35 };
+
+    [0.34, 0.24, 0.14].forEach((rRad, rIdx) => {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(rRad, 0.022, 16, 48),
+        new THREE.MeshStandardMaterial({
+          color: 0xf59e0b,
+          emissive: 0xb45309,
+          emissiveIntensity: 0.75,
+          metalness: 0.88,
+          roughness: 0.15,
+        })
+      );
+      ring.rotation.x = rIdx * 0.6;
+      ring.rotation.y = rIdx * 0.8;
+      glyphGroup.add(ring);
+    });
+
+    group.add(glyphGroup);
+    statueGlyphs.push(glyphGroup);
+    group.add(turingGroup);
+
   } else if (statue.id === 'statue-shannon') {
     // ===================================================
     // CLAUDE SHANNON: MATHEMATICAL CRYPTOGRAPHY (CLASSICAL BRONZE BUST & BELL LABS CHALKBOARD)
@@ -1940,180 +2671,1054 @@ function buildStatueMonument(
 }
 
 // ===================================================
-// HIGH-QUALITY ARTIFACT BUILDER (Preserved)
+// MUSEUM-GRADE 3D CRYPTOGRAPHIC ARTIFACT BUILDER
 // ===================================================
 function buildHighQualityArtifact(id: string, group: THREE.Group) {
+  const antiqueBrass = new THREE.MeshStandardMaterial({ color: 0xb8860b, metalness: 0.88, roughness: 0.24 });
+  const polishedGold = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.94, roughness: 0.14 });
+  const agedBronze = new THREE.MeshStandardMaterial({ color: 0x7c4a1e, metalness: 0.82, roughness: 0.32 });
+  const mahogany = new THREE.MeshStandardMaterial({ color: 0x3b180c, roughness: 0.34, metalness: 0.08 });
+  const darkOak = new THREE.MeshStandardMaterial({ color: 0x2b170b, roughness: 0.42, metalness: 0.05 });
+  const obsidian = new THREE.MeshStandardMaterial({ color: 0x0f131a, roughness: 0.16, metalness: 0.45 });
+  const brushedSteel = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.9, roughness: 0.2 });
+  const gunmetal = new THREE.MeshStandardMaterial({ color: 0x27303f, metalness: 0.78, roughness: 0.32 });
+  const ivory = new THREE.MeshStandardMaterial({ color: 0xf5eedc, roughness: 0.28, metalness: 0.04 });
+
   switch (id) {
     case 'caesar': {
-      group.rotation.x = Math.PI / 5;
-      const outerDiskGeo = new THREE.CylinderGeometry(0.65, 0.65, 0.05, 64);
-      const bronzeMat = new THREE.MeshStandardMaterial({ color: 0x92400e, metalness: 0.85, roughness: 0.25 });
-      const outerDisk = new THREE.Mesh(outerDiskGeo, bronzeMat);
-      outerDisk.castShadow = true;
-      group.add(outerDisk);
+      // Alberti Imperial Roman Cipher Disc (Dual concentric bronze/gold discs, 24 divisions, laurel boss & pointer)
+      const cradleBase = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.44, 0.08, 32), obsidian);
+      cradleBase.position.y = -0.46;
+      group.add(cradleBase);
 
-      const outerNotchGeo = new THREE.BoxGeometry(0.025, 0.06, 0.035);
-      const notchMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.9, roughness: 0.1 });
-      for (let i = 0; i < 26; i++) {
-        const angle = (i / 26) * Math.PI * 2;
-        const notch = new THREE.Mesh(outerNotchGeo, notchMat);
-        notch.position.set(Math.cos(angle) * 0.58, 0.01, Math.sin(angle) * 0.58);
-        notch.rotation.y = -angle;
-        group.add(notch);
+      const cradleStem = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.38, 20), agedBronze);
+      cradleStem.position.set(0, -0.26, -0.08);
+      cradleStem.rotation.x = -0.35;
+      group.add(cradleStem);
+
+      const mount = new THREE.Group();
+      mount.rotation.x = 0.62;
+      mount.position.y = 0.02;
+      group.add(mount);
+
+      // Outer stationary Roman bronze disc with stepped bevel rim
+      const outerDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.71, 0.06, 64), agedBronze);
+      outerDisc.castShadow = true;
+      mount.add(outerDisc);
+
+      const outerRim = new THREE.Mesh(new THREE.TorusGeometry(0.68, 0.024, 16, 64), polishedGold);
+      outerRim.rotation.x = Math.PI / 2;
+      outerRim.position.y = 0.03;
+      mount.add(outerRim);
+
+      // 24 radial Latin majuscule sector dividers & letter studs
+      const dividerGeo = new THREE.BoxGeometry(0.014, 0.025, 0.16);
+      const studGeo = new THREE.BoxGeometry(0.045, 0.02, 0.055);
+      for (let i = 0; i < 24; i++) {
+        const ang = (i / 24) * Math.PI * 2;
+        const div = new THREE.Mesh(dividerGeo, polishedGold);
+        div.position.set(Math.cos(ang) * 0.57, 0.034, Math.sin(ang) * 0.57);
+        div.rotation.y = -ang;
+        mount.add(div);
+
+        const nextAng = ((i + 0.5) / 24) * Math.PI * 2;
+        const stud = new THREE.Mesh(studGeo, ivory);
+        stud.position.set(Math.cos(nextAng) * 0.57, 0.032, Math.sin(nextAng) * 0.57);
+        stud.rotation.y = -nextAng;
+        mount.add(stud);
       }
 
-      const innerDiskGeo = new THREE.CylinderGeometry(0.46, 0.46, 0.06, 64);
-      const goldMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.15 });
-      const innerDisk = new THREE.Mesh(innerDiskGeo, goldMat);
-      innerDisk.position.y = 0.02;
-      innerDisk.castShadow = true;
-      group.add(innerDisk);
+      // Inner rotatable cipher disc
+      const innerRecess = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.065, 64), obsidian);
+      innerRecess.position.y = 0.015;
+      mount.add(innerRecess);
 
-      const pinGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.12, 32);
-      const pin = new THREE.Mesh(pinGeo, notchMat);
-      pin.position.y = 0.06;
-      group.add(pin);
+      const innerDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.46, 0.075, 64), antiqueBrass);
+      innerDisc.position.y = 0.028;
+      innerDisc.castShadow = true;
+      mount.add(innerDisc);
+
+      const innerStudGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.02, 12);
+      for (let i = 0; i < 24; i++) {
+        const ang = (i / 24) * Math.PI * 2 + 0.13;
+        const s = new THREE.Mesh(innerStudGeo, polishedGold);
+        s.position.set(Math.cos(ang) * 0.36, 0.07, Math.sin(ang) * 0.36);
+        mount.add(s);
+      }
+
+      // Central Imperial Roman laurel wreath boss
+      const bossBase = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.09, 32), polishedGold);
+      bossBase.position.y = 0.065;
+      mount.add(bossBase);
+
+      const leafGeo = new THREE.BoxGeometry(0.028, 0.016, 0.065);
+      for (let l = 0; l < 12; l++) {
+        const ang = (l / 12) * Math.PI * 2;
+        const leaf = new THREE.Mesh(leafGeo, polishedGold);
+        leaf.position.set(Math.cos(ang) * 0.19, 0.072, Math.sin(ang) * 0.19);
+        leaf.rotation.y = -ang + 0.45;
+        mount.add(leaf);
+      }
+
+      const rubyPin = new THREE.Mesh(
+        new THREE.SphereGeometry(0.055, 20, 20),
+        new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.12, metalness: 0.3 })
+      );
+      rubyPin.position.y = 0.11;
+      mount.add(rubyPin);
+
+      // Tapered brass index pointer arm
+      const pointer = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.022, 0.62), polishedGold);
+      pointer.position.set(0, 0.088, -0.31);
+      mount.add(pointer);
       break;
     }
+
     case 'affine': {
-      group.rotation.x = Math.PI / 6;
-      const gridGeo = new THREE.BoxGeometry(1.2, 0.06, 0.7);
-      const darkSlateMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2 });
-      const gridBase = new THREE.Mesh(gridGeo, darkSlateMat);
-      gridBase.castShadow = true;
-      group.add(gridBase);
+      // St.-Cyr Modular Vernier Slide Ruler (ax + b mod 26 dual scales, magnifying glass cursor & coprime dial)
+      const mount = new THREE.Group();
+      mount.rotation.x = 0.54;
+      group.add(mount);
 
-      const barGeo = new THREE.BoxGeometry(0.03, 0.08, 0.65);
-      const goldLineMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1 });
-      const diagonalBar = new THREE.Mesh(barGeo, goldLineMat);
-      diagonalBar.rotation.y = Math.PI / 4;
-      diagonalBar.position.y = 0.04;
-      group.add(diagonalBar);
+      // Twin brass trestle feet beneath frame
+      [-0.46, 0.46].forEach((fx) => {
+        const foot = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 0.48), agedBronze);
+        foot.position.set(fx, -0.14, 0);
+        mount.add(foot);
+      });
+
+      // Mahogany & aged boxwood slide rule frame
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(1.34, 0.08, 0.62), mahogany);
+      frame.castShadow = true;
+      mount.add(frame);
+
+      const brassBorder = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.06, 0.64), antiqueBrass);
+      brassBorder.position.y = -0.005;
+      mount.add(brassBorder);
+
+      const boxwoodMat = new THREE.MeshStandardMaterial({ color: 0xd9c396, roughness: 0.38, metalness: 0.05 });
+      // Upper stationary plaintext scale (x) and lower modular sliding bar (a*x + b mod 26)
+      const upperScale = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.03, 0.16), boxwoodMat);
+      upperScale.position.set(0.12, 0.045, -0.13);
+      mount.add(upperScale);
+
+      const lowerSlide = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.034, 0.16), antiqueBrass);
+      lowerSlide.position.set(0.16, 0.046, 0.11);
+      mount.add(lowerSlide);
+
+      // Center brass gear rack track between scales
+      const rackTrack = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.025, 0.05), obsidian);
+      rackTrack.position.set(0.12, 0.042, -0.01);
+      mount.add(rackTrack);
+
+      const tickGeo = new THREE.BoxGeometry(0.008, 0.014, 0.09);
+      for (let t = 0; t < 26; t++) {
+        const tx = -0.32 + t * 0.035;
+        const uTick = new THREE.Mesh(tickGeo, obsidian);
+        uTick.position.set(tx, 0.062, -0.13);
+        mount.add(uTick);
+
+        const lTick = new THREE.Mesh(tickGeo, obsidian);
+        lTick.position.set(tx + 0.04, 0.065, 0.11);
+        mount.add(lTick);
+      }
+
+      // Left-mounted Coprime Multiplier Selector Dial gcd(a, 26) = 1
+      const dialPlate = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.2, 0.04, 32), polishedGold);
+      dialPlate.position.set(-0.46, 0.05, 0);
+      mount.add(dialPlate);
+
+      const dialKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.08, 24), obsidian);
+      dialKnob.position.set(-0.46, 0.09, 0);
+      mount.add(dialKnob);
+
+      for (let d = 0; d < 12; d++) {
+        const ang = (d / 12) * Math.PI * 2;
+        const detent = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 8), obsidian);
+        detent.position.set(-0.46 + Math.cos(ang) * 0.15, 0.072, Math.sin(ang) * 0.15);
+        mount.add(detent);
+      }
+
+      // Magnifying Vernier Cursor with clear crystal & glowing amber hairline
+      const cursorGroup = new THREE.Group();
+      cursorGroup.position.set(0.22, 0.09, -0.01);
+      mount.add(cursorGroup);
+
+      const cursorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.04, 0.48), polishedGold);
+      cursorGroup.add(cursorFrame);
+
+      const cursorCutout = new THREE.Mesh(
+        new THREE.BoxGeometry(0.18, 0.05, 0.4),
+        new THREE.MeshPhysicalMaterial({
+          color: 0xe0f2fe,
+          transmission: 0.85,
+          transparent: true,
+          opacity: 0.45,
+          roughness: 0.06,
+          ior: 1.52,
+        })
+      );
+      cursorCutout.position.y = 0.01;
+      cursorGroup.add(cursorCutout);
+
+      const hairline = new THREE.Mesh(
+        new THREE.BoxGeometry(0.008, 0.055, 0.42),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 0.9 })
+      );
+      hairline.position.y = 0.012;
+      cursorGroup.add(hairline);
       break;
     }
-    case 'vigenere': {
-      group.rotation.x = Math.PI / 5;
-      const squareGeo = new THREE.BoxGeometry(1.1, 0.08, 1.1);
-      const marbleMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, clearcoat: 0.5 });
-      const square = new THREE.Mesh(squareGeo, marbleMat);
-      square.castShadow = true;
-      group.add(square);
 
-      const cellGeo = new THREE.BoxGeometry(0.06, 0.09, 0.06);
-      const cyanMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.5 });
+    case 'vigenere': {
+      // Blaise de Vigenère / Bazeries Polyalphabetic Brass Cylinder Stack (12 fluted cipher disks on spindle)
+      const basePlinth = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.11, 0.62), mahogany);
+      basePlinth.position.y = -0.34;
+      basePlinth.castShadow = true;
+      group.add(basePlinth);
+
+      const plinthTrim = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.04, 0.66), antiqueBrass);
+      plinthTrim.position.y = -0.38;
+      group.add(plinthTrim);
+
+      // Twin ornate bronze end stanchions
+      [-0.56, 0.56].forEach((sx) => {
+        const stanchion = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.56, 0.28), agedBronze);
+        stanchion.position.set(sx, -0.02, 0);
+        stanchion.castShadow = true;
+        group.add(stanchion);
+
+        const bearingCap = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.12, 24), polishedGold);
+        bearingCap.rotation.z = Math.PI / 2;
+        bearingCap.position.set(sx + (sx > 0 ? 0.06 : -0.06), 0.12, 0);
+        group.add(bearingCap);
+      });
+
+      // Central steel spindle shaft
+      const spindle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.32, 24), brushedSteel);
+      spindle.rotation.z = Math.PI / 2;
+      spindle.position.y = 0.12;
+      group.add(spindle);
+
+      // 12 rotatable alphanumeric cipher wheel disks with 26 peripheral character notches
+      const notchGeo = new THREE.BoxGeometry(0.055, 0.016, 0.022);
+      for (let w = 0; w < 12; w++) {
+        const wx = -0.44 + w * 0.08;
+        const wheelMat = w % 2 === 0 ? polishedGold : antiqueBrass;
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.068, 48), wheelMat);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(wx, 0.12, 0);
+        wheel.castShadow = true;
+        group.add(wheel);
+
+        const dividerRing = new THREE.Mesh(new THREE.CylinderGeometry(0.348, 0.348, 0.008, 48), obsidian);
+        dividerRing.rotation.z = Math.PI / 2;
+        dividerRing.position.set(wx + 0.036, 0.12, 0);
+        group.add(dividerRing);
+
+        const phaseOffset = w * 0.24;
+        for (let c = 0; c < 26; c += 2) {
+          const ang = (c / 26) * Math.PI * 2 + phaseOffset;
+          const notch = new THREE.Mesh(notchGeo, obsidian);
+          notch.position.set(wx, 0.12 + Math.sin(ang) * 0.342, Math.cos(ang) * 0.342);
+          notch.rotation.x = -ang;
+          group.add(notch);
+        }
+      }
+
+      // Front-mounted horizontal brass reading aperture bar framing active cipher row
+      const upperBar = new THREE.Mesh(new THREE.BoxGeometry(1.06, 0.032, 0.04), polishedGold);
+      upperBar.position.set(0, 0.2, 0.365);
+      group.add(upperBar);
+
+      const lowerBar = new THREE.Mesh(new THREE.BoxGeometry(1.06, 0.032, 0.04), polishedGold);
+      lowerBar.position.set(0, 0.08, 0.365);
+      group.add(lowerBar);
+
+      [-0.51, 0.51].forEach((bx) => {
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.15, 0.18), agedBronze);
+        arm.position.set(bx, 0.14, 0.29);
+        group.add(arm);
+      });
+      break;
+    }
+
+    case 'playfair': {
+      // Victorian Wheatstone-Playfair Digraph Matrix (Mahogany case, 25 ivory tiles, dual brass crosshairs)
+      const mount = new THREE.Group();
+      mount.rotation.x = 0.56;
+      group.add(mount);
+
+      // Polished mahogany tray & raised mitered brass bezel
+      const tray = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.09, 1.08), mahogany);
+      tray.castShadow = true;
+      mount.add(tray);
+
+      const bezelRim = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.06, 1.12), antiqueBrass);
+      bezelRim.position.y = -0.01;
+      mount.add(bezelRim);
+
+      const recessWell = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.03, 0.92), obsidian);
+      recessWell.position.y = 0.042;
+      mount.add(recessWell);
+
+      // Brass compartment dividers
+      for (let g = 0; g < 6; g++) {
+        const pos = -0.45 + g * 0.18;
+        const hDiv = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.025, 0.014), antiqueBrass);
+        hDiv.position.set(0, 0.058, pos);
+        mount.add(hDiv);
+
+        const vDiv = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.025, 0.92), antiqueBrass);
+        vDiv.position.set(pos, 0.058, 0);
+        mount.add(vDiv);
+      }
+
+      // 25 carved ivory letter tiles (highlighting digraph rectangle corners (1,1), (1,3), (3,1), (3,3))
+      const tileGeo = new THREE.BoxGeometry(0.148, 0.038, 0.148);
+      const pipGeo = new THREE.BoxGeometry(0.065, 0.008, 0.065);
+      const highlightMat = new THREE.MeshStandardMaterial({
+        color: 0xfef08a,
+        emissive: 0xd97706,
+        emissiveIntensity: 0.45,
+        roughness: 0.2,
+      });
+
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
-          const cell = new THREE.Mesh(cellGeo, cyanMat);
-          cell.position.set(-0.4 + c * 0.2, 0.01, -0.4 + r * 0.2);
-          group.add(cell);
-        }
-      }
-      break;
-    }
-    case 'playfair': {
-      group.rotation.x = Math.PI / 5;
-      const baseGeo = new THREE.BoxGeometry(1.2, 0.06, 1.2);
-      const darkMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2 });
-      const base = new THREE.Mesh(baseGeo, darkMat);
-      base.castShadow = true;
-      group.add(base);
+          const isCorner = (r === 1 || r === 3) && (c === 1 || c === 3);
+          const tile = new THREE.Mesh(tileGeo, isCorner ? highlightMat : ivory);
+          tile.position.set(-0.36 + c * 0.18, isCorner ? 0.078 : 0.068, -0.36 + r * 0.18);
+          tile.castShadow = true;
+          mount.add(tile);
 
-      const sphereGeo = new THREE.SphereGeometry(0.08, 16, 16);
-      const amberMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8 });
-      for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-          const sphere = new THREE.Mesh(sphereGeo, amberMat);
-          sphere.position.set(-0.4 + j * 0.2, 0.08, -0.4 + i * 0.2);
-          group.add(sphere);
+          const pip = new THREE.Mesh(pipGeo, obsidian);
+          pip.position.set(-0.36 + c * 0.18, isCorner ? 0.099 : 0.089, -0.36 + r * 0.18);
+          mount.add(pip);
         }
       }
+
+      // Articulated dual sliding brass coordinate crosshairs framing the digraph rectangle
+      [-0.18, 0.18].forEach((coord) => {
+        const hRail = new THREE.Mesh(new THREE.BoxGeometry(1.04, 0.016, 0.016), polishedGold);
+        hRail.position.set(0, 0.115, coord);
+        mount.add(hRail);
+
+        const vRail = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.016, 1.04), polishedGold);
+        vRail.position.set(coord, 0.128, 0);
+        mount.add(vRail);
+
+        const sliderKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.04, 16), polishedGold);
+        sliderKnob.position.set(0.53, 0.115, coord);
+        mount.add(sliderKnob);
+      });
+
+      // Engraved Wheatstone 1854 brass patent plate on front rim
+      const patentPlate = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.03, 0.06), polishedGold);
+      patentPlate.position.set(0, 0.048, 0.52);
+      mount.add(patentPlate);
       break;
     }
+
     case 'polybius': {
-      group.rotation.x = Math.PI / 5;
-      const boardGeo = new THREE.BoxGeometry(1.2, 0.06, 1.2);
-      const stoneMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 });
-      const board = new THREE.Mesh(boardGeo, stoneMat);
-      board.castShadow = true;
-      group.add(board);
+      // Hellenic Optical Torch Tablet (Carved Grecian limestone stele with 5x5 peg grid + twin bronze fire braziers)
+      const limestoneMat = new THREE.MeshStandardMaterial({ color: 0xcbc3b4, roughness: 0.72, metalness: 0.04 });
+      const recessedStoneMat = new THREE.MeshStandardMaterial({ color: 0x8d8475, roughness: 0.85 });
+      const emberMat = new THREE.MeshStandardMaterial({
+        color: 0xfbbf24,
+        emissive: 0xea580c,
+        emissiveIntensity: 1.5,
+        roughness: 0.25,
+      });
+      const flameCoreMat = new THREE.MeshStandardMaterial({
+        color: 0xfef3c7,
+        emissive: 0xf59e0b,
+        emissiveIntensity: 2.0,
+        roughness: 0.15,
+      });
+
+      // Stepped Grecian stone base plinth
+      const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.48, 0.1, 0.86), limestoneMat);
+      plinth.position.y = -0.38;
+      plinth.castShadow = true;
+      group.add(plinth);
+
+      // Angled carved limestone tablet in center
+      const steleMount = new THREE.Group();
+      steleMount.position.set(0, 0.02, -0.02);
+      steleMount.rotation.x = 0.58;
+      group.add(steleMount);
+
+      const stele = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.1, 0.86), limestoneMat);
+      stele.castShadow = true;
+      steleMount.add(stele);
+
+      // Triangular classical pediment header on top of stele
+      const pediment = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.46, 0.1, 3), limestoneMat);
+      pediment.rotation.y = Math.PI;
+      pediment.scale.set(1.0, 1.0, 0.35);
+      pediment.position.set(0, 0, -0.5);
+      steleMount.add(pediment);
+
+      // 5x5 recessed coordinate wells + weathered bronze signal pegs
+      const wellGeo = new THREE.BoxGeometry(0.11, 0.02, 0.11);
+      const pegGeo = new THREE.CylinderGeometry(0.026, 0.022, 0.09, 14);
+      const activeCoords = new Set(['1-3', '0-4', '2-1', '4-2', '3-0']);
+
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          const wx = -0.28 + c * 0.14;
+          const wz = -0.28 + r * 0.14;
+          const well = new THREE.Mesh(wellGeo, recessedStoneMat);
+          well.position.set(wx, 0.048, wz);
+          steleMount.add(well);
+
+          if (activeCoords.has(`${r}-${c}`)) {
+            const peg = new THREE.Mesh(pegGeo, agedBronze);
+            peg.position.set(wx, 0.09, wz);
+            peg.castShadow = true;
+            steleMount.add(peg);
+          }
+        }
+      }
+
+      // Twin elevated Greek bronze torch braziers flanking left (row count) and right (column count)
+      [-0.58, 0.58].forEach((bx, idx) => {
+        const brazierGroup = new THREE.Group();
+        brazierGroup.position.set(bx, -0.33, 0.06);
+        group.add(brazierGroup);
+
+        const tripodBase = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.15, 0.12, 6), agedBronze);
+        tripodBase.position.y = 0.06;
+        brazierGroup.add(tripodBase);
+
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.055, 0.52, 16), agedBronze);
+        stem.position.y = 0.36;
+        brazierGroup.add(stem);
+
+        const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.06, 0.12, 24), antiqueBrass);
+        bowl.position.y = 0.65;
+        brazierGroup.add(bowl);
+
+        const emberBed = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.04, 20), emberMat);
+        emberBed.position.y = 0.71;
+        brazierGroup.add(emberBed);
+
+        // Sculpted glowing flame cones (2 torches lit on left, 4 ember tongues on right)
+        const flameCount = idx === 0 ? 2 : 3;
+        for (let f = 0; f < flameCount; f++) {
+          const offset = (f - (flameCount - 1) / 2) * 0.065;
+          const flame = new THREE.Mesh(new THREE.ConeGeometry(0.048, 0.2, 12), flameCoreMat);
+          flame.position.set(offset, 0.81 + (f % 2) * 0.03, 0);
+          brazierGroup.add(flame);
+        }
+      });
       break;
     }
+
     case 'scytale': {
-      group.rotation.z = Math.PI / 2;
-      const cylinderGeo = new THREE.CylinderGeometry(0.3, 0.3, 1.4, 32);
-      const woodMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.5 });
-      const cylinder = new THREE.Mesh(cylinderGeo, woodMat);
-      cylinder.castShadow = true;
-      group.add(cylinder);
+      // Spartan Ephor Scytale Baton (Turned dark cedarwood baton, bronze hoplite shield caps, helical parchment spiral, bronze tripod)
+      const cedarMat = new THREE.MeshStandardMaterial({ color: 0x5c260e, roughness: 0.42, metalness: 0.06 });
+      const parchmentMat = new THREE.MeshStandardMaterial({ color: 0xf3e5ab, roughness: 0.64, metalness: 0.02 });
 
-      const stripGeo = new THREE.CylinderGeometry(0.31, 0.31, 1.2, 32);
-      const parchmentMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.6 });
-      const strip = new THREE.Mesh(stripGeo, parchmentMat);
-      group.add(strip);
+      // Ornate Greek bronze cradle stand
+      const standBase = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.06, 0.42), obsidian);
+      standBase.position.y = -0.38;
+      group.add(standBase);
+
+      [-0.36, 0.36].forEach((sx) => {
+        const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.055, 0.34, 16), agedBronze);
+        pillar.position.set(sx, -0.2, 0);
+        group.add(pillar);
+
+        const cradleArc = new THREE.Mesh(new THREE.TorusGeometry(0.21, 0.025, 12, 24, Math.PI), polishedGold);
+        cradleArc.rotation.z = Math.PI;
+        cradleArc.rotation.y = Math.PI / 2;
+        cradleArc.position.set(sx, 0.14, 0);
+        group.add(cradleArc);
+      });
+
+      // Baton assembly tilted slightly for dramatic museum silhouette
+      const batonGroup = new THREE.Group();
+      batonGroup.position.y = 0.14;
+      batonGroup.rotation.z = Math.PI / 2 - 0.08;
+      group.add(batonGroup);
+
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.175, 0.175, 1.32, 36), cedarMat);
+      shaft.castShadow = true;
+      batonGroup.add(shaft);
+
+      // Cast-bronze Spartan hoplite end-cap medallions with Lambda relief
+      [-0.68, 0.68].forEach((ey) => {
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.07, 32), agedBronze);
+        cap.position.y = ey;
+        batonGroup.add(cap);
+
+        const boss = new THREE.Mesh(new THREE.SphereGeometry(0.085, 20, 20), polishedGold);
+        boss.position.y = ey + (ey > 0 ? 0.035 : -0.035);
+        batonGroup.add(boss);
+      });
+
+      // Helical multi-turn coiled parchment strip with iron-gall ink strokes bridging adjacent wraps
+      const inkMat = new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.8 });
+      for (let t = 0; t < 9; t++) {
+        const ty = -0.48 + t * 0.12;
+        const wrap = new THREE.Mesh(new THREE.CylinderGeometry(0.183, 0.183, 0.096, 36), parchmentMat);
+        wrap.position.y = ty;
+        wrap.rotation.z = 0.09;
+        batonGroup.add(wrap);
+
+        // Ink character strokes aligned along longitudinal reading rows
+        for (let row = 0; row < 6; row++) {
+          const ang = (row / 6) * Math.PI * 2;
+          const glyph = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.055, 0.008), inkMat);
+          glyph.position.set(Math.cos(ang) * 0.186, ty, Math.sin(ang) * 0.186);
+          glyph.rotation.y = -ang + Math.PI / 2;
+          batonGroup.add(glyph);
+        }
+      }
+
+      // Unfurled trailing parchment ribbon tail draping toward base
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.36, 0.012), parchmentMat);
+      tail.position.set(0.22, -0.06, 0.18);
+      tail.rotation.z = -0.35;
+      tail.rotation.x = 0.25;
+      group.add(tail);
       break;
     }
+
     case 'enigma': {
-      const boxGeo = new THREE.BoxGeometry(1.2, 0.5, 1.0);
-      const mahoganyMat = new THREE.MeshStandardMaterial({ color: 0x451a03, roughness: 0.3 });
-      const box = new THREE.Mesh(boxGeo, mahoganyMat);
-      box.castShadow = true;
-      group.add(box);
+      // Wehrmacht Enigma M4 Naval Field Machine (Open oak case, 26 keys, 26-lamp board, 4 rotors, Steckerbrett cables)
+      const mGroup = new THREE.Group();
+      mGroup.position.set(0, -0.14, 0.05);
+      group.add(mGroup);
 
-      const rotorGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 32);
-      const silverMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.9, roughness: 0.1 });
-      for (let r = 0; r < 3; r++) {
-        const rotor = new THREE.Mesh(rotorGeo, silverMat);
-        rotor.rotation.z = Math.PI / 2;
-        rotor.position.set(-0.25 + r * 0.25, 0.3, -0.15);
-        group.add(rotor);
+      // Dovetailed dark oak transport box
+      const caseBody = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.34, 0.96), darkOak);
+      caseBody.castShadow = true;
+      mGroup.add(caseBody);
+
+      // Hinged open oak lid at rear
+      const openLid = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.68, 0.07), darkOak);
+      openLid.position.set(0, 0.44, -0.52);
+      openLid.rotation.x = -0.22;
+      openLid.castShadow = true;
+      mGroup.add(openLid);
+
+      // Brushed steel corner clasps
+      [-0.55, 0.55].forEach((cx) => {
+        const clasp = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.14, 0.04), brushedSteel);
+        clasp.position.set(cx, 0.08, 0.48);
+        mGroup.add(clasp);
+      });
+
+      // Stepped matte crinkle-black steel chassis deck
+      const lowerDeck = new THREE.Mesh(new THREE.BoxGeometry(1.04, 0.08, 0.32), obsidian);
+      lowerDeck.position.set(0, 0.18, 0.28);
+      mGroup.add(lowerDeck);
+
+      const upperDeck = new THREE.Mesh(new THREE.BoxGeometry(1.04, 0.16, 0.56), obsidian);
+      upperDeck.position.set(0, 0.22, -0.14);
+      mGroup.add(upperDeck);
+
+      // 26-key circular chrome-bezel typewriter keyboard (3 staggered QWERTZU rows: 9 + 8 + 9)
+      const keyRows = [9, 8, 9];
+      keyRows.forEach((count, rIdx) => {
+        const kz = 0.17 + rIdx * 0.095;
+        const startX = -((count - 1) * 0.098) / 2;
+        for (let k = 0; k < count; k++) {
+          const kx = startX + k * 0.098;
+          const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.05, 8), brushedSteel);
+          stem.position.set(kx, 0.24, kz);
+          mGroup.add(stem);
+
+          const bezel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.018, 16), brushedSteel);
+          bezel.position.set(kx, 0.268, kz);
+          mGroup.add(bezel);
+
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.031, 0.031, 0.02, 16), obsidian);
+          cap.position.set(kx, 0.272, kz);
+          mGroup.add(cap);
+        }
+      });
+
+      // 26-lamp amber dome lightboard (with active cipher lamp illuminated!)
+      const activeLampMat = new THREE.MeshStandardMaterial({
+        color: 0xfef08a,
+        emissive: 0xf59e0b,
+        emissiveIntensity: 2.2,
+        roughness: 0.15,
+      });
+      const dimLampMat = new THREE.MeshStandardMaterial({ color: 0x292524, roughness: 0.3 });
+
+      keyRows.forEach((count, rIdx) => {
+        const lz = -0.09 + rIdx * 0.078;
+        const startX = -((count - 1) * 0.096) / 2;
+        for (let l = 0; l < count; l++) {
+          const isLit = rIdx === 1 && l === 5;
+          const lamp = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.029, 0.029, 0.012, 16),
+            isLit ? activeLampMat : dimLampMat
+          );
+          lamp.position.set(startX + l * 0.096, 0.304, lz);
+          mGroup.add(lamp);
+        }
+      });
+
+      // M4 4-Rotor Walzenlage assembly (Beta thin rotor + 3 Wehrmacht rotors) + UKW reflector housing
+      const ukwBlock = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.09, 24), gunmetal);
+      ukwBlock.rotation.z = Math.PI / 2;
+      ukwBlock.position.set(-0.36, 0.34, -0.3);
+      mGroup.add(ukwBlock);
+
+      for (let r = 0; r < 4; r++) {
+        const rx = -0.22 + r * 0.135;
+        const rotorCore = new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.145, 0.065, 32), gunmetal);
+        rotorCore.rotation.z = Math.PI / 2;
+        rotorCore.position.set(rx, 0.35, -0.3);
+        mGroup.add(rotorCore);
+
+        // Cream alphabet tyre band
+        const alphaBand = new THREE.Mesh(new THREE.CylinderGeometry(0.149, 0.149, 0.032, 32), ivory);
+        alphaBand.rotation.z = Math.PI / 2;
+        alphaBand.position.set(rx - 0.008, 0.35, -0.3);
+        mGroup.add(alphaBand);
+
+        // Serrated brass thumbwheel flange
+        const thumbRing = new THREE.Mesh(new THREE.CylinderGeometry(0.172, 0.172, 0.018, 28), polishedGold);
+        thumbRing.rotation.z = Math.PI / 2;
+        thumbRing.position.set(rx + 0.028, 0.35, -0.3);
+        mGroup.add(thumbRing);
       }
+
+      // Front Steckerbrett (plugboard) with brass socket jacks & curved braided patch cables
+      const steckerPlate = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.22, 0.03), obsidian);
+      steckerPlate.position.set(0, -0.02, 0.48);
+      mGroup.add(steckerPlate);
+
+      for (let j = 0; j < 13; j++) {
+        const jx = -0.42 + j * 0.07;
+        const sockTop = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.02, 10), antiqueBrass);
+        sockTop.rotation.x = Math.PI / 2;
+        sockTop.position.set(jx, 0.03, 0.495);
+        mGroup.add(sockTop);
+
+        const sockBot = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.02, 10), antiqueBrass);
+        sockBot.rotation.x = Math.PI / 2;
+        sockBot.position.set(jx, -0.04, 0.495);
+        mGroup.add(sockBot);
+      }
+
+      const cableMat = new THREE.MeshStandardMaterial({ color: 0x4a1d1f, roughness: 0.75 });
+      const cablePairs: [number, number, number][] = [
+        [-0.38, -0.08, -0.14],
+        [-0.24, 0.18, -0.19],
+        [-0.02, 0.36, -0.15],
+        [0.08, 0.42, -0.12],
+      ];
+      cablePairs.forEach(([x1, x2, sagY]) => {
+        const curve = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(x1, 0.03, 0.5),
+          new THREE.Vector3(x1, 0.01, 0.57),
+          new THREE.Vector3((x1 + x2) / 2, sagY, 0.61),
+          new THREE.Vector3(x2, -0.03, 0.57),
+          new THREE.Vector3(x2, -0.04, 0.5),
+        ]);
+        const cable = new THREE.Mesh(new THREE.TubeGeometry(curve, 18, 0.013, 8, false), cableMat);
+        mGroup.add(cable);
+      });
       break;
     }
+
     case 'lorenz': {
-      const chassisGeo = new THREE.BoxGeometry(1.4, 0.6, 0.9);
-      const greenSteelMat = new THREE.MeshStandardMaterial({ color: 0x164e63, metalness: 0.7, roughness: 0.3 });
-      const chassis = new THREE.Mesh(chassisGeo, greenSteelMat);
-      chassis.castShadow = true;
-      group.add(chassis);
+      // Lorenz Schlüssel-Zusatz SZ42 Teleprinter Cipher Attachment (12 pinwheels in 3 banks: 5 Chi, 2 Mu, 5 Psi)
+      const lGroup = new THREE.Group();
+      lGroup.position.y = -0.1;
+      group.add(lGroup);
 
-      const wheelGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.05, 24);
-      const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85, roughness: 0.2 });
-      for (let w = 0; w < 6; w++) {
-        const wheel = new THREE.Mesh(wheelGeo, brassMat);
-        wheel.rotation.z = Math.PI / 2;
-        wheel.position.set(-0.5 + w * 0.2, 0.35, 0.1);
-        group.add(wheel);
-      }
+      // Industrial cast-iron & olive-gunmetal slotted bedplate chassis
+      const bedplate = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.22, 0.88), gunmetal);
+      bedplate.position.y = -0.22;
+      bedplate.castShadow = true;
+      lGroup.add(bedplate);
+
+      // Tubular chrome rack-mount handles at left and right ends
+      [-0.71, 0.71].forEach((hx) => {
+        const handle = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.018, 12, 24, Math.PI), brushedSteel);
+        handle.rotation.y = hx > 0 ? 0 : Math.PI;
+        handle.position.set(hx > 0 ? 0.67 : -0.67, -0.22, 0);
+        lGroup.add(handle);
+      });
+
+      // Front Bakelite control switches & Baudot synchronizer dials
+      [-0.42, -0.14, 0.14, 0.42].forEach((dx) => {
+        const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.04, 20), obsidian);
+        dial.rotation.x = Math.PI / 2;
+        dial.position.set(dx, -0.22, 0.45);
+        lGroup.add(dial);
+
+        const pointer = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.07, 0.02), ivory);
+        pointer.position.set(dx, -0.22, 0.47);
+        lGroup.add(pointer);
+      });
+
+      // Twin cast-iron end stanchions + central stainless drive shaft
+      [-0.58, 0.58].forEach((sx) => {
+        const upright = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.54, 0.46), gunmetal);
+        upright.position.set(sx, 0.14, -0.04);
+        lGroup.add(upright);
+      });
+
+      const driveShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 1.24, 24), brushedSteel);
+      driveShaft.rotation.z = Math.PI / 2;
+      driveShaft.position.set(0, 0.22, -0.04);
+      lGroup.add(driveShaft);
+
+      // Overhead sensing pawl rail
+      const pawlBar = new THREE.Mesh(new THREE.BoxGeometry(1.16, 0.03, 0.05), brushedSteel);
+      pawlBar.position.set(0, 0.54, -0.04);
+      lGroup.add(pawlBar);
+
+      // All 12 historical Lorenz pinwheels across 3 distinct banks: 5 Chi (left), 2 Motor Mu (center), 5 Psi (right)
+      const wheelSpecs: { x: number; r: number; mat: THREE.Material }[] = [
+        // 5 Chi wheels
+        { x: -0.49, r: 0.24, mat: antiqueBrass },
+        { x: -0.4, r: 0.24, mat: antiqueBrass },
+        { x: -0.31, r: 0.24, mat: antiqueBrass },
+        { x: -0.22, r: 0.24, mat: antiqueBrass },
+        { x: -0.13, r: 0.24, mat: antiqueBrass },
+        // 2 Mu motor control wheels
+        { x: -0.02, r: 0.205, mat: brushedSteel },
+        { x: 0.07, r: 0.205, mat: brushedSteel },
+        // 5 Psi wheels
+        { x: 0.18, r: 0.26, mat: polishedGold },
+        { x: 0.27, r: 0.26, mat: polishedGold },
+        { x: 0.36, r: 0.26, mat: polishedGold },
+        { x: 0.45, r: 0.26, mat: polishedGold },
+        { x: 0.54, r: 0.26, mat: polishedGold },
+      ];
+
+      const pinGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.038, 6);
+      wheelSpecs.forEach((ws, idx) => {
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(ws.r, ws.r, 0.046, 36), ws.mat);
+        rim.rotation.z = Math.PI / 2;
+        rim.position.set(ws.x, 0.22, -0.04);
+        rim.castShadow = true;
+        lGroup.add(rim);
+
+        const hub = new THREE.Mesh(new THREE.CylinderGeometry(ws.r * 0.62, ws.r * 0.62, 0.052, 24), obsidian);
+        hub.rotation.z = Math.PI / 2;
+        hub.position.set(ws.x, 0.22, -0.04);
+        lGroup.add(hub);
+
+        // Radial cam pins around wheel circumference
+        for (let p = 0; p < 14; p++) {
+          const ang = (p / 14) * Math.PI * 2 + idx * 0.19;
+          const pin = new THREE.Mesh(pinGeo, brushedSteel);
+          const toggleShift = (p + idx) % 3 === 0 ? 0.018 : -0.012;
+          pin.rotation.z = Math.PI / 2;
+          pin.position.set(
+            ws.x + toggleShift,
+            0.22 + Math.sin(ang) * (ws.r - 0.015),
+            -0.04 + Math.cos(ang) * (ws.r - 0.015)
+          );
+          lGroup.add(pin);
+        }
+
+        // Overhead sensing lever pawl
+        const pawl = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.08, 0.12), agedBronze);
+        pawl.position.set(ws.x, 0.5, 0.01);
+        pawl.rotation.x = 0.25;
+        lGroup.add(pawl);
+      });
       break;
     }
+
     case 'rsa': {
-      const vaultGeo = new THREE.BoxGeometry(1.0, 1.1, 1.0);
-      const steelMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.95, roughness: 0.1 });
-      const vault = new THREE.Mesh(vaultGeo, steelMat);
-      vault.castShadow = true;
-      group.add(vault);
+      // Dual-Key Trapdoor Celestial Armillary (Gimballed brass astrolabe, Public & Private keys, prime dodecahedron core)
+      const baseFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.42, 0.1, 36), obsidian);
+      baseFoot.position.y = -0.58;
+      group.add(baseFoot);
 
-      const handleGeo = new THREE.TorusGeometry(0.2, 0.04, 16, 32);
-      const chromeMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 1.0, roughness: 0.05 });
-      const handle = new THREE.Mesh(handleGeo, chromeMat);
-      handle.position.set(0, 0, 0.52);
-      group.add(handle);
+      const baseCollar = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.14, 0.22, 24), polishedGold);
+      baseCollar.position.y = -0.44;
+      group.add(baseCollar);
+
+      // Outer meridian cradle arc
+      const meridian = new THREE.Mesh(new THREE.TorusGeometry(0.66, 0.03, 16, 64), agedBronze);
+      meridian.position.y = 0.12;
+      group.add(meridian);
+
+      // Three tilted concentric gimbal astrolabe rings
+      const outerGimbal = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.026, 16, 64), polishedGold);
+      outerGimbal.position.y = 0.12;
+      outerGimbal.rotation.set(0.45, 0.6, 0);
+      group.add(outerGimbal);
+
+      const midGimbal = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.022, 16, 56), antiqueBrass);
+      midGimbal.position.y = 0.12;
+      midGimbal.rotation.set(-0.55, -0.4, 0.35);
+      group.add(midGimbal);
+
+      const innerGimbal = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.018, 16, 48), brushedSteel);
+      innerGimbal.position.y = 0.12;
+      innerGimbal.rotation.set(Math.PI / 2 - 0.3, 0.2, 0.5);
+      group.add(innerGimbal);
+
+      // Glowing Prime Factorization Dodecahedron Core (N = p * q)
+      const primeCore = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(0.165, 0),
+        new THREE.MeshStandardMaterial({
+          color: 0xfef08a,
+          emissive: 0xd97706,
+          emissiveIntensity: 1.35,
+          metalness: 0.4,
+          roughness: 0.15,
+        })
+      );
+      primeCore.position.y = 0.12;
+      group.add(primeCore);
+
+      const coreCage = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(0.23, 0),
+        new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.95, roughness: 0.1, wireframe: true })
+      );
+      coreCage.position.y = 0.12;
+      group.add(coreCage);
+
+      // Interlocking Asymmetric Twin Keys: Burnished Gold Public Key (e, N) & Obsidian Private Key (d, p, q)
+      const buildKey = (mat: THREE.Material, accentMat: THREE.Material, isPublic: boolean) => {
+        const kGroup = new THREE.Group();
+        const bow = new THREE.Mesh(new THREE.TorusGeometry(0.095, 0.022, 14, 28), mat);
+        bow.position.y = 0.24;
+        kGroup.add(bow);
+
+        const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.36, 16), mat);
+        kGroup.add(shaft);
+
+        const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.03, 16), accentMat);
+        collar.position.y = 0.11;
+        kGroup.add(collar);
+
+        // Distinct asymmetric key bit teeth
+        const bitTop = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.032, 0.018), accentMat);
+        bitTop.position.set(isPublic ? 0.045 : -0.045, -0.11, 0);
+        kGroup.add(bitTop);
+
+        const bitBot = new THREE.Mesh(new THREE.BoxGeometry(0.095, 0.04, 0.018), mat);
+        bitBot.position.set(isPublic ? 0.05 : -0.05, -0.16, 0);
+        kGroup.add(bitBot);
+        return kGroup;
+      };
+
+      const pubKey = buildKey(polishedGold, antiqueBrass, true);
+      pubKey.position.set(-0.26, 0.18, 0.08);
+      pubKey.rotation.z = -0.65;
+      group.add(pubKey);
+
+      const privAccent = new THREE.MeshStandardMaterial({
+        color: 0xa855f7,
+        emissive: 0x7e22ce,
+        emissiveIntensity: 0.75,
+        metalness: 0.6,
+        roughness: 0.2,
+      });
+      const privKey = buildKey(obsidian, privAccent, false);
+      privKey.position.set(0.26, 0.06, -0.08);
+      privKey.rotation.z = 0.65;
+      group.add(privKey);
       break;
     }
+
     case 'aes': {
-      const cubeGeo = new THREE.BoxGeometry(0.9, 0.9, 0.9);
-      const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x0284c7, transmission: 0.8, opacity: 0.8, roughness: 0.1 });
-      const cube = new THREE.Mesh(cubeGeo, glassMat);
-      cube.castShadow = true;
-      group.add(cube);
+      // The 4x4 Rijndael State Lattice Engine (16 sapphire/quartz byte blocks, GF(2^8) gold bus traces, ShiftRows/MixColumns rings, S-Box core)
+      const chassisBase = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.07, 0.98), obsidian);
+      chassisBase.position.y = -0.46;
+      chassisBase.castShadow = true;
+      group.add(chassisBase);
+
+      const baseRim = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.03, 1.02), polishedGold);
+      baseRim.position.y = -0.48;
+      group.add(baseRim);
+
+      // 4 vertical brass corner stanchions supporting the suspended state lattice
+      [
+        [-0.42, -0.42],
+        [0.42, -0.42],
+        [-0.42, 0.42],
+        [0.42, 0.42],
+      ].forEach(([cx, cz]) => {
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.022, 0.64, 12), antiqueBrass);
+        post.position.set(cx, -0.14, cz);
+        group.add(post);
+      });
+
+      // Tilted lattice assembly for 3D visual legibility from all angles
+      const latticeGroup = new THREE.Group();
+      latticeGroup.position.y = 0.14;
+      latticeGroup.rotation.set(0.48, 0.35, 0);
+      group.add(latticeGroup);
+
+      const quartzByteMat = new THREE.MeshPhysicalMaterial({
+        color: 0x38bdf8,
+        transmission: 0.82,
+        transparent: true,
+        opacity: 0.72,
+        roughness: 0.08,
+        ior: 1.54,
+        clearcoat: 1.0,
+      });
+      const goldTraceMat = new THREE.MeshStandardMaterial({
+        color: 0xfbbf24,
+        emissive: 0xb45309,
+        emissiveIntensity: 0.65,
+        metalness: 0.9,
+        roughness: 0.15,
+      });
+      const cyanCoreMat = new THREE.MeshStandardMaterial({
+        color: 0x7dd3fc,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.85,
+      });
+
+      // Row and Column Galois Field data bus traces
+      for (let i = 0; i < 4; i++) {
+        const coord = -0.3 + i * 0.2;
+        const rowBus = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.68, 8), goldTraceMat);
+        rowBus.rotation.z = Math.PI / 2;
+        rowBus.position.set(0, coord, 0);
+        latticeGroup.add(rowBus);
+
+        const colBus = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.68, 8), brushedSteel);
+        colBus.position.set(coord, 0, 0);
+        latticeGroup.add(colBus);
+      }
+
+      // 16 suspended byte blocks s_{r,c} with inner active nibble cores
+      const byteGeo = new THREE.BoxGeometry(0.13, 0.13, 0.13);
+      const coreGeo = new THREE.BoxGeometry(0.055, 0.055, 0.055);
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          const bx = -0.3 + c * 0.2;
+          const by = 0.3 - r * 0.2;
+          const bz = ((r + c) % 2 === 0 ? 1 : -1) * 0.025;
+
+          const byteCube = new THREE.Mesh(byteGeo, quartzByteMat);
+          byteCube.position.set(bx, by, bz);
+          latticeGroup.add(byteCube);
+
+          // Highlight diagonal ShiftRows trajectory in radiant gold
+          const isShiftedDiag = c === r;
+          const nibbleCore = new THREE.Mesh(coreGeo, isShiftedDiag ? goldTraceMat : cyanCoreMat);
+          nibbleCore.position.set(bx, by, bz);
+          latticeGroup.add(nibbleCore);
+        }
+      }
+
+      // Central illuminated S-Box non-linear substitution prism
+      const sBoxPrism = new THREE.Mesh(new THREE.OctahedronGeometry(0.11, 0), goldTraceMat);
+      sBoxPrism.position.set(0, 0, 0);
+      latticeGroup.add(sBoxPrism);
+
+      // Concentric ShiftRows & MixColumns transformation orbital rings
+      const shiftRowsRing = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.02, 16, 64), polishedGold);
+      shiftRowsRing.position.y = 0.14;
+      shiftRowsRing.rotation.x = Math.PI / 2 - 0.32;
+      group.add(shiftRowsRing);
+
+      const mixColsRing = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.016, 16, 64), brushedSteel);
+      mixColsRing.position.y = 0.14;
+      mixColsRing.rotation.y = 0.55;
+      mixColsRing.rotation.x = 0.28;
+      group.add(mixColsRing);
       break;
     }
+
     case 'sha256': {
-      const sphereGeo = new THREE.SphereGeometry(0.55, 32, 32);
-      const purpleMat = new THREE.MeshPhysicalMaterial({ color: 0x9333ea, emissive: 0x6b21a8, emissiveIntensity: 0.6, roughness: 0.1 });
-      const sphere = new THREE.Mesh(sphereGeo, purpleMat);
-      sphere.castShadow = true;
-      group.add(sphere);
+      // 8-Register Merkle-Damgård Compression Core (Octagonal canisters A..H, 64-round bronze gear, Davies-Meyer funnel & feedforward pipes)
+      const manifoldBase = new THREE.Mesh(new THREE.CylinderGeometry(0.64, 0.68, 0.09, 8), obsidian);
+      manifoldBase.position.y = -0.44;
+      manifoldBase.castShadow = true;
+      group.add(manifoldBase);
+
+      const manifoldCrown = new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.022, 12, 8), polishedGold);
+      manifoldCrown.rotation.x = Math.PI / 2;
+      manifoldCrown.position.y = 0.24;
+      group.add(manifoldCrown);
+
+      // Central 64-tooth bronze round-constant gear (K_0 .. K_63)
+      const roundGear = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.08, 32), antiqueBrass);
+      roundGear.position.y = -0.08;
+      group.add(roundGear);
+
+      const toothGeo = new THREE.BoxGeometry(0.025, 0.085, 0.045);
+      for (let t = 0; t < 32; t++) {
+        const ang = (t / 32) * Math.PI * 2;
+        const tooth = new THREE.Mesh(toothGeo, polishedGold);
+        tooth.position.set(Math.cos(ang) * 0.295, -0.08, Math.sin(ang) * 0.295);
+        tooth.rotation.y = -ang;
+        group.add(tooth);
+      }
+
+      // Radiant 256-bit digest core & overhead Davies-Meyer conical compression intake funnel
+      const digestCore = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.16, 1),
+        new THREE.MeshStandardMaterial({
+          color: 0xe9d5ff,
+          emissive: 0x9333ea,
+          emissiveIntensity: 1.5,
+          roughness: 0.15,
+        })
+      );
+      digestCore.position.y = 0.08;
+      group.add(digestCore);
+
+      const intakeFunnel = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.32, 0.11, 0.28, 32, 1, true),
+        new THREE.MeshStandardMaterial({
+          color: 0xd4af37,
+          metalness: 0.92,
+          roughness: 0.18,
+          side: THREE.DoubleSide,
+        })
+      );
+      intakeFunnel.position.y = 0.36;
+      group.add(intakeFunnel);
+
+      // 8 vertical 32-bit working register canisters (A, B, C, D, E, F, G, H) + radial feedforward pipes
+      const quartzMat = new THREE.MeshStandardMaterial({
+        color: 0xc084fc,
+        emissive: 0x7e22ce,
+        emissiveIntensity: 0.95,
+        roughness: 0.12,
+      });
+
+      for (let reg = 0; reg < 8; reg++) {
+        const ang = (reg / 8) * Math.PI * 2;
+        const rx = Math.cos(ang) * 0.5;
+        const rz = Math.sin(ang) * 0.5;
+
+        const botCap = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.095, 0.08, 20), brushedSteel);
+        botCap.position.set(rx, -0.36, rz);
+        group.add(botCap);
+
+        const topCap = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.07, 20), brushedSteel);
+        topCap.position.set(rx, 0.18, rz);
+        group.add(topCap);
+
+        // Outer glass sleeve & inner glowing 32-bit state column
+        const fillH = 0.22 + ((reg * 3) % 5) * 0.05;
+        const stateCol = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.058, fillH, 20), quartzMat);
+        stateCol.position.set(rx, -0.32 + fillH / 2, rz);
+        group.add(stateCol);
+
+        // Radial Davies-Meyer feedforward conduit pipe from central core to register
+        const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.38, 10), agedBronze);
+        pipe.rotation.z = Math.PI / 2;
+        pipe.rotation.y = -ang;
+        pipe.position.set(Math.cos(ang) * 0.28, -0.22, Math.sin(ang) * 0.28);
+        group.add(pipe);
+      }
       break;
     }
   }
