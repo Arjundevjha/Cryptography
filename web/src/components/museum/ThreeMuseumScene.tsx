@@ -82,6 +82,7 @@ export default function ThreeMuseumScene({
   const rotatingArtifactsRef = useRef<THREE.Object3D[]>([]);
   const floatingMarkersRef = useRef<THREE.Object3D[]>([]);
   const statueGlyphsRef = useRef<THREE.Object3D[]>([]);
+  const exhibitLightsRef = useRef<Map<string, { spot: THREE.SpotLight; wash: THREE.PointLight }>>(new Map());
 
   // Keyboard WASD state
   const keysPressedRef = useRef<{ [key: string]: boolean }>({});
@@ -110,19 +111,18 @@ export default function ThreeMuseumScene({
     // === 1. HIGH-PERFORMANCE WEBGL RENDERER ===
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.15));
+    renderer.shadowMap.enabled = false;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
-    renderer.setClearColor(0x1e293b);
+    renderer.toneMappingExposure = 1.25;
+    renderer.setClearColor(0x352e27);
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // === 2. ATMOSPHERIC OBSIDIAN VAULT SCENE & FOG ===
+    // === 2. GRAND CLASSICAL ARCHITECTURAL SCENE & ATMOSPHERIC FOG ===
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0c10);
-    scene.fog = new THREE.FogExp2(0x0a0c10, 0.005);
+    scene.background = new THREE.Color(0x352e27);
+    scene.fog = new THREE.FogExp2(0x352e27, 0.0032);
     sceneRef.current = scene;
 
     // === 3. FIRST-PERSON EYE-LEVEL CAMERA & IN-PLACE CONTROLS ===
@@ -162,65 +162,53 @@ export default function ThreeMuseumScene({
     window.addEventListener('keyup', handleKeyUp);
 
     // ============================
-    // 5. ARCHIVAL MUSEUM ARCHITECTURAL MATERIALS
+    // 5. GRAND CLASSICAL ARCHITECTURAL MATERIALS
     // ============================
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x1b1e27, roughness: 0.55 });
-    const wainscotMat = new THREE.MeshStandardMaterial({ color: 0x261912, roughness: 0.45 });
-    const trimMat = new THREE.MeshStandardMaterial({ color: 0xc59f3d, metalness: 0.88, roughness: 0.22 });
-    const woodBeamMat = new THREE.MeshStandardMaterial({ color: 0x231710, roughness: 0.45 });
-    const terrazzoFloorMat = new THREE.MeshPhysicalMaterial({
-      color: 0x12141a,
-      roughness: 0.18,
-      metalness: 0.08,
-      clearcoat: 0.35,
-      clearcoatRoughness: 0.12,
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xede5d8, roughness: 0.65, metalness: 0.03 });
+    const wainscotMat = new THREE.MeshStandardMaterial({ color: 0x3d271a, roughness: 0.42, metalness: 0.04 });
+    const trimMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.18 });
+    const woodBeamMat = new THREE.MeshStandardMaterial({ color: 0x3a2517, roughness: 0.45 });
+    const marbleFloorMat = new THREE.MeshStandardMaterial({
+      color: 0xe2d9cd,
+      roughness: 0.24,
+      metalness: 0.04,
     });
-    const neroMarquinaMat = new THREE.MeshPhysicalMaterial({
-      color: 0x08090d,
-      roughness: 0.12,
-      metalness: 0.06,
-      clearcoat: 0.45,
+    const oakRunnerMat = new THREE.MeshStandardMaterial({
+      color: 0x5a3e28,
+      roughness: 0.38,
+      metalness: 0.02,
     });
-    const brassInlayMat = new THREE.MeshStandardMaterial({ color: 0xc99a3e, metalness: 0.88, roughness: 0.2 });
-    const travertineMat = new THREE.MeshStandardMaterial({ color: 0xd6cfc2, roughness: 0.42, metalness: 0.04 });
-    const wartimeBronzeMat = new THREE.MeshStandardMaterial({ color: 0x4a3728, metalness: 0.82, roughness: 0.32 });
-    const titaniumMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.92, roughness: 0.18 });
-    const matteBlackMat = new THREE.MeshStandardMaterial({ color: 0x0b0d12, roughness: 0.5, metalness: 0.3 });
-    const leatherMat = new THREE.MeshStandardMaterial({ color: 0x2c1810, roughness: 0.65, metalness: 0.05 });
+    const brassInlayMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.18 });
+    const travertineMat = new THREE.MeshStandardMaterial({ color: 0xf2ede4, roughness: 0.45, metalness: 0.03 });
+    const wartimeBronzeMat = new THREE.MeshStandardMaterial({ color: 0x5a4533, metalness: 0.82, roughness: 0.32 });
+    const titaniumMat = new THREE.MeshStandardMaterial({ color: 0x5a6878, metalness: 0.9, roughness: 0.2 });
+    const matteBlackMat = new THREE.MeshStandardMaterial({ color: 0x221f1c, roughness: 0.6, metalness: 0.2 });
+    const leatherMat = new THREE.MeshStandardMaterial({ color: 0x422619, roughness: 0.65, metalness: 0.05 });
     const glassMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      transmission: 0.94,
+      transmission: 0.95,
       transparent: true,
-      opacity: 0.32,
+      opacity: 0.25,
       roughness: 0.02,
       ior: 1.52,
     });
     const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.92, roughness: 0.16 });
 
     // ============================
-    // 6. CALIBRATED GALLERY EXHIBITION LIGHTING
+    // 6. CALIBRATED GRAND MUSEUM LIGHTING (DAYLIGHT & WARM ARCHITECTURAL FILL)
     // ============================
-    const hemiLight = new THREE.HemisphereLight(0xfff7ea, 0x101218, 0.58);
+    const hemiLight = new THREE.HemisphereLight(0xfffaee, 0xd2c5b6, 1.35);
     hemiLight.position.set(0, 50, 0);
     scene.add(hemiLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.65);
-    sunLight.position.set(25, 42, 28);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
-    sunLight.shadow.camera.near = 1;
-    sunLight.shadow.camera.far = 160;
-    sunLight.shadow.camera.left = -80;
-    sunLight.shadow.camera.right = 80;
-    sunLight.shadow.camera.top = 80;
-    sunLight.shadow.camera.bottom = -80;
-    sunLight.shadow.bias = -0.0001;
+    const sunLight = new THREE.DirectionalLight(0xfff6e8, 1.6);
+    sunLight.position.set(25, 45, 28);
+    sunLight.castShadow = false;
     scene.add(sunLight);
 
     // Dedicated Rotunda Portrait Key Light (Illuminates Founding Pioneers from the front)
-    const rotundaKeyLight = new THREE.DirectionalLight(0xffedd5, 2.3);
-    rotundaKeyLight.position.set(0, 14, 24);
+    const rotundaKeyLight = new THREE.DirectionalLight(0xfff3df, 2.2);
+    rotundaKeyLight.position.set(0, 15, 22);
     rotundaKeyLight.target.position.set(0, 2.3, 6);
     scene.add(rotundaKeyLight);
     scene.add(rotundaKeyLight.target);
@@ -263,22 +251,21 @@ export default function ThreeMuseumScene({
         chandelierGroup.add(crystal);
       }
     });
-    const lobbyChandelier = new THREE.PointLight(0xffeedb, 4.2, 48);
+    const lobbyChandelier = new THREE.PointLight(0xffeedb, 3.5, 42);
     lobbyChandelier.position.set(0, -1.2, 0);
     chandelierGroup.add(lobbyChandelier);
     scene.add(chandelierGroup);
 
     // ============================
-    // 7. MUSEUM BUILDING ARCHITECTURE (TERRAZZO, INLAYS, COFFERED CEILING)
+    // 7. MUSEUM BUILDING ARCHITECTURE (BOTTICINO MARBLE, INLAYS, COFFERED CEILING)
     // ============================
     const floorGeo = new THREE.PlaneGeometry(180, 200);
-    const floor = new THREE.Mesh(floorGeo, terrazzoFloorMat);
+    const floor = new THREE.Mesh(floorGeo, marbleFloorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
     scene.add(floor);
 
-    // Nero Marquina Marble Corridor Runners leading from Rotunda to Wings
-    const mainRunner = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 56), neroMarquinaMat);
+    // French Honey Oak Parquet Corridor Runners leading from Rotunda to Wings
+    const mainRunner = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 56), oakRunnerMat);
     mainRunner.rotation.x = -Math.PI / 2;
     mainRunner.position.set(0, 0.008, -14);
     scene.add(mainRunner);
@@ -295,13 +282,29 @@ export default function ThreeMuseumScene({
       scene.add(crossJoint);
     }
 
-    // Coffered Dark Acoustic Ceiling & Walnut Structural Cross-Beams
+    // Coffered Warm Classical Ceiling & Walnut Structural Cross-Beams
     const ceilingGeo = new THREE.PlaneGeometry(180, 200);
-    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x10131b, roughness: 0.65 });
+    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xede6dc, roughness: 0.72 });
     const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
     ceiling.position.y = 12;
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
+
+    // Grand Rotunda Frosted Oculus Skylight (Diffuses Warm Natural Daylight)
+    const skylightGeo = new THREE.CircleGeometry(7.5, 48);
+    const skylightMat = new THREE.MeshBasicMaterial({
+      color: 0xfffaee,
+      side: THREE.DoubleSide,
+    });
+    const rotundaSkylight = new THREE.Mesh(skylightGeo, skylightMat);
+    rotundaSkylight.rotation.x = Math.PI / 2;
+    rotundaSkylight.position.set(0, 11.95, 8);
+    scene.add(rotundaSkylight);
+
+    const skylightTrim = new THREE.Mesh(new THREE.RingGeometry(7.3, 7.8, 48), trimMat);
+    skylightTrim.rotation.x = Math.PI / 2;
+    skylightTrim.position.set(0, 11.94, 8);
+    scene.add(skylightTrim);
 
     for (let x = -80; x <= 80; x += 20) {
       const beamGeo = new THREE.BoxGeometry(0.65, 0.85, 200);
@@ -316,7 +319,7 @@ export default function ThreeMuseumScene({
       scene.add(crossBeam);
     }
 
-    // Perimeter Acoustic Limestone Walls with Dark Walnut Wainscoting & Brass Rails
+    // Perimeter Travertine Limestone Walls with Warm Walnut Wainscoting & Brass Rails
     const rearWallGeo = new THREE.BoxGeometry(180, 12, 0.8);
     const rearWall = new THREE.Mesh(rearWallGeo, wallMat);
     rearWall.position.set(0, 6, 32);
@@ -418,7 +421,7 @@ export default function ThreeMuseumScene({
 
     const medallionInner = new THREE.Mesh(
       new THREE.CircleGeometry(2.48, 64),
-      new THREE.MeshStandardMaterial({ color: 0x08090d, roughness: 0.2, side: THREE.DoubleSide })
+      new THREE.MeshStandardMaterial({ color: 0x4a3324, roughness: 0.35, side: THREE.DoubleSide })
     );
     medallionInner.rotation.x = -Math.PI / 2;
     medallionInner.position.set(0, 0.018, 16);
@@ -454,7 +457,7 @@ export default function ThreeMuseumScene({
       const pGroup = new THREE.Group();
       pGroup.position.set(cx, 0, cz);
 
-      const basePlinth = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.45, 1.5), neroMarquinaMat);
+      const basePlinth = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.45, 1.5), oakRunnerMat);
       basePlinth.position.y = 0.225;
       pGroup.add(basePlinth);
 
@@ -465,8 +468,6 @@ export default function ThreeMuseumScene({
 
       const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.56, 10.2, 32), travertineMat);
       shaft.position.y = 5.55;
-      shaft.castShadow = true;
-      shaft.receiveShadow = true;
       pGroup.add(shaft);
 
       const capRing = new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.06, 16, 36), goldMat);
@@ -663,7 +664,7 @@ export default function ThreeMuseumScene({
 
       // Brass plinth & capital rings on portal columns
       [-4.6, 4.6].forEach((px) => {
-        const pBase = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.4, 1.4), neroMarquinaMat);
+        const pBase = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.4, 1.4), oakRunnerMat);
         pBase.position.set(px, 0.2, 0);
         portalGroup.add(pBase);
         const pRing = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.05, 16, 32), goldMat);
@@ -712,15 +713,14 @@ export default function ThreeMuseumScene({
     // ============================
     const rotatingArtifacts: THREE.Object3D[] = [];
     const floatingMarkers: THREE.Object3D[] = [];
-    const roomWallMat = new THREE.MeshStandardMaterial({ color: 0x181b24, roughness: 0.55 });
-    const roomRoofMat = new THREE.MeshStandardMaterial({ color: 0x0f1219, roughness: 0.6 });
-    const plinthObsidianMat = new THREE.MeshPhysicalMaterial({
-      color: 0x12151e,
+    const roomWallMat = new THREE.MeshStandardMaterial({ color: 0xede5d8, roughness: 0.65, metalness: 0.02 });
+    const roomRoofMat = new THREE.MeshStandardMaterial({ color: 0xeae2d5, roughness: 0.72 });
+    const plinthMarbleMat = new THREE.MeshStandardMaterial({
+      color: 0xf2ece4,
       roughness: 0.22,
-      metalness: 0.15,
-      clearcoat: 0.35,
+      metalness: 0.05,
     });
-    const velvetBedMat = new THREE.MeshStandardMaterial({ color: 0x2a1018, roughness: 0.88, metalness: 0.04 });
+    const velvetBedMat = new THREE.MeshStandardMaterial({ color: 0x7a221a, roughness: 0.85, metalness: 0.02 });
 
     MUSEUM_EXHIBITS.forEach((exhibit, exIdx) => {
       const roomGroup = new THREE.Group();
@@ -731,7 +731,6 @@ export default function ThreeMuseumScene({
       // Back Wall with Walnut Wainscoting & Recessed Cove Backlight
       const backWall = new THREE.Mesh(new THREE.BoxGeometry(14, 8.5, 0.4), roomWallMat);
       backWall.position.set(0, 4.25, -6);
-      backWall.receiveShadow = true;
       roomGroup.add(backWall);
 
       const backWainscot = new THREE.Mesh(new THREE.BoxGeometry(13.6, 1.2, 0.46), wainscotMat);
@@ -747,7 +746,7 @@ export default function ThreeMuseumScene({
       alcoveFrame.position.set(0, 4.2, -5.78);
       roomGroup.add(alcoveFrame);
 
-      const alcoveInner = new THREE.Mesh(new THREE.BoxGeometry(5.3, 4.9, 0.14), neroMarquinaMat);
+      const alcoveInner = new THREE.Mesh(new THREE.BoxGeometry(5.3, 4.9, 0.14), wainscotMat);
       alcoveInner.position.set(0, 4.2, -5.76);
       roomGroup.add(alcoveInner);
 
@@ -755,12 +754,10 @@ export default function ThreeMuseumScene({
       const sideWallGeo = new THREE.BoxGeometry(0.4, 8.5, 12);
       const leftWall = new THREE.Mesh(sideWallGeo, roomWallMat);
       leftWall.position.set(-7, 4.25, 0);
-      leftWall.receiveShadow = true;
       roomGroup.add(leftWall);
 
       const rightWall = new THREE.Mesh(sideWallGeo, roomWallMat);
       rightWall.position.set(7, 4.25, 0);
-      rightWall.receiveShadow = true;
       roomGroup.add(rightWall);
 
       [-6.95, 6.95].forEach((wx) => {
@@ -830,14 +827,22 @@ export default function ThreeMuseumScene({
       plaqueMesh.position.set(-6.75, 3.8, -1);
       roomGroup.add(plaqueMesh);
 
-      // Museum-Grade Multi-Tier Beveled Obsidian Vitrine Plinth
+      // Soft Ground Contact Ring under Vitrine Pedestal (Lightweight contact shadow)
+      const contactDecal = new THREE.Mesh(
+        new THREE.RingGeometry(0.8, 1.45, 32),
+        new THREE.MeshBasicMaterial({ color: 0x8a7f72, opacity: 0.35, transparent: true, side: THREE.DoubleSide })
+      );
+      contactDecal.rotation.x = -Math.PI / 2;
+      contactDecal.position.set(0, 0.015, 0);
+      roomGroup.add(contactDecal);
+
+      // Museum-Grade Multi-Tier Botticino Marble Vitrine Plinth
       const toeKick = new THREE.Mesh(new THREE.CylinderGeometry(1.26, 1.3, 0.12, 48), goldMat);
       toeKick.position.set(0, 0.06, 0);
       roomGroup.add(toeKick);
 
-      const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.24, 1.02, 48), plinthObsidianMat);
+      const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.24, 1.02, 48), plinthMarbleMat);
       pedestal.position.set(0, 0.63, 0);
-      pedestal.receiveShadow = true;
       roomGroup.add(pedestal);
 
       const plinthBezel = new THREE.Mesh(new THREE.TorusGeometry(1.16, 0.032, 16, 48), goldMat);
@@ -860,20 +865,23 @@ export default function ThreeMuseumScene({
       roomGroup.add(vitrineCrown);
 
       // Calibrated Exhibit Pin-Spotlight with Realistic Decay & Soft Penumbra + Warm Chamber Wash
-      const spot = new THREE.SpotLight(0xfff6e5, 8.5, 24, 0.54, 0.5, 1.3);
+      const spot = new THREE.SpotLight(0xfff6e5, 7.5, 24, 0.54, 0.5, 1.3);
       spot.position.set(0, 8.1, 1.8);
       spot.castShadow = false;
       spot.target = pedestal;
       roomGroup.add(spot);
       roomGroup.add(spot.target);
 
-      const chamberWash = new THREE.PointLight(0xffedd5, 2.4, 15, 1.4);
+      const chamberWash = new THREE.PointLight(0xffedd5, 2.2, 15, 1.4);
       chamberWash.position.set(0, 6.2, 1.5);
       roomGroup.add(chamberWash);
+
+      exhibitLightsRef.current.set(exhibit.id, { spot, wash: chamberWash });
 
       // Elevated Rotating Physical Cryptographic Artifact
       const artifactGroup = new THREE.Group();
       artifactGroup.position.set(0, 1.92, 0);
+      artifactGroup.userData = { exhibitId: exhibit.id };
       buildHighQualityArtifact(exhibit.id, artifactGroup);
       roomGroup.add(artifactGroup);
       rotatingArtifacts.push(artifactGroup);
@@ -1069,12 +1077,31 @@ export default function ThreeMuseumScene({
         }
       }
 
-      // Rotate artifacts
+      // Rotate artifacts: only spin the active exhibit or when viewing wing/rotunda overview
       if (!isMacroRef.current) {
+        const activeExhibitId = currentViewRef.current;
         rotatingArtifactsRef.current.forEach((art) => {
-          art.rotation.y += delta * 0.4;
+          if (
+            art.userData?.exhibitId === activeExhibitId ||
+            activeExhibitId.startsWith('wing-') ||
+            activeExhibitId === 'atrium'
+          ) {
+            art.rotation.y += delta * 0.45;
+          }
         });
       }
+
+      // Dynamic light scoping: full spotlight on active room, gentle ambient wash on others
+      const currentActive = currentViewRef.current;
+      exhibitLightsRef.current.forEach(({ spot, wash }, id) => {
+        if (id === currentActive) {
+          spot.intensity = 7.5;
+          wash.intensity = 2.4;
+        } else {
+          spot.intensity = 0;
+          wash.intensity = 0.8;
+        }
+      });
 
       // Animate doorway floating markers
       floatingMarkersRef.current.forEach((marker, idx) => {
@@ -1779,9 +1806,9 @@ function buildStatueMonument(
   });
 
   const belgianBlackGranite = new THREE.MeshStandardMaterial({
-    color: 0x18181b,
-    roughness: 0.22,
-    metalness: 0.35,
+    color: 0x422c1e,
+    roughness: 0.28,
+    metalness: 0.15,
   });
 
   const florentineBronze = new THREE.MeshPhysicalMaterial({
@@ -1830,9 +1857,9 @@ function buildStatueMonument(
 
   const medallionInnerGeo = new THREE.CircleGeometry(2.28, 64);
   const medallionInnerMat = new THREE.MeshStandardMaterial({
-    color: 0x09090b,
-    roughness: 0.25,
-    metalness: 0.2,
+    color: 0x4a3324,
+    roughness: 0.35,
+    metalness: 0.15,
     side: THREE.DoubleSide,
   });
   const medallionInner = new THREE.Mesh(medallionInnerGeo, medallionInnerMat);

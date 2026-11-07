@@ -25,7 +25,7 @@ export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDra
       role="dialog"
       aria-modal="true"
       aria-label={`Artifact details for ${exhibit.name}`}
-      className="museum-scroller fixed top-0 right-0 h-full w-80 md:w-96 bg-[#0c0e14]/95 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-40 text-stone-100 overflow-y-auto shadow-2xl"
+      className="museum-scroller fixed top-0 right-0 h-full w-80 md:w-96 bg-[#161412]/96 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-40 text-stone-100 overflow-y-auto shadow-2xl"
     >
       {/* Drawer Header — Title first, wing metadata below */}
       <div className="flex items-start justify-between pb-4 mb-6 border-b border-amber-500/20">
@@ -36,7 +36,7 @@ export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDra
         <button
           onClick={onClose}
           aria-label="Close artifact details"
-          className="p-2 rounded-lg bg-[#111520] border border-stone-800 text-stone-300 hover:text-stone-100 hover:bg-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+          className="p-2 rounded-lg bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 hover:text-stone-100 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
         >
           <X className="w-5 h-5" />
         </button>

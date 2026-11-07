@@ -1,16 +1,16 @@
 # Graph Report - Cryptography  (2026-11-07)
 
 ## Corpus Check
-- 111 files · ~92,551 words
+- 111 files · ~92,704 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1539 nodes · 2690 edges · 96 communities (85 shown, 11 thin omitted)
+- 1539 nodes · 2690 edges · 97 communities (85 shown, 12 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 161 edges (avg confidence: 0.52)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b11ce035`
+- Built from commit: `767ac168`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -55,6 +55,7 @@
 - Lorenz Interactive CLI Simulation Runner
 - is_valid_origin
 - No-Install E2E Testing Script
+- .__init__
 - FastAPI Request Validation Handler
 - Test Suites Execution Script
 - Frontend Root App Layout Settings
@@ -128,7 +129,7 @@
 ## Hyperedges (group relationships)
 - **Cryptography Project Guidelines** — contributing_python_standards, style_guide_no_external_libs, style_guide_file_structure, style_guide_naming_conventions [INFERRED 0.85]
 
-## Communities (96 total, 11 thin omitted)
+## Communities (97 total, 12 thin omitted)
 
 ### Community 0 - "Cryptographic Helpers & Base64 Utilities"
 Cohesion: 0.13
@@ -159,8 +160,8 @@ Cohesion: 0.15
 Nodes (11): Docstring Template Requirement, Categorized Cipher Directory Layout, Steps to Add New Algorithms, Python Standards Guidelines, Algorithm Security References, Project Features and Support, Quick Start Code Samples, Standard Module Layout (+3 more)
 
 ### Community 7 - "Manual Hash Function Implementations"
-Cohesion: 0.14
-Nodes (9): _blake2b_g(), _blake2s_g(), Manual implementation of cryptographic hash functions in pure Python. This modul, Perform bitwise right rotation on a 32-bit unsigned integer., Perform bitwise right rotation on a 64-bit unsigned integer., Helper G function for BLAKE2b., Helper G function for BLAKE2s., _rotr32() (+1 more)
+Cohesion: 0.12
+Nodes (11): _blake2b_g(), _blake2s_g(), main(), Manual implementation of cryptographic hash functions in pure Python. This modul, Run the interactive hash command line interface., Perform bitwise right rotation on a 32-bit unsigned integer., Perform bitwise right rotation on a 64-bit unsigned integer., Helper G function for BLAKE2b. (+3 more)
 
 ### Community 8 - "Affine Cipher Core & Unit Tests"
 Cohesion: 0.07
@@ -259,8 +260,8 @@ Cohesion: 0.25
 Nodes (8): decrypt_private_key(), Decrypt an encrypted private key PEM using the passphrase., Test that missing encrypted PEM header or footer raises ValueError in decrypt_pr, Test that decrypt_private_key raises ValueError when the payload is under 16 byt, test_decrypt_encrypted_private_key(), test_decrypt_private_key_missing_header_or_footer(), test_decrypt_private_key_payload_too_short(), test_rsa_decrypt_private_key_wrong_passphrase()
 
 ### Community 34 - "Lorenz Text Processing Procedures"
-Cohesion: 0.09
-Nodes (25): Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Process an entire text string through the Lorenz cipher machine.          Non-IT, Alias for process_message., Alias for process_message., Initialize the 12-wheel Lorenz cipher machine.          Args:             chi_pi, Set positions for all 12 wheels.          Args:             positions: Position, Get current position indices for all 12 wheels. (+17 more)
+Cohesion: 0.11
+Nodes (23): Lorenz, Lorenz SZ40/SZ42 cipher machine orchestrator., Process an entire text string through the Lorenz cipher machine.          Non-IT, Alias for process_message., Alias for process_message., Get current position indices for all 12 wheels., Set manual pin configurations for Chi, Motor, and Psi wheels.          Args:, Unit tests for Lorenz top-level machine class. (+15 more)
 
 ### Community 35 - "Lorenz Machine Core Unit Tests"
 Cohesion: 0.13
@@ -343,12 +344,12 @@ Cohesion: 0.25
 Nodes (8): b64decode(), Decode a Base64 string to bytes.      BOLT OPTIMIZATION: Processes 4-character b, Test roundtrip encoding and decoding for various byte payloads., Verify that b64decode raises ValueError on invalid characters or invalid lengths, test_b64decode(), test_b64decode_validation_errors(), test_b64encode_roundtrip(), test_generate_keypair_output_primality()
 
 ### Community 75 - "stepping.py"
-Cohesion: 0.20
-Nodes (10): compute_hash(), main(), Compute hash using the specified algorithm.      Args:         data: The input s, Run the interactive hash command line interface., Test compute_hash with 'md5' algorithm triggers SecurityWarning., Test that compute_hash raises a ValueError for unsupported algorithms., Test that all hash functions compute non-empty digests., test_all_hash_functions_non_empty() (+2 more)
+Cohesion: 0.17
+Nodes (16): blake2b(), compute_hash(), Compute hash using the specified algorithm.      Args:         data: The input s, Compute the BLAKE2b hash of the given data.      BLAKE2b is optimized for 64-bit, Test compute_hash with 'md5' algorithm triggers SecurityWarning., Test BLAKE2b implementation against known-answer vectors and hashlib standard., Test that compute_hash raises a ValueError for unsupported algorithms., Test SHA-256 implementation against known-answer vectors. (+8 more)
 
 ### Community 76 - "parse_aes_key"
-Cohesion: 0.25
-Nodes (8): Pad the input string according to SHA-256 specification., Process a single 64-byte block to update the SHA-256 hash state in place.      B, Compute the SHA-256 hash of the given data.      Args:         data: The input s, sha256(), _sha256_compress_block(), _sha256_pad(), Test SHA-256 implementation against known-answer vectors., test_sha256_kats()
+Cohesion: 0.33
+Nodes (6): Pad the input string according to SHA-256 specification., Process a single 64-byte block to update the SHA-256 hash state in place.      B, Compute the SHA-256 hash of the given data.      Args:         data: The input s, sha256(), _sha256_compress_block(), _sha256_pad()
 
 ### Community 77 - "test_fallback_imports"
 Cohesion: 0.12
@@ -383,16 +384,16 @@ Cohesion: 0.12
 Nodes (16): inv_shift_rows(), Shift state rows to the left by row offsets., Shift state rows to the right by row offsets., shift_rows(), Test shift_rows function with a 16-byte state represented as 0..15., Test inv_shift_rows function directly with a known input state., Test shift_rows against FIPS 197 Appendix B Known Answer Test vector., Test that applying shift_rows 4 times returns the state to its original configur (+8 more)
 
 ### Community 85 - "sub_bytes"
-Cohesion: 0.20
-Nodes (11): blake2b(), md5(), Warning category raised when insecure or cryptographically broken algorithms are, Compute the MD5 hash of the given data.      WARNING: MD5 is cryptographically b, Compute the BLAKE2b hash of the given data.      BLAKE2b is optimized for 64-bit, SecurityWarning, Test BLAKE2b implementation against known-answer vectors and hashlib standard., Test that md5 function triggers a SecurityWarning and computes expected hash. (+3 more)
+Cohesion: 0.67
+Nodes (3): Warning category raised when insecure or cryptographically broken algorithms are, SecurityWarning, UserWarning
 
 ### Community 86 - "md5"
-Cohesion: 0.33
-Nodes (6): _left_rotate32(), Perform bitwise left rotation on a 32-bit unsigned integer., Compute the SHA-1 hash of the given data.      WARNING: SHA-1 is cryptographical, sha1(), Test SHA-1 KAT correctness and verify SecurityWarning emission., test_sha1_kat_and_warning()
+Cohesion: 0.20
+Nodes (10): _left_rotate32(), md5(), Perform bitwise left rotation on a 32-bit unsigned integer., Compute the MD5 hash of the given data.      WARNING: MD5 is cryptographically b, Compute the SHA-1 hash of the given data.      WARNING: SHA-1 is cryptographical, sha1(), Test SHA-1 KAT correctness and verify SecurityWarning emission., Test that md5 function triggers a SecurityWarning and computes expected hash. (+2 more)
 
 ### Community 87 - "sub_word"
-Cohesion: 0.25
-Nodes (8): Process a single 128-byte block to update the SHA-512 hash state in place., Compute the SHA-512 hash of the given data.      Args:         data: The input s, sha512(), _sha512_compress_block(), Test SHA-512 implementation against known-answer vectors., Test SHA-512 against standard hashlib for various block sizes, boundaries, and U, test_sha512_block_boundaries_and_unicode(), test_sha512_kats()
+Cohesion: 0.33
+Nodes (6): Process a single 128-byte block to update the SHA-512 hash state in place., Compute the SHA-512 hash of the given data.      Args:         data: The input s, sha512(), _sha512_compress_block(), Test SHA-512 implementation against known-answer vectors., test_sha512_kats()
 
 ### Community 89 - "web/README.md"
 Cohesion: 0.33
@@ -417,16 +418,16 @@ Nodes (3): Validates digit coordinates in Polybius ciphertext., validate_polybiu
 ## Knowledge Gaps
 - **127 isolated node(s):** `run_e2e.sh script`, `PYTHONPATH`, `$schema`, `src/index.{ts,tsx,js,jsx}`, `src/main.{ts,tsx,js,jsx}` (+122 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Lorenz` connect `Lorenz Text Processing Procedures` to `Plugboard`, `FastAPI Backend Routes & Schema Models`, `Test Suites Execution Script`, `run_cli`, `Lorenz Wheels Components Testing`, `Baudot ITA2 Lorenz Code Conversions`, `AesDecryptInput`, `Lorenz Stepping Controller Engine`, `Sha256Input`, `Lorenz Machine Cryptography Vector Math`?**
+- **Why does `Lorenz` connect `Lorenz Text Processing Procedures` to `Plugboard`, `FastAPI Backend Routes & Schema Models`, `.__init__`, `Test Suites Execution Script`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`, `run_cli`, `AesDecryptInput`, `Lorenz Stepping Controller Engine`, `Sha256Input`, `Lorenz Machine Cryptography Vector Math`?**
   _High betweenness centrality (0.075) - this node is a cross-community bridge._
-- **Why does `sha256()` connect `parse_aes_key` to `FastAPI Backend Routes & Schema Models`, `sub_bytes`, `Sha256Input`, `Manual Hash Function Implementations`?**
+- **Why does `sha256()` connect `parse_aes_key` to `FastAPI Backend Routes & Schema Models`, `stepping.py`, `Sha256Input`, `Manual Hash Function Implementations`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
-- **Why does `SteppingController` connect `Lorenz Stepping Controller Engine` to `Lorenz Text Processing Procedures`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`?**
+- **Why does `SteppingController` connect `Lorenz Stepping Controller Engine` to `.__init__`, `Lorenz Text Processing Procedures`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`?**
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Are the 25 inferred relationships involving `Lorenz` (e.g. with `SteppingController` and `Wheel`) actually correct?**
   _`Lorenz` has 25 INFERRED edges - model-reasoned connections that need verification._

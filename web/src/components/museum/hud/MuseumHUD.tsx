@@ -67,7 +67,7 @@ export function MuseumHUD({
       <header className="select-none fixed top-4 inset-x-4 sm:inset-x-5 z-40 flex items-center justify-between gap-2 pointer-events-none">
         {/* Left Zone: Branding & Return to Lobby */}
         <div className="pointer-events-auto flex items-center gap-2 min-w-0">
-          <div className="px-3.5 py-2 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2.5 min-w-0">
+          <div className="px-3.5 py-2 rounded-2xl bg-[#161412]/92 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2.5 min-w-0">
             <span className="text-amber-400 text-sm leading-none shrink-0" aria-hidden="true">
               ◈
             </span>
@@ -99,7 +99,7 @@ export function MuseumHUD({
         {/* Center Zone: Wing & Navigation Bar */}
         <nav
           aria-label="Museum wings and tools"
-          className="pointer-events-auto hidden lg:flex items-center gap-1 p-1.5 rounded-2xl bg-[#0c0e14]/90 backdrop-blur-xl border border-amber-500/25 shadow-2xl shrink-0"
+          className="pointer-events-auto hidden lg:flex items-center gap-1 p-1.5 rounded-2xl bg-[#161412]/92 backdrop-blur-xl border border-amber-500/25 shadow-2xl shrink-0"
         >
           <button
             onClick={onReturnToFoyer}
@@ -134,7 +134,7 @@ export function MuseumHUD({
               className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 isTourActive
                   ? 'bg-amber-400 text-stone-950 font-bold'
-                  : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
+                  : 'bg-[#24201c] hover:bg-[#322d27] text-amber-300 border border-amber-500/25'
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5" /> Guided Tour
@@ -147,7 +147,7 @@ export function MuseumHUD({
             aria-expanded={showMap}
             aria-label="Toggle 2D museum floorplan map"
             className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-              showMap ? 'bg-amber-400 text-stone-950 font-bold' : 'bg-[#111520] hover:bg-stone-800 text-amber-300 border border-amber-500/25'
+              showMap ? 'bg-amber-400 text-stone-950 font-bold' : 'bg-[#24201c] hover:bg-[#322d27] text-amber-300 border border-amber-500/25'
             }`}
           >
             <Map className="w-3.5 h-3.5" /> 2D Map <span className="text-[10px] font-mono opacity-80">[M]</span>
@@ -164,7 +164,7 @@ export function MuseumHUD({
               className={`lg:hidden px-3 py-2 rounded-2xl text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-xl border shadow-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 isTourActive
                   ? 'bg-amber-400 text-stone-950 border-amber-300'
-                  : 'bg-[#0c0e14]/90 text-amber-300 border-amber-500/30'
+                  : 'bg-[#161412]/92 text-amber-300 border-amber-500/30'
               }`}
             >
               <GraduationCap className="w-4 h-4" />
@@ -177,7 +177,7 @@ export function MuseumHUD({
             target="_blank"
             rel="noopener noreferrer"
             aria-label="View repository on GitHub"
-            className="px-3 py-2 rounded-2xl bg-[#0c0e14]/90 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-sans font-medium flex items-center gap-2 shadow-2xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+            className="px-3 py-2 rounded-2xl bg-[#161412]/92 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-sans font-medium flex items-center gap-2 shadow-2xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           >
             <Github className="w-4 h-4 text-stone-300" />
             <span className="hidden xl:inline">View Repository</span>
@@ -196,7 +196,7 @@ export function MuseumHUD({
           }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
         >
-          <div className="relative w-full max-w-4xl bg-[#0c0e14] border border-amber-500/35 rounded-3xl p-6 shadow-2xl text-stone-100 space-y-4">
+          <div className="relative w-full max-w-4xl bg-[#161412] border border-amber-500/35 rounded-3xl p-6 shadow-2xl text-stone-100 space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
               <div className="flex items-center gap-2.5">
@@ -213,23 +213,23 @@ export function MuseumHUD({
               <button
                 onClick={() => setShowMap(false)}
                 aria-label="Close museum floorplan map"
-                className="p-2 rounded-xl bg-[#111520] hover:bg-stone-800 border border-stone-800 text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+                className="p-2 rounded-xl bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* SVG Architectural Floorplan Graphic */}
-            <div className="relative w-full h-80 bg-[#080a0f] rounded-2xl border border-amber-500/20 p-4 flex items-center justify-center overflow-hidden select-none">
+            <div className="relative w-full h-80 bg-[#1c1916] rounded-2xl border border-amber-500/20 p-4 flex items-center justify-center overflow-hidden select-none">
               <svg viewBox="0 0 800 400" className="w-full h-full">
                 {/* Architectural Blueprint Grid */}
                 <pattern id="blueprint-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-                  <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#182030" strokeWidth="0.6" />
+                  <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#332c25" strokeWidth="0.6" />
                 </pattern>
                 <rect width="800" height="400" fill="url(#blueprint-grid)" />
 
                 {/* Grand Entrance Rotunda Box */}
-                <rect x="275" y="294" width="250" height="88" rx="12" fill="#10141f" stroke="#d4af37" strokeWidth="1.8" />
+                <rect x="275" y="294" width="250" height="88" rx="12" fill="#221e1a" stroke="#d4af37" strokeWidth="1.8" />
                 <text x="400" y="312" fill="#d4af37" fontSize="11" fontFamily="Georgia, serif" fontWeight="bold" textAnchor="middle">
                   GRAND ENTRANCE ROTUNDA
                 </text>
@@ -449,7 +449,7 @@ export function MuseumHUD({
 
       {/* Subtle Gallery Exploration Hint (only inside exhibit chambers when not in guided tour) */}
       {!isTourActive && activeExhibit && !isMacro && (
-        <div className="select-none fixed bottom-6 left-1/2 -translate-x-1/2 z-30 hidden xl:flex pointer-events-none px-4 py-1.5 rounded-full bg-[#0c0e14]/85 backdrop-blur-md border border-amber-500/20 text-stone-300 text-xs font-sans items-center gap-2 shadow-lg">
+        <div className="select-none fixed bottom-6 left-1/2 -translate-x-1/2 z-30 hidden xl:flex pointer-events-none px-4 py-1.5 rounded-full bg-[#161412]/90 backdrop-blur-md border border-amber-500/20 text-stone-300 text-xs font-sans items-center gap-2 shadow-lg">
           <Compass className="w-3.5 h-3.5 text-amber-400 shrink-0" />
           <span>WASD / Arrows to Walk · Drag to Orbit · Click Vitrine Case to Inspect</span>
         </div>

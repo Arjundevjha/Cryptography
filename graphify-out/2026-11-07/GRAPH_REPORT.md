@@ -1,11 +1,11 @@
 # Graph Report - Cryptography  (2026-11-07)
 
 ## Corpus Check
-- 111 files · ~92,347 words
+- 111 files · ~92,551 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1539 nodes · 2690 edges · 97 communities (86 shown, 11 thin omitted)
+- 1539 nodes · 2690 edges · 96 communities (85 shown, 11 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 161 edges (avg confidence: 0.52)
 - Token cost: 0 input · 0 output
 
@@ -55,7 +55,6 @@
 - Lorenz Interactive CLI Simulation Runner
 - is_valid_origin
 - No-Install E2E Testing Script
-- E2E Testing Script with Dependencies
 - FastAPI Request Validation Handler
 - Test Suites Execution Script
 - Frontend Root App Layout Settings
@@ -129,7 +128,7 @@
 ## Hyperedges (group relationships)
 - **Cryptography Project Guidelines** — contributing_python_standards, style_guide_no_external_libs, style_guide_file_structure, style_guide_naming_conventions [INFERRED 0.85]
 
-## Communities (97 total, 11 thin omitted)
+## Communities (96 total, 11 thin omitted)
 
 ### Community 0 - "Cryptographic Helpers & Base64 Utilities"
 Cohesion: 0.13
@@ -140,8 +139,8 @@ Cohesion: 0.11
 Nodes (26): decrypt(), Decrypt ciphertext using Playfair cipher., Test decrypting digraphs where characters share a row., Test decrypting digraphs where characters share a column., Test decrypting digraphs forming a rectangle., Test grid generation with a simple key., Test that decrypt skips pairs that aren't of length DIGRAPH_LEN., Test decrypt behavior with an odd-length ciphertext input. (+18 more)
 
 ### Community 2 - "FastAPI Backend Routes & Schema Models"
-Cohesion: 0.11
-Nodes (34): BaseModel, affine_decrypt(), affine_encrypt(), AffineDecryptInput, AffineEncryptInput, caesar_decrypt(), caesar_encrypt(), CaesarDecryptInput (+26 more)
+Cohesion: 0.09
+Nodes (40): BaseModel, affine_decrypt(), affine_encrypt(), AffineDecryptInput, AffineEncryptInput, caesar_decrypt(), caesar_encrypt(), CaesarDecryptInput (+32 more)
 
 ### Community 3 - "FastAPI Endpoint Unit Tests"
 Cohesion: 0.01
@@ -283,10 +282,6 @@ Nodes (18): _check_origin_string_format(), is_valid_origin(), parse_allowed_orig
 Cohesion: 0.11
 Nodes (18): Keyboard, Keyboard component for Enigma machine., Map a letter to its alphabetical signal index (0-25)., Map an alphabetical signal index (0-25) back to a letter., Keyboard simulator for Enigma machine., Initialize the keyboard layout., Test the forward logic: letter to signal., Test the backward logic: signal to letter. (+10 more)
 
-### Community 40 - "E2E Testing Script with Dependencies"
-Cohesion: 0.33
-Nodes (6): polybius_decrypt(), polybius_encrypt(), PolybiusDecryptInput, PolybiusEncryptInput, Validates and returns normalized Polybius grid key., validate_polybius_key()
-
 ### Community 41 - "FastAPI Request Validation Handler"
 Cohesion: 0.25
 Nodes (7): 2025-05-18 - Vectorize Vigenère Cipher Operations, 2025-05-19 - Vectorize Affine Cipher via str.maketrans, 2025-05-20 - Pre-compute Coordinate Maps for Grid Ciphers, 2025-05-20 - Vectorize Scytale Cipher Transposition via Strided Slicing, 2025-05-21 - Optimize Enigma Rotor State Transitions with Modular Offset Arithmetic, 2025-05-22 - Bypass Call Stack & Redundant Object Allocations in Lorenz Machine Message Loops, 2025-05-23 - Pre-compute Galois Field GF(2^8) Multiplication Tables for AES MixColumns
@@ -348,8 +343,8 @@ Cohesion: 0.25
 Nodes (8): b64decode(), Decode a Base64 string to bytes.      BOLT OPTIMIZATION: Processes 4-character b, Test roundtrip encoding and decoding for various byte payloads., Verify that b64decode raises ValueError on invalid characters or invalid lengths, test_b64decode(), test_b64decode_validation_errors(), test_b64encode_roundtrip(), test_generate_keypair_output_primality()
 
 ### Community 75 - "stepping.py"
-Cohesion: 0.18
-Nodes (14): blake2b(), compute_hash(), main(), Compute hash using the specified algorithm.      Args:         data: The input s, Run the interactive hash command line interface., Compute the BLAKE2b hash of the given data.      BLAKE2b is optimized for 64-bit, Test compute_hash with 'md5' algorithm triggers SecurityWarning., Test BLAKE2b implementation against known-answer vectors and hashlib standard. (+6 more)
+Cohesion: 0.20
+Nodes (10): compute_hash(), main(), Compute hash using the specified algorithm.      Args:         data: The input s, Run the interactive hash command line interface., Test compute_hash with 'md5' algorithm triggers SecurityWarning., Test that compute_hash raises a ValueError for unsupported algorithms., Test that all hash functions compute non-empty digests., test_all_hash_functions_non_empty() (+2 more)
 
 ### Community 76 - "parse_aes_key"
 Cohesion: 0.25
@@ -388,12 +383,12 @@ Cohesion: 0.12
 Nodes (16): inv_shift_rows(), Shift state rows to the left by row offsets., Shift state rows to the right by row offsets., shift_rows(), Test shift_rows function with a 16-byte state represented as 0..15., Test inv_shift_rows function directly with a known input state., Test shift_rows against FIPS 197 Appendix B Known Answer Test vector., Test that applying shift_rows 4 times returns the state to its original configur (+8 more)
 
 ### Community 85 - "sub_bytes"
-Cohesion: 0.67
-Nodes (3): Warning category raised when insecure or cryptographically broken algorithms are, SecurityWarning, UserWarning
+Cohesion: 0.20
+Nodes (11): blake2b(), md5(), Warning category raised when insecure or cryptographically broken algorithms are, Compute the MD5 hash of the given data.      WARNING: MD5 is cryptographically b, Compute the BLAKE2b hash of the given data.      BLAKE2b is optimized for 64-bit, SecurityWarning, Test BLAKE2b implementation against known-answer vectors and hashlib standard., Test that md5 function triggers a SecurityWarning and computes expected hash. (+3 more)
 
 ### Community 86 - "md5"
-Cohesion: 0.20
-Nodes (10): _left_rotate32(), md5(), Perform bitwise left rotation on a 32-bit unsigned integer., Compute the MD5 hash of the given data.      WARNING: MD5 is cryptographically b, Compute the SHA-1 hash of the given data.      WARNING: SHA-1 is cryptographical, sha1(), Test SHA-1 KAT correctness and verify SecurityWarning emission., Test that md5 function triggers a SecurityWarning and computes expected hash. (+2 more)
+Cohesion: 0.33
+Nodes (6): _left_rotate32(), Perform bitwise left rotation on a 32-bit unsigned integer., Compute the SHA-1 hash of the given data.      WARNING: SHA-1 is cryptographical, sha1(), Test SHA-1 KAT correctness and verify SecurityWarning emission., test_sha1_kat_and_warning()
 
 ### Community 87 - "sub_word"
 Cohesion: 0.25
@@ -427,9 +422,9 @@ Nodes (3): Validates digit coordinates in Polybius ciphertext., validate_polybiu
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Lorenz` connect `Lorenz Text Processing Procedures` to `Plugboard`, `FastAPI Backend Routes & Schema Models`, `E2E Testing Script with Dependencies`, `Test Suites Execution Script`, `run_cli`, `Lorenz Wheels Components Testing`, `Baudot ITA2 Lorenz Code Conversions`, `AesDecryptInput`, `Lorenz Stepping Controller Engine`, `Sha256Input`, `Lorenz Machine Cryptography Vector Math`?**
+- **Why does `Lorenz` connect `Lorenz Text Processing Procedures` to `Plugboard`, `FastAPI Backend Routes & Schema Models`, `Test Suites Execution Script`, `run_cli`, `Lorenz Wheels Components Testing`, `Baudot ITA2 Lorenz Code Conversions`, `AesDecryptInput`, `Lorenz Stepping Controller Engine`, `Sha256Input`, `Lorenz Machine Cryptography Vector Math`?**
   _High betweenness centrality (0.075) - this node is a cross-community bridge._
-- **Why does `sha256()` connect `parse_aes_key` to `FastAPI Backend Routes & Schema Models`, `stepping.py`, `Sha256Input`, `Manual Hash Function Implementations`?**
+- **Why does `sha256()` connect `parse_aes_key` to `FastAPI Backend Routes & Schema Models`, `sub_bytes`, `Sha256Input`, `Manual Hash Function Implementations`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **Why does `SteppingController` connect `Lorenz Stepping Controller Engine` to `Lorenz Text Processing Procedures`, `Baudot ITA2 Lorenz Code Conversions`, `Lorenz Wheels Components Testing`?**
   _High betweenness centrality (0.040) - this node is a cross-community bridge._

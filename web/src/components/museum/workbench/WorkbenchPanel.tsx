@@ -173,7 +173,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   return (
     <div
       data-testid={`exhibit-${exhibit.id}`}
-      className="museum-scroller max-h-[calc(100vh-140px)] overflow-y-auto w-80 md:w-96 p-5 rounded-2xl bg-[#0c0e14]/92 backdrop-blur-2xl border border-amber-500/25 shadow-2xl text-stone-100 font-sans"
+      className="museum-scroller max-h-[calc(100vh-140px)] overflow-y-auto w-80 md:w-96 p-5 rounded-2xl bg-[#161412]/96 backdrop-blur-2xl border border-amber-500/30 shadow-2xl text-stone-100 font-sans"
     >
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-amber-500/20">
@@ -183,7 +183,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         </div>
 
         {/* Encrypt / Decrypt Toggle */}
-        <div className="select-none flex rounded-lg p-1 bg-[#111520] border border-stone-800 shrink-0" data-testid={`mode-select-${exhibit.id}`}>
+        <div className="select-none flex rounded-lg p-1 bg-[#221f1c] border border-stone-800 shrink-0" data-testid={`mode-select-${exhibit.id}`}>
           <button
             data-testid={`encrypt-btn-${exhibit.id}`}
             onClick={() => setMode('encrypt')}
@@ -233,12 +233,12 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           data-testid={`input-text-${exhibit.id}`}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg bg-[#090b10] border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors"
+          className="w-full px-3 py-2 rounded-lg bg-[#1a1714] border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors"
         />
       </div>
 
       {/* Dynamic Cipher Parameters */}
-      <div className="mb-4 p-3.5 rounded-xl bg-[#111520] border border-stone-800 space-y-2.5">
+      <div className="mb-4 p-3.5 rounded-xl bg-[#221f1c] border border-stone-800 space-y-2.5">
         <div className="text-xs font-display font-semibold text-amber-300">Cipher Parameters</div>
 
         {exhibit.id === 'caesar' && (

@@ -390,8 +390,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/ThreeMuseumScene.tsx": {
-    "mtime": 1794046235.824651,
-    "ast_hash": "3fca286cdf55fc20b5d4e8ae7d94edb4",
+    "mtime": 1794047560.7797978,
+    "ast_hash": "26809396df57e2d2a55a188f5e48335a",
     "semantic_hash": ""
   },
   "web/src/components/museum/hud/ApiStatusDot.tsx": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "web/src/components/museum/hud/MuseumHUD.tsx": {
-    "mtime": 1794047141.2312078,
-    "ast_hash": "77d5faa4b20a1171cb24862df53269cc",
+    "mtime": 1794047562.361861,
+    "ast_hash": "d4bc02f134e7f42cd470f73d9ba75065",
     "semantic_hash": ""
   },
   "web/src/components/museum/museumData.ts": {
@@ -480,8 +480,8 @@
     "semantic_hash": ""
   },
   "handoff.md": {
-    "mtime": 1793713336.043778,
-    "ast_hash": "f07756bfaf4968f567bff70c0c25c281",
+    "mtime": 1794047657.6199267,
+    "ast_hash": "7bdb1a2606789429b72f0bb7170980dc",
     "semantic_hash": ""
   },
   "web/QUALITY_LOG.md": {
