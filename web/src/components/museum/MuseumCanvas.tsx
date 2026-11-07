@@ -113,9 +113,13 @@ export function MuseumCanvas() {
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
   const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
 
-  // Keyboard shortcut [C] to collapse/expand Curatorial Plaque inside exhibit chambers
+  // Keyboard shortcuts: [C] to collapse curatorial plaque, [Escape] to dismiss active guided tour
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isTourActive) {
+        setIsTourActive(false);
+        return;
+      }
       if (!activeExhibit || activeWing || currentView === 'atrium' || isMacro) return;
       if (e.key === 'c' || e.key === 'C') {
         if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -134,7 +138,7 @@ export function MuseumCanvas() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeExhibit, activeWing, currentView, isMacro]);
+  }, [activeExhibit, activeWing, currentView, isMacro, isTourActive]);
 
   const handleSelectRoom = useCallback((roomId: string) => {
     setCurrentView(roomId);
@@ -214,8 +218,9 @@ export function MuseumCanvas() {
               </div>
               <button
                 onClick={() => setIsTourActive(false)}
-                aria-label="End guided historical tour"
-                className="select-none p-1.5 rounded-lg bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+                aria-label="End guided historical tour (Escape)"
+                title="End guided tour [Esc]"
+                className="select-none p-1.5 rounded-lg bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 hover:text-stone-100 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -232,16 +237,23 @@ export function MuseumCanvas() {
                 <ArrowLeft className="w-3.5 h-3.5" /> Previous Era
               </button>
 
-              <div className="hidden sm:flex items-center gap-1" aria-hidden="true">
+              <nav aria-label="Tour stops" className="hidden sm:flex items-center gap-1.5">
                 {HISTORICAL_TOUR_STOPS.map((st, idx) => (
-                  <span
+                  <button
                     key={st.targetId}
-                    className={`h-1.5 rounded-full transition-all ${
-                      idx === tourStepIdx ? 'w-5 bg-amber-400' : 'w-1.5 bg-stone-700'
+                    type="button"
+                    onClick={() => handleStepTour(idx)}
+                    aria-label={`Jump to stop ${idx + 1}: ${st.title}`}
+                    aria-current={idx === tourStepIdx ? 'step' : undefined}
+                    title={`Stop ${idx + 1}: ${st.title}`}
+                    className={`h-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                      idx === tourStepIdx
+                        ? 'w-6 bg-amber-400'
+                        : 'w-2 bg-stone-700 hover:bg-stone-500'
                     }`}
                   />
                 ))}
-              </div>
+              </nav>
 
               <button
                 onClick={() => handleStepTour(tourStepIdx + 1)}
