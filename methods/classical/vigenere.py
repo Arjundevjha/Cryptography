@@ -4,6 +4,18 @@ import secrets
 import string
 
 MODE_ENCRYPT = 'encrypt'
+MAX_TEXT_LENGTH = 100000
+
+def _validate_inputs(text: str, key: str, text_name: str) -> None:
+    """Validate input types and enforce maximum length limits to prevent Denial of Service (DoS)."""
+    if not isinstance(text, str):
+        raise TypeError(f"{text_name} must be a string")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"{text_name} length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+    if not isinstance(key, str):
+        raise TypeError("Key must be a string")
+    if len(key) > MAX_TEXT_LENGTH:
+        raise ValueError(f"Key length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
 
 def _pad_key(text: str, key: str) -> str:
     """Pad the key to match the length of the text, cycling through key characters."""
@@ -110,6 +122,7 @@ def encrypt(plaintext: str, key: str) -> str:
     Each letter is shifted by the corresponding key letter position.
     Non-alphabetic characters are preserved.
     """
+    _validate_inputs(plaintext, key, "Plaintext")
     return _transform(plaintext, key, mode=MODE_ENCRYPT)
 
 def decrypt(ciphertext: str, key: str) -> str:
@@ -118,6 +131,7 @@ def decrypt(ciphertext: str, key: str) -> str:
     Each letter is shifted back by the corresponding key letter position.
     Non-alphabetic characters are preserved.
     """
+    _validate_inputs(ciphertext, key, "Ciphertext")
     return _transform(ciphertext, key, mode='decrypt')
 
 def main():
