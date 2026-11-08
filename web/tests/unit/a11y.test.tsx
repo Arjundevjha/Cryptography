@@ -482,9 +482,22 @@ describe('Accessibility (A11y) Unit Tests', () => {
     fireEvent.click(nextBtn);
     expect(screen.getByText(/Polybius Fire-Beacon Coordinates/i)).toBeInTheDocument();
 
-    // End tour (remains in Polybius exhibit chamber)
-    const endTourBtn = screen.getByRole('button', { name: /end guided historical tour/i });
-    fireEvent.click(endTourBtn);
+    // Verify direct-jump tour stop buttons in <nav aria-label="Tour stops">
+    const tourStopsNav = screen.getByRole('navigation', { name: /tour stops/i });
+    expect(tourStopsNav).toBeInTheDocument();
+
+    const stop2Btn = screen.getByRole('button', { name: /go to tour stop 2: polybius fire-beacon coordinates/i });
+    expect(stop2Btn).toHaveAttribute('aria-current', 'step');
+
+    // Jump directly to stop 5 (Vigenere)
+    const stop5Btn = screen.getByRole('button', { name: /go to tour stop 5: le chiffre indéchiffrable/i });
+    expect(stop5Btn).not.toHaveAttribute('aria-current');
+    fireEvent.click(stop5Btn);
+    expect(stop5Btn).toHaveAttribute('aria-current', 'step');
+    expect(screen.getByRole('heading', { level: 3, name: /le chiffre indéchiffrable/i })).toBeInTheDocument();
+
+    // Verify pressing Escape key dismisses the guided tour
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
     expect(screen.queryByRole('region', { name: /guided historical tour/i })).not.toBeInTheDocument();
 
     // Verify collapsible curatorial plaque inside exhibit chamber

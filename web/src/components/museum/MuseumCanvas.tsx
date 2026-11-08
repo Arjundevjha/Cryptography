@@ -113,9 +113,13 @@ export function MuseumCanvas() {
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
   const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
 
-  // Keyboard shortcut [C] to collapse/expand Curatorial Plaque inside exhibit chambers
+  // Keyboard shortcut [C] to collapse/expand Curatorial Plaque inside exhibit chambers & Escape to dismiss tour
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isTourActive) {
+        setIsTourActive(false);
+        return;
+      }
       if (!activeExhibit || activeWing || currentView === 'atrium' || isMacro) return;
       if (e.key === 'c' || e.key === 'C') {
         if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -134,7 +138,7 @@ export function MuseumCanvas() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeExhibit, activeWing, currentView, isMacro]);
+  }, [activeExhibit, activeWing, currentView, isMacro, isTourActive]);
 
   const handleSelectRoom = useCallback((roomId: string) => {
     setCurrentView(roomId);
@@ -232,16 +236,20 @@ export function MuseumCanvas() {
                 <ArrowLeft className="w-3.5 h-3.5" /> Previous Era
               </button>
 
-              <div className="hidden sm:flex items-center gap-1" aria-hidden="true">
+              <nav aria-label="Tour stops" className="hidden sm:flex items-center gap-1.5">
                 {HISTORICAL_TOUR_STOPS.map((st, idx) => (
-                  <span
+                  <button
                     key={st.targetId}
-                    className={`h-1.5 rounded-full transition-all ${
-                      idx === tourStepIdx ? 'w-5 bg-amber-400' : 'w-1.5 bg-stone-700'
+                    onClick={() => handleStepTour(idx)}
+                    aria-label={`Go to tour stop ${idx + 1}: ${st.title}`}
+                    aria-current={idx === tourStepIdx ? 'step' : undefined}
+                    title={`${idx + 1}. ${st.title} (${st.era})`}
+                    className={`h-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                      idx === tourStepIdx ? 'w-5 bg-amber-400' : 'w-2 bg-stone-700 hover:bg-stone-500'
                     }`}
                   />
                 ))}
-              </div>
+              </nav>
 
               <button
                 onClick={() => handleStepTour(tourStepIdx + 1)}
