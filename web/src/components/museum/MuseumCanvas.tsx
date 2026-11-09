@@ -113,6 +113,21 @@ export function MuseumCanvas() {
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
   const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
 
+  // Keyboard shortcut [Escape] to dismiss Guided Tour dock or Vitrine Inspection mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isTourActive) {
+          setIsTourActive(false);
+        } else if (isMacro) {
+          setIsMacro(false);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isTourActive, isMacro]);
+
   // Keyboard shortcut [C] to collapse/expand Curatorial Plaque inside exhibit chambers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -232,16 +247,21 @@ export function MuseumCanvas() {
                 <ArrowLeft className="w-3.5 h-3.5" /> Previous Era
               </button>
 
-              <div className="hidden sm:flex items-center gap-1" aria-hidden="true">
+              <nav aria-label="Tour stops" className="hidden sm:flex items-center gap-1.5">
                 {HISTORICAL_TOUR_STOPS.map((st, idx) => (
-                  <span
+                  <button
                     key={st.targetId}
-                    className={`h-1.5 rounded-full transition-all ${
-                      idx === tourStepIdx ? 'w-5 bg-amber-400' : 'w-1.5 bg-stone-700'
+                    type="button"
+                    onClick={() => handleStepTour(idx)}
+                    aria-label={`Jump to tour stop ${idx + 1}: ${st.title}`}
+                    aria-current={idx === tourStepIdx ? 'step' : undefined}
+                    title={`Stop ${idx + 1}: ${st.title}`}
+                    className={`h-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                      idx === tourStepIdx ? 'w-6 bg-amber-400' : 'w-2 bg-stone-700 hover:bg-stone-500'
                     }`}
                   />
                 ))}
-              </div>
+              </nav>
 
               <button
                 onClick={() => handleStepTour(tourStepIdx + 1)}

@@ -477,12 +477,37 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(tourRegion).toBeInTheDocument();
     expect(screen.getByText(/The Spartan Ephor Scytale/i)).toBeInTheDocument();
 
-    // Advance to stop 2 (Polybius)
+    // Verify tour stops navigation dock has accessible buttons with aria-current="step"
+    const tourNav = screen.getByRole('navigation', { name: /tour stops/i });
+    expect(tourNav).toBeInTheDocument();
+
+    const stop1Btn = screen.getByRole('button', { name: /jump to tour stop 1: the spartan ephor scytale/i });
+    expect(stop1Btn).toHaveAttribute('aria-current', 'step');
+    expect(stop1Btn.className).toContain('focus-visible:ring-2');
+
+    // Advance to stop 2 (Polybius) via next button
     const nextBtn = screen.getByRole('button', { name: /next tour stop/i });
     fireEvent.click(nextBtn);
     expect(screen.getByText(/Polybius Fire-Beacon Coordinates/i)).toBeInTheDocument();
 
-    // End tour (remains in Polybius exhibit chamber)
+    // Direct jump by clicking stop 5 (Vigenere)
+    const vigenereStopBtn = screen.getByRole('button', { name: /jump to tour stop 5: le chiffre indéchiffrable/i });
+    expect(vigenereStopBtn).not.toHaveAttribute('aria-current');
+    fireEvent.click(vigenereStopBtn);
+
+    expect(screen.getByRole('heading', { name: /Le Chiffre Indéchiffrable/i })).toBeInTheDocument();
+    expect(vigenereStopBtn).toHaveAttribute('aria-current', 'step');
+
+    // Dismiss tour via Escape key
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(screen.queryByRole('region', { name: /guided historical tour/i })).not.toBeInTheDocument();
+
+    // Reopen tour via top HUD navigation bar button
+    const hudTourBtn = screen.getByRole('button', { name: /toggle guided historical tour/i });
+    fireEvent.click(hudTourBtn);
+    expect(screen.getByRole('region', { name: /guided historical tour/i })).toBeInTheDocument();
+
+    // End tour via close button
     const endTourBtn = screen.getByRole('button', { name: /end guided historical tour/i });
     fireEvent.click(endTourBtn);
     expect(screen.queryByRole('region', { name: /guided historical tour/i })).not.toBeInTheDocument();
