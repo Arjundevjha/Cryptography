@@ -5,6 +5,19 @@ import secrets
 ALPHABET = "abcdefghiklmnopqrstuvwxyz"
 ALPHA_SET = set(ALPHABET)
 DIGRAPH_LEN = 2
+MAX_TEXT_LENGTH = 100000
+
+
+def _validate_inputs(text: str, key: str, text_name: str) -> None:
+    """Validate input types and enforce maximum length limits to prevent Denial of Service (DoS)."""
+    if not isinstance(text, str):
+        raise TypeError(f"{text_name} must be a string")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"{text_name} length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+    if not isinstance(key, str):
+        raise TypeError("Key must be a string")
+    if len(key) > MAX_TEXT_LENGTH:
+        raise ValueError(f"Key length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
 
 
 def _create_grid(key: str) -> list[list[str]]:
@@ -116,6 +129,7 @@ def pick_keys() -> str:
 
 def encrypt(plaintext: str, key: str) -> str:
     """Encrypt plaintext using Playfair cipher."""
+    _validate_inputs(plaintext, key, "Plaintext")
     grid = _create_grid(key)
     pos_map = _build_pos_map(grid)
     enc_map = _build_transform_map(grid, pos_map, mode="encrypt")
@@ -130,6 +144,7 @@ def encrypt(plaintext: str, key: str) -> str:
 
 def decrypt(ciphertext: str, key: str) -> str:
     """Decrypt ciphertext using Playfair cipher."""
+    _validate_inputs(ciphertext, key, "Ciphertext")
     grid = _create_grid(key)
     pos_map = _build_pos_map(grid)
     dec_map = _build_transform_map(grid, pos_map, mode="decrypt")
