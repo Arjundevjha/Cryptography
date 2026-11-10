@@ -5,7 +5,8 @@ from methods.classical.vigenere import (
     _pad_key,
     pick_keys,
     _encrypt_decrypt_char,
-    MODE_ENCRYPT
+    MODE_ENCRYPT,
+    MAX_TEXT_LENGTH
 )
 
 def test_pad_key():
@@ -165,3 +166,31 @@ def test_main_random_key(capsys):
     assert "Vigenere Key Utilized: abcde" in captured.out
     assert "Vigenere Encrypted Text: HFNOS" in captured.out
     assert "Vigenere Decrypted Result: HELLO" in captured.out
+
+def test_input_validation_types():
+    """Test that invalid types for text or key raise TypeError."""
+    import pytest
+    for invalid_text in [123, None, ["a"], {"a": 1}, True]:
+        with pytest.raises(TypeError, match="must be a string"):
+            encrypt(invalid_text, "KEY")
+        with pytest.raises(TypeError, match="must be a string"):
+            decrypt(invalid_text, "KEY")
+
+    for invalid_key in [123, None, ["k"], {"k": "v"}, True, False]:
+        with pytest.raises(TypeError, match="Key must be a string"):
+            encrypt("HELLO", invalid_key)
+        with pytest.raises(TypeError, match="Key must be a string"):
+            decrypt("HELLO", invalid_key)
+
+def test_input_validation_max_length():
+    """Test that text or key exceeding MAX_TEXT_LENGTH raises ValueError to mitigate DoS."""
+    import pytest
+    oversized = "A" * (MAX_TEXT_LENGTH + 1)
+    with pytest.raises(ValueError, match="Plaintext length exceeds maximum allowed limit"):
+        encrypt(oversized, "KEY")
+    with pytest.raises(ValueError, match="Ciphertext length exceeds maximum allowed limit"):
+        decrypt(oversized, "KEY")
+    with pytest.raises(ValueError, match="Key length exceeds maximum allowed limit"):
+        encrypt("HELLO", oversized)
+    with pytest.raises(ValueError, match="Key length exceeds maximum allowed limit"):
+        decrypt("HELLO", oversized)

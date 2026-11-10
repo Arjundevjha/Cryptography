@@ -466,7 +466,7 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(alertBanner).toHaveTextContent('Invalid parameters provided');
   });
 
-  it('supports guided historical tour navigation and collapsible curatorial plaque with C shortcut', () => {
+  it('supports guided historical tour navigation, direct stop jumping, Escape dismissal, and collapsible curatorial plaque with C shortcut', () => {
     render(<MuseumCanvas />);
 
     // Start guided tour from Rotunda button
@@ -477,13 +477,40 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(tourRegion).toBeInTheDocument();
     expect(screen.getByText(/The Spartan Ephor Scytale/i)).toBeInTheDocument();
 
+    // Verify tour stop indicator nav and direct step jump
+    const tourNav = screen.getByRole('navigation', { name: /tour stops/i });
+    expect(tourNav).toBeInTheDocument();
+
+    const stop1Btn = screen.getByRole('button', { name: /jump to stop 1: the spartan ephor scytale/i });
+    const stop2Btn = screen.getByRole('button', { name: /jump to stop 2: polybius fire-beacon coordinates/i });
+    const stop10Btn = screen.getByRole('button', { name: /jump to stop 10: the rijndael 4×4 state lattice/i });
+
+    expect(stop1Btn).toHaveAttribute('aria-current', 'step');
+    expect(stop2Btn).not.toHaveAttribute('aria-current');
+    expect(stop1Btn.className).toContain('focus-visible:ring-2');
+
+    // Click stop 10 button directly to jump to the final era
+    fireEvent.click(stop10Btn);
+    expect(stop10Btn).toHaveAttribute('aria-current', 'step');
+    expect(stop1Btn).not.toHaveAttribute('aria-current');
+    expect(screen.getByText(/The Rijndael 4×4 State Lattice/i)).toBeInTheDocument();
+
+    // Verify Escape key dismisses the guided tour
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+    expect(screen.queryByRole('region', { name: /guided historical tour/i })).not.toBeInTheDocument();
+
+    // Restart tour to verify End tour button and Advance button
+    fireEvent.click(screen.getByRole('button', { name: /toggle guided historical tour/i }));
+    expect(screen.getByRole('region', { name: /guided historical tour/i })).toBeInTheDocument();
+
     // Advance to stop 2 (Polybius)
     const nextBtn = screen.getByRole('button', { name: /next tour stop/i });
     fireEvent.click(nextBtn);
     expect(screen.getByText(/Polybius Fire-Beacon Coordinates/i)).toBeInTheDocument();
 
-    // End tour (remains in Polybius exhibit chamber)
+    // End tour via close button
     const endTourBtn = screen.getByRole('button', { name: /end guided historical tour/i });
+    expect(endTourBtn).toHaveAttribute('title', 'End guided tour [Esc]');
     fireEvent.click(endTourBtn);
     expect(screen.queryByRole('region', { name: /guided historical tour/i })).not.toBeInTheDocument();
 
