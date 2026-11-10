@@ -1,4 +1,28 @@
-# Session Handoff: Cryptography Museum Complete Visual, Architectural & Educational Overhaul
+# Session Handoff
+
+## Latest Session: PR Triage Sweep (`/clear-prs`, commit `d2e00ae1`)
+
+### Executive Summary
+Cleared the entire open PR backlog (5 → 0) in one triage pass:
+
+- **Integrated (#434)** — `methods/classical/affine.py`: 312-entry module-scope `str.maketrans` enc/dec table cache keyed by `(a % 26, b % 26)`, replacing per-call table construction. Correctness guaranteed by the existing `_validate_inputs` coprime/type guards. Journal file `.jules/bolt.md` stripped.
+- **Integrated (#431)** — `methods/classical/vigenere.py`: added `MAX_TEXT_LENGTH = 100000` and `_validate_inputs()` (strict `str` types, DoS length bounds) wired into `encrypt`/`decrypt`, plus coverage in `methods/classical/tests/test_vigenere.py`.
+- **Integrated (#430)** — `web/src/components/museum/MuseumCanvas.tsx`: guided-tour progress dots became real `<button>`s inside `<nav aria-label="Tour stops">` with `aria-current="step"`, per-stop labels/titles, visible focus rings, plus `Escape` dismissal and close-button shortcut tooltip. Covered in `web/tests/unit/a11y.test.tsx`.
+- **Rejected (#433)** — duplicate of #430 (same tour-stepper implementation) and carried the external AI journal artifact `.Jules/palette.md`.
+- **Rejected (#432)** — duplicate of #430 and committed a 5,588-line `web/pnpm-lock.yaml` although the repo standardizes on npm (`web/package-lock.json`).
+
+### Verification (post-integration, single unified tree)
+- `pytest -q` → **807 / 807** passing.
+- `cd web && npm test` → **68 / 68** passing across 5 suites.
+- `cd web && npm run build` → clean Next.js production build.
+- `python3 scripts/diagnose.py --check` → all checks PASSED.
+- `gh pr list --state open` → **0**; `gh api repos/.../branches` → `main` only; local `git branch` → `main` only.
+- `graphify update .` → 1551 nodes / 2714 edges / 98 communities.
+- Vercel preview pruning skipped: no `.vercel` project link exists in this workspace, so no branch previews were created from this machine.
+
+---
+
+## Prior Session: Cryptography Museum Complete Visual, Architectural & Educational Overhaul
 
 ## Executive Summary
 Completed a comprehensive 3D architectural, cryptographic artifact, educational storytelling, and UI/UX ("Impeccable") overhaul of the Cryptography Museum (`Arjundevjha/Cryptography`), eradicating the "under construction" white-drywall/wireframe look, replacing all 11 placeholder 3D shapes with authentic multi-part historical/mathematical instruments, and lifting the gloomy dark vault look into a bright, majestic **Grand Classical Museum Hall** backed by a **High-FPS Performance Engine**:
@@ -70,4 +94,5 @@ Completed a comprehensive 3D architectural, cryptographic artifact, educational 
 
 ## Immediate Next Steps
 1. All PRs cleared (0 open pull requests).
-2. Codebase is in production-ready state on `main`.
+2. Codebase is in production-ready state on `main` at `d2e00ae1` (plus docs/graph sync commit).
+3. Next triage run: re-run `clear-prs` when new bot PRs land; keep rejecting `.jules/` / `.Jules/` journals and stray lockfiles.
