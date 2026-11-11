@@ -8,6 +8,7 @@ from methods.classical.playfair import (
     decrypt,
     pick_keys,
     main,
+    MAX_TEXT_LENGTH,
 )
 
 def test_create_grid_basic():
@@ -244,3 +245,28 @@ def test_main_interactive(monkeypatch, capsys):
     assert "Playfair Generated Key:" in captured.out
     assert "Playfair Encrypted Result:" in captured.out
     assert "Playfair Decrypted Result:" in captured.out
+
+
+def test_input_validation_types():
+    """Test that non-string inputs for text or key raise TypeError."""
+    with pytest.raises(TypeError, match="Plaintext must be a string"):
+        encrypt(123, "secret")
+    with pytest.raises(TypeError, match="Key must be a string"):
+        encrypt("hello", 123)
+    with pytest.raises(TypeError, match="Ciphertext must be a string"):
+        decrypt(123, "secret")
+    with pytest.raises(TypeError, match="Key must be a string"):
+        decrypt("hello", None)
+
+
+def test_input_validation_max_length():
+    """Test that inputs exceeding MAX_TEXT_LENGTH raise ValueError to mitigate DoS."""
+    oversized = "a" * (MAX_TEXT_LENGTH + 1)
+    with pytest.raises(ValueError, match="Plaintext length exceeds maximum allowed limit"):
+        encrypt(oversized, "secret")
+    with pytest.raises(ValueError, match="Ciphertext length exceeds maximum allowed limit"):
+        decrypt(oversized, "secret")
+    with pytest.raises(ValueError, match="Key length exceeds maximum allowed limit"):
+        encrypt("hello", oversized)
+    with pytest.raises(ValueError, match="Key length exceeds maximum allowed limit"):
+        decrypt("hello", oversized)
