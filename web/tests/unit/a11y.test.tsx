@@ -284,11 +284,14 @@ describe('Accessibility (A11y) Unit Tests', () => {
     expect(qInput).toBeInTheDocument();
     expect(eInput).toBeInTheDocument();
     expect(keygenBtn).toBeInTheDocument();
+    expect(keygenBtn).toHaveAttribute('data-testid', 'generate-keys-btn-rsa');
+    expect(keygenBtn).not.toBeDisabled();
 
     expect(pInput.className).toContain('focus-visible:ring-2');
     expect(qInput.className).toContain('focus-visible:ring-2');
     expect(eInput.className).toContain('focus-visible:ring-2');
     expect(keygenBtn.className).toContain('focus-visible:ring-2');
+    expect(keygenBtn.className).toContain('disabled:cursor-not-allowed');
   });
 
   it('renders Lorenz wheel inputs and reset button with accessible labels and focus styles', () => {

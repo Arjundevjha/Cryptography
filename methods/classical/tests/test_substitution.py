@@ -1,12 +1,15 @@
 import string
 from unittest.mock import patch
 
+import pytest
+
 from methods.classical.substitution import (
     pick_keys,
     _invert_key,
     encrypt,
     decrypt,
-    main
+    main,
+    MAX_TEXT_LENGTH
 )
 
 def test_pick_keys():
@@ -88,3 +91,35 @@ def test_main(capsys):
     assert "Substitution Cipher Key Map: bcdefghijklmnopqrstuvwxyza" in captured.out
     assert "Substitution Ciphertext (Encrypted): Ifmmp Xpsme!" in captured.out
     assert "Substitution Restored Message (Decrypted): Hello World!" in captured.out
+
+def test_invalid_input_types():
+    """Test that non-string text inputs raise TypeError."""
+    key = {'a': 'b'}
+    with pytest.raises(TypeError, match="Plaintext must be a string"):
+        encrypt(12345, key)
+    with pytest.raises(TypeError, match="Plaintext must be a string"):
+        encrypt(None, key)
+    with pytest.raises(TypeError, match="Ciphertext must be a string"):
+        decrypt(12345, key)
+    with pytest.raises(TypeError, match="Ciphertext must be a string"):
+        decrypt(None, key)
+
+def test_invalid_key_types_and_empty():
+    """Test that invalid key types and empty keys raise appropriate errors."""
+    with pytest.raises(TypeError, match="Key must be a dictionary"):
+        encrypt("hello", "not_a_dict")
+    with pytest.raises(TypeError, match="Key must be a dictionary"):
+        decrypt("hello", None)
+    with pytest.raises(ValueError, match="Key cannot be empty"):
+        encrypt("hello", {})
+    with pytest.raises(ValueError, match="Key cannot be empty"):
+        decrypt("hello", {})
+
+def test_max_text_length_dos():
+    """Test that text exceeding MAX_TEXT_LENGTH raises ValueError to mitigate DoS."""
+    key = {'a': 'b'}
+    oversized = "a" * (MAX_TEXT_LENGTH + 1)
+    with pytest.raises(ValueError, match=f"Plaintext length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}"):
+        encrypt(oversized, key)
+    with pytest.raises(ValueError, match=f"Ciphertext length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}"):
+        decrypt(oversized, key)

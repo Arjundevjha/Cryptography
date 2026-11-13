@@ -3,6 +3,19 @@
 import secrets
 import string
 
+MAX_TEXT_LENGTH = 100000
+
+def _validate_inputs(text: str, key: dict, text_name: str) -> None:
+    """Validate input types, key structure, and enforce maximum length limits to prevent DoS."""
+    if not isinstance(text, str):
+        raise TypeError(f"{text_name} must be a string")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"{text_name} length exceeds maximum allowed limit of {MAX_TEXT_LENGTH}")
+    if not isinstance(key, dict):
+        raise TypeError("Key must be a dictionary")
+    if not key:
+        raise ValueError("Key cannot be empty")
+
 def pick_keys() -> dict:
     """Generate a random substitution key mapping each letter to another using CSPRNG.
 
@@ -44,6 +57,7 @@ def encrypt(plaintext: str, key: dict) -> str:
     Each letter is replaced according to the key mapping.
     Non-alphabetic characters are preserved.
     """
+    _validate_inputs(plaintext, key, "Plaintext")
     return plaintext.translate(_build_translation_table(key))
 
 def decrypt(ciphertext: str, key: dict) -> str:
@@ -52,6 +66,7 @@ def decrypt(ciphertext: str, key: dict) -> str:
     Each letter is replaced according to the inverse key mapping.
     Non-alphabetic characters are preserved.
     """
+    _validate_inputs(ciphertext, key, "Ciphertext")
     return ciphertext.translate(_build_translation_table(_invert_key(key)))
 
 def main():

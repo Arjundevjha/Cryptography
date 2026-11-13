@@ -580,11 +580,15 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
               </div>
             </div>
             <button
+              data-testid="generate-keys-btn-rsa"
               onClick={handleRSAKeygen}
-              aria-label="Generate RSA keypair"
-              className="w-full py-1.5 text-xs rounded-lg bg-[#090b10] hover:bg-stone-900 border border-amber-500/30 text-amber-300 font-sans font-semibold flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+              disabled={loading}
+              aria-busy={loading}
+              aria-label={loading ? 'Generating RSA keys...' : 'Generate RSA keypair'}
+              className="w-full py-1.5 text-xs rounded-lg bg-[#090b10] hover:bg-stone-900 border border-amber-500/30 text-amber-300 font-sans font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
             >
-              <RefreshCw className="w-3 h-3" /> Generate Keys
+              <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+              <span>{loading ? 'Generating Keys...' : 'Generate Keys'}</span>
             </button>
           </div>
         )}
