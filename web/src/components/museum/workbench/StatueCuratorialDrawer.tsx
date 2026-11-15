@@ -197,7 +197,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       role="dialog"
       aria-modal="true"
       aria-label={`Statue details for ${statue.name}`}
-      className="museum-scroller fixed top-0 right-0 h-full w-full sm:w-[480px] md:w-[560px] bg-[#161412]/96 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-50 text-stone-100 overflow-y-auto shadow-2xl"
+      className="museum-scroller fixed top-0 right-0 h-full w-full sm:w-[480px] md:w-[560px] bg-[#161412]/95 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-50 text-stone-100 overflow-y-auto shadow-2xl"
     >
       {/* Header — Heading first, metadata below (Zero Eyebrow Kicker) */}
       <div className="flex items-start justify-between pb-4 mb-5 border-b border-amber-500/20">

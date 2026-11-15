@@ -173,7 +173,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   return (
     <div
       data-testid={`exhibit-${exhibit.id}`}
-      className="museum-scroller max-h-[calc(100vh-140px)] overflow-y-auto w-80 md:w-96 p-5 rounded-2xl bg-[#161412]/96 backdrop-blur-2xl border border-amber-500/30 shadow-2xl text-stone-100 font-sans"
+      className="museum-scroller max-h-[calc(100vh-140px)] overflow-y-auto w-80 md:w-96 p-5 rounded-2xl bg-[#161412]/95 backdrop-blur-2xl border border-amber-500/30 shadow-2xl text-stone-100 font-sans"
     >
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-amber-500/20">

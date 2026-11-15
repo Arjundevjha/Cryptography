@@ -12,6 +12,7 @@ fallow_output.json
 
 # Agent workspace
 .agents/
+graphify-out/
 
 # Log files
 *.log

@@ -5,18 +5,14 @@ import ThreeMuseumScene from './ThreeMuseumScene';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from './museumData';
 import { MuseumHUD } from './hud/MuseumHUD';
 import { WorkbenchPanel } from './workbench/WorkbenchPanel';
-import { ArtifactMetadataDrawer } from './workbench/ArtifactMetadataDrawer';
 import { StatueCuratorialDrawer } from './workbench/StatueCuratorialDrawer';
 import { AudioSystem } from './AudioSystem';
 import {
   BookOpen,
   History,
   ShieldAlert,
-  ZoomIn,
-  ZoomOut,
   ArrowRight,
   ArrowLeft,
-  Eye,
   PanelLeftClose,
   PanelLeftOpen,
   GraduationCap,
@@ -96,7 +92,6 @@ const HISTORICAL_TOUR_STOPS: HistoricalTourStop[] = [
 export function MuseumCanvas() {
   const [isClient, setIsClient] = useState(false);
   const [currentView, setCurrentView] = useState<string>('atrium');
-  const [isMacro, setIsMacro] = useState(false);
   const [isCuratorialCollapsed, setIsCuratorialCollapsed] = useState(false);
   const [isTourActive, setIsTourActive] = useState(false);
   const [tourStepIdx, setTourStepIdx] = useState(0);
@@ -120,7 +115,7 @@ export function MuseumCanvas() {
         setIsTourActive(false);
         return;
       }
-      if (!activeExhibit || activeWing || currentView === 'atrium' || isMacro) return;
+      if (!activeExhibit || activeWing || currentView === 'atrium') return;
       if (e.key === 'c' || e.key === 'C') {
         if (e.ctrlKey || e.altKey || e.metaKey) return;
         const target = e.target as HTMLElement | null;
@@ -138,21 +133,14 @@ export function MuseumCanvas() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeExhibit, activeWing, currentView, isMacro, isTourActive]);
+  }, [activeExhibit, activeWing, currentView, isTourActive]);
 
   const handleSelectRoom = useCallback((roomId: string) => {
     setCurrentView(roomId);
-    setIsMacro(false);
   }, []);
 
   const handleReturnToFoyer = useCallback(() => {
     setCurrentView('atrium');
-    setIsMacro(false);
-  }, []);
-
-  const handleCaseClick = useCallback((roomId: string) => {
-    setCurrentView(roomId);
-    setIsMacro(true);
   }, []);
 
   const handleToggleTour = useCallback(() => {
@@ -161,7 +149,6 @@ export function MuseumCanvas() {
       if (nextState) {
         setTourStepIdx(0);
         setCurrentView(HISTORICAL_TOUR_STOPS[0].targetId);
-        setIsMacro(false);
       }
       return nextState;
     });
@@ -171,7 +158,6 @@ export function MuseumCanvas() {
     const clamped = (nextIdx + HISTORICAL_TOUR_STOPS.length) % HISTORICAL_TOUR_STOPS.length;
     setTourStepIdx(clamped);
     setCurrentView(HISTORICAL_TOUR_STOPS[clamped].targetId);
-    setIsMacro(false);
   }, []);
 
   const currentTourStop = HISTORICAL_TOUR_STOPS[tourStepIdx];
@@ -182,16 +168,13 @@ export function MuseumCanvas() {
       {isClient && (
         <ThreeMuseumScene
           currentView={currentView}
-          isMacro={isMacro}
           onSelectRoom={handleSelectRoom}
-          onCaseClick={handleCaseClick}
         />
       )}
 
       {/* === SCREEN-SPACE HUD OVERLAYS (Layer 1) === */}
       <MuseumHUD
         currentView={currentView}
-        isMacro={isMacro}
         onSelectRoom={handleSelectRoom}
         onReturnToFoyer={handleReturnToFoyer}
         isTourActive={isTourActive}
@@ -271,7 +254,7 @@ export function MuseumCanvas() {
       {currentView === 'atrium' && !isTourActive && (
         <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-20 w-full max-w-5xl px-4 pointer-events-none">
           <div className="pointer-events-auto">
-            <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 mb-2 rounded-xl bg-[#161412]/92 backdrop-blur-xl border border-amber-500/25 text-stone-200">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 mb-2 rounded-xl bg-[#161412]/95 backdrop-blur-xl border border-amber-500/25 text-stone-200">
               <div className="flex items-center gap-2.5">
                 <span className="text-amber-400 text-xs" aria-hidden="true">◈</span>
                 <span className="font-display text-xs sm:text-sm font-semibold text-amber-300 tracking-wide">
@@ -292,7 +275,7 @@ export function MuseumCanvas() {
                 <button
                   key={statue.id}
                   onClick={() => handleSelectRoom(statue.id)}
-                  className="p-3 rounded-xl bg-[#161412]/92 backdrop-blur-xl hover:bg-[#221e1a] border border-amber-500/30 hover:border-amber-400 shadow-lg transition-colors text-left group focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+                  className="p-3 rounded-xl bg-[#161412]/95 backdrop-blur-xl hover:bg-[#221e1a] border border-amber-500/30 hover:border-amber-400 shadow-lg transition-colors text-left group focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 >
                   <div className="font-display text-xs sm:text-sm font-semibold text-stone-100 group-hover:text-amber-300 transition-colors line-clamp-1">
                     {statue.name}
@@ -316,7 +299,7 @@ export function MuseumCanvas() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-4xl px-4 pointer-events-none">
           <div className="pointer-events-auto space-y-2.5">
             <div className="text-center">
-              <div className="inline-block px-5 py-2.5 rounded-2xl bg-[#161412]/94 backdrop-blur-xl border border-amber-500/35 text-stone-100 shadow-2xl">
+              <div className="inline-block px-5 py-2.5 rounded-2xl bg-[#161412]/95 backdrop-blur-xl border border-amber-500/35 text-stone-100 shadow-2xl">
                 <h3 className="font-display text-sm sm:text-base font-semibold text-amber-300 tracking-wide">
                   {activeWing.name}
                 </h3>
@@ -329,7 +312,7 @@ export function MuseumCanvas() {
                 <button
                   key={ex.id}
                   onClick={() => handleSelectRoom(ex.id)}
-                  className="p-3 rounded-xl bg-[#161412]/92 backdrop-blur-xl hover:bg-[#221e1a] border border-stone-800 hover:border-amber-400/70 transition-colors text-left group shadow-lg focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+                  className="p-3 rounded-xl bg-[#161412]/95 backdrop-blur-xl hover:bg-[#221e1a] border border-stone-800 hover:border-amber-400/70 transition-colors text-left group shadow-lg focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 >
                   <div className="font-display text-xs font-semibold text-stone-100 group-hover:text-amber-300 transition-colors line-clamp-1">
                     {ex.name}
@@ -346,21 +329,21 @@ export function MuseumCanvas() {
       )}
 
       {/* === COLLAPSIBLE CURATORIAL EXHIBITION PLAQUE (Left side, inside exhibit rooms) === */}
-      {activeExhibit && !activeWing && currentView !== 'atrium' && !isMacro && (
+      {activeExhibit && !activeWing && currentView !== 'atrium' && (
         <div className="fixed top-24 left-5 z-20 pointer-events-auto">
           {isCuratorialCollapsed ? (
             <button
               onClick={() => setIsCuratorialCollapsed(false)}
               aria-expanded="false"
               aria-label="Expand curatorial plaque / show curatorial exhibition panel"
-              className="select-none px-3.5 py-2.5 rounded-2xl bg-[#161412]/94 hover:bg-[#221e1a] backdrop-blur-2xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2 text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+              className="select-none px-3.5 py-2.5 rounded-2xl bg-[#161412]/95 hover:bg-[#221e1a] backdrop-blur-2xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2 text-xs font-sans font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             >
               <PanelLeftOpen className="w-4 h-4 text-amber-400" />
               <span>Curatorial Plaque</span>
               <span className="text-[10px] font-mono text-amber-300/80">[C]</span>
             </button>
           ) : (
-            <div className="museum-scroller w-80 max-h-[calc(100vh-150px)] overflow-y-auto bg-[#161412]/94 backdrop-blur-2xl border border-amber-500/25 shadow-2xl rounded-2xl p-5 space-y-3.5 text-stone-100">
+            <div className="museum-scroller w-80 max-h-[calc(100vh-150px)] overflow-y-auto bg-[#161412]/95 backdrop-blur-2xl border border-amber-500/25 shadow-2xl rounded-2xl p-5 space-y-3.5 text-stone-100">
               {/* Heading first, wing/timeline below, plus collapse toggle */}
               <div className="flex items-start justify-between gap-2 pb-3 border-b border-amber-500/20">
                 <div className="space-y-1">
@@ -403,20 +386,13 @@ export function MuseumCanvas() {
                 </h3>
                 <p className="text-xs text-stone-300 font-sans leading-relaxed">{activeExhibit.vulnerabilities}</p>
               </div>
-
-              <button
-                onClick={() => handleCaseClick(activeExhibit.id)}
-                className="select-none w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-sans font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-              >
-                <ZoomIn className="w-3.5 h-3.5" /> Inspect Display Vitrine
-              </button>
             </div>
           )}
         </div>
       )}
 
       {/* === WORKBENCH PANEL (Right side, inside exhibit rooms) === */}
-      {activeExhibit && !activeWing && currentView !== 'atrium' && !isMacro && (
+      {activeExhibit && !activeWing && currentView !== 'atrium' && (
         <div className="fixed top-24 right-5 z-20 pointer-events-auto">
           <WorkbenchPanel exhibit={activeExhibit} />
         </div>
@@ -433,25 +409,6 @@ export function MuseumCanvas() {
 
       {/* === AUDIO SYSTEM (Spatial Ambient & Synth Audio) === */}
       <AudioSystem currentView={currentView} />
-
-      {/* === INSPECTION MODE FLOATING BANNER & DRAWER === */}
-      {activeExhibit && isMacro && (
-        <>
-          <div className="select-none fixed top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-[#161412]/94 backdrop-blur-xl border border-amber-500/35 text-stone-100 shadow-2xl">
-            <div className="flex items-center gap-2 text-amber-300 font-display text-xs sm:text-sm font-semibold">
-              <Eye className="w-4 h-4 text-amber-400" />
-              <span>Vitrine Inspection — {activeExhibit.name}</span>
-            </div>
-            <button
-              onClick={() => setIsMacro(false)}
-              className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-sans font-bold flex items-center gap-1.5 shadow transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-            >
-              <ZoomOut className="w-3.5 h-3.5" /> Exit Inspection
-            </button>
-          </div>
-          <ArtifactMetadataDrawer exhibit={activeExhibit} onClose={() => setIsMacro(false)} />
-        </>
-      )}
     </div>
   );
 }

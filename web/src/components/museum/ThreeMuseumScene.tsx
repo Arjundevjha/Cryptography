@@ -8,27 +8,43 @@ import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES, CryptographicStatue } fr
 
 interface ThreeMuseumSceneProps {
   currentView: string;
-  isMacro: boolean;
   onSelectRoom: (roomId: string) => void;
-  onCaseClick: (roomId: string) => void;
 }
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
-let sharedBustGeometry: THREE.BufferGeometry | null = null;
-let isBustLoading = false;
-const bustCallbacks: Array<() => void> = [];
+type PioneerBustKey = 'alkindi' | 'turing' | 'shannon' | 'diffie' | 'hellman';
 
-function loadScannedBust(onReady?: () => void) {
-  if (sharedBustGeometry) {
-    if (onReady) onReady();
+interface PioneerBustMaterials {
+  skin: THREE.Material;
+  hair: THREE.Material;
+  turban?: THREE.Material;
+  garment?: THREE.Material;
+  accent: THREE.Material;
+}
+
+const pioneerBustCache = new Map<PioneerBustKey, Map<string, THREE.BufferGeometry>>();
+const pioneerBustLoading = new Set<PioneerBustKey>();
+const pioneerBustCallbacks = new Map<PioneerBustKey, Array<(parts: Map<string, THREE.BufferGeometry>) => void>>();
+
+function loadPioneerBust(
+  bustKey: PioneerBustKey,
+  onReady?: (parts: Map<string, THREE.BufferGeometry>) => void
+) {
+  const cached = pioneerBustCache.get(bustKey);
+  if (cached) {
+    if (onReady) onReady(cached);
     return;
   }
-  if (onReady) bustCallbacks.push(onReady);
-  if (isBustLoading || typeof window === 'undefined') return;
-  isBustLoading = true;
+  if (onReady) {
+    const list = pioneerBustCallbacks.get(bustKey) ?? [];
+    list.push(onReady);
+    pioneerBustCallbacks.set(bustKey, list);
+  }
+  if (pioneerBustLoading.has(bustKey) || typeof window === 'undefined') return;
+  pioneerBustLoading.add(bustKey);
 
-  fetch('/models/LeePerrySmith.glb')
+  fetch(`/models/bust-${bustKey}.glb`)
     .then((res) => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.arrayBuffer();
@@ -39,39 +55,45 @@ function loadScannedBust(onReady?: () => void) {
         buffer,
         '',
         (gltf) => {
+          const parts = new Map<string, THREE.BufferGeometry>();
+          gltf.scene.updateMatrixWorld(true);
           gltf.scene.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh && !sharedBustGeometry) {
+            if ((child as THREE.Mesh).isMesh) {
               const mesh = child as THREE.Mesh;
-              sharedBustGeometry = mesh.geometry.clone();
-              sharedBustGeometry.center();
-              sharedBustGeometry.computeVertexNormals();
+              const partName = (mesh.name || 'head').toLowerCase();
+              const geo = mesh.geometry.clone();
+              geo.applyMatrix4(mesh.matrixWorld);
+              geo.computeVertexNormals();
+              parts.set(partName, geo);
             }
           });
-          isBustLoading = false;
-          bustCallbacks.forEach((cb) => cb());
-          bustCallbacks.length = 0;
+          pioneerBustCache.set(bustKey, parts);
+          pioneerBustLoading.delete(bustKey);
+          const cbs = pioneerBustCallbacks.get(bustKey) ?? [];
+          cbs.forEach((cb) => cb(parts));
+          pioneerBustCallbacks.delete(bustKey);
         },
         (err) => {
-          console.error('[loadScannedBust] Parse error:', err);
-          isBustLoading = false;
+          console.error(`[loadPioneerBust:${bustKey}] Parse error:`, err);
+          pioneerBustLoading.delete(bustKey);
         }
       );
     })
     .catch((err) => {
-      console.warn('[loadScannedBust] Could not load 3D scanned bust, falling back to procedural sculpture:', err);
-      isBustLoading = false;
+      console.warn(`[loadPioneerBust:${bustKey}] Could not load bust GLB, falling back to procedural sculpture:`, err);
+      pioneerBustLoading.delete(bustKey);
     });
 }
 
 if (typeof window !== 'undefined') {
-  loadScannedBust();
+  (['alkindi', 'turing', 'shannon', 'diffie', 'hellman'] as PioneerBustKey[]).forEach((k) =>
+    loadPioneerBust(k)
+  );
 }
 
 export default function ThreeMuseumScene({
   currentView,
-  isMacro,
   onSelectRoom,
-  onCaseClick,
 }: ThreeMuseumSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -82,7 +104,8 @@ export default function ThreeMuseumScene({
   const rotatingArtifactsRef = useRef<THREE.Object3D[]>([]);
   const floatingMarkersRef = useRef<THREE.Object3D[]>([]);
   const statueGlyphsRef = useRef<THREE.Object3D[]>([]);
-  const exhibitLightsRef = useRef<Map<string, { spot: THREE.SpotLight; wash: THREE.PointLight }>>(new Map());
+  const activeExhibitSpotRef = useRef<THREE.SpotLight | null>(null);
+  const activeExhibitWashRef = useRef<THREE.PointLight | null>(null);
 
   // Keyboard WASD state
   const keysPressedRef = useRef<{ [key: string]: boolean }>({});
@@ -93,10 +116,8 @@ export default function ThreeMuseumScene({
   const targetLookAt = useRef(new THREE.Vector3(0, 2.5, 10));
   const isAnimatingRef = useRef(true);
 
-  const isMacroRef = useRef(isMacro);
   const currentViewRef = useRef(currentView);
   const onSelectRoomRef = useRef(onSelectRoom);
-  const onCaseClickRef = useRef(onCaseClick);
   const initializedRef = useRef(false);
 
   // Build the full 3D scene once
@@ -111,7 +132,7 @@ export default function ThreeMuseumScene({
     // === 1. HIGH-PERFORMANCE WEBGL RENDERER ===
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.15));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
     renderer.shadowMap.enabled = false;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.25;
@@ -184,13 +205,13 @@ export default function ThreeMuseumScene({
     const titaniumMat = new THREE.MeshStandardMaterial({ color: 0x5a6878, metalness: 0.9, roughness: 0.2 });
     const matteBlackMat = new THREE.MeshStandardMaterial({ color: 0x221f1c, roughness: 0.6, metalness: 0.2 });
     const leatherMat = new THREE.MeshStandardMaterial({ color: 0x422619, roughness: 0.65, metalness: 0.05 });
-    const glassMat = new THREE.MeshPhysicalMaterial({
+    const glassMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
-      transmission: 0.95,
       transparent: true,
-      opacity: 0.25,
-      roughness: 0.02,
-      ior: 1.52,
+      opacity: 0.16,
+      roughness: 0.08,
+      metalness: 0.15,
+      depthWrite: false,
     });
     const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.92, roughness: 0.16 });
 
@@ -694,10 +715,6 @@ export default function ThreeMuseumScene({
       washStrip.position.set(0, 9.46, 0.55);
       portalGroup.add(washStrip);
 
-      const portalGlow = new THREE.PointLight(portal.accentColor, 2.2, 22);
-      portalGlow.position.set(0, 8.2, 1.5);
-      portalGroup.add(portalGlow);
-
       const signTex = getPortalBannerTexture(portal.title);
       const signMat = new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.22, metalness: 0.25 });
       const signMesh = new THREE.Mesh(new THREE.BoxGeometry(8.6, 1.65, 0.28), signMat);
@@ -864,20 +881,6 @@ export default function ThreeMuseumScene({
       vitrineCrown.position.set(0, 3.44, 0);
       roomGroup.add(vitrineCrown);
 
-      // Calibrated Exhibit Pin-Spotlight with Realistic Decay & Soft Penumbra + Warm Chamber Wash
-      const spot = new THREE.SpotLight(0xfff6e5, 7.5, 24, 0.54, 0.5, 1.3);
-      spot.position.set(0, 8.1, 1.8);
-      spot.castShadow = false;
-      spot.target = pedestal;
-      roomGroup.add(spot);
-      roomGroup.add(spot.target);
-
-      const chamberWash = new THREE.PointLight(0xffedd5, 2.2, 15, 1.4);
-      chamberWash.position.set(0, 6.2, 1.5);
-      roomGroup.add(chamberWash);
-
-      exhibitLightsRef.current.set(exhibit.id, { spot, wash: chamberWash });
-
       // Elevated Rotating Physical Cryptographic Artifact
       const artifactGroup = new THREE.Group();
       artifactGroup.position.set(0, 1.92, 0);
@@ -889,28 +892,19 @@ export default function ThreeMuseumScene({
       scene.add(roomGroup);
     });
 
+    // Single shared dynamic Exhibit Pin-Spotlight + Warm Chamber Wash (avoids 22 per-room lights)
+    const activeSpot = new THREE.SpotLight(0xfff6e5, 0, 24, 0.54, 0.5, 1.3);
+    activeSpot.castShadow = false;
+    scene.add(activeSpot);
+    scene.add(activeSpot.target);
+    activeExhibitSpotRef.current = activeSpot;
+
+    const activeWash = new THREE.PointLight(0xffedd5, 0, 15, 1.4);
+    scene.add(activeWash);
+    activeExhibitWashRef.current = activeWash;
+
     rotatingArtifactsRef.current = rotatingArtifacts;
     floatingMarkersRef.current = floatingMarkers;
-
-    // Preload & dynamically upgrade portrait busts with 3D scanned anatomy
-    loadScannedBust(() => {
-      const geo = sharedBustGeometry;
-      if (!scene || !geo) return;
-      scene.traverse((obj) => {
-        if (obj.userData?.isPortraitHead && ((obj as any).isGroup || obj.type === 'Group')) {
-          const mat = obj.userData.material;
-          const s = obj.userData.scale || 0.088;
-          while (obj.children.length > 0) {
-            obj.remove(obj.children[0]);
-          }
-          const mesh = new THREE.Mesh(geo, mat);
-          mesh.scale.setScalar(s);
-          mesh.rotation.y = 0;
-          mesh.castShadow = true;
-          obj.add(mesh);
-        }
-      });
-    });
 
     // ============================
     // 11. RAYCASTING INTERACTION
@@ -927,9 +921,6 @@ export default function ThreeMuseumScene({
       const dx = e.clientX - mouseDownPos.x;
       const dy = e.clientY - mouseDownPos.y;
       if (Math.hypot(dx, dy) > 6) return;
-
-      // In macro inspection mode, ignore background 3D clicks so inspection is not interrupted
-      if (isMacroRef.current) return;
 
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -953,12 +944,6 @@ export default function ThreeMuseumScene({
               isSpatialUpdateRef.current = false;
               lastRoomChangeTimeRef.current = performance.now() + 1500;
               onSelectRoomRef.current(clickedStatueId);
-            }
-            return;
-          }
-          if (obj.userData?.isDisplayCase && obj.userData.exhibitId === currentViewRef.current) {
-            if (onCaseClickRef.current) {
-              onCaseClickRef.current(obj.userData.exhibitId);
             }
             return;
           }
@@ -1033,7 +1018,7 @@ export default function ThreeMuseumScene({
       // --- B. AUTOMATIC 3D SPATIAL PROXIMITY ROOM DETECTION ---
       // CRITICAL: Only evaluate spatial room changes when the user is ACTUALLY walking with WASD!
       const now = performance.now();
-      if (isWalking && !isMacroRef.current && !isAnimatingRef.current && now > lastRoomChangeTimeRef.current) {
+      if (isWalking && !isAnimatingRef.current && now > lastRoomChangeTimeRef.current) {
         let insideRoomId: string | null = null;
 
         if (currentViewRef.current.startsWith('statue-')) {
@@ -1078,30 +1063,32 @@ export default function ThreeMuseumScene({
       }
 
       // Rotate artifacts: only spin the active exhibit or when viewing wing/rotunda overview
-      if (!isMacroRef.current) {
-        const activeExhibitId = currentViewRef.current;
-        rotatingArtifactsRef.current.forEach((art) => {
-          if (
-            art.userData?.exhibitId === activeExhibitId ||
-            activeExhibitId.startsWith('wing-') ||
-            activeExhibitId === 'atrium'
-          ) {
-            art.rotation.y += delta * 0.45;
-          }
-        });
-      }
-
-      // Dynamic light scoping: full spotlight on active room, gentle ambient wash on others
-      const currentActive = currentViewRef.current;
-      exhibitLightsRef.current.forEach(({ spot, wash }, id) => {
-        if (id === currentActive) {
-          spot.intensity = 7.5;
-          wash.intensity = 2.4;
-        } else {
-          spot.intensity = 0;
-          wash.intensity = 0.8;
+      const activeExhibitId = currentViewRef.current;
+      rotatingArtifactsRef.current.forEach((art) => {
+        if (
+          art.userData?.exhibitId === activeExhibitId ||
+          activeExhibitId.startsWith('wing-') ||
+          activeExhibitId === 'atrium'
+        ) {
+          art.rotation.y += delta * 0.45;
         }
       });
+
+      // Position single shared exhibit spotlight & wash on the active exhibit room
+      const activeEx = MUSEUM_EXHIBITS.find((e) => e.id === activeExhibitId);
+      if (activeExhibitSpotRef.current && activeExhibitWashRef.current) {
+        if (activeEx) {
+          activeExhibitSpotRef.current.position.set(activeEx.position[0], 8.1, activeEx.position[2] + 1.8);
+          activeExhibitSpotRef.current.target.position.set(activeEx.position[0], 0.6, activeEx.position[2]);
+          activeExhibitSpotRef.current.target.updateMatrixWorld();
+          activeExhibitSpotRef.current.intensity = 7.5;
+          activeExhibitWashRef.current.position.set(activeEx.position[0], 6.2, activeEx.position[2] + 1.5);
+          activeExhibitWashRef.current.intensity = 2.4;
+        } else {
+          activeExhibitSpotRef.current.intensity = 0;
+          activeExhibitWashRef.current.intensity = 0;
+        }
+      }
 
       // Animate doorway floating markers
       floatingMarkersRef.current.forEach((marker, idx) => {
@@ -1167,30 +1154,16 @@ export default function ThreeMuseumScene({
   }, []);
 
   useEffect(() => {
-    let cleanup: (() => void) | undefined;
-    let built = false;
-    const triggerBuild = () => {
-      if (built) return;
-      built = true;
-      cleanup = buildScene();
-    };
-
-    // Load scanned bust, with graceful fallback timer for test environments
-    loadScannedBust(triggerBuild);
-    const fallbackTimer = setTimeout(triggerBuild, 300);
-
+    const cleanup = buildScene();
     return () => {
-      clearTimeout(fallbackTimer);
       if (cleanup) cleanup();
     };
   }, [buildScene]);
 
   // Target camera positions for button room selection transitions
   useEffect(() => {
-    isMacroRef.current = isMacro;
     currentViewRef.current = currentView;
     onSelectRoomRef.current = onSelectRoom;
-    onCaseClickRef.current = onCaseClick;
     lastRoomChangeTimeRef.current = performance.now() + 1500; // 1.5s grace period on programmatic selection
     if (isSpatialUpdateRef.current) {
       isSpatialUpdateRef.current = false;
@@ -1216,17 +1189,11 @@ export default function ThreeMuseumScene({
     } else {
       const exhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
       if (exhibit) {
-        if (isMacro) {
-          targetCamPos.current.set(...exhibit.macroPosition);
-          targetLookAt.current.set(...exhibit.macroTarget);
-          isAnimatingRef.current = true;
-        } else {
-          targetCamPos.current.set(exhibit.cameraPosition[0], 2.25, exhibit.cameraPosition[2]);
-          targetLookAt.current.set(exhibit.cameraTarget[0], 1.88, exhibit.cameraTarget[2]);
-        }
+        targetCamPos.current.set(exhibit.cameraPosition[0], 2.25, exhibit.cameraPosition[2]);
+        targetLookAt.current.set(exhibit.cameraTarget[0], 1.88, exhibit.cameraTarget[2]);
       }
     }
-  }, [currentView, isMacro]);
+  }, [currentView]);
 
   return (
     <div
@@ -1733,62 +1700,61 @@ function buildClassicalSocle(radius: number, height: number, material: THREE.Mat
   return mesh;
 }
 
-function createPortraitHead(material: THREE.Material, scale: number = 0.088): THREE.Object3D {
-  if (sharedBustGeometry) {
-    const mesh = new THREE.Mesh(sharedBustGeometry, material);
+function populatePioneerBustGroup(
+  group: THREE.Group,
+  parts: Map<string, THREE.BufferGeometry>,
+  materials: PioneerBustMaterials,
+  scale: number
+) {
+  while (group.children.length > 0) {
+    group.remove(group.children[0]);
+  }
+  parts.forEach((geo, partName) => {
+    let mat: THREE.Material = materials.skin;
+    if (partName === 'hair' || partName === 'beard') {
+      mat = materials.hair;
+    } else if (partName === 'turban') {
+      mat = materials.turban ?? materials.skin;
+    } else if (partName === 'garment') {
+      mat = materials.garment ?? materials.skin;
+    } else if (partName === 'glasses' || partName === 'tie') {
+      mat = materials.accent;
+    }
+    if (geo.attributes.color) {
+      mat = new THREE.MeshStandardMaterial({
+        color: 0xf0d6b8,
+        vertexColors: true,
+        roughness: 0.44,
+        metalness: 0.28,
+      });
+    }
+    const mesh = new THREE.Mesh(geo, mat);
     mesh.scale.setScalar(scale);
     mesh.rotation.y = 0;
-    mesh.castShadow = true;
-    mesh.userData = { isPortraitHead: true, material, scale };
-    return mesh;
-  }
-  const group = new THREE.Group();
-  group.userData = { isPortraitHead: true, material, scale };
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.19, 32, 32), material);
-  head.scale.set(0.92, 1.08, 0.98);
-  head.castShadow = true;
-  group.add(head);
-
-  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.038, 0.11, 12), material);
-  nose.position.set(0, -0.01, 0.19);
-  nose.rotation.x = Math.PI / 2;
-  group.add(nose);
-  return group;
+    group.add(mesh);
+  });
 }
 
-function buildSculptedHermTorso(
-  width: number,
-  height: number,
-  depth: number,
-  material: THREE.Material
+function createPioneerBust(
+  bustKey: PioneerBustKey,
+  materials: PioneerBustMaterials,
+  scale: number = 0.09
 ): THREE.Group {
-  const torso = new THREE.Group();
-
-  // Tapered chest
-  const chest = new THREE.Mesh(
-    new THREE.CylinderGeometry(width * 0.44, width * 0.32, height, 32),
-    material
-  );
-  chest.position.set(0, height / 2 + 0.34, 0);
-  chest.scale.set(1.15, 1, (depth / width) * 1.5);
-  chest.castShadow = true;
-  torso.add(chest);
-
-  // Left rounded anatomical shoulder
-  const sL = new THREE.Mesh(new THREE.SphereGeometry(width * 0.22, 24, 24), material);
-  sL.position.set(-width * 0.36, height * 0.84 + 0.34, 0);
-  sL.scale.set(1.1, 0.82, (depth / width) * 1.6);
-  sL.castShadow = true;
-  torso.add(sL);
-
-  // Right rounded anatomical shoulder
-  const sR = new THREE.Mesh(new THREE.SphereGeometry(width * 0.22, 24, 24), material);
-  sR.position.set(width * 0.36, height * 0.84 + 0.34, 0);
-  sR.scale.set(1.1, 0.82, (depth / width) * 1.6);
-  sR.castShadow = true;
-  torso.add(sR);
-
-  return torso;
+  const group = new THREE.Group();
+  group.userData = { isPioneerBust: true, bustKey, materials, scale };
+  const cached = pioneerBustCache.get(bustKey);
+  if (cached) {
+    populatePioneerBustGroup(group, cached, materials, scale);
+    return group;
+  }
+  // Lightweight fallback silhouette until async GLB fetch completes
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.19, 24, 24), materials.skin);
+  head.scale.set(0.92, 1.08, 0.98);
+  group.add(head);
+  loadPioneerBust(bustKey, (parts) => {
+    populatePioneerBustGroup(group, parts, materials, scale);
+  });
+  return group;
 }
 
 function buildStatueMonument(
@@ -1796,13 +1762,11 @@ function buildStatueMonument(
   group: THREE.Group,
   statueGlyphs: THREE.Object3D[]
 ) {
-  // Rich Classical & Sculptural PBR Materials
-  const carraraMarble = new THREE.MeshPhysicalMaterial({
+  // Rich Classical & Sculptural PBR Materials (MeshStandardMaterial for high FPS)
+  const carraraMarble = new THREE.MeshStandardMaterial({
     color: 0xfafaf9,
-    roughness: 0.15,
+    roughness: 0.22,
     metalness: 0.05,
-    clearcoat: 0.65,
-    clearcoatRoughness: 0.12,
   });
 
   const belgianBlackGranite = new THREE.MeshStandardMaterial({
@@ -1811,27 +1775,22 @@ function buildStatueMonument(
     metalness: 0.15,
   });
 
-  const florentineBronze = new THREE.MeshPhysicalMaterial({
+  const florentineBronze = new THREE.MeshStandardMaterial({
     color: 0x5a3e28,
-    metalness: 0.88,
-    roughness: 0.26,
-    clearcoat: 0.5,
-    clearcoatRoughness: 0.18,
+    metalness: 0.85,
+    roughness: 0.28,
   });
 
-  const darkWoolBronze = new THREE.MeshPhysicalMaterial({
+  const darkWoolBronze = new THREE.MeshStandardMaterial({
     color: 0x27272a,
     metalness: 0.72,
-    roughness: 0.32,
-    clearcoat: 0.35,
+    roughness: 0.34,
   });
 
-  const gildedGold = new THREE.MeshPhysicalMaterial({
+  const gildedGold = new THREE.MeshStandardMaterial({
     color: 0xf59e0b,
-    metalness: 0.95,
-    roughness: 0.14,
-    clearcoat: 0.75,
-    clearcoatRoughness: 0.08,
+    metalness: 0.92,
+    roughness: 0.16,
   });
 
   const antiqueGold = new THREE.MeshStandardMaterial({
@@ -1982,31 +1941,13 @@ function buildStatueMonument(
     group.add(rivet);
   });
 
-  // Dedicated Soft Upward Point Light from Pedestal
-  const upLight = new THREE.PointLight(0xffedd5, 1.4, 4.5);
-  upLight.position.set(0, 1.8, 0.5);
-  group.add(upLight);
-
-  // Dedicated Overhead Warm Spotlight targeted at the portrait bust
-  const spot = new THREE.SpotLight(0xfffbeb, 3.8);
-  spot.position.set(0, 7.5, 2.8);
-  spot.angle = 0.62;
-  spot.penumbra = 0.5;
-  const bustSpotTarget = new THREE.Object3D();
-  bustSpotTarget.position.set(0, 2.5, 0);
-  group.add(bustSpotTarget);
-  spot.target = bustSpotTarget;
-  group.add(spot);
-
   // ==========================================
   // 3. CLASSICAL MUSEUM STATUARY BUSTS & EXHIBITS
   // ==========================================
-  const statuaryMarble = new THREE.MeshPhysicalMaterial({
+  const statuaryMarble = new THREE.MeshStandardMaterial({
     color: 0xdfdad2, // Natural warm antique Roman marble with subtle surface depth
     roughness: 0.42, // Honed satin stone finish (eliminating specular glare blowout)
     metalness: 0.02,
-    clearcoat: 0.12,
-    clearcoatRoughness: 0.35,
   });
 
   const museumBronze = new THREE.MeshStandardMaterial({
@@ -2045,63 +1986,20 @@ function buildStatueMonument(
     socle.position.set(0, 0, 0);
     alkindiGroup.add(socle);
 
-    // 2. Sculpted Draped Herm (Anatomically contoured chest and draped robes)
-    const hermTorso = buildSculptedHermTorso(0.72, 0.48, 0.38, statuaryMarble);
-    alkindiGroup.add(hermTorso);
-
-    // Sculpted Diagonal Robe Fold across the chest
-    const chestDrape = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.07, 16, 32, Math.PI * 0.8), statuaryMarble);
-    chestDrape.position.set(-0.05, 0.64, 0.14);
-    chestDrape.rotation.z = -Math.PI / 4;
-    alkindiGroup.add(chestDrape);
-
-    // Gilded Gold Embroidered Zari Lapel Border
-    const zariLeft = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.48, 0.02), gildedGold);
-    zariLeft.position.set(-0.16, 0.62, 0.2);
-    zariLeft.rotation.z = 0.15;
-    alkindiGroup.add(zariLeft);
-
-    const zariRight = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.48, 0.02), gildedGold);
-    zariRight.position.set(0.16, 0.62, 0.2);
-    zariRight.rotation.z = -0.15;
-    alkindiGroup.add(zariRight);
-
-    // 3. Dignified Portrait Head of Al-Kindi (Anatomical 3D Scanned Sculpture)
-    const head = createPortraitHead(statuaryMarble, 0.092);
-    head.position.set(0, 1.14, 0.02);
+    // 2. Bespoke Sculpted Portrait Bust of Al-Kindi (Abbasid Scholar Likeness, Turban, Beard & Jubba)
+    const head = createPioneerBust(
+      'alkindi',
+      {
+        skin: statuaryMarble,
+        hair: statuaryMarble,
+        turban: statuaryMarble,
+        garment: statuaryMarble,
+        accent: gildedGold,
+      },
+      1.15
+    );
+    head.position.set(0, 0.37, 0);
     alkindiGroup.add(head);
-
-    // Sculpted Arabian Scholar Beard (Neat tapered beard under chin)
-    const chinBeard = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.16, 16), statuaryMarble);
-    chinBeard.position.set(0, 0.98, 0.12);
-    chinBeard.rotation.x = -Math.PI / 10;
-    alkindiGroup.add(chinBeard);
-
-    const mustache = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.012, 12, 24, Math.PI), statuaryMarble);
-    mustache.position.set(0, 1.12, 0.21);
-    mustache.rotation.z = Math.PI;
-    alkindiGroup.add(mustache);
-
-    // 4. Imperial Abbasid Turban (Crowning the head above the brow)
-    const turban1 = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.055, 16, 32), statuaryMarble);
-    turban1.rotation.x = Math.PI / 2;
-    turban1.position.set(0, 1.32, 0.01);
-    alkindiGroup.add(turban1);
-
-    const turban2 = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.048, 16, 32), statuaryMarble);
-    turban2.rotation.x = Math.PI / 2 + 0.18;
-    turban2.position.set(0, 1.38, 0);
-    alkindiGroup.add(turban2);
-
-    const turbanDome = new THREE.Mesh(new THREE.SphereGeometry(0.15, 32, 16), statuaryMarble);
-    turbanDome.position.set(0, 1.42, 0);
-    alkindiGroup.add(turbanDome);
-
-    // Trailing Sash Tail (Tailasan) draped down over left shoulder
-    const tailasan = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.44, 8, 16), statuaryMarble);
-    tailasan.position.set(-0.24, 1.06, -0.04);
-    tailasan.rotation.z = 0.2;
-    alkindiGroup.add(tailasan);
 
     // 6. Historic Artifact: Carved Mahogany Manuscript Stand (Rihal) with Manuscript
     const lecternGroup = new THREE.Group();
@@ -2187,37 +2085,19 @@ function buildStatueMonument(
     socleCollar.position.set(0, 0.38, 0);
     turingGroup.add(socleCollar);
 
-    // 2. Sculpted 1940s Bletchley Park Jacket Herm Torso in Florentine Bronze
-    const hermTorso = buildSculptedHermTorso(0.7, 0.48, 0.37, museumBronze);
-    turingGroup.add(hermTorso);
-
-    // Tailored Jacket Lapels & Wartime Tie
-    const lapelLeft = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.42, 0.03), darkWoolBronze);
-    lapelLeft.position.set(-0.11, 0.62, 0.19);
-    lapelLeft.rotation.z = -0.18;
-    turingGroup.add(lapelLeft);
-
-    const lapelRight = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.42, 0.03), darkWoolBronze);
-    lapelRight.position.set(0.11, 0.62, 0.19);
-    lapelRight.rotation.z = 0.18;
-    turingGroup.add(lapelRight);
-
-    const tie = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.34, 0.025), gildedGold);
-    tie.position.set(0, 0.58, 0.195);
-    turingGroup.add(tie);
-
-    // 3. Portrait Head of Alan Turing with Side-Parted Hair
-    const head = createPortraitHead(museumBronze, 0.09);
-    head.position.set(0, 1.14, 0.02);
-    turingGroup.add(head);
-
-    const hairSweep = new THREE.Mesh(
-      new THREE.SphereGeometry(0.165, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.52),
-      darkWoolBronze
+    // 2. Bespoke Sculpted Portrait Bust of Alan Turing (1951 Elliott & Fry Likeness + 1940s Blazer)
+    const head = createPioneerBust(
+      'turing',
+      {
+        skin: museumBronze,
+        hair: darkWoolBronze,
+        garment: darkWoolBronze,
+        accent: gildedGold,
+      },
+      1.15
     );
-    hairSweep.position.set(0.01, 1.24, -0.01);
-    hairSweep.rotation.z = -0.12;
-    turingGroup.add(hairSweep);
+    head.position.set(0, 0.37, 0);
+    turingGroup.add(head);
 
     // 4. Historic Relic Right: Miniature 3-Drum Turing-Welchman Bombe Cabinet
     const bombeGroup = new THREE.Group();
@@ -2327,52 +2207,19 @@ function buildStatueMonument(
     goldSocleRim.position.set(0, 0.36, 0);
     shannonGroup.add(goldSocleRim);
 
-    // 2. Tailored Academic Suit Herm (Anatomically contoured chest in Cast Museum Bronze)
-    const suitTorso = buildSculptedHermTorso(0.7, 0.48, 0.36, museumBronze);
-    shannonGroup.add(suitTorso);
-
-    // Sculpted V-Lapels
-    [-0.13, 0.13].forEach((lx) => {
-      const lapel = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.42, 0.03), museumBronze);
-      lapel.position.set(lx, 0.65, 0.19);
-      lapel.rotation.z = (lx > 0 ? -1 : 1) * 0.22;
-      shannonGroup.add(lapel);
-    });
-
-    // White Shirt Collar & Silk Tie with Gold Tie Clip
-    const shirt = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.2, 0.02), statuaryMarble);
-    shirt.position.set(0, 0.74, 0.19);
-    shannonGroup.add(shirt);
-
-    const tie = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.36, 0.025), museumBronze);
-    tie.position.set(0, 0.58, 0.2);
-    shannonGroup.add(tie);
-
-    const tieClip = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.02, 0.035), gildedGold);
-    tieClip.position.set(0, 0.64, 0.21);
-    shannonGroup.add(tieClip);
-
-    // 3. Thoughtful Portrait Head of Claude Shannon (Anatomical 3D Scanned Bronze)
-    const head = createPortraitHead(museumBronze, 0.092);
-    head.position.set(0, 1.14, 0.02);
+    // 2. Bespoke Sculpted Portrait Bust of Claude Shannon (Bell Labs Likeness, Spectacles & Suit)
+    const head = createPioneerBust(
+      'shannon',
+      {
+        skin: museumBronze,
+        hair: darkWoolBronze,
+        garment: darkWoolBronze,
+        accent: gildedGold,
+      },
+      1.15
+    );
+    head.position.set(0, 0.37, 0);
     shannonGroup.add(head);
-
-    // Gold Wireframe Scholarly Spectacles (Resting on eye bridge)
-    const glassesGroup = new THREE.Group();
-    glassesGroup.position.set(0, 1.25, 0.22);
-
-    const rim1 = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.0035, 12, 24), gildedGold);
-    rim1.position.set(-0.046, 0, 0);
-    glassesGroup.add(rim1);
-
-    const rim2 = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.0035, 12, 24), gildedGold);
-    rim2.position.set(0.046, 0, 0);
-    glassesGroup.add(rim2);
-
-    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.004, 0.004), gildedGold);
-    glassesGroup.add(bridge);
-
-    shannonGroup.add(glassesGroup);
 
     // 5. Historic Display: Bell Labs Drafting Easel & Framed Chalkboard
     const easelGroup = new THREE.Group();
@@ -2480,45 +2327,18 @@ function buildStatueMonument(
     const diffieSocle = buildClassicalSocle(0.34, 0.38, statuaryMarble);
     diffieGroup.add(diffieSocle);
 
-    const diffieTorso = buildSculptedHermTorso(0.68, 0.48, 0.36, museumBronze);
-    diffieGroup.add(diffieTorso);
-
-    const diffieHead = createPortraitHead(museumBronze, 0.088);
-    diffieHead.position.set(0, 1.14, 0.02);
+    const diffieHead = createPioneerBust(
+      'diffie',
+      {
+        skin: museumBronze,
+        hair: darkWoolBronze,
+        garment: darkWoolBronze,
+        accent: gildedGold,
+      },
+      1.12
+    );
+    diffieHead.position.set(0, 0.37, 0);
     diffieGroup.add(diffieHead);
-
-    // Flowing Shoulder-Length Wavy Hair Locks
-    const dHairL = new THREE.Mesh(
-      new THREE.TubeGeometry(
-        new THREE.CatmullRomCurve3([
-          new THREE.Vector3(-0.14, 1.25, 0.02),
-          new THREE.Vector3(-0.22, 1.05, 0.04),
-          new THREE.Vector3(-0.18, 0.78, -0.02),
-        ]),
-        16,
-        0.05,
-        8,
-        false
-      ),
-      museumBronze
-    );
-    diffieGroup.add(dHairL);
-
-    const dHairR = new THREE.Mesh(
-      new THREE.TubeGeometry(
-        new THREE.CatmullRomCurve3([
-          new THREE.Vector3(0.14, 1.25, 0.02),
-          new THREE.Vector3(0.22, 1.05, 0.04),
-          new THREE.Vector3(0.18, 0.78, -0.02),
-        ]),
-        16,
-        0.05,
-        8,
-        false
-      ),
-      museumBronze
-    );
-    diffieGroup.add(dHairR);
 
     // Velvet Cushion & Golden Private Key Scepter on Plinth
     const cushionL = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.06, 0.22), velvetCushionMat);
@@ -2545,15 +2365,17 @@ function buildStatueMonument(
     const hellmanSocle = buildClassicalSocle(0.34, 0.38, statuaryMarble);
     hellmanGroup.add(hellmanSocle);
 
-    const hellmanTorso = buildSculptedHermTorso(0.68, 0.48, 0.36, museumBronze);
-    hellmanGroup.add(hellmanTorso);
-
-    const hTie = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.36, 0.025), gildedGold);
-    hTie.position.set(0, 0.58, 0.19);
-    hellmanGroup.add(hTie);
-
-    const hellmanHead = createPortraitHead(museumBronze, 0.088);
-    hellmanHead.position.set(0, 1.14, 0.02);
+    const hellmanHead = createPioneerBust(
+      'hellman',
+      {
+        skin: museumBronze,
+        hair: darkWoolBronze,
+        garment: darkWoolBronze,
+        accent: gildedGold,
+      },
+      1.12
+    );
+    hellmanHead.position.set(0, 0.37, 0);
     hellmanGroup.add(hellmanHead);
 
     // Velvet Cushion & Platinum Public Key Scepter on Plinth
@@ -2599,18 +2421,19 @@ function buildStatueMonument(
     // Ralph Merkle's Faceted Refractive Puzzle Polyhedron
     const puzzlePoly = new THREE.Mesh(
       new THREE.DodecahedronGeometry(0.2),
-      new THREE.MeshPhysicalMaterial({
+      new THREE.MeshStandardMaterial({
         color: 0x38bdf8,
-        transmission: 0.94,
-        roughness: 0.04,
-        ior: 1.6,
-        clearcoat: 1.0,
+        transparent: true,
+        opacity: 0.42,
+        roughness: 0.08,
+        metalness: 0.25,
+        depthWrite: false,
       })
     );
     puzzlePoly.position.set(0, 1.2, 0);
     merkleGroup.add(puzzlePoly);
 
-    // Glowing Golden Key Artifact Core with Internal Light
+    // Glowing Golden Key Artifact Core
     const coreKey = new THREE.Mesh(
       new THREE.SphereGeometry(0.07, 16, 16),
       new THREE.MeshStandardMaterial({
@@ -2621,10 +2444,6 @@ function buildStatueMonument(
     );
     coreKey.position.set(0, 1.2, 0);
     merkleGroup.add(coreKey);
-
-    const coreLight = new THREE.PointLight(0xf59e0b, 2.8, 3.5);
-    coreLight.position.set(0, 1.2, 0);
-    merkleGroup.add(coreLight);
 
     // Orbiting Brass Gimbal Rings
     const gimbal1 = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.014, 12, 32), gildedGold);
@@ -2883,13 +2702,12 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
 
       const cursorCutout = new THREE.Mesh(
         new THREE.BoxGeometry(0.18, 0.05, 0.4),
-        new THREE.MeshPhysicalMaterial({
+        new THREE.MeshStandardMaterial({
           color: 0xe0f2fe,
-          transmission: 0.85,
           transparent: true,
-          opacity: 0.45,
-          roughness: 0.06,
-          ior: 1.52,
+          opacity: 0.38,
+          roughness: 0.08,
+          metalness: 0.15,
         })
       );
       cursorCutout.position.y = 0.01;
@@ -3593,14 +3411,12 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
       latticeGroup.rotation.set(0.48, 0.35, 0);
       group.add(latticeGroup);
 
-      const quartzByteMat = new THREE.MeshPhysicalMaterial({
+      const quartzByteMat = new THREE.MeshStandardMaterial({
         color: 0x38bdf8,
-        transmission: 0.82,
         transparent: true,
         opacity: 0.72,
-        roughness: 0.08,
-        ior: 1.54,
-        clearcoat: 1.0,
+        roughness: 0.1,
+        metalness: 0.2,
       });
       const goldTraceMat = new THREE.MeshStandardMaterial({
         color: 0xfbbf24,

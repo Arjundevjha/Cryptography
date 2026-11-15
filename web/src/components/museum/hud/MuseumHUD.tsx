@@ -7,7 +7,6 @@ import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from '../museumData';
 
 interface MuseumHUDProps {
   currentView: string;
-  isMacro: boolean;
   onSelectRoom: (roomId: string) => void;
   onReturnToFoyer: () => void;
   isTourActive?: boolean;
@@ -16,7 +15,6 @@ interface MuseumHUDProps {
 
 export function MuseumHUD({
   currentView,
-  isMacro,
   onSelectRoom,
   onReturnToFoyer,
   isTourActive = false,
@@ -67,7 +65,7 @@ export function MuseumHUD({
       <header className="select-none fixed top-4 inset-x-4 sm:inset-x-5 z-40 flex items-center justify-between gap-2 pointer-events-none">
         {/* Left Zone: Branding & Return to Lobby */}
         <div className="pointer-events-auto flex items-center gap-2 min-w-0">
-          <div className="px-3.5 py-2 rounded-2xl bg-[#161412]/92 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2.5 min-w-0">
+          <div className="px-3.5 py-2 rounded-2xl bg-[#161412]/95 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2.5 min-w-0">
             <span className="text-amber-400 text-sm leading-none shrink-0" aria-hidden="true">
               ◈
             </span>
@@ -99,7 +97,7 @@ export function MuseumHUD({
         {/* Center Zone: Wing & Navigation Bar */}
         <nav
           aria-label="Museum wings and tools"
-          className="pointer-events-auto hidden lg:flex items-center gap-1 p-1.5 rounded-2xl bg-[#161412]/92 backdrop-blur-xl border border-amber-500/25 shadow-2xl shrink-0"
+          className="pointer-events-auto hidden lg:flex items-center gap-1 p-1.5 rounded-2xl bg-[#161412]/95 backdrop-blur-xl border border-amber-500/25 shadow-2xl shrink-0"
         >
           <button
             onClick={onReturnToFoyer}
@@ -164,7 +162,7 @@ export function MuseumHUD({
               className={`lg:hidden px-3 py-2 rounded-2xl text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-xl border shadow-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 isTourActive
                   ? 'bg-amber-400 text-stone-950 border-amber-300'
-                  : 'bg-[#161412]/92 text-amber-300 border-amber-500/30'
+                  : 'bg-[#161412]/95 text-amber-300 border-amber-500/30'
               }`}
             >
               <GraduationCap className="w-4 h-4" />
@@ -177,7 +175,7 @@ export function MuseumHUD({
             target="_blank"
             rel="noopener noreferrer"
             aria-label="View repository on GitHub"
-            className="px-3 py-2 rounded-2xl bg-[#161412]/92 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-sans font-medium flex items-center gap-2 shadow-2xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+            className="px-3 py-2 rounded-2xl bg-[#161412]/95 hover:bg-stone-900 backdrop-blur-xl border border-stone-800 text-stone-200 text-xs font-sans font-medium flex items-center gap-2 shadow-2xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           >
             <Github className="w-4 h-4 text-stone-300" />
             <span className="hidden xl:inline">View Repository</span>
@@ -448,10 +446,10 @@ export function MuseumHUD({
       )}
 
       {/* Subtle Gallery Exploration Hint (only inside exhibit chambers when not in guided tour) */}
-      {!isTourActive && activeExhibit && !isMacro && (
+      {!isTourActive && activeExhibit && (
         <div className="select-none fixed bottom-6 left-1/2 -translate-x-1/2 z-30 hidden xl:flex pointer-events-none px-4 py-1.5 rounded-full bg-[#161412]/90 backdrop-blur-md border border-amber-500/20 text-stone-300 text-xs font-sans items-center gap-2 shadow-lg">
           <Compass className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span>WASD / Arrows to Walk · Drag to Orbit · Click Vitrine Case to Inspect</span>
+          <span>WASD / Arrows to Walk · Drag to Orbit</span>
         </div>
       )}
 

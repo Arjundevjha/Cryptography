@@ -141,7 +141,6 @@ describe('Founding Fathers Cryptographic Statues Unit Tests', () => {
     render(
       <MuseumHUD
         currentView="statue-alkindi"
-        isMacro={false}
         onSelectRoom={handleSelectRoom}
         onReturnToFoyer={handleReturnToFoyer}
       />

@@ -25,7 +25,7 @@ export function ArtifactMetadataDrawer({ exhibit, onClose }: ArtifactMetadataDra
       role="dialog"
       aria-modal="true"
       aria-label={`Artifact details for ${exhibit.name}`}
-      className="museum-scroller fixed top-0 right-0 h-full w-80 md:w-96 bg-[#161412]/96 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-40 text-stone-100 overflow-y-auto shadow-2xl"
+      className="museum-scroller fixed top-0 right-0 h-full w-80 md:w-96 bg-[#161412]/95 backdrop-blur-2xl border-l border-amber-500/30 p-6 z-40 text-stone-100 overflow-y-auto shadow-2xl"
     >
       {/* Drawer Header — Title first, wing metadata below */}
       <div className="flex items-start justify-between pb-4 mb-6 border-b border-amber-500/20">

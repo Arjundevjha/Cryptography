@@ -46,7 +46,6 @@ describe('Accessibility (A11y) Unit Tests', () => {
     render(
       <MuseumHUD
         currentView="wing-classical"
-        isMacro={false}
         onSelectRoom={jest.fn()}
         onReturnToFoyer={jest.fn()}
       />
@@ -72,7 +71,6 @@ describe('Accessibility (A11y) Unit Tests', () => {
     render(
       <MuseumHUD
         currentView="atrium"
-        isMacro={false}
         onSelectRoom={jest.fn()}
         onReturnToFoyer={jest.fn()}
       />
@@ -132,7 +130,6 @@ describe('Accessibility (A11y) Unit Tests', () => {
     render(
       <MuseumHUD
         currentView="atrium"
-        isMacro={false}
         onSelectRoom={handleSelectRoom}
         onReturnToFoyer={jest.fn()}
       />
