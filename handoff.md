@@ -1,17 +1,18 @@
 # Session Handoff Summary
 
 ## Executive Summary
-Completed UI readability fixes, WebGL multi-room FPS optimizations, removal of the unused "Inspect Display" drawer, Next.js dev CSP fix, and replaced the Hall of Fame pioneer busts (`Al-Kindi`, `Alan Turing`, `Claude Shannon`, `Whitfield Diffie`, `Martin Hellman`) with photo-reconstructed 3D bronze portrait `.glb` sculptures via `TripoSR`.
+Transformed the 3D museum environment from flat untextured white/beige surfaces into a warm, sunlit, real-life curated museum gallery with procedural architectural textures, wing-themed gallery rooms, fluted neoclassical columns, a coffered ceiling, a central vista focal apse, soft contact shadows, and fixed the bottom-left HUD overlap.
 
 ## Key Technical Decisions
-- **Photo-to-3D Portrait Busts** (`scripts/reconstruct_busts_3d.py` -> `web/public/models/bust-*.glb`): Reconstructed 360° vertex-colored `.glb` sculptures from studio bronze portrait references, normalized to `0.92m` height, `min_y = 0`, `+Z` front orientation.
-- **GLTF `matrixWorld` & Vertex Colors** (`web/src/components/museum/ThreeMuseumScene.tsx`): Applied `mesh.matrixWorld` in `loadPioneerBust` and enabled `vertexColors: true` with warm patinated bronze `MeshStandardMaterial` (`color: 0xf0d6b8, roughness: 0.44, metalness: 0.28`). Hydrated busts directly via callbacks inside `createPioneerBust` on first load.
-- **Multi-Room WebGL FPS**: Replaced `MeshPhysicalMaterial` `transmission`/`clearcoat` and ~36 per-room lights with `MeshStandardMaterial`, consolidated global lights + single active-exhibit spotlight, `shadowMap.enabled = false`, and `pixelRatio <= 1.0`.
-- **Tailwind v3 Opacity & Dev CSP**: Replaced `/92`, `/94`, `/96` with `/95` across HUD/workbench drawers; added `'unsafe-eval'` to `web/next.config.js` CSP only in `development`.
-- **`/learn` Skill Update**: Updated `~/.gemini/config/skills/threejs-webgl-museum/SKILL.md` with these patterns.
+- **Procedural Architectural Textures** (`web/src/components/museum/museumTextures.ts`): Added cached `CanvasTexture` generators for Botticino veined marble tile flooring (`createMarbleTileTexture`), honey-oak herringbone parquet (`createHerringboneParquetTexture`), Venetian plaster walls (`createVenetianPlasterTexture`), fluted neoclassical columns (`createFlutedColumnTexture`), coffered ceilings (`createCofferedCeilingTexture`), soft radial contact shadows (`createContactShadowTexture`), and framed archival cipher plates (`createWingGalleryArtTexture`).
+- **Warm Real-Life Museum Palette & Wing Identity** (`web/src/components/museum/ThreeMuseumScene.tsx`):
+  - Calibrated `toneMappingExposure` to `1.08` with warm stone atmospheric fog (`0xe5dbcd`, `0.0042`) and balanced daylight fill so textures retain rich relief without washing out.
+  - Wing-themed textured Venetian plaster rooms: Terracotta (`Classical`), Heritage Sage Green (`Historical`), and Wedgewood Slate (`Modern`), each with corner travertine pilasters, crown molding, brass doorway jambs, and a framed archival study plate in the back alcove.
+  - Added a Grand Central Vista Focal Apse at `z = -94.4` to anchor the main corridor sightline.
+- **HUD Overlap Fix** (`web/src/components/museum/hud/MuseumHUD.tsx`): Moved `<ApiStatusDot />` to the top-right header zone beside `View Repository` so it never overlaps the bottom-left `Al-Kindi` pioneer card.
 
 ## Verification
 - `cd web && npm test`: 5 suites, 68 tests passing.
-- `cd web && npx next build`: Clean Turbopack/TypeScript build.
-- Playwright browser check on `http://localhost:3099`: Verified Lobby, Al-Kindi, Alan Turing, and Diffie & Hellman busts rendered cleanly on their pedestals with `Page errors: []`.
-- `graphify update .`: Rebuilt (`1611 nodes, 2874 edges, 102 communities`).
+- `cd web && npx next build`: Clean Turbopack & TypeScript build.
+- Playwright visual check on `http://localhost:3000`: Inspected `lobby_after.png` and `classical_wing_after.png` confirming veined marble floors, herringbone parquet, fluted columns, coffered ceiling, wing-themed rooms, and zero HUD overlap.
+- `graphify update .`: Updated knowledge graph.

@@ -5,6 +5,15 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES, CryptographicStatue } from './museumData';
+import {
+  createMarbleTileTexture,
+  createHerringboneParquetTexture,
+  createVenetianPlasterTexture,
+  createFlutedColumnTexture,
+  createCofferedCeilingTexture,
+  createContactShadowTexture,
+  createWingGalleryArtTexture,
+} from './museumTextures';
 
 interface ThreeMuseumSceneProps {
   currentView: string;
@@ -135,15 +144,15 @@ export default function ThreeMuseumScene({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
     renderer.shadowMap.enabled = false;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
-    renderer.setClearColor(0x352e27);
+    renderer.toneMappingExposure = 1.08;
+    renderer.setClearColor(0xe5dbcd);
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // === 2. GRAND CLASSICAL ARCHITECTURAL SCENE & ATMOSPHERIC FOG ===
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x352e27);
-    scene.fog = new THREE.FogExp2(0x352e27, 0.0032);
+    scene.background = new THREE.Color(0xe5dbcd);
+    scene.fog = new THREE.FogExp2(0xe5dbcd, 0.0042);
     sceneRef.current = scene;
 
     // === 3. FIRST-PERSON EYE-LEVEL CAMERA & IN-PLACE CONTROLS ===
@@ -183,28 +192,42 @@ export default function ThreeMuseumScene({
     window.addEventListener('keyup', handleKeyUp);
 
     // ============================
-    // 5. GRAND CLASSICAL ARCHITECTURAL MATERIALS
+    // 5. GRAND CLASSICAL ARCHITECTURAL MATERIALS (PROCEDURALLY TEXTURED)
     // ============================
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0xede5d8, roughness: 0.65, metalness: 0.03 });
-    const wainscotMat = new THREE.MeshStandardMaterial({ color: 0x3d271a, roughness: 0.42, metalness: 0.04 });
-    const trimMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.18 });
-    const woodBeamMat = new THREE.MeshStandardMaterial({ color: 0x3a2517, roughness: 0.45 });
+    const travertineWallTex = createVenetianPlasterTexture('#e7ddd0', '#d6c8b6', 6, 2, 19);
+    const marbleFloorTex = createMarbleTileTexture(26, 28);
+    const parquetRunnerTex = createHerringboneParquetTexture(2, 15);
+    const flutedColTex = createFlutedColumnTexture();
+    const cofferedCeilingTex = createCofferedCeilingTexture(18, 20);
+    const contactShadowTex = createContactShadowTexture();
+    const contactShadowMat = new THREE.MeshBasicMaterial({
+      map: contactShadowTex,
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.72,
+    });
+
+    const wallMat = new THREE.MeshStandardMaterial({ map: travertineWallTex, roughness: 0.72, metalness: 0.02 });
+    const wainscotMat = new THREE.MeshStandardMaterial({ color: 0x422a1b, roughness: 0.44, metalness: 0.05 });
+    const trimMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.88, roughness: 0.22 });
+    const woodBeamMat = new THREE.MeshStandardMaterial({ color: 0x3f2819, roughness: 0.48 });
     const marbleFloorMat = new THREE.MeshStandardMaterial({
-      color: 0xe2d9cd,
-      roughness: 0.24,
-      metalness: 0.04,
+      map: marbleFloorTex,
+      roughness: 0.26,
+      metalness: 0.05,
     });
     const oakRunnerMat = new THREE.MeshStandardMaterial({
-      color: 0x5a3e28,
+      map: parquetRunnerTex,
       roughness: 0.38,
-      metalness: 0.02,
+      metalness: 0.03,
     });
     const brassInlayMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.18 });
-    const travertineMat = new THREE.MeshStandardMaterial({ color: 0xf2ede4, roughness: 0.45, metalness: 0.03 });
+    const travertineMat = new THREE.MeshStandardMaterial({ map: flutedColTex, roughness: 0.52, metalness: 0.03 });
+    const travertineTrimMat = new THREE.MeshStandardMaterial({ color: 0xe6dccb, roughness: 0.55, metalness: 0.03 });
     const wartimeBronzeMat = new THREE.MeshStandardMaterial({ color: 0x5a4533, metalness: 0.82, roughness: 0.32 });
     const titaniumMat = new THREE.MeshStandardMaterial({ color: 0x5a6878, metalness: 0.9, roughness: 0.2 });
     const matteBlackMat = new THREE.MeshStandardMaterial({ color: 0x221f1c, roughness: 0.6, metalness: 0.2 });
-    const leatherMat = new THREE.MeshStandardMaterial({ color: 0x422619, roughness: 0.65, metalness: 0.05 });
+    const leatherMat = new THREE.MeshStandardMaterial({ color: 0x4a291a, roughness: 0.62, metalness: 0.05 });
     const glassMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       transparent: true,
@@ -218,17 +241,17 @@ export default function ThreeMuseumScene({
     // ============================
     // 6. CALIBRATED GRAND MUSEUM LIGHTING (DAYLIGHT & WARM ARCHITECTURAL FILL)
     // ============================
-    const hemiLight = new THREE.HemisphereLight(0xfffaee, 0xd2c5b6, 1.35);
+    const hemiLight = new THREE.HemisphereLight(0xfffaf0, 0xc9b9a6, 1.05);
     hemiLight.position.set(0, 50, 0);
     scene.add(hemiLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfff6e8, 1.6);
+    const sunLight = new THREE.DirectionalLight(0xfff4e0, 1.35);
     sunLight.position.set(25, 45, 28);
     sunLight.castShadow = false;
     scene.add(sunLight);
 
     // Dedicated Rotunda Portrait Key Light (Illuminates Founding Pioneers from the front)
-    const rotundaKeyLight = new THREE.DirectionalLight(0xfff3df, 2.2);
+    const rotundaKeyLight = new THREE.DirectionalLight(0xfff2db, 1.85);
     rotundaKeyLight.position.set(0, 15, 22);
     rotundaKeyLight.target.position.set(0, 2.3, 6);
     scene.add(rotundaKeyLight);
@@ -285,11 +308,17 @@ export default function ThreeMuseumScene({
     floor.rotation.x = -Math.PI / 2;
     scene.add(floor);
 
-    // French Honey Oak Parquet Corridor Runners leading from Rotunda to Wings
+    // French Honey Oak Herringbone Parquet Corridor Runner with Brass Border Rails
     const mainRunner = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 56), oakRunnerMat);
     mainRunner.rotation.x = -Math.PI / 2;
     mainRunner.position.set(0, 0.008, -14);
     scene.add(mainRunner);
+
+    [-3.65, 3.65].forEach((bx) => {
+      const runnerBorder = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.008, 56), brassInlayMat);
+      runnerBorder.position.set(bx, 0.011, -14);
+      scene.add(runnerBorder);
+    });
 
     // Architectural Inlaid Brass Expansion Joints (Replaces debug GridHelper)
     for (let x = -72; x <= 72; x += 18) {
@@ -305,7 +334,7 @@ export default function ThreeMuseumScene({
 
     // Coffered Warm Classical Ceiling & Walnut Structural Cross-Beams
     const ceilingGeo = new THREE.PlaneGeometry(180, 200);
-    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xede6dc, roughness: 0.72 });
+    const ceilingMat = new THREE.MeshStandardMaterial({ map: cofferedCeilingTex, roughness: 0.72 });
     const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
     ceiling.position.y = 12;
     ceiling.rotation.x = Math.PI / 2;
@@ -357,6 +386,34 @@ export default function ThreeMuseumScene({
     const frontWall = new THREE.Mesh(rearWallGeo, wallMat);
     frontWall.position.set(0, 6, -95);
     scene.add(frontWall);
+
+    // Grand Central Vista Focal Apse on the Far North Wall (anchors the main corridor sightline)
+    const apseGroup = new THREE.Group();
+    apseGroup.position.set(0, 0, -94.4);
+    const apseWainscot = new THREE.Mesh(new THREE.BoxGeometry(26, 1.4, 0.4), wainscotMat);
+    apseWainscot.position.y = 0.7;
+    apseGroup.add(apseWainscot);
+    const apsePanel = new THREE.Mesh(
+      new THREE.BoxGeometry(12, 8.2, 0.35),
+      new THREE.MeshStandardMaterial({ color: 0x3b4e41, roughness: 0.65 })
+    );
+    apsePanel.position.set(0, 5.2, 0.15);
+    apseGroup.add(apsePanel);
+    const apseFrame = new THREE.Mesh(new THREE.BoxGeometry(12.6, 8.8, 0.25), goldMat);
+    apseFrame.position.set(0, 5.2, 0.08);
+    apseGroup.add(apseFrame);
+    const apseCrest = new THREE.Mesh(new THREE.TorusGeometry(2.2, 0.12, 16, 48), goldMat);
+    apseCrest.position.set(0, 5.4, 0.4);
+    apseGroup.add(apseCrest);
+    const apseCrestInner = new THREE.Mesh(new THREE.OctahedronGeometry(0.95, 0), goldMat);
+    apseCrestInner.position.set(0, 5.4, 0.42);
+    apseGroup.add(apseCrestInner);
+    [-6.8, 6.8].forEach((px) => {
+      const pilaster = new THREE.Mesh(new THREE.BoxGeometry(0.95, 11.4, 0.65), travertineTrimMat);
+      pilaster.position.set(px, 5.7, 0.25);
+      apseGroup.add(pilaster);
+    });
+    scene.add(apseGroup);
 
     const sideWallGeo = new THREE.BoxGeometry(0.8, 12, 130);
     const leftExteriorWall = new THREE.Mesh(sideWallGeo, wallMat);
@@ -496,9 +553,14 @@ export default function ThreeMuseumScene({
       capRing.position.y = 10.65;
       pGroup.add(capRing);
 
-      const abacus = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.35, 1.45), travertineMat);
+      const abacus = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.35, 1.45), travertineTrimMat);
       abacus.position.y = 10.88;
       pGroup.add(abacus);
+
+      const colShadow = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 2.8), contactShadowMat);
+      colShadow.rotation.x = -Math.PI / 2;
+      colShadow.position.y = 0.013;
+      pGroup.add(colShadow);
 
       scene.add(pGroup);
     });
@@ -730,11 +792,29 @@ export default function ThreeMuseumScene({
     // ============================
     const rotatingArtifacts: THREE.Object3D[] = [];
     const floatingMarkers: THREE.Object3D[] = [];
-    const roomWallMat = new THREE.MeshStandardMaterial({ color: 0xede5d8, roughness: 0.65, metalness: 0.02 });
-    const roomRoofMat = new THREE.MeshStandardMaterial({ color: 0xeae2d5, roughness: 0.72 });
+    const wingWallMaterials: Record<'Classical' | 'Historical' | 'Modern', THREE.MeshStandardMaterial> = {
+      Classical: new THREE.MeshStandardMaterial({
+        map: createVenetianPlasterTexture('#c98967', '#b37250', 2, 1, 21),
+        roughness: 0.72,
+        metalness: 0.02,
+      }),
+      Historical: new THREE.MeshStandardMaterial({
+        map: createVenetianPlasterTexture('#627d69', '#4e6655', 2, 1, 43),
+        roughness: 0.72,
+        metalness: 0.02,
+      }),
+      Modern: new THREE.MeshStandardMaterial({
+        map: createVenetianPlasterTexture('#5b748a', '#485f74', 2, 1, 65),
+        roughness: 0.68,
+        metalness: 0.04,
+      }),
+    };
+    const roomExteriorMat = wallMat;
+    const roomRoofMat = new THREE.MeshStandardMaterial({ map: cofferedCeilingTex, roughness: 0.72 });
     const plinthMarbleMat = new THREE.MeshStandardMaterial({
-      color: 0xf2ece4,
-      roughness: 0.22,
+      map: marbleFloorTex,
+      color: 0xfaf6f0,
+      roughness: 0.24,
       metalness: 0.05,
     });
     const velvetBedMat = new THREE.MeshStandardMaterial({ color: 0x7a221a, roughness: 0.85, metalness: 0.02 });
@@ -744,8 +824,9 @@ export default function ThreeMuseumScene({
       roomGroup.position.set(...exhibit.position);
       roomGroup.rotation.y = exhibit.rotationY;
       roomGroup.userData = { exhibitId: exhibit.id };
+      const roomWallMat = wingWallMaterials[exhibit.category];
 
-      // Back Wall with Walnut Wainscoting & Recessed Cove Backlight
+      // Back Wall with Walnut Wainscoting & Crown Molding
       const backWall = new THREE.Mesh(new THREE.BoxGeometry(14, 8.5, 0.4), roomWallMat);
       backWall.position.set(0, 4.25, -6);
       roomGroup.add(backWall);
@@ -758,14 +839,28 @@ export default function ThreeMuseumScene({
       backRail.position.set(0, 1.22, -5.96);
       roomGroup.add(backRail);
 
-      // Warm Recessed Alcove Frame on Back Wall
-      const alcoveFrame = new THREE.Mesh(new THREE.BoxGeometry(5.6, 5.2, 0.12), trimMat);
-      alcoveFrame.position.set(0, 4.2, -5.78);
+      // Warm Recessed Alcove Frame & Curatorial Archival Plate on Back Wall
+      const alcoveFrame = new THREE.Mesh(new THREE.BoxGeometry(5.6, 4.8, 0.12), trimMat);
+      alcoveFrame.position.set(0, 4.35, -5.78);
       roomGroup.add(alcoveFrame);
 
-      const alcoveInner = new THREE.Mesh(new THREE.BoxGeometry(5.3, 4.9, 0.14), wainscotMat);
-      alcoveInner.position.set(0, 4.2, -5.76);
+      const alcoveInner = new THREE.Mesh(new THREE.BoxGeometry(5.3, 4.5, 0.14), wainscotMat);
+      alcoveInner.position.set(0, 4.35, -5.76);
       roomGroup.add(alcoveInner);
+
+      const galleryArtTex = createWingGalleryArtTexture(exhibit.name, exhibit.category, exhibit.timeline);
+      const galleryArtMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(4.8, 4.05),
+        new THREE.MeshStandardMaterial({ map: galleryArtTex, roughness: 0.42 })
+      );
+      galleryArtMesh.position.set(0, 4.35, -5.67);
+      roomGroup.add(galleryArtMesh);
+
+      // Over-alcove Brass Picture Lamp
+      const alcoveLampHood = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 1.8, 12), goldMat);
+      alcoveLampHood.rotation.z = Math.PI / 2;
+      alcoveLampHood.position.set(0, 6.85, -5.45);
+      roomGroup.add(alcoveLampHood);
 
       // Side Walls with Walnut Wainscoting
       const sideWallGeo = new THREE.BoxGeometry(0.4, 8.5, 12);
@@ -781,21 +876,52 @@ export default function ThreeMuseumScene({
         const sWainscot = new THREE.Mesh(new THREE.BoxGeometry(0.46, 1.2, 11.8), wainscotMat);
         sWainscot.position.set(wx, 0.6, 0);
         roomGroup.add(sWainscot);
+        const sRail = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 11.8), trimMat);
+        sRail.position.set(wx, 1.22, 0);
+        roomGroup.add(sRail);
       });
 
-      // Front Wall with Doorway Arch & Brass Pilaster Trim
+      // Corner Travertine Pilasters & Crown Molding
+      [
+        [-6.85, -5.85],
+        [6.85, -5.85],
+        [-6.85, 5.85],
+        [6.85, 5.85],
+      ].forEach(([px, pz]) => {
+        const pilaster = new THREE.Mesh(new THREE.BoxGeometry(0.55, 8.5, 0.55), travertineTrimMat);
+        pilaster.position.set(px, 4.25, pz);
+        roomGroup.add(pilaster);
+      });
+
+      const backCrown = new THREE.Mesh(new THREE.BoxGeometry(14.2, 0.28, 0.55), travertineTrimMat);
+      backCrown.position.set(0, 8.36, -5.95);
+      roomGroup.add(backCrown);
+
+      // Front Wall with Textured Travertine Facade, Doorway Arch & Brass Pilaster Trim
       const frontPartGeo = new THREE.BoxGeometry(3.8, 8.5, 0.4);
-      const frontLeft = new THREE.Mesh(frontPartGeo, roomWallMat);
+      const frontLeft = new THREE.Mesh(frontPartGeo, roomExteriorMat);
       frontLeft.position.set(-5.1, 4.25, 6);
       roomGroup.add(frontLeft);
 
-      const frontRight = new THREE.Mesh(frontPartGeo, roomWallMat);
+      const frontRight = new THREE.Mesh(frontPartGeo, roomExteriorMat);
       frontRight.position.set(5.1, 4.25, 6);
       roomGroup.add(frontRight);
 
-      const header = new THREE.Mesh(new THREE.BoxGeometry(6.6, 2.2, 0.45), roomWallMat);
+      const header = new THREE.Mesh(new THREE.BoxGeometry(6.6, 2.2, 0.45), roomExteriorMat);
       header.position.set(0, 7.4, 6);
       roomGroup.add(header);
+
+      // Front Doorway Brass Trim & Wainscot
+      [-3.2, 3.2].forEach((dx) => {
+        const jamb = new THREE.Mesh(new THREE.BoxGeometry(0.18, 6.3, 0.52), trimMat);
+        jamb.position.set(dx, 3.15, 6);
+        roomGroup.add(jamb);
+      });
+      [-5.1, 5.1].forEach((fx) => {
+        const fWainscot = new THREE.Mesh(new THREE.BoxGeometry(3.82, 1.2, 0.48), wainscotMat);
+        fWainscot.position.set(fx, 0.6, 6);
+        roomGroup.add(fWainscot);
+      });
 
       // Coffered Ceiling Roof
       const roomRoof = new THREE.Mesh(new THREE.BoxGeometry(14.4, 0.3, 12.4), roomRoofMat);

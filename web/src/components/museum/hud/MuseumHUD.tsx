@@ -170,6 +170,8 @@ export function MuseumHUD({
             </button>
           )}
 
+          <ApiStatusDot />
+
           <a
             href="https://github.com/Arjundevjha/Cryptography"
             target="_blank"
@@ -452,11 +454,6 @@ export function MuseumHUD({
           <span>WASD / Arrows to Walk · Drag to Orbit</span>
         </div>
       )}
-
-      {/* Footer Minimal API Status Dot */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <ApiStatusDot />
-      </div>
     </>
   );
 }
