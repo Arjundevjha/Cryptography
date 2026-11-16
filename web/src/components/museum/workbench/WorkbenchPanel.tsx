@@ -2,13 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import { CipherExhibit } from '../museumData';
-import { Lock, Unlock, Play, RefreshCw, AlertTriangle, Copy, Check, ArrowUpDown } from 'lucide-react';
+import {
+  Lock,
+  Unlock,
+  Play,
+  RefreshCw,
+  AlertTriangle,
+  Copy,
+  Check,
+  ArrowUpDown,
+  BarChart3,
+  Layers,
+  Award,
+  Wrench,
+} from 'lucide-react';
+import { CipherParameterControls } from './CipherParameterControls';
+import { FrequencyAnalysisView } from './FrequencyAnalysisView';
+import { StepInspectorView } from './StepInspectorView';
+import { PassportChallengeView } from './PassportChallengeView';
 
 interface WorkbenchPanelProps {
   exhibit: CipherExhibit;
 }
 
+type WorkbenchTab = 'workbench' | 'cryptanalysis' | 'inspector' | 'challenge';
+
+const OFFLINE_ERROR_MSG = 'Could not reach encryption server — is the API running?';
+
 export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
+  const [activeTab, setActiveTab] = useState<WorkbenchTab>('workbench');
   const [mode, setMode] = useState<'encrypt' | 'decrypt'>('encrypt');
   const [inputText, setInputText] = useState('HELLO MUSEUM WORLD');
   const [outputText, setOutputText] = useState('');
@@ -21,6 +43,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const [aKey, setAKey] = useState<number>(exhibit.defaultParams.a_key ?? 5);
   const [bKey, setBKey] = useState<number>(exhibit.defaultParams.b_key ?? 8);
   const [keyPhrase, setKeyPhrase] = useState<string>(exhibit.defaultParams.key ?? 'LEMON');
+  const [substitutionKey, setSubstitutionKey] = useState<string>(
+    exhibit.defaultParams.substitutionKey ?? 'QWERTYUIOPASDFGHJKLZXCVBNM'
+  );
   const [width, setWidth] = useState<number>(exhibit.defaultParams.width ?? 4);
   const [pVal, setPVal] = useState<number>(61);
   const [qVal, setQVal] = useState<number>(53);
@@ -36,11 +61,24 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const [enigmaPlugboard, setEnigmaPlugboard] = useState<string>('AB CD');
   const [lorenzPositions, setLorenzPositions] = useState<number[]>(Array(12).fill(0));
 
+  // New exhibit states: hmac-hash & diffie-hellman
+  const [hashAlgorithm, setHashAlgorithm] = useState<'sha256' | 'sha3_256' | 'blake2s' | 'md5'>('sha256');
+  const [hmacAction, setHmacAction] = useState<'hash' | 'sign' | 'verify'>('hash');
+  const [hmacKey, setHmacKey] = useState<string>('MUSEUM_SECRET_KEY');
+  const [hmacSignature, setHmacSignature] = useState<string>('');
+  const [dhPrime, setDhPrime] = useState<number>(exhibit.defaultParams.p ?? 23);
+  const [dhGen, setDhGen] = useState<number>(exhibit.defaultParams.g ?? 5);
+  const [dhAlice, setDhAlice] = useState<number>(exhibit.defaultParams.a ?? 6);
+  const [dhBob, setDhBob] = useState<number>(exhibit.defaultParams.b ?? 15);
+  const [dhResult, setDhResult] = useState<{ A: number; B: number; shared_secret: number } | null>(null);
+
   useEffect(() => {
     setInputText('HELLO MUSEUM WORLD');
     setOutputText('');
     setErrorMsg(null);
     setCopied(false);
+    setActiveTab('workbench');
+    setDhResult(null);
   }, [exhibit.id]);
 
   const handleCopy = async () => {
@@ -78,7 +116,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
       setRsaPublicKey(data.public_key);
       setRsaPrivateKey(data.private_key);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Could not reach encryption server — is the API running?');
+      setErrorMsg(err.message || OFFLINE_ERROR_MSG);
     } finally {
       setLoading(false);
     }
@@ -89,13 +127,11 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     setErrorMsg(null);
 
     let endpoint = mode === 'encrypt' ? exhibit.endpoint.encrypt : exhibit.endpoint.decrypt;
-    let payload: any = {};
+    let payload: Record<string, any> = {};
 
     try {
       if (exhibit.id === 'caesar') {
-        payload = mode === 'encrypt'
-          ? { plaintext: inputText, shift }
-          : { ciphertext: inputText, shift };
+        payload = mode === 'encrypt' ? { plaintext: inputText, shift } : { ciphertext: inputText, shift };
       } else if (exhibit.id === 'affine') {
         payload = mode === 'encrypt'
           ? { plaintext: inputText, a_key: aKey, b_key: bKey }
@@ -104,6 +140,11 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         payload = mode === 'encrypt'
           ? { plaintext: inputText, key: keyPhrase }
           : { ciphertext: inputText, key: keyPhrase };
+      } else if (exhibit.id === 'substitution') {
+        endpoint = mode === 'encrypt' ? '/api/substitution/encrypt' : '/api/substitution/decrypt';
+        payload = mode === 'encrypt'
+          ? { plaintext: inputText, key: substitutionKey }
+          : { ciphertext: inputText, key: substitutionKey };
       } else if (exhibit.id === 'polybius') {
         payload = mode === 'encrypt'
           ? { plaintext: inputText, key: keyPhrase.length === 25 ? keyPhrase : undefined }
@@ -128,10 +169,20 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           : { ciphertext: inputText, positions: lorenzPositions };
       } else if (exhibit.id === 'rsa') {
         if (mode === 'encrypt') {
-          if (!rsaPublicKey) {
-            await handleRSAKeygen();
+          let pubKey = rsaPublicKey;
+          if (!pubKey) {
+            const keyRes = await fetch('/api/rsa/keygen', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ p: pVal, q: qVal, e: eVal }),
+            });
+            if (!keyRes.ok) throw new Error(OFFLINE_ERROR_MSG);
+            const keyData = await keyRes.json();
+            pubKey = keyData.public_key;
+            setRsaPublicKey(keyData.public_key);
+            setRsaPrivateKey(keyData.private_key);
           }
-          payload = { plaintext: inputText, public_key: rsaPublicKey };
+          payload = { plaintext: inputText, public_key: pubKey };
         } else {
           payload = { ciphertext: inputText, private_key: rsaPrivateKey };
         }
@@ -143,6 +194,20 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         }
       } else if (exhibit.id === 'sha256') {
         payload = { plaintext: inputText };
+      } else if (exhibit.id === 'hmac-hash') {
+        if (hmacAction === 'hash') {
+          endpoint = '/api/hash/digest';
+          payload = { plaintext: inputText, algorithm: hashAlgorithm };
+        } else if (hmacAction === 'sign') {
+          endpoint = '/api/hmac/sign';
+          payload = { message: inputText, key: hmacKey, algorithm: 'sha256' };
+        } else {
+          endpoint = '/api/hmac/verify';
+          payload = { message: inputText, key: hmacKey, signature: hmacSignature, algorithm: 'sha256' };
+        }
+      } else if (exhibit.id === 'diffie-hellman') {
+        endpoint = '/api/diffie-hellman/exchange';
+        payload = { p: dhPrime, g: dhGen, a: dhAlice, b: dhBob };
       }
 
       const res = await fetch(endpoint, {
@@ -152,23 +217,41 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
       });
 
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({ detail: 'API Error' }));
+        const errData = await res.json().catch(() => ({ detail: 'Execution failed' }));
         throw new Error(errData.detail || 'Execution failed');
       }
 
       const data = await res.json();
-      if (mode === 'encrypt') {
+      if (exhibit.id === 'diffie-hellman') {
+        setDhResult(data);
+        setOutputText(`A=${data.A}, B=${data.B}, Shared Secret=${data.shared_secret}`);
+      } else if (exhibit.id === 'hmac-hash') {
+        if (hmacAction === 'hash') {
+          setOutputText(data.hash || '');
+        } else if (hmacAction === 'sign') {
+          setHmacSignature(data.signature || '');
+          setOutputText(data.signature || '');
+        } else {
+          setOutputText(data.valid ? 'VALID SIGNATURE' : 'INVALID SIGNATURE');
+        }
+      } else if (mode === 'encrypt') {
         setOutputText(data.ciphertext || data.hash || '');
         if (data.nonce) setAesNonce(data.nonce);
       } else {
         setOutputText(data.plaintext || '');
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Could not reach encryption server — is the API running?');
+      if (err instanceof TypeError || !err?.message) {
+        setErrorMsg(OFFLINE_ERROR_MSG);
+      } else {
+        setErrorMsg(err.message);
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const isClassical = exhibit.category === 'Classical';
 
   return (
     <div
@@ -176,14 +259,17 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
       className="museum-scroller max-h-[calc(100vh-140px)] overflow-y-auto w-80 md:w-96 p-5 rounded-2xl bg-[#161412]/95 backdrop-blur-2xl border border-amber-500/30 shadow-2xl text-stone-100 font-sans"
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-amber-500/20">
+      <div className="flex items-center justify-between gap-2 mb-3 pb-3 border-b border-amber-500/20">
         <div>
           <h3 className="font-display text-sm font-semibold tracking-wide text-amber-300">{exhibit.name}</h3>
           <p className="text-[11px] text-stone-400 font-sans">Interactive Cipher Workbench</p>
         </div>
 
         {/* Encrypt / Decrypt Toggle */}
-        <div className="select-none flex rounded-lg p-1 bg-[#221f1c] border border-stone-800 shrink-0" data-testid={`mode-select-${exhibit.id}`}>
+        <div
+          className="select-none flex rounded-lg p-1 bg-[#221f1c] border border-stone-800 shrink-0"
+          data-testid={`mode-select-${exhibit.id}`}
+        >
           <button
             data-testid={`encrypt-btn-${exhibit.id}`}
             onClick={() => setMode('encrypt')}
@@ -207,500 +293,282 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         </div>
       </div>
 
-      {/* Input Field */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-1.5">
-          <label htmlFor={`input-text-${exhibit.id}`} className="block text-xs font-sans font-semibold text-stone-200">
-            {mode === 'encrypt' ? 'Plaintext Input' : 'Ciphertext Input'}
-          </label>
-          <div className="flex items-center gap-2 text-[11px] text-stone-300">
-            <span className="font-mono">{inputText.length} chars</span>
-            {inputText.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setInputText('')}
-                aria-label="Clear input text"
-                className="font-sans text-amber-300 hover:text-amber-200 underline focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </div>
-        <textarea
-          id={`input-text-${exhibit.id}`}
-          rows={2}
-          data-testid={`input-text-${exhibit.id}`}
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={(e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-              e.preventDefault();
-              if (!loading) {
-                handleExecute();
-              }
-            }
-          }}
-          className="w-full px-3 py-2 rounded-lg bg-[#1a1714] border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors"
-        />
-      </div>
-
-      {/* Dynamic Cipher Parameters */}
-      <div className="mb-4 p-3.5 rounded-xl bg-[#221f1c] border border-stone-800 space-y-2.5">
-        <div className="text-xs font-display font-semibold text-amber-300">Cipher Parameters</div>
-
-        {exhibit.id === 'caesar' && (
-          <div>
-            <label htmlFor={`param-shift-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">
-              Shift Value: <span className="font-mono text-amber-300">{shift}</span>
-            </label>
-            <input
-              id={`param-shift-${exhibit.id}`}
-              type="text"
-              data-testid="param-shift-caesar"
-              value={shift}
-              onChange={(e) => setShift(parseInt(e.target.value) || 0)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-            />
-          </div>
-        )}
-
-        {exhibit.id === 'affine' && (
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <label htmlFor={`param-a-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">Key a:</label>
-              <input
-                id={`param-a-${exhibit.id}`}
-                type="number"
-                data-testid="param-a-affine"
-                value={aKey}
-                onChange={(e) => setAKey(parseInt(e.target.value) || 1)}
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-              />
-            </div>
-            <div>
-              <label htmlFor={`param-b-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">Key b:</label>
-              <input
-                id={`param-b-${exhibit.id}`}
-                type="number"
-                data-testid="param-b-affine"
-                value={bKey}
-                onChange={(e) => setBKey(parseInt(e.target.value) || 0)}
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-              />
-            </div>
-          </div>
-        )}
-
-        {(exhibit.id === 'vigenere' || exhibit.id === 'playfair' || exhibit.id === 'polybius') && (
-          <div>
-            <label htmlFor={`param-key-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">Key Phrase:</label>
-            <input
-              id={`param-key-${exhibit.id}`}
-              type="text"
-              data-testid={`param-key-${exhibit.id}`}
-              value={keyPhrase}
-              onChange={(e) => setKeyPhrase(e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-            />
-          </div>
-        )}
-
-        {exhibit.id === 'scytale' && (
-          <div>
-            <label htmlFor={`param-width-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">
-              Cylinder Diameter Width: <span className="font-mono text-amber-300">{width}</span>
-            </label>
-            <input
-              id={`param-width-${exhibit.id}`}
-              type="number"
-              data-testid="param-width-scytale"
-              value={width}
-              onChange={(e) => setWidth(parseInt(e.target.value) || 2)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-            />
-          </div>
-        )}
-
-        {exhibit.id === 'enigma' && (
-          <div className="space-y-2.5 text-xs">
-            {/* Rotor Selectors */}
-            <div>
-              <label id={`param-rotors-label-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">Rotors (Select I - VIII):</label>
-              <div role="group" aria-labelledby={`param-rotors-label-${exhibit.id}`} className="grid grid-cols-3 gap-1">
-                {[0, 1, 2].map((idx) => (
-                  <select
-                    key={`rotor-${idx}`}
-                    id={`param-rotor-${idx}-${exhibit.id}`}
-                    aria-label={`Enigma Rotor ${idx + 1}`}
-                    value={enigmaRotors[idx] || 'I'}
-                    onChange={(e) => {
-                      const updated = [...enigmaRotors];
-                      updated[idx] = e.target.value;
-                      setEnigmaRotors(updated);
-                    }}
-                    className="px-1.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                  >
-                    {['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'].map((r) => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </select>
-                ))}
-              </div>
-              <input
-                type="text"
-                data-testid="param-rotors-enigma"
-                value={enigmaRotors.join('-')}
-                onChange={(e) => {
-                  const parts = e.target.value.split(/[-,\s]+/).map((s) => s.trim().toUpperCase());
-                  if (parts.length === 3) setEnigmaRotors(parts);
-                }}
-                className="sr-only"
-              />
-            </div>
-
-            {/* Reflector Selection */}
-            <div>
-              <label htmlFor={`param-reflector-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">Reflector:</label>
-              <select
-                id={`param-reflector-${exhibit.id}`}
-                data-testid="param-reflector-enigma"
-                value={enigmaReflector}
-                onChange={(e) => setEnigmaReflector(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-              >
-                <option value="A">Reflector A (EJMZALYX...)</option>
-                <option value="B">Reflector B (YRUHQSLD... Standard)</option>
-                <option value="C">Reflector C (FVPJIAOY...)</option>
-                <option value="B_THIN">Reflector B Thin (ENKQAUYW...)</option>
-                <option value="C_THIN">Reflector C Thin (RDOBJNTK...)</option>
-              </select>
-            </div>
-
-            {/* Positions & Rings */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label htmlFor={`param-positions-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">Positions:</label>
-                <input
-                  id={`param-positions-${exhibit.id}`}
-                  type="text"
-                  data-testid="param-positions-enigma"
-                  value={enigmaPositions.join('')}
-                  onChange={(e) => {
-                    const raw = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
-                    const p1 = raw[0] || 'A';
-                    const p2 = raw[1] || 'A';
-                    const p3 = raw[2] || 'A';
-                    setEnigmaPositions([p1, p2, p3]);
-                  }}
-                  maxLength={3}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                />
-              </div>
-
-              <div>
-                <label htmlFor={`param-rings-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">Rings:</label>
-                <input
-                  id={`param-rings-${exhibit.id}`}
-                  type="text"
-                  data-testid="param-rings-enigma"
-                  value={enigmaRings.join('')}
-                  onChange={(e) => {
-                    const raw = e.target.value.toUpperCase().replace(/[^A-Z1-9]/g, '');
-                    const r1 = raw[0] || 'A';
-                    const r2 = raw[1] || 'A';
-                    const r3 = raw[2] || 'A';
-                    setEnigmaRings([r1, r2, r3]);
-                  }}
-                  maxLength={3}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-stone-200 uppercase text-xs font-mono tracking-widest text-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Plugboard Swaps */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label htmlFor={`param-plugboard-${exhibit.id}`} className="block text-xs font-sans text-stone-300">Plugboard (Steckerbrett Swaps):</label>
-                <span className="text-[11px] text-amber-300 font-mono">
-                  {enigmaPlugboard.trim() ? enigmaPlugboard.trim().split(/\s+/).length : 0} active
-                </span>
-              </div>
-              <input
-                id={`param-plugboard-${exhibit.id}`}
-                type="text"
-                data-testid="param-plugboard-enigma"
-                value={enigmaPlugboard}
-                onChange={(e) => setEnigmaPlugboard(e.target.value.toUpperCase())}
-                placeholder="e.g. AB CD EF"
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-stone-200 placeholder:text-stone-400 text-xs font-mono uppercase focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-              />
-            </div>
-          </div>
-        )}
-
-        {exhibit.id === 'lorenz' && (
-          <div className="space-y-3 text-xs">
-            <input
-              type="text"
-              data-testid="param-positions-lorenz"
-              value={lorenzPositions.join(',')}
-              readOnly
-              className="sr-only"
-            />
-
-            {/* Chi Wheels (1..5) */}
-            <div>
-              <label className="block text-xs font-sans text-amber-300 font-semibold mb-1">
-                Chi Wheels (χ₁–χ₅ Positions):
-              </label>
-              <div className="grid grid-cols-5 gap-1">
-                {[0, 1, 2, 3, 4].map((posIdx) => (
-                  <input
-                    key={`chi-${posIdx}`}
-                    type="number"
-                    min={0}
-                    aria-label={`Chi Wheel ${posIdx + 1} position`}
-                    value={lorenzPositions[posIdx]}
-                    onChange={(e) => {
-                      const updated = [...lorenzPositions];
-                      updated[posIdx] = parseInt(e.target.value) || 0;
-                      setLorenzPositions(updated);
-                    }}
-                    className="w-full px-1 py-1 rounded bg-[#090b10] border border-stone-800 text-center text-amber-300 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Motor Wheels (1..2) */}
-            <div>
-              <label className="block text-xs font-sans text-amber-300 font-semibold mb-1">
-                Motor Wheels (μ₁–μ₂ Positions):
-              </label>
-              <div className="grid grid-cols-2 gap-1">
-                {[5, 6].map((posIdx) => (
-                  <input
-                    key={`motor-${posIdx}`}
-                    type="number"
-                    min={0}
-                    aria-label={`Motor Wheel ${posIdx - 4} position`}
-                    value={lorenzPositions[posIdx]}
-                    onChange={(e) => {
-                      const updated = [...lorenzPositions];
-                      updated[posIdx] = parseInt(e.target.value) || 0;
-                      setLorenzPositions(updated);
-                    }}
-                    className="w-full px-1 py-1 rounded bg-[#090b10] border border-stone-800 text-center text-amber-300 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Psi Wheels (1..5) */}
-            <div>
-              <label className="block text-xs font-sans text-amber-300 font-semibold mb-1">
-                Psi Wheels (ψ₁–ψ₅ Positions):
-              </label>
-              <div className="grid grid-cols-5 gap-1">
-                {[7, 8, 9, 10, 11].map((posIdx) => (
-                  <input
-                    key={`psi-${posIdx}`}
-                    type="number"
-                    min={0}
-                    aria-label={`Psi Wheel ${posIdx - 6} position`}
-                    value={lorenzPositions[posIdx]}
-                    onChange={(e) => {
-                      const updated = [...lorenzPositions];
-                      updated[posIdx] = parseInt(e.target.value) || 0;
-                      setLorenzPositions(updated);
-                    }}
-                    className="w-full px-1 py-1 rounded bg-[#090b10] border border-stone-800 text-center text-amber-300 font-mono text-xs focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                  />
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setLorenzPositions(Array(12).fill(0))}
-              aria-label="Reset all Lorenz wheel positions to zero"
-              className="w-full py-1.5 rounded-lg bg-[#090b10] hover:bg-stone-900 text-stone-300 text-xs font-sans flex items-center justify-center gap-1.5 border border-stone-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
-            >
-              <RefreshCw className="w-3 h-3" /> Reset Positions to 0
-            </button>
-          </div>
-        )}
-
-        {exhibit.id === 'rsa' && (
-          <div className="space-y-2">
-            <div className="grid grid-cols-3 gap-1.5 text-xs">
-              <div>
-                <label htmlFor={`param-p-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-0.5">
-                  p:
-                </label>
-                <input
-                  id={`param-p-${exhibit.id}`}
-                  type="number"
-                  aria-label="RSA Prime p"
-                  data-testid="param-p-rsa"
-                  value={pVal}
-                  onChange={(e) => setPVal(parseInt(e.target.value) || 0)}
-                  className="w-full px-2 py-1 rounded bg-[#090b10] border border-stone-800 font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                />
-              </div>
-              <div>
-                <label htmlFor={`param-q-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-0.5">
-                  q:
-                </label>
-                <input
-                  id={`param-q-${exhibit.id}`}
-                  type="number"
-                  aria-label="RSA Prime q"
-                  data-testid="param-q-rsa"
-                  value={qVal}
-                  onChange={(e) => setQVal(parseInt(e.target.value) || 0)}
-                  className="w-full px-2 py-1 rounded bg-[#090b10] border border-stone-800 font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                />
-              </div>
-              <div>
-                <label htmlFor={`param-e-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-0.5">
-                  e:
-                </label>
-                <input
-                  id={`param-e-${exhibit.id}`}
-                  type="number"
-                  aria-label="RSA Public Exponent e"
-                  data-testid="param-e-rsa"
-                  value={eVal}
-                  onChange={(e) => setEVal(parseInt(e.target.value) || 0)}
-                  className="w-full px-2 py-1 rounded bg-[#090b10] border border-stone-800 font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                />
-              </div>
-            </div>
-            <button
-              data-testid="generate-keys-btn-rsa"
-              onClick={handleRSAKeygen}
-              disabled={loading}
-              aria-busy={loading}
-              aria-label={loading ? 'Generating RSA keys...' : 'Generate RSA keypair'}
-              className="w-full py-1.5 text-xs rounded-lg bg-[#090b10] hover:bg-stone-900 border border-amber-500/30 text-amber-300 font-sans font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
-            >
-              <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
-              <span>{loading ? 'Generating Keys...' : 'Generate Keys'}</span>
-            </button>
-          </div>
-        )}
-
-        {exhibit.id === 'aes' && (
-          <div>
-            <label htmlFor={`param-key-${exhibit.id}`} className="block text-xs font-sans text-stone-300 mb-1">16-Byte AES Key:</label>
-            <input
-              id={`param-key-${exhibit.id}`}
-              type="text"
-              data-testid="param-key-aes"
-              value={aesKey}
-              onChange={(e) => setAesKey(e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Action Execution Button */}
-      <button
-        data-testid={`execute-btn-${exhibit.id}`}
-        onClick={handleExecute}
-        disabled={loading}
-        aria-busy={loading}
-        title={`Execute ${mode} (Ctrl+Enter)`}
-        aria-label={`Execute ${mode} (Press Ctrl+Enter or Cmd+Enter to execute)`}
-        className="select-none w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-sans font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-colors disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+      {/* Sub-navigation Tabs */}
+      <div
+        role="tablist"
+        aria-label="Workbench tools"
+        className="flex gap-1 p-1 mb-4 rounded-xl bg-[#221f1c] border border-stone-800 text-[11px] font-sans"
       >
-        {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-stone-950" />}
-        <span>Execute {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}</span>
-        <span className="text-[10px] font-mono opacity-70 font-normal ml-0.5 tracking-normal">[Ctrl+↵]</span>
-      </button>
-
-      {/* Standardized Error Banner */}
-      {errorMsg && (
-        <div
-          role="alert"
-          aria-live="assertive"
-          className="mt-3 p-3 rounded-lg bg-rose-950/80 border border-rose-500/50 text-rose-200 text-xs font-sans flex items-start gap-2"
+        <button
+          role="tab"
+          aria-selected={activeTab === 'workbench'}
+          onClick={() => setActiveTab('workbench')}
+          className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+            activeTab === 'workbench' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
+          }`}
         >
-          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
+          <Wrench className="w-3 h-3" /> Cipher
+        </button>
+        {isClassical && (
+          <button
+            role="tab"
+            aria-selected={activeTab === 'cryptanalysis'}
+            onClick={() => setActiveTab('cryptanalysis')}
+            className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+              activeTab === 'cryptanalysis' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
+            }`}
+          >
+            <BarChart3 className="w-3 h-3" /> Crack
+          </button>
+        )}
+        <button
+          role="tab"
+          aria-selected={activeTab === 'inspector'}
+          onClick={() => setActiveTab('inspector')}
+          className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+            activeTab === 'inspector' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
+          }`}
+        >
+          <Layers className="w-3 h-3" /> Steps
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === 'challenge'}
+          onClick={() => setActiveTab('challenge')}
+          className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+            activeTab === 'challenge' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
+          }`}
+        >
+          <Award className="w-3 h-3" /> Stamp
+        </button>
+      </div>
 
-      {/* Output Container */}
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="block text-xs font-sans font-semibold text-stone-200">
-            {mode === 'encrypt' ? 'Ciphertext Result' : 'Decrypted Plaintext'}
-          </label>
-          {outputText && (
-            <div className="select-none flex items-center gap-1.5">
-              <button
-                onClick={handleSwap}
-                title="Swap output text into input and toggle mode"
-                aria-label="Swap output text into input and toggle mode"
-                className="flex items-center gap-1 text-xs font-sans text-amber-300 hover:text-amber-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-2 py-0.5 bg-[#111520] border border-stone-800 transition-colors"
-              >
-                <ArrowUpDown className="w-3 h-3" />
-                <span>Swap</span>
-              </button>
-              <button
-                onClick={handleCopy}
-                title={
-                  copied
-                    ? 'Copied to clipboard!'
-                    : mode === 'encrypt'
-                    ? 'Copy ciphertext result to clipboard'
-                    : 'Copy decrypted plaintext to clipboard'
-                }
-                aria-label={
-                  copied
-                    ? 'Copied to clipboard'
-                    : mode === 'encrypt'
-                    ? 'Copy ciphertext result to clipboard'
-                    : 'Copy decrypted plaintext to clipboard'
-                }
-                className="flex items-center gap-1 text-xs font-sans text-amber-300 hover:text-amber-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-2 py-0.5 bg-[#111520] border border-stone-800 transition-colors"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3 h-3 text-emerald-400" />
-                    <span className="text-emerald-400">Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3 h-3" />
-                    <span>Copy</span>
-                  </>
+      {activeTab === 'workbench' && (
+        <>
+          {/* Input Field */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <label htmlFor={`input-text-${exhibit.id}`} className="block text-xs font-sans font-semibold text-stone-200">
+                {mode === 'encrypt' ? 'Plaintext Input' : 'Ciphertext Input'}
+              </label>
+              <div className="flex items-center gap-2 text-[11px] text-stone-300">
+                <span className="font-mono">{inputText.length} chars</span>
+                {inputText.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setInputText('')}
+                    aria-label="Clear input text"
+                    className="font-sans text-amber-300 hover:text-amber-200 underline focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1"
+                  >
+                    Clear
+                  </button>
                 )}
-              </button>
+              </div>
+            </div>
+            <textarea
+              id={`input-text-${exhibit.id}`}
+              rows={2}
+              data-testid={`input-text-${exhibit.id}`}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                  e.preventDefault();
+                  if (!loading) handleExecute();
+                }
+              }}
+              className="w-full px-3 py-2 rounded-lg bg-[#1a1714] border border-stone-800 text-stone-100 text-xs font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors"
+            />
+          </div>
+
+          <CipherParameterControls
+            exhibitId={exhibit.id}
+            mode={mode}
+            loading={loading}
+            shift={shift}
+            setShift={setShift}
+            aKey={aKey}
+            setAKey={setAKey}
+            bKey={bKey}
+            setBKey={setBKey}
+            keyPhrase={keyPhrase}
+            setKeyPhrase={setKeyPhrase}
+            substitutionKey={substitutionKey}
+            setSubstitutionKey={setSubstitutionKey}
+            width={width}
+            setWidth={setWidth}
+            pVal={pVal}
+            setPVal={setPVal}
+            qVal={qVal}
+            setQVal={setQVal}
+            eVal={eVal}
+            setEVal={setEVal}
+            onRSAKeygen={handleRSAKeygen}
+            aesKey={aesKey}
+            setAesKey={setAesKey}
+            enigmaRotors={enigmaRotors}
+            setEnigmaRotors={setEnigmaRotors}
+            enigmaPositions={enigmaPositions}
+            setEnigmaPositions={setEnigmaPositions}
+            enigmaRings={enigmaRings}
+            setEnigmaRings={setEnigmaRings}
+            enigmaReflector={enigmaReflector}
+            setEnigmaReflector={setEnigmaReflector}
+            enigmaPlugboard={enigmaPlugboard}
+            setEnigmaPlugboard={setEnigmaPlugboard}
+            lorenzPositions={lorenzPositions}
+            setLorenzPositions={setLorenzPositions}
+            hashAlgorithm={hashAlgorithm}
+            setHashAlgorithm={setHashAlgorithm}
+            hmacAction={hmacAction}
+            setHmacAction={setHmacAction}
+            hmacKey={hmacKey}
+            setHmacKey={setHmacKey}
+            hmacSignature={hmacSignature}
+            setHmacSignature={setHmacSignature}
+            dhPrime={dhPrime}
+            setDhPrime={setDhPrime}
+            dhGen={dhGen}
+            setDhGen={setDhGen}
+            dhAlice={dhAlice}
+            setDhAlice={setDhAlice}
+            dhBob={dhBob}
+            setDhBob={setDhBob}
+            dhResult={dhResult}
+          />
+
+          <button
+            data-testid={`execute-btn-${exhibit.id}`}
+            onClick={handleExecute}
+            disabled={loading}
+            aria-busy={loading}
+            title={`Execute ${mode} (Ctrl+Enter)`}
+            aria-label={`Execute ${mode} (Press Ctrl+Enter or Cmd+Enter to execute)`}
+            className="select-none w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-sans font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-colors disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+          >
+            {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-stone-950" />}
+            <span>Execute {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'}</span>
+            <span className="text-[10px] font-mono opacity-70 font-normal ml-0.5 tracking-normal">[Ctrl+↵]</span>
+          </button>
+
+          {errorMsg && (
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="mt-3 p-3 rounded-lg bg-rose-950/80 border border-rose-500/50 text-rose-200 text-xs font-sans flex items-start gap-2"
+            >
+              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <span>{errorMsg}</span>
             </div>
           )}
-        </div>
-        <div
-          role="status"
-          aria-live="polite"
-          className="sr-only"
-        >
-          {copied ? `Copied ${mode === 'encrypt' ? 'ciphertext' : 'decrypted plaintext'} to clipboard` : ''}
-        </div>
-        <div
-          data-testid={`output-text-${exhibit.id}`}
-          aria-live="polite"
-          aria-atomic="true"
-          className="w-full min-h-[50px] p-3 rounded-lg bg-[#090b10] border border-stone-800 text-amber-300 font-mono text-xs break-all select-all"
-        >
-          {outputText || <span className="text-stone-400 italic font-sans">Result will appear here...</span>}
-        </div>
-      </div>
+
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-sans font-semibold text-stone-200">
+                {mode === 'encrypt' ? 'Ciphertext Result' : 'Decrypted Plaintext'}
+              </label>
+              {outputText && (
+                <div className="select-none flex items-center gap-1.5">
+                  <button
+                    onClick={handleSwap}
+                    title="Swap output text into input and toggle mode"
+                    aria-label="Swap output text into input and toggle mode"
+                    className="flex items-center gap-1 text-xs font-sans text-amber-300 hover:text-amber-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-2 py-0.5 bg-[#111520] border border-stone-800 transition-colors"
+                  >
+                    <ArrowUpDown className="w-3 h-3" />
+                    <span>Swap</span>
+                  </button>
+                  <button
+                    onClick={handleCopy}
+                    title={
+                      copied
+                        ? 'Copied to clipboard!'
+                        : mode === 'encrypt'
+                        ? 'Copy ciphertext result to clipboard'
+                        : 'Copy decrypted plaintext to clipboard'
+                    }
+                    aria-label={
+                      copied
+                        ? 'Copied to clipboard'
+                        : mode === 'encrypt'
+                        ? 'Copy ciphertext result to clipboard'
+                        : 'Copy decrypted plaintext to clipboard'
+                    }
+                    className="flex items-center gap-1 text-xs font-sans text-amber-300 hover:text-amber-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-2 py-0.5 bg-[#111520] border border-stone-800 transition-colors"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-400" />
+                        <span className="text-emerald-400">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+            <div role="status" aria-live="polite" className="sr-only">
+              {copied ? `Copied ${mode === 'encrypt' ? 'ciphertext' : 'decrypted plaintext'} to clipboard` : ''}
+            </div>
+            <div
+              data-testid={`output-text-${exhibit.id}`}
+              aria-live="polite"
+              aria-atomic="true"
+              className="w-full min-h-[50px] p-3 rounded-lg bg-[#090b10] border border-stone-800 text-amber-300 font-mono text-xs break-all select-all"
+            >
+              {outputText || <span className="text-stone-400 italic font-sans">Result will appear here...</span>}
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'cryptanalysis' && isClassical && (
+        <FrequencyAnalysisView
+          exhibitId={exhibit.id}
+          inputText={inputText}
+          onApplyShift={(s) => {
+            setShift(s);
+            setMode('decrypt');
+            setActiveTab('workbench');
+          }}
+          onApplyAffine={(a, b) => {
+            setAKey(a);
+            setBKey(b);
+            setMode('decrypt');
+            setActiveTab('workbench');
+          }}
+          onApplyKey={(k) => {
+            if (exhibit.id === 'substitution') setSubstitutionKey(k);
+            else setKeyPhrase(k);
+            setMode('decrypt');
+            setActiveTab('workbench');
+          }}
+          onLoadSample={(sample) => setInputText(sample)}
+        />
+      )}
+
+      {activeTab === 'inspector' && (
+        <StepInspectorView
+          exhibitId={exhibit.id}
+          inputText={inputText}
+          keyPhrase={keyPhrase}
+          shift={shift}
+          enigmaRotors={enigmaRotors}
+          enigmaPositions={enigmaPositions}
+          enigmaReflector={enigmaReflector}
+          enigmaPlugboard={enigmaPlugboard}
+          dhPrime={dhPrime}
+          dhGen={dhGen}
+          dhAlice={dhAlice}
+          dhBob={dhBob}
+        />
+      )}
+
+      {activeTab === 'challenge' && <PassportChallengeView exhibit={exhibit} />}
     </div>
   );
 }
