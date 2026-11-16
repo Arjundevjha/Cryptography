@@ -13,8 +13,22 @@ import {
   playfairDecrypt,
   generatePlayfairGrid,
   substitutionEncrypt,
-  substitutionDecrypt
+  substitutionDecrypt,
+  computeLetterFrequencies,
+  chiSquaredScore,
+  indexOfCoincidence,
+  estimateVigenereKeyLength,
+  crackCaesar,
+  affineEncrypt,
+  affineDecrypt,
+  crackAffine,
+  tracePlayfairEncrypt,
+  modPow,
+  traceDiffieHellman,
+  traceEnigmaSteps,
+  getAesRoundSchedule
 } from '../../app/utils/ciphers';
+import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
 describe('Caesar Cipher Adapter', () => {
   it('should encrypt standard text correctly', () => {
@@ -264,5 +278,141 @@ describe('Security Input Length & Sanitization', () => {
   it('should sanitize non-alphabetic characters in Vigenère key', () => {
     expect(vigenereEncrypt('HELLO', 'K!E@Y#')).toBe(vigenereEncrypt('HELLO', 'KEY'));
     expect(vigenereEncrypt('HELLO', '12345')).toBe('HELLO');
+  });
+});
+
+describe('Cryptanalysis Helpers', () => {
+  const sampleEnglish =
+    'Cryptography is the practice and study of techniques for secure communication in the presence of adversarial behavior.';
+
+  it('should compute letter frequencies for 26 letters summing to 100%', () => {
+    const freqs = computeLetterFrequencies('AAB!123');
+    expect(freqs).toHaveLength(26);
+    expect(freqs[0]).toMatchObject({ letter: 'A', count: 2 });
+    expect(freqs[0].frequency).toBeCloseTo(66.6667, 2);
+    expect(freqs[1]).toMatchObject({ letter: 'B', count: 1 });
+    expect(freqs[1].frequency).toBeCloseTo(33.3333, 2);
+    const totalFreq = freqs.reduce((acc, e) => acc + e.frequency, 0);
+    expect(totalFreq).toBeCloseTo(100, 5);
+  });
+
+  it('should return zero frequencies for empty or non-alphabetic input', () => {
+    const freqs = computeLetterFrequencies('1234!@#');
+    expect(freqs.every((e) => e.count === 0 && e.frequency === 0)).toBe(true);
+    expect(chiSquaredScore('1234!@#')).toBe(Infinity);
+  });
+
+  it('should score English plaintext lower than shifted ciphertext in chiSquaredScore', () => {
+    const shifted = caesarEncrypt(sampleEnglish, 13);
+    expect(chiSquaredScore(sampleEnglish)).toBeLessThan(chiSquaredScore(shifted));
+  });
+
+  it('should crack Caesar cipher and recover exact shift and plaintext', () => {
+    const ciphertext = caesarEncrypt(sampleEnglish, 7);
+    const candidates = crackCaesar(ciphertext, 5);
+    expect(candidates).toHaveLength(5);
+    expect(candidates[0].shift).toBe(7);
+    expect(candidates[0].plaintext).toBe(sampleEnglish);
+  });
+
+  it('should encrypt, decrypt, and crack Affine cipher', () => {
+    const ciphertext = affineEncrypt(sampleEnglish, 5, 8);
+    expect(affineDecrypt(ciphertext, 5, 8)).toBe(sampleEnglish);
+    expect(() => affineEncrypt('HELLO', 2, 3)).toThrow('must be coprime to 26');
+
+    const candidates = crackAffine(ciphertext, 3);
+    expect(candidates).toHaveLength(3);
+    expect(candidates[0].a).toBe(5);
+    expect(candidates[0].b).toBe(8);
+    expect(candidates[0].plaintext).toBe(sampleEnglish);
+  });
+
+  it('should compute Index of Coincidence and estimate Vigenere key length', () => {
+    const ioc = indexOfCoincidence(sampleEnglish);
+    expect(ioc).toBeGreaterThan(0.055);
+    expect(indexOfCoincidence('A')).toBe(0);
+
+    const vigenereCipher = vigenereEncrypt(
+      sampleEnglish + ' ' + sampleEnglish,
+      'LEMON'
+    );
+    const estimates = estimateVigenereKeyLength(vigenereCipher, 10);
+    expect(estimates.length).toBeGreaterThan(0);
+    // Key length 5 (or multiple 10) should be among top 2 candidates
+    const topTwo = estimates.slice(0, 2).map((e) => e.keyLength);
+    expect(topTwo.some((len) => len === 5 || len === 10)).toBe(true);
+  });
+});
+
+describe('Step-by-Step Inspector Helpers', () => {
+  it('should trace Playfair digraph encryption matching playfairEncrypt', () => {
+    const trace = tracePlayfairEncrypt('HIDETHEGOLDINTHETREESTUMP', 'playfair example');
+    expect(trace.grid).toHaveLength(25);
+    expect(trace.ciphertext).toBe(playfairEncrypt('HIDETHEGOLDINTHETREESTUMP', 'playfair example'));
+    expect(trace.steps.length).toBeGreaterThan(0);
+    expect(trace.steps.every((s) => ['same-row', 'same-col', 'rectangle'].includes(s.rule))).toBe(true);
+  });
+
+  it('should compute modPow and Diffie-Hellman shared secret with BigInt', () => {
+    expect(modPow(5, 6, 23)).toBe(BigInt(8));
+    expect(() => modPow(2, 3, 0)).toThrow('Modulus must be greater than 0');
+    expect(() => modPow(2, -1, 5)).toThrow('Exponent must be non-negative');
+
+    const dh = traceDiffieHellman(23, 5, 6, 15);
+    expect(dh.publicA).toBe('8');
+    expect(dh.publicB).toBe('19');
+    expect(dh.sharedSecretAlice).toBe('2');
+    expect(dh.sharedSecretBob).toBe('2');
+
+    // Large BigInt test
+    const largeDh = traceDiffieHellman(BigInt('2147483647'), BigInt(7), BigInt(123456), BigInt(654321));
+    expect(largeDh.sharedSecretAlice).toBe(largeDh.sharedSecretBob);
+  });
+
+  it('should trace Enigma rotor stepping including double-step', () => {
+    const steps = traceEnigmaSteps('AB', ['A', 'W', 'V'], 'I-II-III');
+    expect(steps).toHaveLength(2);
+    expect(steps[0].inputChar).toBe('A');
+    expect(steps[0].rotorsBefore).toEqual(['A', 'W', 'V']);
+    expect(steps[0].rotorsAfter).toEqual(['B', 'X', 'W']);
+    expect(steps[0].doubleStepped).toBe(true);
+  });
+
+  it('should return AES round schedules for 128, 192, and 256-bit keys', () => {
+    const s128 = getAesRoundSchedule(128);
+    expect(s128).toHaveLength(11);
+    expect(s128[0].operations).toEqual(['AddRoundKey']);
+    expect(s128[1].operations).toContain('MixColumns');
+    expect(s128[10].operations).not.toContain('MixColumns');
+
+    expect(getAesRoundSchedule(192)).toHaveLength(13);
+    expect(getAesRoundSchedule(256)).toHaveLength(15);
+  });
+});
+
+describe('Museum Exhibits Data Integrity', () => {
+  it('should include substitution, hmac-hash, and diffie-hellman exhibits with challenges and valid interior camera bounds', () => {
+    const ids = MUSEUM_EXHIBITS.map((e) => e.id);
+    expect(ids).toContain('substitution');
+    expect(ids).toContain('hmac-hash');
+    expect(ids).toContain('diffie-hellman');
+
+    for (const exhibit of MUSEUM_EXHIBITS) {
+      expect(exhibit.challenge).toBeDefined();
+      expect(exhibit.challenge?.prompt).toBeTruthy();
+      expect(exhibit.challenge?.answer).toBeTruthy();
+      // Camera position must be strictly inside room bounds (Z = position.z + 3.5)
+      expect(exhibit.cameraPosition[2]).toBeCloseTo(exhibit.position[2] + 3.5, 5);
+    }
+
+    // Verify no two exhibit rooms collide (< 20 units apart)
+    for (let i = 0; i < MUSEUM_EXHIBITS.length; i++) {
+      for (let j = i + 1; j < MUSEUM_EXHIBITS.length; j++) {
+        const a = MUSEUM_EXHIBITS[i].position;
+        const b = MUSEUM_EXHIBITS[j].position;
+        const dist = Math.hypot(a[0] - b[0], a[2] - b[2]);
+        expect(dist).toBeGreaterThanOrEqual(20);
+      }
+    }
   });
 });

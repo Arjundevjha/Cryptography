@@ -440,4 +440,474 @@ export function substitutionDecrypt(ciphertext: string, keyAlphabet: string): st
   return substitutionTransform(ciphertext, table);
 }
 
+// ============================================================================
+// Cryptanalysis Helpers (Frequency Analysis, Chi-Squared, IoC, Key Recovery)
+// ============================================================================
+
+export const ENGLISH_FREQUENCIES: Record<string, number> = {
+  A: 8.167, B: 1.492, C: 2.782, D: 4.253, E: 12.702, F: 2.228,
+  G: 2.015, H: 6.094, I: 6.966, J: 0.153, K: 0.772, L: 4.025,
+  M: 2.406, N: 6.749, O: 7.507, P: 1.929, Q: 0.095, R: 5.987,
+  S: 6.327, T: 9.056, U: 2.758, V: 0.978, W: 2.360, X: 0.150,
+  Y: 1.974, Z: 0.074,
+};
+
+const ENGLISH_FREQ_ARRAY: number[] = Array.from({ length: 26 }, (_, i) =>
+  ENGLISH_FREQUENCIES[String.fromCharCode(65 + i)]
+);
+
+const VALID_AFFINE_A = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
+
+export interface LetterFrequencyEntry {
+  letter: string;
+  count: number;
+  frequency: number;
+  expectedFrequency: number;
+}
+
+export interface CaesarCrackResult {
+  shift: number;
+  plaintext: string;
+  chiSquared: number;
+}
+
+export interface AffineCrackResult {
+  a: number;
+  b: number;
+  plaintext: string;
+  chiSquared: number;
+}
+
+function countAlphabeticLetters(text: string): { counts: Uint32Array; total: number } {
+  const counts = new Uint32Array(26);
+  let total = 0;
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code >= 65 && code <= 90) {
+      counts[code - 65]++;
+      total++;
+    } else if (code >= 97 && code <= 122) {
+      counts[code - 97]++;
+      total++;
+    }
+  }
+  return { counts, total };
+}
+
+/**
+ * Compute A-Z letter counts and percentage frequencies for a given text.
+ */
+export function computeLetterFrequencies(text: string): LetterFrequencyEntry[] {
+  validateInputLength(text);
+  const { counts, total } = countAlphabeticLetters(text);
+  return Array.from({ length: 26 }, (_, i) => {
+    const letter = String.fromCharCode(65 + i);
+    const count = counts[i];
+    return {
+      letter,
+      count,
+      frequency: total > 0 ? (count / total) * 100 : 0,
+      expectedFrequency: ENGLISH_FREQUENCIES[letter],
+    };
+  });
+}
+
+/**
+ * Compute Pearson chi-squared statistic comparing text letter distribution to English.
+ * Lower scores indicate closer match to English plaintext.
+ */
+export function chiSquaredScore(text: string): number {
+  validateInputLength(text);
+  const { counts, total } = countAlphabeticLetters(text);
+  if (total === 0) return Infinity;
+
+  let score = 0;
+  for (let i = 0; i < 26; i++) {
+    const expected = (ENGLISH_FREQ_ARRAY[i] / 100) * total;
+    const diff = counts[i] - expected;
+    score += (diff * diff) / expected;
+  }
+  return score;
+}
+
+/**
+ * Compute Friedman's Index of Coincidence for alphabetic characters in text.
+ * English text typically scores ~0.0667; uniform random text ~0.0385.
+ */
+export function indexOfCoincidence(text: string): number {
+  validateInputLength(text);
+  const { counts, total } = countAlphabeticLetters(text);
+  if (total < 2) return 0;
+
+  let numerator = 0;
+  for (let i = 0; i < 26; i++) {
+    numerator += counts[i] * (counts[i] - 1);
+  }
+  return numerator / (total * (total - 1));
+}
+
+/**
+ * Estimate likely Vigenère key lengths by averaging column Index of Coincidence.
+ */
+export function estimateVigenereKeyLength(
+  ciphertext: string,
+  maxLen: number = 12
+): { keyLength: number; ioc: number }[] {
+  validateInputLength(ciphertext);
+  const lettersOnly = ciphertext.replace(/[^a-zA-Z]/g, '');
+  if (lettersOnly.length < 2) return [];
+
+  const limit = Math.min(Math.max(1, maxLen), lettersOnly.length);
+  const results: { keyLength: number; ioc: number }[] = [];
+
+  for (let keyLen = 1; keyLen <= limit; keyLen++) {
+    let iocSum = 0;
+    let validCols = 0;
+    for (let col = 0; col < keyLen; col++) {
+      let colChars = '';
+      for (let idx = col; idx < lettersOnly.length; idx += keyLen) {
+        colChars += lettersOnly[idx];
+      }
+      if (colChars.length >= 2) {
+        iocSum += indexOfCoincidence(colChars);
+        validCols++;
+      }
+    }
+    if (validCols > 0) {
+      results.push({ keyLength: keyLen, ioc: iocSum / validCols });
+    }
+  }
+
+  return results.sort((a, b) => b.ioc - a.ioc);
+}
+
+/**
+ * Crack a Caesar ciphertext by testing all 26 shifts ranked by chi-squared score.
+ */
+export function crackCaesar(ciphertext: string, topN: number = 5): CaesarCrackResult[] {
+  validateInputLength(ciphertext);
+  const results: CaesarCrackResult[] = [];
+  for (let shift = 0; shift < 26; shift++) {
+    const plaintext = caesarDecrypt(ciphertext, shift);
+    results.push({
+      shift,
+      plaintext,
+      chiSquared: chiSquaredScore(plaintext),
+    });
+  }
+  results.sort((a, b) => a.chiSquared - b.chiSquared);
+  return topN > 0 ? results.slice(0, topN) : results;
+}
+
+function modInverse26(a: number): number {
+  const aNorm = ((a % 26) + 26) % 26;
+  for (let x = 1; x < 26; x++) {
+    if ((aNorm * x) % 26 === 1) return x;
+  }
+  throw new Error(`Key "a" (${a}) must be coprime to 26`);
+}
+
+/**
+ * Affine cipher encryption: E(x) = (a*x + b) mod 26.
+ */
+export function affineEncrypt(plaintext: string, a: number, b: number): string {
+  validateInputLength(plaintext);
+  modInverse26(a); // Validate 'a' is coprime to 26
+  const aNorm = ((a % 26) + 26) % 26;
+  const bNorm = ((b % 26) + 26) % 26;
+  const out = new Array<string>(plaintext.length);
+
+  for (let i = 0; i < plaintext.length; i++) {
+    const code = plaintext.charCodeAt(i);
+    if (code >= 65 && code <= 90) {
+      out[i] = String.fromCharCode(((aNorm * (code - 65) + bNorm) % 26) + 65);
+    } else if (code >= 97 && code <= 122) {
+      out[i] = String.fromCharCode(((aNorm * (code - 97) + bNorm) % 26) + 97);
+    } else {
+      out[i] = plaintext[i];
+    }
+  }
+  return out.join('');
+}
+
+/**
+ * Affine cipher decryption: D(y) = a^-1 * (y - b) mod 26.
+ */
+export function affineDecrypt(ciphertext: string, a: number, b: number): string {
+  validateInputLength(ciphertext);
+  const aInv = modInverse26(a);
+  const bNorm = ((b % 26) + 26) % 26;
+  const out = new Array<string>(ciphertext.length);
+
+  for (let i = 0; i < ciphertext.length; i++) {
+    const code = ciphertext.charCodeAt(i);
+    if (code >= 65 && code <= 90) {
+      const y = code - 65;
+      out[i] = String.fromCharCode(((aInv * ((y - bNorm + 26) % 26)) % 26) + 65);
+    } else if (code >= 97 && code <= 122) {
+      const y = code - 97;
+      out[i] = String.fromCharCode(((aInv * ((y - bNorm + 26) % 26)) % 26) + 97);
+    } else {
+      out[i] = ciphertext[i];
+    }
+  }
+  return out.join('');
+}
+
+/**
+ * Crack an Affine ciphertext by searching all 312 valid (a, b) pairs ranked by chi-squared.
+ */
+export function crackAffine(ciphertext: string, topN: number = 5): AffineCrackResult[] {
+  validateInputLength(ciphertext);
+  const results: AffineCrackResult[] = [];
+  for (const a of VALID_AFFINE_A) {
+    for (let b = 0; b < 26; b++) {
+      const plaintext = affineDecrypt(ciphertext, a, b);
+      results.push({
+        a,
+        b,
+        plaintext,
+        chiSquared: chiSquaredScore(plaintext),
+      });
+    }
+  }
+  results.sort((a, b) => a.chiSquared - b.chiSquared);
+  return topN > 0 ? results.slice(0, topN) : results;
+}
+
+// ============================================================================
+// Step-by-Step Cipher Inspector Helpers
+// ============================================================================
+
+export interface PlayfairTraceStep {
+  digraph: string;
+  encrypted: string;
+  rule: 'same-row' | 'same-col' | 'rectangle';
+  pos1: { row: number; col: number };
+  pos2: { row: number; col: number };
+  outPos1: { row: number; col: number };
+  outPos2: { row: number; col: number };
+}
+
+export interface PlayfairTraceResult {
+  grid: string[];
+  steps: PlayfairTraceStep[];
+  ciphertext: string;
+}
+
+/**
+ * Produce step-by-step Playfair digraph encryption trace with 5x5 grid coordinates.
+ */
+export function tracePlayfairEncrypt(plaintext: string, key: string): PlayfairTraceResult {
+  validateInputLength(plaintext);
+  const grid = generatePlayfairGrid(key);
+  const { rowMap, colMap } = buildPlayfairPosMap(grid);
+  const cleanText = plaintext.toLowerCase().replace(/j/g, 'i').replace(/[^a-z]/g, '');
+  const steps: PlayfairTraceStep[] = [];
+  const outChars: string[] = [];
+
+  let i = 0;
+  while (i < cleanText.length) {
+    const code1 = cleanText.charCodeAt(i);
+    let code2 = 120; // 'x'
+    if (i + 1 < cleanText.length) {
+      const nextCode = cleanText.charCodeAt(i + 1);
+      if (code1 === nextCode) {
+        i += 1;
+      } else {
+        code2 = nextCode;
+        i += 2;
+      }
+    } else {
+      i += 1;
+    }
+
+    const r1 = rowMap[code1], col1 = colMap[code1];
+    const r2 = rowMap[code2], col2 = colMap[code2];
+    let outR1 = r1, outC1 = col1, outR2 = r2, outC2 = col2;
+    let rule: PlayfairTraceStep['rule'];
+
+    if (r1 === r2) {
+      rule = 'same-row';
+      outC1 = (col1 + 1) % 5;
+      outC2 = (col2 + 1) % 5;
+    } else if (col1 === col2) {
+      rule = 'same-col';
+      outR1 = (r1 + 1) % 5;
+      outR2 = (r2 + 1) % 5;
+    } else {
+      rule = 'rectangle';
+      outC1 = col2;
+      outC2 = col1;
+    }
+
+    const enc1 = grid[outR1 * 5 + outC1].toUpperCase();
+    const enc2 = grid[outR2 * 5 + outC2].toUpperCase();
+    outChars.push(enc1, enc2);
+
+    steps.push({
+      digraph: `${String.fromCharCode(code1).toUpperCase()}${String.fromCharCode(code2).toUpperCase()}`,
+      encrypted: `${enc1}${enc2}`,
+      rule,
+      pos1: { row: r1, col: col1 },
+      pos2: { row: r2, col: col2 },
+      outPos1: { row: outR1, col: outC1 },
+      outPos2: { row: outR2, col: outC2 },
+    });
+  }
+
+  return {
+    grid,
+    steps,
+    ciphertext: outChars.join(''),
+  };
+}
+
+/**
+ * BigInt modular exponentiation (base^exp mod mod) using square-and-multiply.
+ */
+export function modPow(
+  base: bigint | number,
+  exp: bigint | number,
+  mod: bigint | number
+): bigint {
+  const m = BigInt(mod);
+  if (m <= BigInt(0)) {
+    throw new Error('Modulus must be greater than 0');
+  }
+  let e = BigInt(exp);
+  if (e < BigInt(0)) {
+    throw new Error('Exponent must be non-negative');
+  }
+  if (m === BigInt(1)) return BigInt(0);
+
+  let b = ((BigInt(base) % m) + m) % m;
+  let result = BigInt(1);
+
+  while (e > BigInt(0)) {
+    if ((e & BigInt(1)) === BigInt(1)) {
+      result = (result * b) % m;
+    }
+    e >>= BigInt(1);
+    b = (b * b) % m;
+  }
+  return result;
+}
+
+export interface DiffieHellmanStep {
+  p: string;
+  g: string;
+  a: string;
+  b: string;
+  publicA: string;
+  publicB: string;
+  sharedSecretAlice: string;
+  sharedSecretBob: string;
+}
+
+/**
+ * Compute step-by-step Diffie-Hellman key exchange values using BigInt modPow.
+ */
+export function traceDiffieHellman(
+  p: bigint | number,
+  g: bigint | number,
+  a: bigint | number,
+  b: bigint | number
+): DiffieHellmanStep {
+  const publicA = modPow(g, a, p);
+  const publicB = modPow(g, b, p);
+  const sharedSecretAlice = modPow(publicB, a, p);
+  const sharedSecretBob = modPow(publicA, b, p);
+
+  return {
+    p: BigInt(p).toString(),
+    g: BigInt(g).toString(),
+    a: BigInt(a).toString(),
+    b: BigInt(b).toString(),
+    publicA: publicA.toString(),
+    publicB: publicB.toString(),
+    sharedSecretAlice: sharedSecretAlice.toString(),
+    sharedSecretBob: sharedSecretBob.toString(),
+  };
+}
+
+export interface EnigmaTraceStep {
+  index: number;
+  inputChar: string;
+  rotorsBefore: [string, string, string];
+  rotorsAfter: [string, string, string];
+  doubleStepped: boolean;
+}
+
+/**
+ * Trace Enigma rotor stepping per alphabetic character in plaintext.
+ */
+export function traceEnigmaSteps(
+  plaintext: string,
+  initialPositions: string[],
+  rotors: string
+): EnigmaTraceStep[] {
+  validateInputLength(plaintext);
+  const steps: EnigmaTraceStep[] = [];
+  let current: [string, string, string] = [
+    (initialPositions[0] || 'A').toUpperCase(),
+    (initialPositions[1] || 'A').toUpperCase(),
+    (initialPositions[2] || 'A').toUpperCase(),
+  ];
+
+  let idx = 0;
+  for (let i = 0; i < plaintext.length; i++) {
+    const ch = plaintext[i].toUpperCase();
+    if (ch < 'A' || ch > 'Z') continue;
+    const next = enigmaStepRotors(current, 1, rotors);
+    const nextTuple: [string, string, string] = [next[0], next[1], next[2]];
+    const doubleStepped = current[0] !== nextTuple[0] && current[1] !== nextTuple[1];
+    steps.push({
+      index: idx++,
+      inputChar: ch,
+      rotorsBefore: [...current] as [string, string, string],
+      rotorsAfter: nextTuple,
+      doubleStepped,
+    });
+    current = nextTuple;
+  }
+  return steps;
+}
+
+export interface AesRoundStep {
+  round: number;
+  operations: ('SubBytes' | 'ShiftRows' | 'MixColumns' | 'AddRoundKey')[];
+  description: string;
+}
+
+/**
+ * Return the standard AES round transformation schedule for 128, 192, or 256-bit keys.
+ */
+export function getAesRoundSchedule(keyBits: 128 | 192 | 256): AesRoundStep[] {
+  const totalRounds = keyBits === 128 ? 10 : keyBits === 192 ? 12 : 14;
+  const schedule: AesRoundStep[] = [
+    {
+      round: 0,
+      operations: ['AddRoundKey'],
+      description: 'Initial key whitening: XOR plaintext state with Round Key 0.',
+    },
+  ];
+
+  for (let r = 1; r < totalRounds; r++) {
+    schedule.push({
+      round: r,
+      operations: ['SubBytes', 'ShiftRows', 'MixColumns', 'AddRoundKey'],
+      description: `Standard round ${r}: S-box substitution, row shift, column mixing, and round key XOR.`,
+    });
+  }
+
+  schedule.push({
+    round: totalRounds,
+    operations: ['SubBytes', 'ShiftRows', 'AddRoundKey'],
+    description: `Final round ${totalRounds}: omits MixColumns before final AddRoundKey.`,
+  });
+
+  return schedule;
+}
+
 

@@ -1,3 +1,10 @@
+export interface ExhibitChallenge {
+  prompt: string;
+  ciphertext: string;
+  hint: string;
+  answer: string;
+}
+
 export interface CipherExhibit {
   id: string;
   name: string;
@@ -19,6 +26,7 @@ export interface CipherExhibit {
     decrypt: string;
   };
   defaultParams: Record<string, any>;
+  challenge?: ExhibitChallenge;
 }
 
 export interface MuseumWing {
@@ -81,6 +89,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     defaultParams: {
       shift: 3,
     },
+    challenge: {
+      prompt: 'Decrypt this Roman dispatch encrypted with a Caesar shift of 3.',
+      ciphertext: 'YHQL YLGL YLFL',
+      hint: 'Shift each letter backward by 3 positions in the alphabet (Y → V, H → E).',
+      answer: 'VENI VIDI VICI',
+    },
   },
   {
     id: 'affine',
@@ -106,6 +120,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
       a_key: 5,
       b_key: 8,
     },
+    challenge: {
+      prompt: 'Break this Affine ciphertext encrypted with a = 5, b = 8.',
+      ciphertext: 'SWFRCP',
+      hint: 'Use the Cryptanalysis tab or solve x = 21 * (y - 8) mod 26.',
+      answer: 'CIPHER',
+    },
   },
   {
     id: 'vigenere',
@@ -129,6 +149,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     },
     defaultParams: {
       key: 'LEMON',
+    },
+    challenge: {
+      prompt: 'Decrypt this classic Renaissance Vigenère message using the key LEMON.',
+      ciphertext: 'LXFOPVEFRNHR',
+      hint: 'Subtract the repeating key LEMON (shifts 11, 4, 12, 14, 13) from the ciphertext.',
+      answer: 'ATTACKATDAWN',
     },
   },
   {
@@ -154,6 +180,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     defaultParams: {
       key: 'MONARCHY',
     },
+    challenge: {
+      prompt: 'Decrypt this Playfair digraph message using the keyword MONARCHY.',
+      ciphertext: 'FNTC',
+      hint: 'Build the 5x5 grid starting with MONARCHY and reverse the rectangle rule for FN and TC.',
+      answer: 'GOLD',
+    },
   },
   {
     id: 'polybius',
@@ -178,6 +210,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     defaultParams: {
       key: 'abcdefghiklmnopqrstuvwxyz',
     },
+    challenge: {
+      prompt: 'Decode these watchtower Polybius coordinates using the standard 5x5 grid (I/J combined).',
+      ciphertext: '25 15 54',
+      hint: 'Each pair represents (row, column): row 2 col 5 is K.',
+      answer: 'KEY',
+    },
   },
   {
     id: 'scytale',
@@ -201,6 +239,42 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     },
     defaultParams: {
       width: 4,
+    },
+    challenge: {
+      prompt: 'Unwrap this Spartan Scytale dispatch written on a rod of circumference width 4.',
+      ciphertext: 'STPAANRS',
+      hint: 'Arrange the 8 letters into 4 columns (2 rows) and read across.',
+      answer: 'SPARTANS',
+    },
+  },
+  {
+    id: 'substitution',
+    name: 'Substitution Cipher',
+    category: 'Classical',
+    wing: 'Classical Ciphers Wing',
+    subtitle: 'Monoalphabetic Keyed Alphabet Permutation',
+    description: 'Replaces each plaintext letter with a fixed corresponding letter from a scrambled 26-letter cipher alphabet.',
+    historicalContext: 'Widely used for diplomatic and personal correspondence from the Middle Ages through the Renaissance until Al-Kindi and Arab cryptanalysts popularized frequency analysis.',
+    vulnerabilities: 'Preserves single-letter, digraph, and trigraph frequency distributions of the underlying language, making it vulnerable to frequency analysis.',
+    timeline: 'c. 9th–16th Century – Classical Era',
+    position: [-45, 0, -90],
+    cameraPosition: [-45, 2.2, -86.5],
+    cameraTarget: [-45, 1.6, -90],
+    macroPosition: [-45, 2.8, -88.2],
+    macroTarget: [-45, 1.6, -90],
+    rotationY: 0,
+    endpoint: {
+      encrypt: '/api/substitution/encrypt',
+      decrypt: '/api/substitution/decrypt',
+    },
+    defaultParams: {
+      key: 'zebrascdfghijklmnopqtuvwxy',
+    },
+    challenge: {
+      prompt: 'Decrypt this monoalphabetic substitution message using key alphabet "zebrascdfghijklmnopqtuvwxy".',
+      ciphertext: 'SIAA ZQ LKBA',
+      hint: 'Map each ciphertext letter back to A–Z using its index in the key alphabet.',
+      answer: 'FLEE AT ONCE',
     },
   },
   {
@@ -229,6 +303,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
       rings: ['A', 'A', 'A'],
       plugboard: ['AB', 'CD'],
     },
+    challenge: {
+      prompt: 'With rotors I-II-III loaded, which rotor steps on every single keystroke?',
+      ciphertext: 'I - II - III',
+      hint: 'The rightmost (fast) rotor always advances at least one step per keypress.',
+      answer: 'III',
+    },
   },
   {
     id: 'lorenz',
@@ -252,6 +332,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     },
     defaultParams: {
       positions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    },
+    challenge: {
+      prompt: 'How many total pinwheels (chi, psi, and motor wheels combined) does the Lorenz SZ42 use?',
+      ciphertext: '5 χ + 5 ψ + 2 μ',
+      hint: 'Sum the 5 chi, 5 psi, and 2 motor wheels.',
+      answer: '12',
     },
   },
   {
@@ -279,6 +365,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
       q: 53,
       e: 17,
     },
+    challenge: {
+      prompt: 'Given primes p = 61 and q = 53, compute the RSA public modulus n = p × q.',
+      ciphertext: 'p = 61, q = 53',
+      hint: 'Multiply 61 by 53.',
+      answer: '3233',
+    },
   },
   {
     id: 'aes',
@@ -304,6 +396,12 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
       key: '1234567890123456',
       key_format: 'text',
     },
+    challenge: {
+      prompt: 'How many transformation rounds does AES-128 execute?',
+      ciphertext: '128-bit key',
+      hint: 'AES-128 uses 10 rounds, AES-192 uses 12, and AES-256 uses 14.',
+      answer: '10',
+    },
   },
   {
     id: 'sha256',
@@ -326,6 +424,76 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
       decrypt: '/api/sha256',
     },
     defaultParams: {},
+    challenge: {
+      prompt: 'What is the fixed output bit length of a SHA-256 digest?',
+      ciphertext: '32 bytes',
+      hint: 'Multiply 32 bytes by 8 bits per byte.',
+      answer: '256',
+    },
+  },
+  {
+    id: 'hmac-hash',
+    name: 'Multi-Hash & HMAC',
+    category: 'Modern',
+    wing: 'Modern Cryptography Wing',
+    subtitle: 'Cryptographic Digests & Keyed Message Authentication',
+    description: 'Compares SHA-256, SHA3-256, BLAKE2s, and legacy MD5 digests alongside HMAC-SHA256 keyed message authentication codes.',
+    historicalContext: 'HMAC (Hash-based Message Authentication Code) was formalized by Mihir Bellare, Ran Canetti, and Hugo Krawczyk in 1996 (RFC 2104) to prevent length-extension attacks on Merkle-Damgård hashes.',
+    vulnerabilities: 'Legacy MD5 is broken against collision attacks and must not be used for security. HMAC-SHA256 remains secure even when the underlying hash has minor structural weaknesses.',
+    timeline: '1996 AD–Present – Integrity & Authentication',
+    position: [35, 0, -75],
+    cameraPosition: [35, 2.2, -71.5],
+    cameraTarget: [35, 1.6, -75],
+    macroPosition: [35, 2.8, -73.2],
+    macroTarget: [35, 1.6, -75],
+    rotationY: 0,
+    endpoint: {
+      encrypt: '/api/hmac/sign',
+      decrypt: '/api/hmac/verify',
+    },
+    defaultParams: {
+      algorithm: 'sha256',
+      key: 'museum-secret-key',
+    },
+    challenge: {
+      prompt: 'How many hexadecimal characters are in a 256-bit HMAC-SHA256 signature?',
+      ciphertext: '256 bits = 32 bytes',
+      hint: 'Each byte is represented by 2 hexadecimal characters.',
+      answer: '64',
+    },
+  },
+  {
+    id: 'diffie-hellman',
+    name: 'Diffie-Hellman Exchange',
+    category: 'Modern',
+    wing: 'Modern Cryptography Wing',
+    subtitle: 'Asymmetric Key Agreement Over Public Channels',
+    description: 'Allows two parties (Alice and Bob) to establish a shared secret key over an insecure public channel using modular exponentiation.',
+    historicalContext: 'Published in 1976 by Whitfield Diffie and Martin Hellman (building on Ralph Merkle’s work), solving the millennia-old key distribution problem and launching modern public-key cryptography.',
+    vulnerabilities: 'Unauthenticated Diffie-Hellman is vulnerable to Man-in-the-Middle (MitM) attacks; small primes are vulnerable to discrete logarithm attacks.',
+    timeline: '1976 AD – Public-Key Revolution',
+    position: [55, 0, -75],
+    cameraPosition: [55, 2.2, -71.5],
+    cameraTarget: [55, 1.6, -75],
+    macroPosition: [55, 2.8, -73.2],
+    macroTarget: [55, 1.6, -75],
+    rotationY: 0,
+    endpoint: {
+      encrypt: '/api/diffie-hellman/exchange',
+      decrypt: '/api/diffie-hellman/exchange',
+    },
+    defaultParams: {
+      p: 23,
+      g: 5,
+      a: 6,
+      b: 15,
+    },
+    challenge: {
+      prompt: 'With p = 23, g = 5, Alice secret a = 6, and Bob secret b = 15, compute the shared secret g^(ab) mod p.',
+      ciphertext: 'p=23, g=5, a=6, b=15',
+      hint: 'Compute A = 5^6 mod 23 = 8, then compute 8^15 mod 23.',
+      answer: '2',
+    },
   },
 ];
 
