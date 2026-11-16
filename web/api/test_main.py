@@ -2223,3 +2223,394 @@ def test_sha256_endpoint_direct():
     assert "hash" in result
     assert result["hash"] == "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
 
+
+# ==========================================
+# SUBSTITUTION ENDPOINT TESTS
+# ==========================================
+
+SUBSTITUTION_KEY_STR = "qwertyuiopasdfghjklzxcvbnm"
+SUBSTITUTION_KEY_DICT = dict(zip("abcdefghijklmnopqrstuvwxyz", SUBSTITUTION_KEY_STR))
+
+
+def test_substitution_encrypt_decrypt_string_key():
+    enc = client.post(
+        "/api/substitution/encrypt",
+        json={"plaintext": "Hello, World! 123", "key": SUBSTITUTION_KEY_STR},
+    )
+    assert enc.status_code == 200
+    ciphertext = enc.json()["ciphertext"]
+    assert ciphertext == "Itssg, Vgksr! 123"
+
+    dec = client.post(
+        "/api/substitution/decrypt",
+        json={"ciphertext": ciphertext, "key": SUBSTITUTION_KEY_STR},
+    )
+    assert dec.status_code == 200
+    assert dec.json() == {"plaintext": "Hello, World! 123"}
+
+
+def test_substitution_encrypt_decrypt_dict_key():
+    enc = client.post(
+        "/api/substitution/encrypt",
+        json={"plaintext": "Attack at Dawn", "key": SUBSTITUTION_KEY_DICT},
+    )
+    assert enc.status_code == 200
+    ciphertext = enc.json()["ciphertext"]
+
+    dec = client.post(
+        "/api/substitution/decrypt",
+        json={"ciphertext": ciphertext, "key": SUBSTITUTION_KEY_DICT},
+    )
+    assert dec.status_code == 200
+    assert dec.json() == {"plaintext": "Attack at Dawn"}
+
+
+@pytest.mark.parametrize("bad_key", [
+    "short",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "qwertyuiopasdfghjklzxcvbn1",
+    "qwertyuiopasdfghjklzxcvbnmm",
+    "",
+])
+def test_substitution_invalid_string_key(bad_key):
+    resp = client.post(
+        "/api/substitution/encrypt",
+        json={"plaintext": "hello", "key": bad_key},
+    )
+    assert resp.status_code == 400
+
+
+def test_substitution_invalid_dict_keys():
+    # Missing letters
+    resp1 = client.post(
+        "/api/substitution/encrypt",
+        json={"plaintext": "hello", "key": {"a": "b"}},
+    )
+    assert resp1.status_code == 400
+
+    # Duplicate target values (non-bijective)
+    dup_dict = dict(SUBSTITUTION_KEY_DICT)
+    dup_dict["b"] = dup_dict["a"]
+    resp2 = client.post(
+        "/api/substitution/decrypt",
+        json={"ciphertext": "hello", "key": dup_dict},
+    )
+    assert resp2.status_code == 400
+
+    # Multi-character value
+    bad_val_dict = dict(SUBSTITUTION_KEY_DICT)
+    bad_val_dict["a"] = "qq"
+    resp3 = client.post(
+        "/api/substitution/encrypt",
+        json={"plaintext": "hello", "key": bad_val_dict},
+    )
+    assert resp3.status_code == 400
+
+
+def test_substitution_exceeds_max_length():
+    resp = client.post(
+        "/api/substitution/encrypt",
+        json={"plaintext": "a" * 501, "key": SUBSTITUTION_KEY_STR},
+    )
+    assert resp.status_code == 400
+    assert "exceeds" in resp.json()["detail"].lower()
+
+    resp2 = client.post(
+        "/api/substitution/decrypt",
+        json={"ciphertext": "a" * 501, "key": SUBSTITUTION_KEY_STR},
+    )
+    assert resp2.status_code == 400
+    assert "exceeds" in resp2.json()["detail"].lower()
+
+
+@patch("methods.classical.substitution.encrypt", side_effect=RuntimeError("boom"))
+def test_substitution_encrypt_exception(mock_enc, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post(
+            "/api/substitution/encrypt",
+            json={"plaintext": "hello", "key": SUBSTITUTION_KEY_STR},
+        )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Encryption failed"
+    assert "Substitution encryption error" in caplog.text
+
+
+@patch("methods.classical.substitution.decrypt", side_effect=RuntimeError("boom"))
+def test_substitution_decrypt_exception(mock_dec, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post(
+            "/api/substitution/decrypt",
+            json={"ciphertext": "hello", "key": SUBSTITUTION_KEY_STR},
+        )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Decryption failed"
+    assert "Substitution decryption error" in caplog.text
+
+
+# ==========================================
+# HASH DIGEST ENDPOINT TESTS
+# ==========================================
+
+@pytest.mark.parametrize("algorithm, plaintext, expected_hash", [
+    ("sha256", "hello", "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"),
+    ("sha3_256", "hello", "3338be694f50c5f338814986cdf0686453a888b84f424d792af4b9202398f392"),
+    ("blake2s", "hello", "19213bacc58dee6dbde3ceb9a47cbb330b3d86f8cca8997eb00be456f140ca25"),
+    ("md5", "hello", "5d41402abc4b2a76b9719d911017c592"),
+    ("SHA256", "", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+])
+def test_hash_digest_algorithms(algorithm, plaintext, expected_hash):
+    resp = client.post(
+        "/api/hash/digest",
+        json={"plaintext": plaintext, "algorithm": algorithm},
+    )
+    assert resp.status_code == 200
+    assert resp.json() == {"hash": expected_hash, "algorithm": algorithm.lower()}
+
+
+def test_hash_digest_default_algorithm():
+    resp = client.post("/api/hash/digest", json={"plaintext": "abc"})
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "hash": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "algorithm": "sha256",
+    }
+
+
+@pytest.mark.parametrize("bad_algo", ["sha1", "sha512", "blake2b", "crc32", ""])
+def test_hash_digest_unsupported_algorithm(bad_algo):
+    resp = client.post(
+        "/api/hash/digest",
+        json={"plaintext": "hello", "algorithm": bad_algo},
+    )
+    assert resp.status_code == 400
+    assert "unsupported algorithm" in resp.json()["detail"].lower()
+
+
+def test_hash_digest_exceeds_max_length():
+    resp = client.post(
+        "/api/hash/digest",
+        json={"plaintext": "a" * 501, "algorithm": "sha256"},
+    )
+    assert resp.status_code == 400
+    assert "exceeds" in resp.json()["detail"].lower()
+
+
+@patch("methods.modern.hash_functions.compute_hash", side_effect=RuntimeError("boom"))
+def test_hash_digest_exception(mock_compute, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post(
+            "/api/hash/digest",
+            json={"plaintext": "hello", "algorithm": "sha256"},
+        )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Hashing failed"
+    assert "Hash digest error" in caplog.text
+
+
+# ==========================================
+# HMAC ENDPOINT TESTS
+# ==========================================
+
+def test_hmac_sign_and_verify_roundtrip():
+    sign_resp = client.post(
+        "/api/hmac/sign",
+        json={"message": "Museum Artifact #42", "key": "super-secret-key"},
+    )
+    assert sign_resp.status_code == 200
+    sign_data = sign_resp.json()
+    assert sign_data["algorithm"] == "sha256"
+    assert len(sign_data["signature"]) == 64
+
+    verify_resp = client.post(
+        "/api/hmac/verify",
+        json={
+            "message": "Museum Artifact #42",
+            "key": "super-secret-key",
+            "signature": sign_data["signature"],
+        },
+    )
+    assert verify_resp.status_code == 200
+    assert verify_resp.json() == {"valid": True, "algorithm": "sha256"}
+
+    # Case-insensitive signature verification
+    verify_upper = client.post(
+        "/api/hmac/verify",
+        json={
+            "message": "Museum Artifact #42",
+            "key": "super-secret-key",
+            "signature": sign_data["signature"].upper(),
+        },
+    )
+    assert verify_upper.status_code == 200
+    assert verify_upper.json() == {"valid": True, "algorithm": "sha256"}
+
+
+def test_hmac_verify_failures():
+    sign_resp = client.post(
+        "/api/hmac/sign",
+        json={"message": "original", "key": "secret"},
+    )
+    sig = sign_resp.json()["signature"]
+
+    # Tampered message
+    r1 = client.post(
+        "/api/hmac/verify",
+        json={"message": "tampered", "key": "secret", "signature": sig},
+    )
+    assert r1.status_code == 200
+    assert r1.json()["valid"] is False
+
+    # Wrong key
+    r2 = client.post(
+        "/api/hmac/verify",
+        json={"message": "original", "key": "wrong", "signature": sig},
+    )
+    assert r2.status_code == 200
+    assert r2.json()["valid"] is False
+
+    # Invalid signature
+    r3 = client.post(
+        "/api/hmac/verify",
+        json={"message": "original", "key": "secret", "signature": "00" * 32},
+    )
+    assert r3.status_code == 200
+    assert r3.json()["valid"] is False
+
+
+def test_hmac_validation_errors():
+    # Empty key on sign & verify
+    r1 = client.post("/api/hmac/sign", json={"message": "hi", "key": ""})
+    assert r1.status_code == 400
+    assert "empty" in r1.json()["detail"].lower()
+
+    r2 = client.post(
+        "/api/hmac/verify",
+        json={"message": "hi", "key": "", "signature": "abcd"},
+    )
+    assert r2.status_code == 400
+    assert "empty" in r2.json()["detail"].lower()
+
+    # Unsupported algorithm
+    r3 = client.post(
+        "/api/hmac/sign",
+        json={"message": "hi", "key": "secret", "algorithm": "md5"},
+    )
+    assert r3.status_code == 400
+
+    r4 = client.post(
+        "/api/hmac/verify",
+        json={"message": "hi", "key": "secret", "signature": "abcd", "algorithm": "md5"},
+    )
+    assert r4.status_code == 400
+
+    # Exceeds max length
+    r5 = client.post(
+        "/api/hmac/sign",
+        json={"message": "a" * 501, "key": "secret"},
+    )
+    assert r5.status_code == 400
+    assert "exceeds" in r5.json()["detail"].lower()
+
+
+@patch("methods.modern.digital_signatures.create_hmac", side_effect=RuntimeError("boom"))
+def test_hmac_sign_exception(mock_create, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post(
+            "/api/hmac/sign",
+            json={"message": "hello", "key": "secret"},
+        )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "HMAC signing failed"
+    assert "HMAC sign error" in caplog.text
+
+
+@patch("methods.modern.digital_signatures.verify_hmac", side_effect=RuntimeError("boom"))
+def test_hmac_verify_exception(mock_verify, caplog):
+    with caplog.at_level("ERROR"):
+        resp = client.post(
+            "/api/hmac/verify",
+            json={"message": "hello", "key": "secret", "signature": "abcd"},
+        )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "HMAC verification failed"
+    assert "HMAC verify error" in caplog.text
+
+
+# ==========================================
+# DIFFIE-HELLMAN ENDPOINT TESTS
+# ==========================================
+
+def test_diffie_hellman_exchange_textbook():
+    # Classic textbook example: p=23, g=5, a=6, b=15 -> A=8, B=19, shared_secret=2
+    resp = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": 23, "g": 5, "a": 6, "b": 15},
+    )
+    assert resp.status_code == 200
+    assert resp.json() == {"A": 8, "B": 19, "shared_secret": 2}
+
+
+def test_diffie_hellman_exchange_large_prime():
+    p = 2147483647  # Mersenne prime 2^31 - 1
+    g = 7
+    a = 123456
+    b = 654321
+    resp = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": p, "g": g, "a": a, "b": b},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["A"] == pow(g, a, p)
+    assert data["B"] == pow(g, b, p)
+    assert data["shared_secret"] == pow(g, a * b, p)
+
+
+@pytest.mark.parametrize("bad_p", [2, 4, 9, 15, 21, 100])
+def test_diffie_hellman_non_prime_or_too_small_p(bad_p):
+    resp = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": bad_p, "g": 2, "a": 1, "b": 1},
+    )
+    assert resp.status_code == 400
+
+
+def test_diffie_hellman_bounds_validation():
+    # g >= p
+    r1 = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": 23, "g": 23, "a": 6, "b": 15},
+    )
+    assert r1.status_code == 400
+    assert "strictly less than p" in r1.json()["detail"].lower()
+
+    # g < 2
+    r2 = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": 23, "g": 1, "a": 6, "b": 15},
+    )
+    assert r2.status_code == 400
+
+    # a >= p
+    r3 = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": 23, "g": 5, "a": 23, "b": 15},
+    )
+    assert r3.status_code == 400
+    assert "strictly less than p" in r3.json()["detail"].lower()
+
+    # b < 1
+    r4 = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": 23, "g": 5, "a": 6, "b": 0},
+    )
+    assert r4.status_code == 400
+
+    # p > 2**512 (DoS bound)
+    r5 = client.post(
+        "/api/diffie-hellman/exchange",
+        json={"p": 2**512 + 1, "g": 5, "a": 6, "b": 15},
+    )
+    assert r5.status_code == 400
+
+

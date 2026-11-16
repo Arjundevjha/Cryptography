@@ -349,6 +349,112 @@ def affine_decrypt(data: AffineDecryptInput):
 
 
 # ==========================================
+# SUBSTITUTION CIPHER
+# ==========================================
+
+SubstitutionKeyStr = Annotated[str, Field(max_length=500)]
+SubstitutionKeyChar = Annotated[str, Field(max_length=10)]
+SubstitutionKeyDict = Annotated[dict[SubstitutionKeyChar, SubstitutionKeyChar], Field(max_length=26)]
+
+class SubstitutionEncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
+    key: SubstitutionKeyStr | SubstitutionKeyDict = Field(
+        ..., description="26-letter permutation string or a-z mapping dictionary"
+    )
+
+class SubstitutionDecryptInput(BaseModel):
+    ciphertext: str = Field(..., max_length=500, description="The ciphertext to decrypt")
+    key: SubstitutionKeyStr | SubstitutionKeyDict = Field(
+        ..., description="26-letter permutation string or a-z mapping dictionary"
+    )
+
+
+def parse_substitution_key(key: str | dict[str, str]) -> dict[str, str]:
+    """Validate and normalize a substitution key into a 26-letter a-z bijection."""
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    if isinstance(key, str):
+        cleaned = key.strip().lower()
+        if (
+            len(cleaned) != 26
+            or not cleaned.isascii()
+            or not cleaned.isalpha()
+            or len(set(cleaned)) != 26
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Substitution key string must contain 26 unique ASCII letters.",
+            )
+        return dict(zip(alphabet, cleaned))
+
+    if isinstance(key, dict):
+        if len(key) != 26:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Substitution key dictionary must contain all 26 letters.",
+            )
+        normalized: dict[str, str] = {}
+        for k, v in key.items():
+            if (
+                not isinstance(k, str)
+                or not isinstance(v, str)
+                or len(k) != 1
+                or len(v) != 1
+                or not (k.isascii() and k.isalpha())
+                or not (v.isascii() and v.isalpha())
+            ):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Substitution key entries must map single ASCII letters to single ASCII letters.",
+                )
+            normalized[k.lower()] = v.lower()
+        if set(normalized.keys()) != set(alphabet) or len(set(normalized.values())) != 26:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Substitution key dictionary must be a bijection over a-z.",
+            )
+        return normalized
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Substitution key must be a 26-letter string or mapping dictionary.",
+    )
+
+
+@app.post("/api/substitution/encrypt")
+def substitution_encrypt(data: SubstitutionEncryptInput):
+    key_map = parse_substitution_key(data.key)
+    try:
+        from methods.classical import substitution
+        ciphertext = substitution.encrypt(data.plaintext, key_map)
+        return {"ciphertext": ciphertext}
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Substitution encryption error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Encryption failed",
+        )
+
+
+@app.post("/api/substitution/decrypt")
+def substitution_decrypt(data: SubstitutionDecryptInput):
+    key_map = parse_substitution_key(data.key)
+    try:
+        from methods.classical import substitution
+        plaintext = substitution.decrypt(data.ciphertext, key_map)
+        return {"plaintext": plaintext}
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Substitution decryption error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Decryption failed",
+        )
+
+
+# ==========================================
 # HISTORICAL CIPHERS
 # ==========================================
 
@@ -898,5 +1004,134 @@ def sha256_endpoint(data: Sha256Input):
     except Exception as e:
         logger.error("SHA256 error: %s", e)
         raise HTTPException(status_code=400, detail="Hashing failed")
+
+
+ALLOWED_HASH_ALGORITHMS = ("sha256", "sha3_256", "blake2s", "md5")
+
+class HashDigestInput(BaseModel):
+    plaintext: str = Field("", max_length=500, description="The plaintext to hash")
+    algorithm: str = Field(
+        default="sha256",
+        max_length=20,
+        description="Hash algorithm: sha256, sha3_256, blake2s, or md5",
+    )
+
+class HmacSignInput(BaseModel):
+    message: str = Field(..., max_length=500, description="The message to sign")
+    key: str = Field(..., max_length=500, description="The secret key")
+    algorithm: str = Field(default="sha256", max_length=20, description="Hash algorithm (sha256)")
+
+class HmacVerifyInput(BaseModel):
+    message: str = Field(..., max_length=500, description="The original message")
+    key: str = Field(..., max_length=500, description="The secret key")
+    signature: str = Field(..., max_length=500, description="The expected HMAC hex digest")
+    algorithm: str = Field(default="sha256", max_length=20, description="Hash algorithm (sha256)")
+
+class DiffieHellmanExchangeInput(BaseModel):
+    p: int = Field(..., ge=3, le=2**512, description="Prime modulus p (3 <= p <= 2^512)")
+    g: int = Field(..., ge=2, le=2**512, description="Generator g (2 <= g < p)")
+    a: int = Field(..., ge=1, le=2**512, description="Alice's private key a (1 <= a < p)")
+    b: int = Field(..., ge=1, le=2**512, description="Bob's private key b (1 <= b < p)")
+
+
+@app.post("/api/hash/digest")
+def hash_digest(data: HashDigestInput):
+    algo = data.algorithm.strip().lower()
+    if algo not in ALLOWED_HASH_ALGORITHMS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported algorithm '{data.algorithm}'. Allowed: {', '.join(ALLOWED_HASH_ALGORITHMS)}",
+        )
+    try:
+        from methods.modern.hash_functions import compute_hash
+        hash_val = compute_hash(data.plaintext, algo)
+        return {"hash": hash_val, "algorithm": algo}
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("Hash digest error (%s): %s", algo, e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Hashing failed")
+
+
+@app.post("/api/hmac/sign")
+def hmac_sign(data: HmacSignInput):
+    if not data.key:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Key cannot be empty.")
+    algo = data.algorithm.strip().lower()
+    if algo != "sha256":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only sha256 is supported for HMAC.",
+        )
+    try:
+        from methods.modern.digital_signatures import create_hmac
+        signature = create_hmac(data.message.encode("utf-8"), data.key.encode("utf-8"), algo)
+        return {"signature": signature, "algorithm": algo}
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("HMAC sign error: %s", e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="HMAC signing failed")
+
+
+@app.post("/api/hmac/verify")
+def hmac_verify(data: HmacVerifyInput):
+    if not data.key:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Key cannot be empty.")
+    algo = data.algorithm.strip().lower()
+    if algo != "sha256":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only sha256 is supported for HMAC.",
+        )
+    try:
+        from methods.modern.digital_signatures import verify_hmac
+        valid = verify_hmac(
+            data.message.encode("utf-8"),
+            data.key.encode("utf-8"),
+            data.signature,
+            algo,
+        )
+        return {"valid": valid, "algorithm": algo}
+    except ValueError as ve:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+    except Exception as e:
+        logger.error("HMAC verify error: %s", e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="HMAC verification failed")
+
+
+@app.post("/api/diffie-hellman/exchange")
+def diffie_hellman_exchange(data: DiffieHellmanExchangeInput):
+    from methods.modern.keypair import is_prime
+    if not is_prime(data.p):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="p must be a prime number.",
+        )
+    if data.g >= data.p:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Generator g must be strictly less than p.",
+        )
+    if data.a >= data.p or data.b >= data.p:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Private keys a and b must be strictly less than p.",
+        )
+    try:
+        pub_a = pow(data.g, data.a, data.p)
+        pub_b = pow(data.g, data.b, data.p)
+        shared_secret = pow(pub_b, data.a, data.p)
+        return {
+            "A": pub_a,
+            "B": pub_b,
+            "shared_secret": shared_secret,
+        }
+    except Exception as e:
+        logger.error("Diffie-Hellman exchange error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Key exchange failed",
+        )
 
 
