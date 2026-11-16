@@ -303,9 +303,10 @@ export default function ThreeMuseumScene({
     // ============================
     // 7. MUSEUM BUILDING ARCHITECTURE (BOTTICINO MARBLE, INLAYS, COFFERED CEILING)
     // ============================
-    const floorGeo = new THREE.PlaneGeometry(180, 200);
+    const floorGeo = new THREE.PlaneGeometry(180, 220);
     const floor = new THREE.Mesh(floorGeo, marbleFloorMat);
     floor.rotation.x = -Math.PI / 2;
+    floor.position.z = -10;
     scene.add(floor);
 
     // French Honey Oak Herringbone Parquet Corridor Runner with Brass Border Rails
@@ -333,10 +334,10 @@ export default function ThreeMuseumScene({
     }
 
     // Coffered Warm Classical Ceiling & Walnut Structural Cross-Beams
-    const ceilingGeo = new THREE.PlaneGeometry(180, 200);
+    const ceilingGeo = new THREE.PlaneGeometry(180, 220);
     const ceilingMat = new THREE.MeshStandardMaterial({ map: cofferedCeilingTex, roughness: 0.72 });
     const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
-    ceiling.position.y = 12;
+    ceiling.position.set(0, 12, -10);
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
@@ -384,12 +385,12 @@ export default function ThreeMuseumScene({
     scene.add(rearBrassRail);
 
     const frontWall = new THREE.Mesh(rearWallGeo, wallMat);
-    frontWall.position.set(0, 6, -95);
+    frontWall.position.set(0, 6, -104);
     scene.add(frontWall);
 
     // Grand Central Vista Focal Apse on the Far North Wall (anchors the main corridor sightline)
     const apseGroup = new THREE.Group();
-    apseGroup.position.set(0, 0, -94.4);
+    apseGroup.position.set(0, 0, -103.4);
     const apseWainscot = new THREE.Mesh(new THREE.BoxGeometry(26, 1.4, 0.4), wainscotMat);
     apseWainscot.position.y = 0.7;
     apseGroup.add(apseWainscot);
@@ -415,13 +416,13 @@ export default function ThreeMuseumScene({
     });
     scene.add(apseGroup);
 
-    const sideWallGeo = new THREE.BoxGeometry(0.8, 12, 130);
+    const sideWallGeo = new THREE.BoxGeometry(0.8, 12, 140);
     const leftExteriorWall = new THREE.Mesh(sideWallGeo, wallMat);
-    leftExteriorWall.position.set(-85, 6, -30);
+    leftExteriorWall.position.set(-85, 6, -35);
     scene.add(leftExteriorWall);
 
     const rightExteriorWall = new THREE.Mesh(sideWallGeo, wallMat);
-    rightExteriorWall.position.set(85, 6, -30);
+    rightExteriorWall.position.set(85, 6, -35);
     scene.add(rightExteriorWall);
 
     // Architectural Wall Sconces along Perimeter & Rotunda
@@ -3695,6 +3696,174 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
         pipe.position.set(Math.cos(ang) * 0.28, -0.22, Math.sin(ang) * 0.28);
         group.add(pipe);
       }
+      break;
+    }
+
+    case 'substitution': {
+      // Monoalphabetic Keyed Cipher Tablet & Bijection Dial
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.62, 0.09, 32), mahogany);
+      base.position.y = -0.44;
+      group.add(base);
+
+      const dialBed = new THREE.Group();
+      dialBed.position.y = 0.02;
+      dialBed.rotation.x = 0.32;
+
+      const outerDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.05, 48), antiqueBrass);
+      dialBed.add(outerDisc);
+
+      const innerDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.065, 48), ivory);
+      innerDisc.position.y = 0.012;
+      dialBed.add(innerDisc);
+
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.02, 14, 48), polishedGold);
+      rim.rotation.x = Math.PI / 2;
+      rim.position.y = 0.026;
+      dialBed.add(rim);
+
+      for (let i = 0; i < 26; i++) {
+        const ang = (i / 26) * Math.PI * 2;
+        const tick = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.02, 0.075), obsidian);
+        tick.position.set(Math.cos(ang) * 0.43, 0.032, Math.sin(ang) * 0.43);
+        tick.rotation.y = -ang;
+        dialBed.add(tick);
+      }
+
+      const pointer = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.03, 0.62), polishedGold);
+      pointer.position.y = 0.06;
+      pointer.rotation.y = 0.45;
+      dialBed.add(pointer);
+
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.085, 0.09, 24), polishedGold);
+      hub.position.y = 0.065;
+      dialBed.add(hub);
+
+      group.add(dialBed);
+      break;
+    }
+
+    case 'hmac-hash': {
+      // Dual-Keyed HMAC Seal (ipad / opad interlocking rings + glowing Merkle digest prism)
+      const sealBase = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.64, 0.09, 8), obsidian);
+      sealBase.position.y = -0.44;
+      group.add(sealBase);
+
+      const ipadRing = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.036, 16, 48), polishedGold);
+      ipadRing.position.y = 0.06;
+      ipadRing.rotation.x = Math.PI / 3;
+      ipadRing.rotation.y = 0.4;
+      group.add(ipadRing);
+
+      const opadRing = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.036, 16, 48), brushedSteel);
+      opadRing.position.y = 0.06;
+      opadRing.rotation.x = -Math.PI / 3;
+      opadRing.rotation.y = -0.4;
+      group.add(opadRing);
+
+      const hmacCore = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.22, 0),
+        new THREE.MeshStandardMaterial({
+          color: 0x34d399,
+          emissive: 0x059669,
+          emissiveIntensity: 1.3,
+          roughness: 0.15,
+          metalness: 0.2,
+        })
+      );
+      hmacCore.position.y = 0.06;
+      group.add(hmacCore);
+
+      for (let i = 0; i < 4; i++) {
+        const ang = (i / 4) * Math.PI * 2 + Math.PI / 4;
+        const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.48, 16), antiqueBrass);
+        pin.position.set(Math.cos(ang) * 0.46, -0.16, Math.sin(ang) * 0.46);
+        group.add(pin);
+      }
+      break;
+    }
+
+    case 'diffie-hellman': {
+      // Diffie-Hellman Color-Mixing & Modular Exchange Vessels
+      const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.09, 0.62), obsidian);
+      plinth.position.y = -0.44;
+      group.add(plinth);
+
+      const aliceMat = new THREE.MeshStandardMaterial({
+        color: 0xfbbf24,
+        emissive: 0xd97706,
+        emissiveIntensity: 0.85,
+        roughness: 0.15,
+      });
+      const bobMat = new THREE.MeshStandardMaterial({
+        color: 0x38bdf8,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.85,
+        roughness: 0.15,
+      });
+      const sharedMat = new THREE.MeshStandardMaterial({
+        color: 0x34d399,
+        emissive: 0x10b981,
+        emissiveIntensity: 1.35,
+        roughness: 0.12,
+      });
+
+      // Alice & Bob private vessels
+      [
+        { x: -0.42, mat: aliceMat },
+        { x: 0.42, mat: bobMat },
+      ].forEach(({ x, mat }) => {
+        const capBot = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.08, 24), antiqueBrass);
+        capBot.position.set(x, -0.35, 0);
+        group.add(capBot);
+
+        const vessel = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.42, 24), mat);
+        vessel.position.set(x, -0.1, 0);
+        group.add(vessel);
+
+        const capTop = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.06, 24), polishedGold);
+        capTop.position.set(x, 0.14, 0);
+        group.add(capTop);
+      });
+
+      // Shared secret central core + brass gimbal
+      const sharedCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.19, 1), sharedMat);
+      sharedCore.position.set(0, 0.18, 0);
+      group.add(sharedCore);
+
+      const gimbal = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.02, 14, 40), polishedGold);
+      gimbal.position.set(0, 0.18, 0);
+      gimbal.rotation.x = Math.PI / 3;
+      group.add(gimbal);
+
+      // Exchange bridge conduit bar
+      const bridge = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.84, 12), agedBronze);
+      bridge.rotation.z = Math.PI / 2;
+      bridge.position.set(0, -0.1, 0);
+      group.add(bridge);
+      break;
+    }
+
+    default: {
+      // Clean fallback museum artifact for any dynamically added exhibit
+      const fallbackBase = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.52, 0.09, 32), obsidian);
+      fallbackBase.position.y = -0.44;
+      group.add(fallbackBase);
+
+      const fallbackOrb = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(0.26, 0),
+        new THREE.MeshStandardMaterial({
+          color: 0xd4af37,
+          metalness: 0.88,
+          roughness: 0.2,
+        })
+      );
+      fallbackOrb.position.y = 0.05;
+      group.add(fallbackOrb);
+
+      const fallbackRing = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.02, 14, 48), polishedGold);
+      fallbackRing.position.y = 0.05;
+      fallbackRing.rotation.x = Math.PI / 3;
+      group.add(fallbackRing);
       break;
     }
   }

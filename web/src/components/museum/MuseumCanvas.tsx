@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import ThreeMuseumScene from './ThreeMuseumScene';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from './museumData';
-import { MuseumHUD } from './hud/MuseumHUD';
+import { MuseumHUD, TourMode, TourStop } from './hud/MuseumHUD';
 import { WorkbenchPanel } from './workbench/WorkbenchPanel';
 import { StatueCuratorialDrawer } from './workbench/StatueCuratorialDrawer';
 import { AudioSystem } from './AudioSystem';
@@ -12,21 +12,12 @@ import {
   History,
   ShieldAlert,
   ArrowRight,
-  ArrowLeft,
   PanelLeftClose,
   PanelLeftOpen,
   GraduationCap,
-  X,
 } from 'lucide-react';
 
-interface HistoricalTourStop {
-  targetId: string;
-  era: string;
-  title: string;
-  note: string;
-}
-
-const HISTORICAL_TOUR_STOPS: HistoricalTourStop[] = [
+const HISTORICAL_TOUR_STOPS: TourStop[] = [
   {
     targetId: 'scytale',
     era: 'c. 500 BC · Ancient Sparta',
@@ -94,7 +85,31 @@ export function MuseumCanvas() {
   const [currentView, setCurrentView] = useState<string>('atrium');
   const [isCuratorialCollapsed, setIsCuratorialCollapsed] = useState(false);
   const [isTourActive, setIsTourActive] = useState(false);
+  const [tourMode, setTourMode] = useState<TourMode>('chronological');
   const [tourStepIdx, setTourStepIdx] = useState(0);
+
+  const wingTourStops = useMemo<TourStop[]>(() => {
+    const stops: TourStop[] = [];
+    MUSEUM_WINGS.forEach((wing) => {
+      stops.push({
+        targetId: wing.id,
+        era: `${wing.category} Wing`,
+        title: wing.name,
+        note: wing.description,
+      });
+      MUSEUM_EXHIBITS.filter((ex) => ex.wing === wing.name || ex.category === wing.category).forEach((ex) => {
+        stops.push({
+          targetId: ex.id,
+          era: ex.timeline,
+          title: ex.name,
+          note: ex.description,
+        });
+      });
+    });
+    return stops;
+  }, []);
+
+  const activeTourStops = tourMode === 'wings' ? wingTourStops : HISTORICAL_TOUR_STOPS;
 
   useEffect(() => {
     setIsClient(true);
@@ -148,19 +163,39 @@ export function MuseumCanvas() {
       const nextState = !prev;
       if (nextState) {
         setTourStepIdx(0);
-        setCurrentView(HISTORICAL_TOUR_STOPS[0].targetId);
+        if (activeTourStops.length > 0) {
+          setCurrentView(activeTourStops[0].targetId);
+        }
       }
       return nextState;
     });
-  }, []);
+  }, [activeTourStops]);
 
-  const handleStepTour = useCallback((nextIdx: number) => {
-    const clamped = (nextIdx + HISTORICAL_TOUR_STOPS.length) % HISTORICAL_TOUR_STOPS.length;
-    setTourStepIdx(clamped);
-    setCurrentView(HISTORICAL_TOUR_STOPS[clamped].targetId);
-  }, []);
+  const handleSelectTourMode = useCallback(
+    (mode: TourMode) => {
+      setTourMode(mode);
+      setTourStepIdx(0);
+      const nextStops = mode === 'wings' ? wingTourStops : HISTORICAL_TOUR_STOPS;
+      if (nextStops.length > 0) {
+        setCurrentView(nextStops[0].targetId);
+      }
+    },
+    [wingTourStops]
+  );
 
-  const currentTourStop = HISTORICAL_TOUR_STOPS[tourStepIdx];
+  const handleStepTour = useCallback(
+    (nextIdx: number) => {
+      if (activeTourStops.length === 0) return;
+      const clamped = (nextIdx + activeTourStops.length) % activeTourStops.length;
+      setTourStepIdx(clamped);
+      setCurrentView(activeTourStops[clamped].targetId);
+    },
+    [activeTourStops]
+  );
+
+  const handleExitTour = useCallback(() => {
+    setIsTourActive(false);
+  }, []);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#1f1c18]">
@@ -179,76 +214,13 @@ export function MuseumCanvas() {
         onReturnToFoyer={handleReturnToFoyer}
         isTourActive={isTourActive}
         onToggleTour={handleToggleTour}
+        tourMode={tourMode}
+        onSelectTourMode={handleSelectTourMode}
+        tourStops={activeTourStops}
+        tourStepIdx={tourStepIdx}
+        onStepTour={handleStepTour}
+        onExitTour={handleExitTour}
       />
-
-      {/* === GUIDED HISTORICAL TOUR DOCENT BAR === */}
-      {isTourActive && currentTourStop && (
-        <div
-          role="region"
-          aria-label="Guided historical tour"
-          className="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 w-full max-w-3xl px-4 pointer-events-none"
-        >
-          <div className="pointer-events-auto p-4 rounded-2xl bg-[#161412]/95 backdrop-blur-2xl border border-amber-500/40 text-stone-100 shadow-2xl space-y-2.5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="font-display text-sm sm:text-base font-semibold text-amber-300">
-                  {currentTourStop.title}
-                </h3>
-                <p className="text-xs font-sans text-stone-300 mt-0.5">
-                  Stop <span className="font-mono text-amber-300">{tourStepIdx + 1}</span> of{' '}
-                  <span className="font-mono">{HISTORICAL_TOUR_STOPS.length}</span> · {currentTourStop.era}
-                </p>
-              </div>
-              <button
-                onClick={() => setIsTourActive(false)}
-                aria-label="End guided historical tour (Escape)"
-                title="End guided tour [Esc]"
-                className="select-none p-1.5 rounded-lg bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 hover:text-stone-100 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <p className="text-xs sm:text-sm text-stone-200 font-sans leading-relaxed">{currentTourStop.note}</p>
-
-            <div className="select-none flex items-center justify-between pt-2 border-t border-stone-800/80">
-              <button
-                onClick={() => handleStepTour(tourStepIdx - 1)}
-                aria-label="Previous tour stop"
-                className="px-3 py-1.5 rounded-xl bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-xs font-sans font-medium text-stone-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" /> Previous Era
-              </button>
-
-              <nav aria-label="Tour stops" className="hidden sm:flex items-center gap-1.5">
-                {HISTORICAL_TOUR_STOPS.map((st, idx) => (
-                  <button
-                    key={st.targetId}
-                    type="button"
-                    onClick={() => handleStepTour(idx)}
-                    aria-label={`Jump to stop ${idx + 1}: ${st.title}`}
-                    aria-current={idx === tourStepIdx ? 'step' : undefined}
-                    title={`Stop ${idx + 1}: ${st.title}`}
-                    className={`h-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-                      idx === tourStepIdx
-                        ? 'w-6 bg-amber-400'
-                        : 'w-2 bg-stone-700 hover:bg-stone-500'
-                    }`}
-                  />
-                ))}
-              </nav>
-
-              <button
-                onClick={() => handleStepTour(tourStepIdx + 1)}
-                aria-label="Next tour stop"
-                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-sans font-semibold flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
-              >
-                Next Era <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* === LOBBY ROTUNDA PIONEER ACCESSION STRIP === */}
       {currentView === 'atrium' && !isTourActive && (
@@ -408,7 +380,7 @@ export function MuseumCanvas() {
       )}
 
       {/* === AUDIO SYSTEM (Spatial Ambient & Synth Audio) === */}
-      <AudioSystem currentView={currentView} />
+      <AudioSystem currentView={currentView} isTourActive={isTourActive} tourStepIdx={tourStepIdx} />
     </div>
   );
 }

@@ -1,9 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ApiStatusDot } from './ApiStatusDot';
-import { Github, Home, Compass, Map, X, Navigation, GraduationCap } from 'lucide-react';
+import {
+  Github,
+  Home,
+  Compass,
+  Map,
+  X,
+  Navigation,
+  GraduationCap,
+  Award,
+  ArrowLeft,
+  ArrowRight,
+} from 'lucide-react';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from '../museumData';
+
+export const PASSPORT_STORAGE_KEY = 'cryptography-museum-passport-v1';
+export const PASSPORT_UPDATED_EVENT = 'museum-passport-updated';
+
+export type TourMode = 'chronological' | 'wings';
+
+export interface TourStop {
+  targetId: string;
+  era: string;
+  title: string;
+  note: string;
+}
 
 interface MuseumHUDProps {
   currentView: string;
@@ -11,6 +34,26 @@ interface MuseumHUDProps {
   onReturnToFoyer: () => void;
   isTourActive?: boolean;
   onToggleTour?: () => void;
+  tourMode?: TourMode;
+  onSelectTourMode?: (mode: TourMode) => void;
+  tourStops?: TourStop[];
+  tourStepIdx?: number;
+  onStepTour?: (nextIdx: number) => void;
+  onExitTour?: () => void;
+}
+
+function readPassportStamps(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(PASSPORT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const validIds = new Set(MUSEUM_EXHIBITS.map((e) => e.id));
+    return Array.from(new Set(parsed.filter((id): id is string => typeof id === 'string' && validIds.has(id))));
+  } catch {
+    return [];
+  }
 }
 
 export function MuseumHUD({
@@ -19,8 +62,26 @@ export function MuseumHUD({
   onReturnToFoyer,
   isTourActive = false,
   onToggleTour,
+  tourMode = 'chronological',
+  onSelectTourMode,
+  tourStops = [],
+  tourStepIdx = 0,
+  onStepTour,
+  onExitTour,
 }: MuseumHUDProps) {
   const [showMap, setShowMap] = useState(false);
+  const [stampedIds, setStampedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const syncStamps = () => setStampedIds(readPassportStamps());
+    syncStamps();
+    window.addEventListener('storage', syncStamps);
+    window.addEventListener(PASSPORT_UPDATED_EVENT, syncStamps);
+    return () => {
+      window.removeEventListener('storage', syncStamps);
+      window.removeEventListener(PASSPORT_UPDATED_EVENT, syncStamps);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,6 +119,54 @@ export function MuseumHUD({
     if (activeExhibit) return `${activeExhibit.wing} • ${activeExhibit.name}`;
     return 'Permanent Collection';
   };
+
+  const totalExhibits = MUSEUM_EXHIBITS.length;
+  const stampedCount = stampedIds.length;
+  const allStamped = totalExhibits > 0 && stampedCount >= totalExhibits;
+
+  const mapPositions = useMemo(() => {
+    const positions: Record<string, { cx: number; cy: number }> = {};
+    const byCategory = (cat: 'Classical' | 'Historical' | 'Modern') =>
+      MUSEUM_EXHIBITS.filter((e) => e.category === cat);
+
+    // Classical Wing box: x=[45..250], y=[45..270]
+    const classical = byCategory('Classical');
+    const classicalRows = Math.max(1, Math.ceil(classical.length / 2));
+    classical.forEach((ex, idx) => {
+      const col = idx % 2;
+      const row = Math.floor(idx / 2);
+      const isLastSingle = idx === classical.length - 1 && classical.length % 2 === 1;
+      const cx = isLastSingle ? 147 : col === 0 ? 100 : 195;
+      const cy = classicalRows === 1 ? 155 : 102 + (row * 124) / Math.max(1, classicalRows - 1);
+      positions[ex.id] = { cx, cy };
+    });
+
+    // Historical Wing box: x=[305..495], y=[45..250]
+    const historical = byCategory('Historical');
+    historical.forEach((ex, idx) => {
+      const col = idx % 2;
+      const row = Math.floor(idx / 2);
+      const cx = historical.length === 1 ? 400 : col === 0 ? 355 : 445;
+      const cy = historical.length <= 2 ? 152 : 118 + row * 72;
+      positions[ex.id] = { cx, cy };
+    });
+
+    // Modern Wing box: x=[550..755], y=[45..270]
+    const modern = byCategory('Modern');
+    const modernRows = Math.max(1, Math.ceil(modern.length / 2));
+    modern.forEach((ex, idx) => {
+      const col = idx % 2;
+      const row = Math.floor(idx / 2);
+      const isLastSingle = idx === modern.length - 1 && modern.length % 2 === 1;
+      const cx = isLastSingle ? 652 : col === 0 ? 602 : 702;
+      const cy = modernRows === 1 ? 155 : 108 + (row * 114) / Math.max(1, modernRows - 1);
+      positions[ex.id] = { cx, cy };
+    });
+
+    return positions;
+  }, []);
+
+  const currentTourStop = tourStops[tourStepIdx];
 
   return (
     <>
@@ -170,6 +279,24 @@ export function MuseumHUD({
             </button>
           )}
 
+          <div
+            data-testid="passport-progress-badge"
+            role="status"
+            aria-label={`Museum Passport: ${stampedCount} of ${totalExhibits} exhibits stamped`}
+            title={`Museum Passport: ${stampedCount} of ${totalExhibits} exhibit challenges completed`}
+            className={`px-3 py-2 rounded-2xl backdrop-blur-xl border text-xs font-sans font-semibold flex items-center gap-1.5 shadow-xl transition-colors ${
+              allStamped
+                ? 'bg-emerald-950/90 border-emerald-400/50 text-emerald-200'
+                : 'bg-[#161412]/95 border-amber-500/25 text-stone-200'
+            }`}
+          >
+            <Award className={`w-4 h-4 shrink-0 ${allStamped ? 'text-emerald-400' : 'text-amber-400'}`} />
+            <span className="hidden xl:inline">Passport</span>
+            <span className="font-mono text-amber-300">
+              {stampedCount}/{totalExhibits}
+            </span>
+          </div>
+
           <ApiStatusDot />
 
           <a
@@ -257,35 +384,17 @@ export function MuseumHUD({
 
                 {/* Interactive Clickable Room Dots */}
                 {MUSEUM_EXHIBITS.map((ex) => {
-                  let cx = 400;
-                  let cy = 200;
-                  if (ex.category === 'Classical') {
-                    if (['caesar', 'affine'].includes(ex.id)) {
-                      cx = ex.id === 'caesar' ? 100 : 195;
-                      cy = 108;
-                    } else if (['vigenere', 'playfair'].includes(ex.id)) {
-                      cx = ex.id === 'vigenere' ? 100 : 195;
-                      cy = 160;
-                    } else {
-                      cx = ex.id === 'polybius' ? 100 : 195;
-                      cy = 212;
-                    }
-                  } else if (ex.category === 'Historical') {
-                    cx = ex.id === 'enigma' ? 355 : 445;
-                    cy = 152;
-                  } else {
-                    cx = ex.id === 'rsa' ? 600 : ex.id === 'aes' ? 705 : 652;
-                    cy = ex.id === 'sha256' ? 202 : 122;
-                  }
-
+                  const pos = mapPositions[ex.id] ?? { cx: 400, cy: 200 };
+                  const { cx, cy } = pos;
                   const isActive = currentView === ex.id;
+                  const isStamped = stampedIds.includes(ex.id);
 
                   return (
                     <g
                       key={ex.id}
                       role="button"
                       tabIndex={0}
-                      aria-label={`Navigate to exhibit ${ex.name}`}
+                      aria-label={`Navigate to exhibit ${ex.name}${isStamped ? ' (Passport Stamped)' : ''}`}
                       onClick={() => {
                         onSelectRoom(ex.id);
                         setShowMap(false);
@@ -303,8 +412,8 @@ export function MuseumHUD({
                         cx={cx}
                         cy={cy}
                         r={isActive ? '9' : '7'}
-                        fill={isActive ? '#d4af37' : '#1e293b'}
-                        stroke={isActive ? '#fef3c7' : '#94a3b8'}
+                        fill={isActive ? '#d4af37' : isStamped ? '#065f46' : '#1e293b'}
+                        stroke={isActive ? '#fef3c7' : isStamped ? '#34d399' : '#94a3b8'}
                         strokeWidth="1.8"
                       />
                       {isActive && (
@@ -441,6 +550,109 @@ export function MuseumHUD({
                 className="px-4 py-2 rounded-xl bg-amber-500 text-stone-950 font-semibold hover:bg-amber-400 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               >
                 Close Map
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* === GUIDED MUSEUM TOUR DOCENT BAR === */}
+      {isTourActive && currentTourStop && (
+        <div
+          role="region"
+          aria-label="Guided historical tour"
+          className="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 w-full max-w-3xl px-4 pointer-events-none"
+        >
+          <div className="pointer-events-auto p-4 rounded-2xl bg-[#161412]/95 backdrop-blur-2xl border border-amber-500/40 text-stone-100 shadow-2xl space-y-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="font-display text-sm sm:text-base font-semibold text-amber-300 truncate">
+                  {currentTourStop.title}
+                </h3>
+                <p className="text-xs font-sans text-stone-300 mt-0.5">
+                  Stop <span className="font-mono text-amber-300">{tourStepIdx + 1}</span> of{' '}
+                  <span className="font-mono">{tourStops.length}</span> · {currentTourStop.era}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {onSelectTourMode && (
+                  <div
+                    role="group"
+                    aria-label="Tour itinerary mode"
+                    className="hidden sm:flex items-center p-0.5 rounded-lg bg-[#24201c] border border-stone-700/60 text-[11px] font-sans"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onSelectTourMode('chronological')}
+                      aria-pressed={tourMode === 'chronological'}
+                      className={`px-2 py-1 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                        tourMode === 'chronological'
+                          ? 'bg-amber-500 text-stone-950 font-semibold'
+                          : 'text-stone-300 hover:text-stone-100'
+                      }`}
+                    >
+                      Chronological
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onSelectTourMode('wings')}
+                      aria-pressed={tourMode === 'wings'}
+                      className={`px-2 py-1 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                        tourMode === 'wings'
+                          ? 'bg-amber-500 text-stone-950 font-semibold'
+                          : 'text-stone-300 hover:text-stone-100'
+                      }`}
+                    >
+                      All Wings
+                    </button>
+                  </div>
+                )}
+                <button
+                  onClick={onExitTour ?? onToggleTour}
+                  aria-label="End guided historical tour (Escape)"
+                  title="End guided tour [Esc]"
+                  className="select-none p-1.5 rounded-lg bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 hover:text-stone-100 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xs sm:text-sm text-stone-200 font-sans leading-relaxed">{currentTourStop.note}</p>
+
+            <div className="select-none flex items-center justify-between pt-2 border-t border-stone-800/80">
+              <button
+                onClick={() => onStepTour?.(tourStepIdx - 1)}
+                aria-label="Previous tour stop"
+                className="px-3 py-1.5 rounded-xl bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-xs font-sans font-medium text-stone-200 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> Previous Era
+              </button>
+
+              <nav aria-label="Tour stops" className="hidden sm:flex items-center gap-1.5 flex-wrap justify-center max-w-md">
+                {tourStops.map((st, idx) => (
+                  <button
+                    key={`${st.targetId}-${idx}`}
+                    type="button"
+                    onClick={() => onStepTour?.(idx)}
+                    aria-label={`Jump to stop ${idx + 1}: ${st.title}`}
+                    aria-current={idx === tourStepIdx ? 'step' : undefined}
+                    title={`Stop ${idx + 1}: ${st.title}`}
+                    className={`h-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                      idx === tourStepIdx
+                        ? 'w-6 bg-amber-400'
+                        : 'w-2 bg-stone-700 hover:bg-stone-500'
+                    }`}
+                  />
+                ))}
+              </nav>
+
+              <button
+                onClick={() => onStepTour?.(tourStepIdx + 1)}
+                aria-label="Next tour stop"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-sans font-semibold flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
+              >
+                Next Era <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>

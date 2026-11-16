@@ -5,14 +5,19 @@ import { Volume2, VolumeX } from 'lucide-react';
 
 interface AudioSystemProps {
   currentView: string;
+  isTourActive?: boolean;
+  tourStepIdx?: number;
 }
 
-export function AudioSystem({ currentView }: AudioSystemProps) {
+export function AudioSystem({ currentView, isTourActive = false, tourStepIdx = 0 }: AudioSystemProps) {
   const [muted, setMuted] = useState(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reverbGainRef = useRef<GainNode | null>(null);
   const enigmaOscRef = useRef<OscillatorNode | null>(null);
+  const enigmaGainRef = useRef<GainNode | null>(null);
   const serverHumRef = useRef<OscillatorNode | null>(null);
+  const serverGainRef = useRef<GainNode | null>(null);
+  const prevTourStepRef = useRef<number>(tourStepIdx);
 
   const initAudio = () => {
     if (audioCtxRef.current) return;
@@ -58,6 +63,7 @@ export function AudioSystem({ currentView }: AudioSystemProps) {
       enigmaGain.connect(ctx.destination);
       enigmaOsc.start();
       enigmaOscRef.current = enigmaOsc;
+      enigmaGainRef.current = enigmaGain;
 
       // Modern Vault Server Hum Synth
       const serverHum = ctx.createOscillator();
@@ -69,11 +75,71 @@ export function AudioSystem({ currentView }: AudioSystemProps) {
       serverGain.connect(ctx.destination);
       serverHum.start();
       serverHumRef.current = serverHum;
+      serverGainRef.current = serverGain;
 
     } catch (e) {
       console.warn('AudioContext initialization failed or disabled', e);
     }
   };
+
+  // Modulate subtle spatial ambience based on current museum zone
+  useEffect(() => {
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime;
+      const isHistorical = currentView === 'wing-historical' || currentView === 'enigma' || currentView === 'lorenz';
+      const isModern =
+        currentView === 'wing-modern' ||
+        ['rsa', 'aes', 'sha256', 'hmac-hash', 'diffie-hellman'].includes(currentView);
+
+      if (enigmaGainRef.current) {
+        enigmaGainRef.current.gain.setTargetAtTime(!muted && isHistorical ? 0.006 : 0, now, 0.25);
+      }
+      if (serverGainRef.current) {
+        serverGainRef.current.gain.setTargetAtTime(!muted && isModern ? 0.008 : 0, now, 0.25);
+      }
+      if (reverbGainRef.current) {
+        reverbGainRef.current.gain.setTargetAtTime(muted ? 0 : 0.02, now, 0.2);
+      }
+    } catch {
+      // Ignore audio automation errors in unsupported environments
+    }
+  }, [currentView, muted]);
+
+  // Play soft harmonic chime cue when stepping through Guided Tour while unmuted
+  useEffect(() => {
+    if (!isTourActive) {
+      prevTourStepRef.current = tourStepIdx;
+      return;
+    }
+    if (prevTourStepRef.current === tourStepIdx) return;
+    prevTourStepRef.current = tourStepIdx;
+
+    const ctx = audioCtxRef.current;
+    if (muted || !ctx) return;
+
+    try {
+      const now = ctx.currentTime;
+      const chimeOsc = ctx.createOscillator();
+      const chimeGain = ctx.createGain();
+      chimeOsc.type = 'triangle';
+      chimeOsc.frequency.setValueAtTime(528, now);
+      chimeOsc.frequency.exponentialRampToValueAtTime(660, now + 0.18);
+
+      chimeGain.gain.setValueAtTime(0.0001, now);
+      chimeGain.gain.exponentialRampToValueAtTime(0.035, now + 0.03);
+      chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+      chimeOsc.connect(chimeGain);
+      chimeGain.connect(ctx.destination);
+      chimeOsc.start(now);
+      chimeOsc.stop(now + 0.46);
+    } catch {
+      // Ignore chime errors
+    }
+  }, [isTourActive, tourStepIdx, muted]);
 
   const toggleMute = () => {
     if (!audioCtxRef.current) {
