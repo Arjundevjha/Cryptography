@@ -26,7 +26,15 @@ import {
   modPow,
   traceDiffieHellman,
   traceEnigmaSteps,
-  getAesRoundSchedule
+  getAesRoundSchedule,
+  pkcs7PadBlocks,
+  compareAesBlockModes,
+  schnorrPublicKey,
+  schnorrCommit,
+  schnorrRespond,
+  schnorrVerify,
+  traceSchnorrZkp,
+  traceToyMlKem
 } from '../../app/utils/ciphers';
 import { MUSEUM_EXHIBITS } from '../../src/components/museum/museumData';
 
@@ -391,11 +399,14 @@ describe('Step-by-Step Inspector Helpers', () => {
 });
 
 describe('Museum Exhibits Data Integrity', () => {
-  it('should include substitution, hmac-hash, and diffie-hellman exhibits with challenges and valid interior camera bounds', () => {
+  it('should include substitution, hmac-hash, diffie-hellman, rsa-signatures, zkp-schnorr, and post-quantum-kem exhibits with challenges and valid interior camera bounds', () => {
     const ids = MUSEUM_EXHIBITS.map((e) => e.id);
     expect(ids).toContain('substitution');
     expect(ids).toContain('hmac-hash');
     expect(ids).toContain('diffie-hellman');
+    expect(ids).toContain('rsa-signatures');
+    expect(ids).toContain('zkp-schnorr');
+    expect(ids).toContain('post-quantum-kem');
 
     for (const exhibit of MUSEUM_EXHIBITS) {
       expect(exhibit.challenge).toBeDefined();
@@ -414,5 +425,75 @@ describe('Museum Exhibits Data Integrity', () => {
         expect(dist).toBeGreaterThanOrEqual(20);
       }
     }
+  });
+});
+
+describe('AES CBC/CTR & PKCS#7 Helpers', () => {
+  it('should pad partial and full blocks according to PKCS#7', () => {
+    const partial = pkcs7PadBlocks('HELLO', 16);
+    expect(partial.padByte).toBe(11);
+    expect(partial.bytes).toHaveLength(16);
+    expect(partial.paddedHexBlocks).toHaveLength(1);
+    expect(partial.bytes.slice(5)).toEqual(new Array(11).fill(11));
+
+    const exact = pkcs7PadBlocks('0123456789ABCDEF', 16);
+    expect(exact.padByte).toBe(16);
+    expect(exact.bytes).toHaveLength(32);
+    expect(exact.paddedHexBlocks).toHaveLength(2);
+  });
+
+  it('should reject invalid block sizes', () => {
+    expect(() => pkcs7PadBlocks('ABC', 1)).toThrow('Block size must be between 2 and 255 bytes');
+  });
+
+  it('should compare CBC vs CTR IV reuse behavior', () => {
+    const reused = compareAesBlockModes(['BLOCK_A', 'BLOCK_A', 'BLOCK_B'], true);
+    expect(reused.ctrXorLeakPossible).toBe(true);
+    expect(reused.cbcIdenticalPrefixCount).toBe(1);
+    expect(reused.cbcLeakSummary).toContain('1 matching block');
+    expect(reused.ctrLeakSummary).toContain('P1 ⊕ P2');
+
+    const fresh = compareAesBlockModes(['BLOCK_A', 'BLOCK_A'], false);
+    expect(fresh.ctrXorLeakPossible).toBe(false);
+    expect(fresh.cbcIdenticalPrefixCount).toBe(0);
+  });
+});
+
+describe('Schnorr ZKP Modular Arithmetic Helpers', () => {
+  it('should compute valid Schnorr commitment, response, and verification', () => {
+    // Subgroup of order q=11 in Z_23* with generator g=2 (2^11 = 2048 ≡ 1 mod 23)
+    const y = schnorrPublicKey(23, 2, 6);
+    const t = schnorrCommit(23, 2, 4);
+    const s = schnorrRespond(11, 4, 3, 6);
+    expect(schnorrVerify(23, 2, y, t, 3, s)).toBe(true);
+
+    const transcript = traceSchnorrZkp(23, 11, 2, 6, 4, 3);
+    expect(transcript.valid).toBe(true);
+    expect(transcript.lhs).toBe(transcript.rhs);
+  });
+
+  it('should reject tampered Schnorr responses', () => {
+    const y = schnorrPublicKey(23, 2, 6);
+    const t = schnorrCommit(23, 2, 4);
+    const s = schnorrRespond(11, 4, 3, 6);
+    expect(schnorrVerify(23, 2, y, t, 3, s + BigInt(1))).toBe(false);
+  });
+});
+
+describe('Toy LWE / ML-KEM Helpers', () => {
+  it('should encapsulate and decapsulate both 0 and 1 bits accurately with bounded noise', () => {
+    const step1 = traceToyMlKem(97, [12, 25], [3, 2], 1, 2, [1, -1], 1, 1);
+    expect(step1.publicB).toBe(87);
+    expect(step1.u).toEqual([25, 49]);
+    expect(step1.recoveredBit).toBe(1);
+    expect(step1.matchedOriginal).toBe(true);
+
+    const step0 = traceToyMlKem(97, [12, 25], [3, 2], 1, 2, [1, -1], 1, 0);
+    expect(step0.recoveredBit).toBe(0);
+    expect(step0.matchedOriginal).toBe(true);
+  });
+
+  it('should reject invalid modulus q < 5', () => {
+    expect(() => traceToyMlKem(3, [1, 1], [1, 1], 0, 1, [0, 0], 0, 1)).toThrow('Modulus q must be at least 5');
   });
 });
