@@ -2614,3 +2614,222 @@ def test_diffie_hellman_bounds_validation():
     assert r5.status_code == 400
 
 
+# ==========================================
+# AES-256-CBC ENDPOINT TESTS
+# ==========================================
+
+def test_aes_cbc_encrypt_decrypt_roundtrip_hex_and_iv_reuse():
+    key_hex = "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
+    iv_hex = "0102030405060708090a0b0c0d0e0f10"
+    plaintext = "AAAAAAAAAAAAAAAA" + "AAAAAAAAAAAAAAAA"
+
+    r1 = client.post(
+        "/api/aes/cbc/encrypt",
+        json={"plaintext": plaintext, "key": key_hex, "key_format": "hex", "iv": iv_hex},
+    )
+    assert r1.status_code == 200
+    d1 = r1.json()
+    assert d1["mode"] == "cbc"
+    assert d1["iv_hex"] == iv_hex
+    # 32 bytes plaintext + 16 bytes PKCS7 padding = 3 blocks
+    assert len(d1["padded_blocks_hex"]) == 3
+    assert d1["padded_blocks_hex"][2] == "10" * 16
+
+    # Reusing same key + IV on same plaintext yields identical ciphertext (IV-reuse leak)
+    r2 = client.post(
+        "/api/aes/cbc/encrypt",
+        json={"plaintext": plaintext, "key": key_hex, "key_format": "hex", "iv": iv_hex},
+    )
+    assert r2.status_code == 200
+    assert r2.json()["ciphertext"] == d1["ciphertext"]
+
+    # Decrypt roundtrip
+    dec = client.post(
+        "/api/aes/cbc/decrypt",
+        json={"ciphertext": d1["ciphertext"], "key": key_hex, "key_format": "hex", "iv": iv_hex},
+    )
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == plaintext
+    assert dec.json()["mode"] == "cbc"
+    assert dec.json()["iv_hex"] == iv_hex
+    assert dec.json()["padded_blocks_hex"] == d1["padded_blocks_hex"]
+
+
+def test_aes_cbc_passphrase_and_auto_iv():
+    r1 = client.post(
+        "/api/aes/cbc/encrypt",
+        json={"plaintext": "Hello Museum!", "key": "museum-passphrase", "key_format": "passphrase"},
+    )
+    assert r1.status_code == 200
+    d1 = r1.json()
+    assert len(d1["iv_hex"]) == 32
+    assert d1["mode"] == "cbc"
+
+    dec = client.post(
+        "/api/aes/cbc/decrypt",
+        json={
+            "ciphertext": d1["ciphertext"],
+            "key": "museum-passphrase",
+            "key_format": "passphrase",
+            "iv": d1["iv_hex"],
+        },
+    )
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == "Hello Museum!"
+
+
+def test_aes_cbc_validation_errors():
+    # Wrong hex key length (16 bytes instead of 32 bytes for AES-256-CBC)
+    r1 = client.post(
+        "/api/aes/cbc/encrypt",
+        json={"plaintext": "hi", "key": "00" * 16, "key_format": "hex"},
+    )
+    assert r1.status_code == 400
+
+    # Invalid IV length
+    r2 = client.post(
+        "/api/aes/cbc/encrypt",
+        json={"plaintext": "hi", "key": "secret", "iv": "0011"},
+    )
+    assert r2.status_code == 400
+
+    # Bad ciphertext hex on decrypt
+    r3 = client.post(
+        "/api/aes/cbc/decrypt",
+        json={"ciphertext": "zzzz", "key": "secret", "iv": "00" * 16},
+    )
+    assert r3.status_code == 400
+
+
+# ==========================================
+# RSA SIGN & VERIFY ENDPOINT TESTS
+# ==========================================
+
+def test_rsa_sign_and_verify_roundtrip():
+    keygen = client.post("/api/rsa/keygen", json={"p": 61, "q": 53, "e": 17})
+    assert keygen.status_code == 200
+    keys = keygen.json()
+
+    sign_resp = client.post(
+        "/api/rsa/sign",
+        json={"message": "Verify this exhibit", "private_key": keys["private_key"]},
+    )
+    assert sign_resp.status_code == 200
+    sign_data = sign_resp.json()
+    assert sign_data["algorithm"] == "rsa-sha256"
+    assert len(sign_data["digest_hex"]) == 64
+    assert len(sign_data["signature"]) > 0
+
+    verify_ok = client.post(
+        "/api/rsa/verify",
+        json={
+            "message": "Verify this exhibit",
+            "signature": sign_data["signature"],
+            "public_key": keys["public_key"],
+        },
+    )
+    assert verify_ok.status_code == 200
+    assert verify_ok.json()["valid"] is True
+    assert verify_ok.json()["algorithm"] == "rsa-sha256"
+
+    # Tampered message fails
+    verify_bad = client.post(
+        "/api/rsa/verify",
+        json={
+            "message": "Tampered exhibit",
+            "signature": sign_data["signature"],
+            "public_key": keys["public_key"],
+        },
+    )
+    assert verify_bad.status_code == 200
+    assert verify_bad.json()["valid"] is False
+
+
+def test_rsa_sign_verify_invalid_pem():
+    r1 = client.post("/api/rsa/sign", json={"message": "hi", "private_key": "bad pem"})
+    assert r1.status_code == 400
+
+    r2 = client.post(
+        "/api/rsa/verify",
+        json={"message": "hi", "signature": "abcd", "public_key": "bad pem"},
+    )
+    assert r2.status_code == 400
+
+
+# ==========================================
+# ZKP SCHNORR & ML-KEM ENDPOINT TESTS
+# ==========================================
+
+def test_zkp_schnorr_step_by_step_and_full():
+    secret_x = 42
+    setup = client.post("/api/zkp/prove-step", json={"step": "setup", "secret_x": secret_x})
+    assert setup.status_code == 200
+    y = setup.json()["y"]
+
+    commit = client.post("/api/zkp/prove-step", json={"step": "commit", "r": 19, "y": y})
+    assert commit.status_code == 200
+    t = commit.json()["t"]
+
+    respond = client.post(
+        "/api/zkp/prove-step",
+        json={"step": "respond", "r": 19, "c": 1, "secret_x": secret_x, "t": t, "y": y},
+    )
+    assert respond.status_code == 200
+    s = respond.json()["s"]
+
+    verify = client.post(
+        "/api/zkp/prove-step",
+        json={"step": "verify", "t": t, "c": 1, "s": s, "y": y},
+    )
+    assert verify.status_code == 200
+    assert verify.json()["valid"] is True
+    assert verify.json()["lhs"] == verify.json()["rhs"]
+
+    # Tampered s fails verification
+    verify_bad = client.post(
+        "/api/zkp/prove-step",
+        json={"step": "verify", "t": t, "c": 1, "s": (s + 1) % 233, "y": y},
+    )
+    assert verify_bad.status_code == 200
+    assert verify_bad.json()["valid"] is False
+
+    # Full one-shot
+    full = client.post("/api/zkp/prove-step", json={"step": "full", "secret_x": 77, "c": 5})
+    assert full.status_code == 200
+    assert full.json()["valid"] is True
+
+
+def test_zkp_schnorr_validation_errors():
+    r1 = client.post("/api/zkp/prove-step", json={"step": "unknown"})
+    assert r1.status_code == 400
+
+    r2 = client.post("/api/zkp/prove-step", json={"step": "full", "p": 15, "q": 7, "g": 2})
+    assert r2.status_code == 400
+
+
+def test_mlkem_demo_endpoint():
+    for bit in (0, 1):
+        resp = client.post(
+            "/api/mlkem/demo",
+            json={"message_bit": bit, "noise_bound": 2, "n": 4, "q": 3329},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["q"] == 3329
+        assert data["n"] == 4
+        assert data["match"] is True
+        assert data["encapsulation"]["message_bit"] == bit
+        assert data["decapsulation"]["recovered_bit"] == bit
+        assert len(data["public_key"]["A"]) == 4
+        assert len(data["public_key"]["t"]) == 4
+
+
+def test_mlkem_demo_validation_errors():
+    r1 = client.post("/api/mlkem/demo", json={"n": 1})
+    assert r1.status_code == 400
+
+    r2 = client.post("/api/mlkem/demo", json={"q": 100})
+    assert r2.status_code == 400
+
+
+

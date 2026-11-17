@@ -5,8 +5,11 @@ from methods.modern.digital_signatures import (
     generate_key,
     create_hmac,
     verify_hmac,
-    hmac_compare_digest
+    hmac_compare_digest,
+    rsa_sign,
+    rsa_verify,
 )
+from methods.modern.keypair import generate_keypair
 
 def test_generate_key():
     """Test generating a random symmetric HMAC key."""
@@ -134,3 +137,41 @@ def test_hmac_compare_digest():
     assert hmac_compare_digest(b"hello", "hello") is False
     assert hmac_compare_digest(b"hello", None) is False
     assert hmac_compare_digest(12345, b"12345") is False
+
+
+def test_rsa_sign_and_verify_roundtrip():
+    """Test RSA-SHA256 signing and verification with generated keypair."""
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    msg = "Museum Digital Signature Exhibit"
+    sig = rsa_sign(msg, priv_pem)
+    assert isinstance(sig, str)
+    assert len(sig) > 0
+    assert rsa_verify(msg, sig, pub_pem) is True
+    assert rsa_verify(msg.encode("utf-8"), sig.upper(), pub_pem) is True
+
+
+def test_rsa_verify_failures():
+    """Test RSA verification fails on tampered message, tampered signature, or wrong key."""
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    other_pub, _ = generate_keypair(key_size=512)
+    sig = rsa_sign("Authentic message", priv_pem)
+
+    assert rsa_verify("Tampered message", sig, pub_pem) is False
+    tampered_sig = sig[:-1] + ("0" if sig[-1] != "0" else "1")
+    assert rsa_verify("Authentic message", tampered_sig, pub_pem) is False
+    assert rsa_verify("Authentic message", sig, other_pub) is False
+    assert rsa_verify("Authentic message", "not-hex!", pub_pem) is False
+    assert rsa_verify("Authentic message", "", pub_pem) is False
+    assert rsa_verify("Authentic message", None, pub_pem) is False  # type: ignore
+
+
+def test_rsa_sign_verify_invalid_inputs():
+    """Test RSA sign/verify raise appropriate errors on invalid message or PEM."""
+    pub_pem, priv_pem = generate_keypair(key_size=512)
+    with pytest.raises(TypeError, match="Message must be"):
+        rsa_sign(12345, priv_pem)  # type: ignore
+    with pytest.raises(ValueError, match="Invalid PEM"):
+        rsa_sign("hello", b"not a pem")
+    with pytest.raises(ValueError, match="Invalid PEM"):
+        rsa_verify("hello", "abcd", b"not a pem")
+    assert rsa_verify("hello", "ff" * 128, pub_pem) is False

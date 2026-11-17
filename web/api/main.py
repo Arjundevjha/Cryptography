@@ -1135,3 +1135,340 @@ def diffie_hellman_exchange(data: DiffieHellmanExchangeInput):
         )
 
 
+# ==========================================
+# AES-256-CBC, RSA Signatures & Contemporary / Post-Quantum Endpoints
+# ==========================================
+
+class AesCbcEncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500, description="The plaintext to encrypt")
+    key: str = Field(..., min_length=1, max_length=500, description="32-byte key hex (64 hex chars) or passphrase")
+    key_format: str = Field(default="text", max_length=16, description="Key format: 'text', 'hex', or 'passphrase'")
+    iv: str | None = Field(default=None, max_length=64, description="Optional 16-byte IV as 32 hex chars")
+
+
+class AesCbcDecryptInput(BaseModel):
+    ciphertext: str = Field(..., min_length=2, max_length=2000, description="Hex ciphertext to decrypt")
+    key: str = Field(..., min_length=1, max_length=500, description="32-byte key hex (64 hex chars) or passphrase")
+    iv: str = Field(..., min_length=32, max_length=64, description="16-byte IV as 32 hex chars")
+    key_format: str = Field(default="text", max_length=16, description="Key format: 'text', 'hex', or 'passphrase'")
+
+
+class RsaSignInput(BaseModel):
+    message: str = Field(..., max_length=2000, description="Message to sign with RSA-SHA256")
+    private_key: str = Field(..., max_length=10000, description="PEM formatted RSA private key")
+
+
+class RsaVerifyInput(BaseModel):
+    message: str = Field(..., max_length=2000, description="Original message")
+    signature: str = Field(..., max_length=10000, description="Hex-encoded RSA signature")
+    public_key: str = Field(..., max_length=10000, description="PEM formatted RSA public key")
+
+
+class ZkpProveStepInput(BaseModel):
+    step: str = Field(default="full", max_length=16, description="Step: 'setup', 'commit', 'respond', 'verify', or 'full'")
+    p: int = Field(default=467, ge=5, le=2**64, description="Schnorr prime modulus p")
+    q: int = Field(default=233, ge=2, le=2**64, description="Schnorr subgroup prime order q")
+    g: int = Field(default=4, ge=2, le=2**64, description="Subgroup generator g of order q mod p")
+    secret_x: int | None = Field(default=None, ge=1, le=2**64, description="Prover secret x in [1, q-1]")
+    y: int | None = Field(default=None, ge=1, le=2**64, description="Public key y = g^x mod p")
+    r: int | None = Field(default=None, ge=1, le=2**64, description="Prover commitment nonce r in [1, q-1]")
+    t: int | None = Field(default=None, ge=1, le=2**64, description="Prover commitment t = g^r mod p")
+    c: int | None = Field(default=None, ge=0, le=2**64, description="Verifier challenge c in [0, q-1]")
+    s: int | None = Field(default=None, ge=0, le=2**64, description="Prover response s = (r + c*x) mod q")
+
+
+class MlkemDemoInput(BaseModel):
+    message_bit: int | None = Field(default=None, ge=0, le=1, description="Optional secret bit (0 or 1); random if omitted")
+    noise_bound: int = Field(default=2, ge=0, le=500, description="Max absolute noise value (default 2)")
+    n: int = Field(default=4, ge=2, le=8, description="Lattice dimension n (default 4)")
+    q: int = Field(default=3329, ge=17, le=65537, description="Prime modulus q (default 3329)")
+
+
+def _parse_aes_cbc_key(key: str, key_format: str) -> bytes:
+    from methods.modern.helpers import sha256
+
+    fmt = key_format.strip().lower()
+    if fmt not in ("text", "hex", "passphrase"):
+        raise HTTPException(status_code=400, detail="Invalid key_format; expected 'text', 'hex', or 'passphrase'")
+    if not key:
+        raise HTTPException(status_code=400, detail="Key cannot be empty")
+    if fmt == "hex":
+        try:
+            key_bytes = bytes.fromhex(key.strip())
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail="Invalid hex key") from exc
+        if len(key_bytes) != 32:
+            raise HTTPException(status_code=400, detail="AES-256-CBC hex key must be 32 bytes (64 hex characters)")
+        return key_bytes
+    if fmt == "passphrase":
+        return sha256(key.encode("utf-8"))
+    cleaned = key.strip()
+    if len(cleaned) == 64 and all(c in "0123456789abcdefABCDEF" for c in cleaned):
+        return bytes.fromhex(cleaned)
+    raw = key.encode("utf-8")
+    if len(raw) == 32:
+        return raw
+    return sha256(raw)
+
+
+def _parse_cbc_iv(iv_hex: str | None, required: bool) -> bytes:
+    from methods.modern import symmetric
+
+    if iv_hex is None or not iv_hex.strip():
+        if required:
+            raise HTTPException(status_code=400, detail="IV is required for CBC decryption")
+        return symmetric.generate_iv()
+    try:
+        iv_bytes = bytes.fromhex(iv_hex.strip())
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="IV must be a valid hex string") from exc
+    if len(iv_bytes) != 16:
+        raise HTTPException(status_code=400, detail="IV must be 16 bytes (32 hex characters)")
+    return iv_bytes
+
+
+@app.post("/api/aes/cbc/encrypt")
+def aes_cbc_encrypt(data: AesCbcEncryptInput):
+    from methods.modern import symmetric
+
+    key_bytes = _parse_aes_cbc_key(data.key, data.key_format)
+    iv_bytes = _parse_cbc_iv(data.iv, required=False)
+    try:
+        padded = symmetric.pkcs7_pad(data.plaintext.encode("utf-8"))
+        padded_blocks_hex = [padded[i : i + 16].hex() for i in range(0, len(padded), 16)]
+        ciphertext_bytes = symmetric.encrypt(data.plaintext, key_bytes, iv_bytes)
+        ciphertext_blocks_hex = [
+            ciphertext_bytes[i : i + 16].hex() for i in range(0, len(ciphertext_bytes), 16)
+        ]
+        return {
+            "ciphertext": ciphertext_bytes.hex(),
+            "iv_hex": iv_bytes.hex(),
+            "padded_blocks_hex": padded_blocks_hex,
+            "ciphertext_blocks_hex": ciphertext_blocks_hex,
+            "mode": "cbc",
+        }
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("AES-CBC encryption error: %s", e)
+        raise HTTPException(status_code=400, detail="AES-CBC encryption failed")
+
+
+@app.post("/api/aes/cbc/decrypt")
+def aes_cbc_decrypt(data: AesCbcDecryptInput):
+    from methods.modern import symmetric
+
+    key_bytes = _parse_aes_cbc_key(data.key, data.key_format)
+    iv_bytes = _parse_cbc_iv(data.iv, required=True)
+    try:
+        ciphertext_bytes = bytes.fromhex(data.ciphertext.strip())
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Ciphertext must be a valid hex string") from exc
+    try:
+        plaintext = symmetric.decrypt(ciphertext_bytes, key_bytes, iv_bytes)
+        padded = symmetric.pkcs7_pad(plaintext.encode("utf-8"))
+        padded_blocks_hex = [padded[i : i + 16].hex() for i in range(0, len(padded), 16)]
+        return {
+            "plaintext": plaintext,
+            "iv_hex": iv_bytes.hex(),
+            "padded_blocks_hex": padded_blocks_hex,
+            "mode": "cbc",
+        }
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("AES-CBC decryption error: %s", e)
+        raise HTTPException(status_code=400, detail="AES-CBC decryption failed")
+
+
+@app.post("/api/rsa/sign")
+def rsa_sign_endpoint(data: RsaSignInput):
+    from methods.modern.digital_signatures import rsa_sign
+    from methods.modern.helpers import sha256
+
+    try:
+        priv_key_bytes = data.private_key.strip().encode("utf-8")
+        signature = rsa_sign(data.message, priv_key_bytes)
+        digest_hex = sha256(data.message.encode("utf-8")).hex()
+        return {
+            "signature": signature,
+            "digest_hex": digest_hex,
+            "algorithm": "rsa-sha256",
+        }
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("RSA sign error: %s", e)
+        raise HTTPException(status_code=400, detail="RSA signing failed")
+
+
+@app.post("/api/rsa/verify")
+def rsa_verify_endpoint(data: RsaVerifyInput):
+    from methods.modern.digital_signatures import rsa_verify
+    from methods.modern.helpers import sha256
+
+    try:
+        pub_key_bytes = data.public_key.strip().encode("utf-8")
+        valid = rsa_verify(data.message, data.signature, pub_key_bytes)
+        digest_hex = sha256(data.message.encode("utf-8")).hex()
+        return {
+            "valid": valid,
+            "digest_hex": digest_hex,
+            "algorithm": "rsa-sha256",
+        }
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("RSA verify error: %s", e)
+        raise HTTPException(status_code=400, detail="RSA verification failed")
+
+
+@app.post("/api/zkp/prove-step")
+def zkp_prove_step(data: ZkpProveStepInput):
+    import secrets
+    from methods.modern import contemporary
+
+    step = data.step.strip().lower()
+    if step not in ("setup", "commit", "respond", "verify", "full"):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid step; expected 'setup', 'commit', 'respond', 'verify', or 'full'",
+        )
+
+    try:
+        contemporary.validate_schnorr_params(data.p, data.q, data.g)
+
+        if step == "setup":
+            secret_x = data.secret_x if data.secret_x is not None else (secrets.randbelow(data.q - 1) + 1)
+            y = contemporary.schnorr_public_key(secret_x, data.p, data.q, data.g)
+            return {
+                "step": "setup",
+                "p": data.p,
+                "q": data.q,
+                "g": data.g,
+                "y": y,
+                "r": None,
+                "t": None,
+                "c": None,
+                "s": None,
+                "lhs": None,
+                "rhs": None,
+                "valid": None,
+            }
+
+        if step == "commit":
+            r_val, t_val = contemporary.schnorr_commit(data.r, data.p, data.q, data.g)
+            y_val = (
+                contemporary.schnorr_public_key(data.secret_x, data.p, data.q, data.g)
+                if data.secret_x is not None
+                else data.y
+            )
+            return {
+                "step": "commit",
+                "p": data.p,
+                "q": data.q,
+                "g": data.g,
+                "y": y_val,
+                "r": r_val,
+                "t": t_val,
+                "c": None,
+                "s": None,
+                "lhs": None,
+                "rhs": None,
+                "valid": None,
+            }
+
+        if step == "respond":
+            if data.r is None or data.secret_x is None:
+                raise HTTPException(status_code=400, detail="r and secret_x are required for 'respond' step")
+            c_val = contemporary.schnorr_challenge(data.c, data.q)
+            s_val = contemporary.schnorr_respond(data.r, c_val, data.secret_x, data.q)
+            t_val = data.t if data.t is not None else pow(data.g, data.r, data.p)
+            y_val = (
+                data.y
+                if data.y is not None
+                else contemporary.schnorr_public_key(data.secret_x, data.p, data.q, data.g)
+            )
+            return {
+                "step": "respond",
+                "p": data.p,
+                "q": data.q,
+                "g": data.g,
+                "y": y_val,
+                "r": data.r,
+                "t": t_val,
+                "c": c_val,
+                "s": s_val,
+                "lhs": None,
+                "rhs": None,
+                "valid": None,
+            }
+
+        if step == "verify":
+            if data.t is None or data.c is None or data.s is None or data.y is None:
+                raise HTTPException(status_code=400, detail="t, c, s, and y are required for 'verify' step")
+            result = contemporary.schnorr_verify(data.t, data.c, data.s, data.y, data.p, data.q, data.g)
+            return {
+                "step": "verify",
+                "p": data.p,
+                "q": data.q,
+                "g": data.g,
+                "y": data.y,
+                "r": None,
+                "t": data.t,
+                "c": data.c,
+                "s": data.s,
+                "lhs": result["lhs"],
+                "rhs": result["rhs"],
+                "valid": result["valid"],
+            }
+
+        # step == "full"
+        secret_x = data.secret_x if data.secret_x is not None else (secrets.randbelow(data.q - 1) + 1)
+        y_val = contemporary.schnorr_public_key(secret_x, data.p, data.q, data.g)
+        r_val, t_val = contemporary.schnorr_commit(data.r, data.p, data.q, data.g)
+        c_val = contemporary.schnorr_challenge(data.c, data.q)
+        s_val = contemporary.schnorr_respond(r_val, c_val, secret_x, data.q)
+        result = contemporary.schnorr_verify(t_val, c_val, s_val, y_val, data.p, data.q, data.g)
+        return {
+            "step": "full",
+            "p": data.p,
+            "q": data.q,
+            "g": data.g,
+            "y": y_val,
+            "r": r_val,
+            "t": t_val,
+            "c": c_val,
+            "s": s_val,
+            "lhs": result["lhs"],
+            "rhs": result["rhs"],
+            "valid": result["valid"],
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ZKP prove-step error: %s", e)
+        raise HTTPException(status_code=400, detail="Schnorr ZKP step failed")
+
+
+@app.post("/api/mlkem/demo")
+def mlkem_demo_endpoint(data: MlkemDemoInput):
+    from methods.modern import contemporary
+
+    try:
+        return contemporary.mlkem_demo(
+            n=data.n,
+            q=data.q,
+            noise_bound=data.noise_bound,
+            message_bit=data.message_bit,
+        )
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ML-KEM demo error: %s", e)
+        raise HTTPException(status_code=400, detail="ML-KEM demo failed")
+
+
+
