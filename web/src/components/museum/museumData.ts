@@ -545,8 +545,8 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     macroTarget: [75, 1.6, -45],
     rotationY: 0,
     endpoint: {
-      encrypt: '/api/zkp/schnorr/commit',
-      decrypt: '/api/zkp/schnorr/verify',
+      encrypt: '/api/zkp/prove-step',
+      decrypt: '/api/zkp/prove-step',
     },
     defaultParams: {
       p: 23,
@@ -578,8 +578,8 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
     macroTarget: [75, 1.6, -75],
     rotationY: 0,
     endpoint: {
-      encrypt: '/api/pq/mlkem/encapsulate',
-      decrypt: '/api/pq/mlkem/decapsulate',
+      encrypt: '/api/mlkem/demo',
+      decrypt: '/api/mlkem/demo',
     },
     defaultParams: {
       q: 97,
