@@ -69,4 +69,38 @@ describe('MuseumHUD Passport & Guided Tour Mode', () => {
     fireEvent.click(screen.getByRole('button', { name: /end guided historical tour/i }));
     expect(screen.queryByRole('region', { name: /guided historical tour/i })).not.toBeInTheDocument();
   });
+
+  it('dynamically counts all MUSEUM_EXHIBITS in All Wings tour stops and floorplan map', () => {
+    const onSelectRoom = jest.fn();
+    render(<MuseumCanvas />);
+
+    fireEvent.click(screen.getByRole('button', { name: /toggle guided historical tour/i }));
+    fireEvent.click(screen.getByRole('button', { name: /all wings/i }));
+
+    const expectedTotalStops = MUSEUM_WINGS.length + MUSEUM_EXHIBITS.length;
+    const tourRegion = screen.getByRole('region', { name: /guided historical tour/i });
+    expect(tourRegion).toHaveTextContent(`Stop 1 of ${expectedTotalStops}`);
+
+    // Open floorplan map and verify all exhibits are represented
+    const mapBtn = screen.getByRole('button', { name: /floorplan map/i });
+    fireEvent.click(mapBtn);
+    for (const ex of MUSEUM_EXHIBITS) {
+      expect(
+        screen.getByRole('button', { name: new RegExp(`Navigate to exhibit ${ex.name}`, 'i') })
+      ).toBeInTheDocument();
+    }
+
+    // Verify Passport badge handles full completion across all MUSEUM_EXHIBITS
+    window.localStorage.setItem(
+      PASSPORT_STORAGE_KEY,
+      JSON.stringify(MUSEUM_EXHIBITS.map((e) => e.id))
+    );
+    act(() => {
+      window.dispatchEvent(new Event(PASSPORT_UPDATED_EVENT));
+    });
+    expect(screen.getByTestId('passport-progress-badge')).toHaveTextContent(
+      `${MUSEUM_EXHIBITS.length}/${MUSEUM_EXHIBITS.length}`
+    );
+    expect(onSelectRoom).not.toHaveBeenCalled();
+  });
 });

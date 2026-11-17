@@ -910,4 +910,235 @@ export function getAesRoundSchedule(keyBits: 128 | 192 | 256): AesRoundStep[] {
   return schedule;
 }
 
+export interface Pkcs7PadResult {
+  bytes: number[];
+  paddedHexBlocks: string[];
+  padByte: number;
+}
+
+/**
+ * Apply PKCS#7 padding to UTF-8 text and format as 16-byte (default) hex blocks.
+ */
+export function pkcs7PadBlocks(text: string, blockSize = 16): Pkcs7PadResult {
+  if (blockSize < 2 || blockSize > 255) {
+    throw new Error('Block size must be between 2 and 255 bytes');
+  }
+  validateInputLength(text);
+  const raw =
+    typeof TextEncoder !== 'undefined'
+      ? Array.from(new TextEncoder().encode(text))
+      : Array.from(unescape(encodeURIComponent(text)), (c) => c.charCodeAt(0));
+  const padByte = blockSize - (raw.length % blockSize);
+  const bytes = [...raw, ...new Array<number>(padByte).fill(padByte)];
+
+  const paddedHexBlocks: string[] = [];
+  for (let i = 0; i < bytes.length; i += blockSize) {
+    const blockHex = bytes
+      .slice(i, i + blockSize)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join(' ');
+    paddedHexBlocks.push(blockHex);
+  }
+
+  return { bytes, paddedHexBlocks, padByte };
+}
+
+export interface AesModeComparison {
+  cbcLeakSummary: string;
+  ctrLeakSummary: string;
+  cbcIdenticalPrefixCount: number;
+  ctrXorLeakPossible: boolean;
+}
+
+/**
+ * Compare AES-CBC vs AES-CTR security properties for given blocks and IV-reuse state.
+ */
+export function compareAesBlockModes(blocks: string[], ivReuse: boolean): AesModeComparison {
+  let cbcIdenticalPrefixCount = 0;
+  if (ivReuse && blocks.length >= 2) {
+    // Count how many adjacent or leading blocks match when comparing blocks[0] with others
+    for (let i = 1; i < blocks.length; i++) {
+      if (blocks[i] === blocks[0]) {
+        cbcIdenticalPrefixCount++;
+      }
+    }
+  }
+
+  const cbcLeakSummary = ivReuse
+    ? cbcIdenticalPrefixCount > 0
+      ? `CBC with reused IV leaks ${cbcIdenticalPrefixCount} matching block(s) when identical plaintext prefixes are encrypted.`
+      : 'CBC with reused IV leaks equality of identical leading plaintext blocks.'
+    : 'CBC with a fresh random IV hides identical plaintext prefixes across messages.';
+
+  const ctrLeakSummary = ivReuse
+    ? 'CTR with reused IV/nonce is catastrophic: XORing two ciphertexts yields P1 ⊕ P2 directly.'
+    : 'CTR with a unique nonce per message produces an independent keystream.';
+
+  return {
+    cbcLeakSummary,
+    ctrLeakSummary,
+    cbcIdenticalPrefixCount,
+    ctrXorLeakPossible: ivReuse,
+  };
+}
+
+export interface SchnorrZkpTranscript {
+  p: string;
+  q: string;
+  g: string;
+  y: string;
+  t: string;
+  c: string;
+  s: string;
+  lhs: string;
+  rhs: string;
+  valid: boolean;
+}
+
+/**
+ * Compute Schnorr public key y = g^x mod p.
+ */
+export function schnorrPublicKey(
+  p: bigint | number,
+  g: bigint | number,
+  x: bigint | number
+): bigint {
+  return modPow(g, x, p);
+}
+
+/**
+ * Compute Schnorr commitment t = g^r mod p.
+ */
+export function schnorrCommit(
+  p: bigint | number,
+  g: bigint | number,
+  r: bigint | number
+): bigint {
+  return modPow(g, r, p);
+}
+
+/**
+ * Compute Schnorr response s = (r + c * x) mod q.
+ */
+export function schnorrRespond(
+  q: bigint | number,
+  r: bigint | number,
+  c: bigint | number,
+  x: bigint | number
+): bigint {
+  const qBig = BigInt(q);
+  if (qBig <= BigInt(0)) {
+    throw new Error('Subgroup order q must be greater than 0');
+  }
+  const raw = BigInt(r) + BigInt(c) * BigInt(x);
+  return ((raw % qBig) + qBig) % qBig;
+}
+
+/**
+ * Verify Schnorr proof: checks g^s mod p === (t * y^c) mod p.
+ */
+export function schnorrVerify(
+  p: bigint | number,
+  g: bigint | number,
+  y: bigint | number,
+  t: bigint | number,
+  c: bigint | number,
+  s: bigint | number
+): boolean {
+  const pBig = BigInt(p);
+  const lhs = modPow(g, s, pBig);
+  const rhs = (BigInt(t) * modPow(y, c, pBig)) % pBig;
+  return lhs === rhs;
+}
+
+/**
+ * Produce a full Schnorr Zero-Knowledge Proof transcript.
+ */
+export function traceSchnorrZkp(
+  p: bigint | number,
+  q: bigint | number,
+  g: bigint | number,
+  x: bigint | number,
+  r: bigint | number,
+  c: bigint | number
+): SchnorrZkpTranscript {
+  const pBig = BigInt(p);
+  const y = schnorrPublicKey(pBig, g, x);
+  const t = schnorrCommit(pBig, g, r);
+  const s = schnorrRespond(q, r, c, x);
+  const lhs = modPow(g, s, pBig);
+  const rhs = (t * modPow(y, c, pBig)) % pBig;
+
+  return {
+    p: pBig.toString(),
+    q: BigInt(q).toString(),
+    g: BigInt(g).toString(),
+    y: y.toString(),
+    t: t.toString(),
+    c: BigInt(c).toString(),
+    s: s.toString(),
+    lhs: lhs.toString(),
+    rhs: rhs.toString(),
+    valid: lhs === rhs,
+  };
+}
+
+export interface ToyMlKemStep {
+  q: number;
+  publicB: number;
+  u: [number, number];
+  v: number;
+  noisyValue: number;
+  recoveredBit: 0 | 1;
+  matchedOriginal: boolean;
+}
+
+function posMod(val: number, q: number): number {
+  return ((val % q) + q) % q;
+}
+
+/**
+ * Conceptual 2-dimensional LWE / ML-KEM key encapsulation and decapsulation trace over Z_q.
+ */
+export function traceToyMlKem(
+  q: number,
+  a: [number, number],
+  s: [number, number],
+  e: number,
+  r: number,
+  e1: [number, number],
+  e2: number,
+  messageBit: 0 | 1
+): ToyMlKemStep {
+  if (q < 5) {
+    throw new Error('Modulus q must be at least 5');
+  }
+  const publicB = posMod(a[0] * s[0] + a[1] * s[1] + e, q);
+  const u: [number, number] = [
+    posMod(a[0] * r + e1[0], q),
+    posMod(a[1] * r + e1[1], q),
+  ];
+  const halfQ = Math.floor(q / 2);
+  const v = posMod(publicB * r + e2 + messageBit * halfQ, q);
+  const uDotS = posMod(u[0] * s[0] + u[1] * s[1], q);
+  const noisyValue = posMod(v - uDotS, q);
+
+  const distToZero = Math.min(noisyValue, q - noisyValue);
+  const distToHalf = Math.min(
+    Math.abs(noisyValue - halfQ),
+    q - Math.abs(noisyValue - halfQ)
+  );
+  const recoveredBit: 0 | 1 = distToHalf < distToZero ? 1 : 0;
+
+  return {
+    q,
+    publicB,
+    u,
+    v,
+    noisyValue,
+    recoveredBit,
+    matchedOriginal: recoveredBit === messageBit,
+  };
+}
+
 

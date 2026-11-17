@@ -258,6 +258,52 @@ export function StepInspectorView({
     );
   }
 
+  if (exhibitId === 'rsa-signatures') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-rsa-signatures">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> RSA-SHA256 Sign &amp; Verify Protocol
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Hash: <span className="text-amber-300">h = SHA-256(m) mod n</span></div>
+          <div className="text-stone-300">2. Sign: <span className="text-amber-300">s = hᵈ mod n</span> (private key d)</div>
+          <div className="text-stone-300">3. Verify: <span className="text-emerald-300">h&apos; = sᵉ mod n ≟ h</span> (public key e)</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exhibitId === 'zkp-schnorr') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-zkp-schnorr">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> Schnorr Sigma-Protocol Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Commit: <span className="text-amber-300">t = gʳ mod p</span> (random r)</div>
+          <div className="text-stone-300">2. Challenge: <span className="text-amber-300">c ∈ [0, q−1]</span> (Verifier)</div>
+          <div className="text-stone-300">3. Respond: <span className="text-amber-300">s = (r + c·x) mod q</span></div>
+          <div className="text-emerald-300">4. Verify: gˢ ≡ t · yᶜ (mod p)</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exhibitId === 'post-quantum-kem') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-post-quantum-kem">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> Lattice LWE / ML-KEM Encapsulation Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Keygen: <span className="text-amber-300">t = A·s + e mod q</span></div>
+          <div className="text-stone-300">2. Encapsulate: <span className="text-amber-300">u = Aᵀr + e₁, v = tᵀr + e₂ + ⌊q/2⌋·m</span></div>
+          <div className="text-emerald-300">3. Decapsulate: v − sᵀu ≈ ⌊q/2⌋·m (rounded to 0 or 1)</div>
+        </div>
+      </div>
+    );
+  }
+
   // Generic character-level inspector for Caesar & other exhibits
   const previewChars = (inputText || 'HELLO').slice(0, 8).split('');
   return (

@@ -3,6 +3,7 @@
 import React from 'react';
 import { RefreshCw, Shuffle } from 'lucide-react';
 import { DiffieHellmanVisualizer } from './DiffieHellmanVisualizer';
+import { AesModeVisualizer, AesBlockMode } from './AesModeVisualizer';
 
 export interface CipherParameterControlsProps {
   exhibitId: string;
@@ -29,6 +30,17 @@ export interface CipherParameterControlsProps {
   onRSAKeygen: () => void;
   aesKey: string;
   setAesKey: (v: string) => void;
+  aesBlockMode: AesBlockMode;
+  setAesBlockMode: (v: AesBlockMode) => void;
+  aesIv: string;
+  setAesIv: (v: string) => void;
+  inputText: string;
+  onLoadIdenticalBlocks: () => void;
+  cbcResult: {
+    iv_hex: string;
+    padded_blocks_hex: string[];
+    ciphertext_blocks_hex: string[];
+  } | null;
   enigmaRotors: string[];
   setEnigmaRotors: (v: string[]) => void;
   enigmaPositions: string[];
@@ -432,17 +444,17 @@ export function CipherParameterControls(props: CipherParameterControlsProps) {
       )}
 
       {exhibitId === 'aes' && (
-        <div>
-          <label htmlFor={`param-key-${exhibitId}`} className="block text-xs font-sans text-stone-300 mb-1">16-Byte AES Key:</label>
-          <input
-            id={`param-key-${exhibitId}`}
-            type="text"
-            data-testid="param-key-aes"
-            value={props.aesKey}
-            onChange={(e) => props.setAesKey(e.target.value)}
-            className="w-full px-2.5 py-1.5 rounded-lg bg-[#090b10] border border-stone-800 text-xs font-mono text-stone-200 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-          />
-        </div>
+        <AesModeVisualizer
+          blockMode={props.aesBlockMode}
+          setBlockMode={props.setAesBlockMode}
+          aesKey={props.aesKey}
+          setAesKey={props.setAesKey}
+          aesIv={props.aesIv}
+          setAesIv={props.setAesIv}
+          inputText={props.inputText}
+          onLoadIdenticalBlocks={props.onLoadIdenticalBlocks}
+          cbcResult={props.cbcResult}
+        />
       )}
 
       {exhibitId === 'hmac-hash' && (

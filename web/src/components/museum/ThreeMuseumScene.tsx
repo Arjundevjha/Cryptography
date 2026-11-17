@@ -3843,6 +3843,180 @@ function buildHighQualityArtifact(id: string, group: THREE.Group) {
       break;
     }
 
+    case 'rsa-signatures': {
+      // RSA Digital Signature Signet Seal & Asymmetric Verification Ledger
+      const sealPlinth = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.68, 0.09, 8), obsidian);
+      sealPlinth.position.y = -0.44;
+      group.add(sealPlinth);
+
+      // Tilted engraved signature ledger tablet
+      const ledgerFrame = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.05, 0.56), polishedGold);
+      ledgerFrame.position.set(0, -0.24, 0.06);
+      ledgerFrame.rotation.x = 0.36;
+      group.add(ledgerFrame);
+
+      const ledgerSlate = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.06, 0.48), obsidian);
+      ledgerSlate.position.set(0, -0.235, 0.06);
+      ledgerSlate.rotation.x = 0.36;
+      group.add(ledgerSlate);
+
+      // Wax/Emerald verified digital seal disc on the ledger
+      const verifiedSealMat = new THREE.MeshStandardMaterial({
+        color: 0x10b981,
+        emissive: 0x059669,
+        emissiveIntensity: 1.15,
+        roughness: 0.18,
+        metalness: 0.25,
+      });
+      const sealDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.15, 0.05, 24), verifiedSealMat);
+      sealDisc.position.set(0.14, -0.17, 0.13);
+      sealDisc.rotation.x = 0.36;
+      group.add(sealDisc);
+
+      // Floating heavy brass signet stamp hovering above ledger
+      const stampGrip = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.32, 20), mahogany);
+      stampGrip.position.set(-0.12, 0.24, 0);
+      group.add(stampGrip);
+
+      const stampCollar = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.08, 24), polishedGold);
+      stampCollar.position.set(-0.12, 0.06, 0);
+      group.add(stampCollar);
+
+      // Twin asymmetric key pillars: Public Verifier (e) & Private Signer (d)
+      const pubRing = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.022, 12, 32), brushedSteel);
+      pubRing.position.set(0.36, 0.14, -0.12);
+      group.add(pubRing);
+
+      const privPrism = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), antiqueBrass);
+      privPrism.position.set(-0.38, 0.14, -0.12);
+      group.add(privPrism);
+      break;
+    }
+
+    case 'zkp-schnorr': {
+      // Schnorr Zero-Knowledge Proof Dual-Chamber Veil (Prover Commit R -> Verifier Challenge c)
+      const zkpBase = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.66, 0.09, 36), obsidian);
+      zkpBase.position.y = -0.44;
+      group.add(zkpBase);
+
+      // Central translucent knowledge veil separating Prover & Verifier
+      const veilMat = new THREE.MeshStandardMaterial({
+        color: 0x38bdf8,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.45,
+        transparent: true,
+        opacity: 0.42,
+        roughness: 0.12,
+        metalness: 0.1,
+        side: THREE.DoubleSide,
+      });
+      const veilPane = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.66, 0.72), veilMat);
+      veilPane.position.set(0, -0.04, 0);
+      group.add(veilPane);
+
+      const veilFrame = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.7, 0.76), polishedGold);
+      veilFrame.position.set(0, -0.04, 0);
+      veilFrame.material = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.9,
+        roughness: 0.2,
+        wireframe: true,
+      });
+      group.add(veilFrame);
+
+      // Prover hidden secret & commitment orb (left)
+      const commitMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        emissive: 0xd97706,
+        emissiveIntensity: 1.15,
+        roughness: 0.15,
+      });
+      const commitOrb = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), commitMat);
+      commitOrb.position.set(-0.34, -0.04, 0);
+      group.add(commitOrb);
+
+      // Verifier challenge icosahedron (right)
+      const challengeMat = new THREE.MeshStandardMaterial({
+        color: 0x34d399,
+        emissive: 0x059669,
+        emissiveIntensity: 1.1,
+        roughness: 0.18,
+      });
+      const challengePoly = new THREE.Mesh(new THREE.IcosahedronGeometry(0.16, 0), challengeMat);
+      challengePoly.position.set(0.34, -0.04, 0);
+      group.add(challengePoly);
+
+      // Modular verification ring arching across the veil
+      const proofArch = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.024, 14, 48, Math.PI), polishedGold);
+      proofArch.position.set(0, 0.02, 0);
+      group.add(proofArch);
+      break;
+    }
+
+    case 'post-quantum-kem': {
+      // Post-Quantum ML-KEM / Learning-With-Errors 3D Lattice Cube & Encapsulated Core
+      const lweBase = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.09, 0.96), obsidian);
+      lweBase.position.y = -0.44;
+      group.add(lweBase);
+
+      const latticeMat = new THREE.MeshStandardMaterial({
+        color: 0x38bdf8,
+        emissive: 0x0ea5e9,
+        emissiveIntensity: 0.85,
+        roughness: 0.18,
+        metalness: 0.3,
+      });
+      const noiseMat = new THREE.MeshStandardMaterial({
+        color: 0xc084fc,
+        emissive: 0x9333ea,
+        emissiveIntensity: 0.95,
+        roughness: 0.18,
+        metalness: 0.3,
+      });
+
+      // 3x3x3 Lattice Grid of nodes with subtle LWE noise offsets
+      const step = 0.28;
+      for (let ix = -1; ix <= 1; ix++) {
+        for (let iy = -1; iy <= 1; iy++) {
+          for (let iz = -1; iz <= 1; iz++) {
+            const isCenter = ix === 0 && iy === 0 && iz === 0;
+            if (isCenter) continue;
+            const isEdge = Math.abs(ix) + Math.abs(iy) + Math.abs(iz) === 3;
+            const node = new THREE.Mesh(
+              new THREE.SphereGeometry(isEdge ? 0.042 : 0.032, 12, 12),
+              isEdge ? latticeMat : noiseMat
+            );
+            const jitter = ((ix * 7 + iy * 13 + iz * 19) % 5) * 0.008;
+            node.position.set(ix * step + jitter, 0.02 + iy * step, iz * step - jitter);
+            group.add(node);
+          }
+        }
+      }
+
+      // Wireframe lattice cage
+      const latticeCage = new THREE.Mesh(
+        new THREE.BoxGeometry(step * 2, step * 2, step * 2),
+        new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.85, roughness: 0.2, wireframe: true })
+      );
+      latticeCage.position.y = 0.02;
+      group.add(latticeCage);
+
+      // Encapsulated golden shared-secret core at the center
+      const kemCore = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.14, 0),
+        new THREE.MeshStandardMaterial({
+          color: 0xfbbf24,
+          emissive: 0xd97706,
+          emissiveIntensity: 1.25,
+          roughness: 0.14,
+          metalness: 0.5,
+        })
+      );
+      kemCore.position.y = 0.02;
+      group.add(kemCore);
+      break;
+    }
+
     default: {
       // Clean fallback museum artifact for any dynamically added exhibit
       const fallbackBase = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.52, 0.09, 32), obsidian);
