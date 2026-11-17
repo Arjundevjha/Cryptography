@@ -2,10 +2,6 @@
 const nextConfig = {
   transpilePackages: [
     'three',
-    '@react-three/fiber',
-    '@react-three/drei',
-    '@react-three/postprocessing',
-    'postprocessing',
   ],
   async rewrites() {
     const isVercel = process.env.VERCEL === '1';

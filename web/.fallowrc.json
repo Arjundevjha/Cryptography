@@ -5,10 +5,6 @@
     "src/main.{ts,tsx,js,jsx}"
   ],
   "ignoreDependencies": [
-    "canvas-confetti",
-    "clsx",
-    "framer-motion",
-    "tailwind-merge",
     "tailwindcss"
   ],
   "duplicates": {
