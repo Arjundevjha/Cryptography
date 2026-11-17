@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CryptographicStatue } from '../museumData';
 import {
   X,
@@ -24,16 +24,47 @@ interface StatueCuratorialDrawerProps {
 
 export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDrawerProps) {
   const [activeTab, setActiveTab] = useState<'curation' | 'lab'>('curation');
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const curationTabRef = useRef<HTMLButtonElement>(null);
+  const labTabRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+        previouslyFocused.focus();
+      }
+    };
   }, [onClose]);
+
+  const handleTabListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'Home' || e.key === 'End') {
+      e.preventDefault();
+      let nextTab: 'curation' | 'lab' = activeTab;
+      if (e.key === 'Home') {
+        nextTab = 'curation';
+      } else if (e.key === 'End') {
+        nextTab = 'lab';
+      } else {
+        nextTab = activeTab === 'curation' ? 'lab' : 'curation';
+      }
+      setActiveTab(nextTab);
+      if (nextTab === 'curation') {
+        curationTabRef.current?.focus();
+      } else {
+        labTabRef.current?.focus();
+      }
+    }
+  };
 
   return (
     <div
@@ -55,6 +86,7 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
         </div>
 
         <button
+          ref={closeButtonRef}
           onClick={onClose}
           aria-label="Close statue details"
           className="p-2 rounded-xl bg-[#24201c] hover:bg-[#322d27] border border-stone-700/60 text-stone-300 hover:text-stone-100 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors"
@@ -67,11 +99,16 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
       <div
         role="tablist"
         aria-label="Statue details view mode"
+        onKeyDown={handleTabListKeyDown}
         className="flex rounded-xl bg-[#221f1c] p-1 mb-6 border border-stone-800"
       >
         <button
+          ref={curationTabRef}
+          id="statue-tab-curation"
           role="tab"
           aria-selected={activeTab === 'curation'}
+          aria-controls="statue-tabpanel-curation"
+          tabIndex={activeTab === 'curation' ? 0 : -1}
           onClick={() => setActiveTab('curation')}
           className={`flex-1 py-2.5 rounded-lg text-xs font-sans font-semibold flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'curation'
@@ -82,8 +119,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
           <BookOpen className="w-4 h-4" /> Historical Curation
         </button>
         <button
+          ref={labTabRef}
+          id="statue-tab-lab"
           role="tab"
           aria-selected={activeTab === 'lab'}
+          aria-controls="statue-tabpanel-lab"
+          tabIndex={activeTab === 'lab' ? 0 : -1}
           onClick={() => setActiveTab('lab')}
           className={`flex-1 py-2.5 rounded-lg text-xs font-sans font-semibold flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'lab'
@@ -97,7 +138,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
 
       {/* TAB 1: CURATORIAL OVERVIEW & ARCHIVAL CITATION */}
       {activeTab === 'curation' && (
-        <div className="space-y-6">
+        <div
+          id="statue-tabpanel-curation"
+          role="tabpanel"
+          aria-labelledby="statue-tab-curation"
+          className="space-y-6"
+        >
           {/* Framed Archival Citation Plaque */}
           <div className="p-4 rounded-xl bg-[#111520] border border-amber-500/30 space-y-2.5">
             <h3 className="font-display text-sm font-semibold text-amber-300 flex items-center gap-2">
@@ -149,7 +195,12 @@ export function StatueCuratorialDrawer({ statue, onClose }: StatueCuratorialDraw
 
       {/* TAB 2: INTERACTIVE PIONEER LAB */}
       {activeTab === 'lab' && (
-        <div className="space-y-5">
+        <div
+          id="statue-tabpanel-lab"
+          role="tabpanel"
+          aria-labelledby="statue-tab-lab"
+          className="space-y-5"
+        >
           {statue.interactiveDemoType === 'frequency-analysis' && <AlKindiFrequencyLab />}
           {statue.interactiveDemoType === 'turing-bombe' && <TuringBombeLab />}
           {statue.interactiveDemoType === 'information-entropy' && <ShannonEntropyLab />}

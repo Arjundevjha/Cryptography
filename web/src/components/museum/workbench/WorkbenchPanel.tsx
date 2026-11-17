@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CipherExhibit } from '../museumData';
 import {
   Lock,
@@ -20,6 +20,10 @@ import { CipherParameterControls } from './CipherParameterControls';
 import { FrequencyAnalysisView } from './FrequencyAnalysisView';
 import { StepInspectorView } from './StepInspectorView';
 import { PassportChallengeView } from './PassportChallengeView';
+import { AesBlockMode } from './AesModeVisualizer';
+import { RsaSignaturesView } from './RsaSignaturesView';
+import { ZkpSchnorrView } from './ZkpSchnorrView';
+import { PostQuantumKemView } from './PostQuantumKemView';
 
 interface WorkbenchPanelProps {
   exhibit: CipherExhibit;
@@ -54,6 +58,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const [rsaPrivateKey, setRsaPrivateKey] = useState<string>('');
   const [aesKey, setAesKey] = useState<string>('1234567890123456');
   const [aesNonce, setAesNonce] = useState<string>('');
+  const [aesBlockMode, setAesBlockMode] = useState<AesBlockMode>('ctr');
+  const [aesIv, setAesIv] = useState<string>('');
+  const [cbcResult, setCbcResult] = useState<{
+    iv_hex: string;
+    padded_blocks_hex: string[];
+    ciphertext_blocks_hex: string[];
+  } | null>(null);
+  const tabRefs = useRef<Partial<Record<WorkbenchTab, HTMLButtonElement | null>>>({});
   const [enigmaRotors, setEnigmaRotors] = useState<string[]>(['I', 'II', 'III']);
   const [enigmaPositions, setEnigmaPositions] = useState<string[]>(['A', 'A', 'A']);
   const [enigmaRings, setEnigmaRings] = useState<string[]>(['A', 'A', 'A']);
@@ -79,6 +91,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     setCopied(false);
     setActiveTab('workbench');
     setDhResult(null);
+    setCbcResult(null);
+    setAesBlockMode('ctr');
+    setAesIv('');
   }, [exhibit.id]);
 
   const handleCopy = async () => {
@@ -187,7 +202,23 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           payload = { ciphertext: inputText, private_key: rsaPrivateKey };
         }
       } else if (exhibit.id === 'aes') {
-        if (mode === 'encrypt') {
+        if (aesBlockMode === 'cbc') {
+          endpoint = mode === 'encrypt' ? '/api/aes/cbc/encrypt' : '/api/aes/cbc/decrypt';
+          payload =
+            mode === 'encrypt'
+              ? {
+                  plaintext: inputText,
+                  key: aesKey,
+                  key_format: 'text',
+                  ...(aesIv.trim() ? { iv: aesIv.trim() } : {}),
+                }
+              : {
+                  ciphertext: inputText,
+                  key: aesKey,
+                  iv: aesIv.trim(),
+                  key_format: 'text',
+                };
+        } else if (mode === 'encrypt') {
           payload = { plaintext: inputText, key: aesKey, key_format: 'text', plaintext_format: 'text' };
         } else {
           payload = { ciphertext: inputText, key: aesKey, nonce: aesNonce, key_format: 'text' };
@@ -237,6 +268,14 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
       } else if (mode === 'encrypt') {
         setOutputText(data.ciphertext || data.hash || '');
         if (data.nonce) setAesNonce(data.nonce);
+        if (data.mode === 'cbc') {
+          if (data.iv_hex) setAesIv(data.iv_hex);
+          setCbcResult({
+            iv_hex: data.iv_hex || '',
+            padded_blocks_hex: data.padded_blocks_hex || [],
+            ciphertext_blocks_hex: data.ciphertext_blocks_hex || [],
+          });
+        }
       } else {
         setOutputText(data.plaintext || '');
       }
@@ -252,11 +291,36 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   };
 
   const isClassical = exhibit.category === 'Classical';
+  const isProtocolExhibit =
+    exhibit.id === 'rsa-signatures' ||
+    exhibit.id === 'zkp-schnorr' ||
+    exhibit.id === 'post-quantum-kem';
+
+  const visibleTabs: WorkbenchTab[] = isClassical
+    ? ['workbench', 'cryptanalysis', 'inspector', 'challenge']
+    : ['workbench', 'inspector', 'challenge'];
+
+  const handleTabListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const idx = visibleTabs.indexOf(activeTab);
+    if (idx === -1) return;
+    let nextIdx: number | null = null;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % visibleTabs.length;
+    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + visibleTabs.length) % visibleTabs.length;
+    else if (e.key === 'Home') nextIdx = 0;
+    else if (e.key === 'End') nextIdx = visibleTabs.length - 1;
+
+    if (nextIdx !== null) {
+      e.preventDefault();
+      const nextTab = visibleTabs[nextIdx];
+      setActiveTab(nextTab);
+      tabRefs.current[nextTab]?.focus();
+    }
+  };
 
   return (
     <div
       data-testid={`exhibit-${exhibit.id}`}
-      className="museum-scroller max-h-[calc(100vh-140px)] overflow-y-auto w-80 md:w-96 p-5 rounded-2xl bg-[#161412]/95 backdrop-blur-2xl border border-amber-500/30 shadow-2xl text-stone-100 font-sans"
+      className="museum-scroller max-h-[calc(100vh-140px)] overflow-y-auto w-[calc(100vw-2.5rem)] sm:w-80 md:w-96 p-5 rounded-2xl bg-[#161412]/95 backdrop-blur-2xl border border-amber-500/30 shadow-2xl text-stone-100 font-sans"
     >
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-3 pb-3 border-b border-amber-500/20">
@@ -266,42 +330,49 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         </div>
 
         {/* Encrypt / Decrypt Toggle */}
-        <div
-          className="select-none flex rounded-lg p-1 bg-[#221f1c] border border-stone-800 shrink-0"
-          data-testid={`mode-select-${exhibit.id}`}
-        >
-          <button
-            data-testid={`encrypt-btn-${exhibit.id}`}
-            onClick={() => setMode('encrypt')}
-            aria-pressed={mode === 'encrypt'}
-            className={`px-2.5 py-1 rounded-md text-xs font-sans font-semibold flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-              mode === 'encrypt' ? 'bg-amber-500 text-stone-950 shadow-sm active' : 'text-stone-300 hover:text-stone-100'
-            }`}
+        {!isProtocolExhibit && (
+          <div
+            className="select-none flex rounded-lg p-1 bg-[#221f1c] border border-stone-800 shrink-0"
+            data-testid={`mode-select-${exhibit.id}`}
           >
-            <Lock className="w-3 h-3" /> Encrypt
-          </button>
-          <button
-            data-testid={`decrypt-btn-${exhibit.id}`}
-            onClick={() => setMode('decrypt')}
-            aria-pressed={mode === 'decrypt'}
-            className={`px-2.5 py-1 rounded-md text-xs font-sans font-semibold flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
-              mode === 'decrypt' ? 'bg-amber-500 text-stone-950 shadow-sm active' : 'text-stone-300 hover:text-stone-100'
-            }`}
-          >
-            <Unlock className="w-3 h-3" /> Decrypt
-          </button>
-        </div>
+            <button
+              data-testid={`encrypt-btn-${exhibit.id}`}
+              onClick={() => setMode('encrypt')}
+              aria-pressed={mode === 'encrypt'}
+              className={`px-2.5 py-1 rounded-md text-xs font-sans font-semibold flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                mode === 'encrypt' ? 'bg-amber-500 text-stone-950 shadow-sm active' : 'text-stone-300 hover:text-stone-100'
+              }`}
+            >
+              <Lock className="w-3 h-3" /> Encrypt
+            </button>
+            <button
+              data-testid={`decrypt-btn-${exhibit.id}`}
+              onClick={() => setMode('decrypt')}
+              aria-pressed={mode === 'decrypt'}
+              className={`px-2.5 py-1 rounded-md text-xs font-sans font-semibold flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                mode === 'decrypt' ? 'bg-amber-500 text-stone-950 shadow-sm active' : 'text-stone-300 hover:text-stone-100'
+              }`}
+            >
+              <Unlock className="w-3 h-3" /> Decrypt
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Sub-navigation Tabs */}
       <div
         role="tablist"
         aria-label="Workbench tools"
+        onKeyDown={handleTabListKeyDown}
         className="flex gap-1 p-1 mb-4 rounded-xl bg-[#221f1c] border border-stone-800 text-[11px] font-sans"
       >
         <button
+          ref={(el) => { tabRefs.current.workbench = el; }}
+          id={`wb-tab-workbench-${exhibit.id}`}
           role="tab"
           aria-selected={activeTab === 'workbench'}
+          aria-controls={`wb-tabpanel-workbench-${exhibit.id}`}
+          tabIndex={activeTab === 'workbench' ? 0 : -1}
           onClick={() => setActiveTab('workbench')}
           className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'workbench' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
@@ -311,8 +382,12 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         </button>
         {isClassical && (
           <button
+            ref={(el) => { tabRefs.current.cryptanalysis = el; }}
+            id={`wb-tab-cryptanalysis-${exhibit.id}`}
             role="tab"
             aria-selected={activeTab === 'cryptanalysis'}
+            aria-controls={`wb-tabpanel-cryptanalysis-${exhibit.id}`}
+            tabIndex={activeTab === 'cryptanalysis' ? 0 : -1}
             onClick={() => setActiveTab('cryptanalysis')}
             className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               activeTab === 'cryptanalysis' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
@@ -322,8 +397,12 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           </button>
         )}
         <button
+          ref={(el) => { tabRefs.current.inspector = el; }}
+          id={`wb-tab-inspector-${exhibit.id}`}
           role="tab"
           aria-selected={activeTab === 'inspector'}
+          aria-controls={`wb-tabpanel-inspector-${exhibit.id}`}
+          tabIndex={activeTab === 'inspector' ? 0 : -1}
           onClick={() => setActiveTab('inspector')}
           className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'inspector' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
@@ -332,8 +411,12 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
           <Layers className="w-3 h-3" /> Steps
         </button>
         <button
+          ref={(el) => { tabRefs.current.challenge = el; }}
+          id={`wb-tab-challenge-${exhibit.id}`}
           role="tab"
           aria-selected={activeTab === 'challenge'}
+          aria-controls={`wb-tabpanel-challenge-${exhibit.id}`}
+          tabIndex={activeTab === 'challenge' ? 0 : -1}
           onClick={() => setActiveTab('challenge')}
           className={`flex-1 py-1.5 rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
             activeTab === 'challenge' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
@@ -344,7 +427,19 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
       </div>
 
       {activeTab === 'workbench' && (
-        <>
+        <div
+          id={`wb-tabpanel-workbench-${exhibit.id}`}
+          role="tabpanel"
+          aria-labelledby={`wb-tab-workbench-${exhibit.id}`}
+        >
+          {exhibit.id === 'rsa-signatures' ? (
+            <RsaSignaturesView />
+          ) : exhibit.id === 'zkp-schnorr' ? (
+            <ZkpSchnorrView />
+          ) : exhibit.id === 'post-quantum-kem' ? (
+            <PostQuantumKemView />
+          ) : (
+            <>
           {/* Input Field */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-1.5">
@@ -406,6 +501,16 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             onRSAKeygen={handleRSAKeygen}
             aesKey={aesKey}
             setAesKey={setAesKey}
+            aesBlockMode={aesBlockMode}
+            setAesBlockMode={(m) => {
+              setAesBlockMode(m);
+              setCbcResult(null);
+            }}
+            aesIv={aesIv}
+            setAesIv={setAesIv}
+            inputText={inputText}
+            onLoadIdenticalBlocks={() => setInputText('MUSEUM_BLOCK_001MUSEUM_BLOCK_001')}
+            cbcResult={cbcResult}
             enigmaRotors={enigmaRotors}
             setEnigmaRotors={setEnigmaRotors}
             enigmaPositions={enigmaPositions}
@@ -464,7 +569,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
 
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-sans font-semibold text-stone-200">
+              <label id={`output-label-${exhibit.id}`} className="block text-xs font-sans font-semibold text-stone-200">
                 {mode === 'encrypt' ? 'Ciphertext Result' : 'Decrypted Plaintext'}
               </label>
               {outputText && (
@@ -515,7 +620,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
               {copied ? `Copied ${mode === 'encrypt' ? 'ciphertext' : 'decrypted plaintext'} to clipboard` : ''}
             </div>
             <div
+              id={`output-text-${exhibit.id}`}
               data-testid={`output-text-${exhibit.id}`}
+              aria-labelledby={`output-label-${exhibit.id}`}
               aria-live="polite"
               aria-atomic="true"
               className="w-full min-h-[50px] p-3 rounded-lg bg-[#090b10] border border-stone-800 text-amber-300 font-mono text-xs break-all select-all"
@@ -523,52 +630,74 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
               {outputText || <span className="text-stone-400 italic font-sans">Result will appear here...</span>}
             </div>
           </div>
-        </>
+            </>
+          )}
+        </div>
       )}
 
       {activeTab === 'cryptanalysis' && isClassical && (
-        <FrequencyAnalysisView
-          exhibitId={exhibit.id}
-          inputText={inputText}
-          onApplyShift={(s) => {
-            setShift(s);
-            setMode('decrypt');
-            setActiveTab('workbench');
-          }}
-          onApplyAffine={(a, b) => {
-            setAKey(a);
-            setBKey(b);
-            setMode('decrypt');
-            setActiveTab('workbench');
-          }}
-          onApplyKey={(k) => {
-            if (exhibit.id === 'substitution') setSubstitutionKey(k);
-            else setKeyPhrase(k);
-            setMode('decrypt');
-            setActiveTab('workbench');
-          }}
-          onLoadSample={(sample) => setInputText(sample)}
-        />
+        <div
+          id={`wb-tabpanel-cryptanalysis-${exhibit.id}`}
+          role="tabpanel"
+          aria-labelledby={`wb-tab-cryptanalysis-${exhibit.id}`}
+        >
+          <FrequencyAnalysisView
+            exhibitId={exhibit.id}
+            inputText={inputText}
+            onApplyShift={(s) => {
+              setShift(s);
+              setMode('decrypt');
+              setActiveTab('workbench');
+            }}
+            onApplyAffine={(a, b) => {
+              setAKey(a);
+              setBKey(b);
+              setMode('decrypt');
+              setActiveTab('workbench');
+            }}
+            onApplyKey={(k) => {
+              if (exhibit.id === 'substitution') setSubstitutionKey(k);
+              else setKeyPhrase(k);
+              setMode('decrypt');
+              setActiveTab('workbench');
+            }}
+            onLoadSample={(sample) => setInputText(sample)}
+          />
+        </div>
       )}
 
       {activeTab === 'inspector' && (
-        <StepInspectorView
-          exhibitId={exhibit.id}
-          inputText={inputText}
-          keyPhrase={keyPhrase}
-          shift={shift}
-          enigmaRotors={enigmaRotors}
-          enigmaPositions={enigmaPositions}
-          enigmaReflector={enigmaReflector}
-          enigmaPlugboard={enigmaPlugboard}
-          dhPrime={dhPrime}
-          dhGen={dhGen}
-          dhAlice={dhAlice}
-          dhBob={dhBob}
-        />
+        <div
+          id={`wb-tabpanel-inspector-${exhibit.id}`}
+          role="tabpanel"
+          aria-labelledby={`wb-tab-inspector-${exhibit.id}`}
+        >
+          <StepInspectorView
+            exhibitId={exhibit.id}
+            inputText={inputText}
+            keyPhrase={keyPhrase}
+            shift={shift}
+            enigmaRotors={enigmaRotors}
+            enigmaPositions={enigmaPositions}
+            enigmaReflector={enigmaReflector}
+            enigmaPlugboard={enigmaPlugboard}
+            dhPrime={dhPrime}
+            dhGen={dhGen}
+            dhAlice={dhAlice}
+            dhBob={dhBob}
+          />
+        </div>
       )}
 
-      {activeTab === 'challenge' && <PassportChallengeView exhibit={exhibit} />}
+      {activeTab === 'challenge' && (
+        <div
+          id={`wb-tabpanel-challenge-${exhibit.id}`}
+          role="tabpanel"
+          aria-labelledby={`wb-tab-challenge-${exhibit.id}`}
+        >
+          <PassportChallengeView exhibit={exhibit} />
+        </div>
+      )}
     </div>
   );
 }
