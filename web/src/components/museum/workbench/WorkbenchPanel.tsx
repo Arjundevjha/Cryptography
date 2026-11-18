@@ -15,6 +15,7 @@ import {
   Layers,
   Award,
   Wrench,
+  Swords,
 } from 'lucide-react';
 import { CipherParameterControls } from './CipherParameterControls';
 import { FrequencyAnalysisView } from './FrequencyAnalysisView';
@@ -24,12 +25,14 @@ import { AesBlockMode } from './AesModeVisualizer';
 import { RsaSignaturesView } from './RsaSignaturesView';
 import { ZkpSchnorrView } from './ZkpSchnorrView';
 import { PostQuantumKemView } from './PostQuantumKemView';
+import { AttackLabView } from './labs/AttackLabView';
+import { hasAttackLab } from './labs/labApi';
 
 interface WorkbenchPanelProps {
   exhibit: CipherExhibit;
 }
 
-type WorkbenchTab = 'workbench' | 'cryptanalysis' | 'inspector' | 'challenge';
+type WorkbenchTab = 'workbench' | 'cryptanalysis' | 'inspector' | 'attack-lab' | 'challenge';
 
 const OFFLINE_ERROR_MSG = 'Could not reach encryption server — is the API running?';
 
@@ -291,14 +294,19 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   };
 
   const isClassical = exhibit.category === 'Classical';
+  const showAttackLab = hasAttackLab(exhibit.id);
   const isProtocolExhibit =
     exhibit.id === 'rsa-signatures' ||
     exhibit.id === 'zkp-schnorr' ||
     exhibit.id === 'post-quantum-kem';
 
-  const visibleTabs: WorkbenchTab[] = isClassical
-    ? ['workbench', 'cryptanalysis', 'inspector', 'challenge']
-    : ['workbench', 'inspector', 'challenge'];
+  const visibleTabs: WorkbenchTab[] = [
+    'workbench',
+    ...(isClassical ? (['cryptanalysis'] as WorkbenchTab[]) : []),
+    'inspector',
+    ...(showAttackLab ? (['attack-lab'] as WorkbenchTab[]) : []),
+    'challenge',
+  ];
 
   const handleTabListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const idx = visibleTabs.indexOf(activeTab);
@@ -364,7 +372,7 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         role="tablist"
         aria-label="Workbench tools"
         onKeyDown={handleTabListKeyDown}
-        className="flex gap-1 p-1 mb-4 rounded-xl bg-[#221f1c] border border-stone-800 text-[11px] font-sans"
+        className="flex flex-wrap gap-1 p-1 mb-4 rounded-xl bg-[#221f1c] border border-stone-800 text-[11px] font-sans"
       >
         <button
           ref={(el) => { tabRefs.current.workbench = el; }}
@@ -410,6 +418,22 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
         >
           <Layers className="w-3 h-3" /> Steps
         </button>
+        {showAttackLab && (
+          <button
+            ref={(el) => { tabRefs.current['attack-lab'] = el; }}
+            id={`wb-tab-attack-lab-${exhibit.id}`}
+            role="tab"
+            aria-selected={activeTab === 'attack-lab'}
+            aria-controls={`wb-tabpanel-attack-lab-${exhibit.id}`}
+            tabIndex={activeTab === 'attack-lab' ? 0 : -1}
+            onClick={() => setActiveTab('attack-lab')}
+            className={`flex-1 py-1.5 px-1.5 whitespace-nowrap rounded-lg font-semibold flex items-center justify-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+              activeTab === 'attack-lab' ? 'bg-amber-500 text-stone-950' : 'text-stone-300 hover:text-stone-100'
+            }`}
+          >
+            <Swords className="w-3 h-3" /> Attack Lab
+          </button>
+        )}
         <button
           ref={(el) => { tabRefs.current.challenge = el; }}
           id={`wb-tab-challenge-${exhibit.id}`}
@@ -685,6 +709,35 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             dhGen={dhGen}
             dhAlice={dhAlice}
             dhBob={dhBob}
+          />
+        </div>
+      )}
+
+      {activeTab === 'attack-lab' && showAttackLab && (
+        <div
+          id={`wb-tabpanel-attack-lab-${exhibit.id}`}
+          role="tabpanel"
+          aria-labelledby={`wb-tab-attack-lab-${exhibit.id}`}
+        >
+          <AttackLabView
+            exhibit={exhibit}
+            inputText={inputText}
+            onApplyShift={(s) => {
+              setShift(s);
+              setMode('decrypt');
+              setActiveTab('workbench');
+            }}
+            onApplyAffine={(a, b) => {
+              setAKey(a);
+              setBKey(b);
+              setMode('decrypt');
+              setActiveTab('workbench');
+            }}
+            onApplyKey={(k) => {
+              setKeyPhrase(k);
+              setMode('decrypt');
+              setActiveTab('workbench');
+            }}
           />
         </div>
       )}
