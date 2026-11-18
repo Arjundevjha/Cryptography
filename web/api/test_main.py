@@ -986,7 +986,7 @@ def test_rsa_keygen_non_coprime():
     assert response.status_code == 400
     assert "coprime" in response.json()["detail"].lower()
 
-@patch("api.main.pow", side_effect=ValueError("Modular inverse failure"))
+@patch("api.routers.modern.pow", side_effect=ValueError("Modular inverse failure"))
 def test_rsa_keygen_modular_inverse_error(mock_pow):
     payload = {
         "p": 61,
@@ -1124,7 +1124,7 @@ def test_parse_aes_key_hex_fallback():
                 raise ValueError("Simulated hex decode error")
             return orig_bytes.fromhex(string)
 
-    with patch("api.main.bytes", MockBytes):
+    with patch("api.routers.modern.bytes", MockBytes):
         res = parse_aes_key("0123456789abcdef0123456789abcdef", "text")
         assert res == b"0123456789abcdef0123456789abcdef"
 
@@ -1791,7 +1791,7 @@ def test_enigma_api_runtime_error_exception(caplog):
         assert "Enigma encryption error" in caplog.text
 
 def test_enigma_api_value_error_exception():
-    with patch("api.main.build_enigma_machine", side_effect=ValueError("Enigma value error")):
+    with patch("api.routers.historical.build_enigma_machine", side_effect=ValueError("Enigma value error")):
         resp = client.post("/api/enigma/encipher", json={
             "plaintext": "HELLO",
             "rotors": ["I", "II", "III"],
