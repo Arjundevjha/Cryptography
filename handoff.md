@@ -1,18 +1,28 @@
 # Session Handoff Summary
 
 ## Executive Summary
-Completed **Modern Crypto Story & Web Audit** via parallel swarm execution, merged all 5 author branches onto `main` (octopus merge + `e1eba6b0`), and verified end-to-end:
-1. **AES-256-CBC vs. AES-CTR (`symmetric.py`)**: Exposed `POST /api/aes/cbc/encrypt` and `POST /api/aes/cbc/decrypt` in `web/api/main.py` backed by `methods/modern/symmetric.py`, and added `AesModeVisualizer.tsx` with a CBC/CTR selector, custom/fixed/random IV controls, 16-byte PKCS#7 padding block inspector, and CBC pattern-leak detection.
-2. **Asymmetric Digital Signatures (RSA Sign/Verify)**: Added pure-Python `rsa_sign` / `rsa_verify` in `methods/modern/digital_signatures.py`, exposed `POST /api/rsa/sign` and `POST /api/rsa/verify` in `web/api/main.py`, and added the `rsa-signatures` exhibit (`RsaSignaturesView.tsx`, 3D pedestal at `[75, 0, -15]`).
-3. **Contemporary / Post-Quantum Extensions**: Added `methods/modern/contemporary.py` and exposed `POST /api/zkp/prove-step` and `POST /api/mlkem/demo`, paired with `zkp-schnorr` (`ZkpSchnorrView.tsx`, `[75, 0, -45]`) and `post-quantum-kem` (`PostQuantumKemView.tsx`, `[75, 0, -75]`), plus Passport challenges, `StepInspectorView.tsx` protocol cards, and 3D scene/HUD updates (17 exhibits, 20 tour stops).
-4. **Performance, Dead-Code & Mobile/A11y Audit**: Removed 9 unused dependencies from `web/package.json` (`@react-three/drei`, `@react-three/fiber`, `@react-three/postprocessing`, `postprocessing`, `canvas-confetti`, `@types/canvas-confetti`, `clsx`, `framer-motion`, `tailwind-merge`), removed unused `ExhibitInput.tsx`, improved ARIA/keyboard tab navigation & mobile width in `WorkbenchPanel.tsx` and `StatueCuratorialDrawer.tsx`, and added `web/tests/e2e/audit-mobile-a11y.spec.ts`.
+Completed **Cryptanalysis Attack Labs**, **Mobile 3D Navigation & Spatial Polish**, and **Engineering Hygiene, CI/CD & Backend Modularization** via parallel swarm execution, merged all 5 author branches onto `main`, and verified end-to-end:
+1. **Interactive Cryptanalysis & "Break the Cipher" Labs**:
+   - **Backend (`methods/*/cryptanalysis.py`, `web/api/routers/cryptanalysis.py`)**: Pure-Python engines and unit tests for Caesar chi-squared brute-force, Affine brute-force + known-plaintext solver, Vigenère IoC + Kasiski + key recovery, Enigma Bombe crib-dragging (`WETTER`), Lorenz depth XOR + crib-dragging, AES-CBC bit-flipping (`guest` → `admin`), and small-prime RSA factoring (Fermat + Pollard's rho + recovered `d`), exposed under `POST /api/cryptanalysis/{caesar,affine,vigenere,enigma-bombe,lorenz-depth,cbc-bitflip,rsa-factor}`.
+   - **Frontend (`web/src/components/museum/workbench/labs/`)**: `ClassicalAttackLab.tsx`, `HistoricalAttackLab.tsx`, `ModernAttackLab.tsx`, `AttackLabView.tsx`, and `labApi.ts`, wired as an **Attack Lab** tab in `WorkbenchPanel.tsx` for the 7 supported exhibits, plus Jest unit tests (`web/tests/unit/attackLabs.test.tsx`).
+2. **Mobile 3D Navigation & Spatial Polish**:
+   - **Mobile D-Pad (`web/src/components/museum/hud/MobileNavPad.tsx`)**: Touch D-pad (`md:hidden`) wired via `mobileKeysRef` in `MuseumCanvas.tsx` into `ThreeMuseumScene.tsx`'s WASD/proximity loop.
+   - **Procedural Web Audio (`web/src/components/museum/audio/museumAudio.ts`)**: Pure Web Audio API synthesizer (`playMechanicalClick`, `playVaultChime`, `toggleAmbient`) with `localStorage`-persisted mute toggle (`hud-audio-toggle`) in `MuseumHUD.tsx` and chime trigger in `PassportChallengeView.tsx`.
+   - **Pioneer Statue Polish (`web/src/components/museum/ThreeMuseumScene.tsx`)**: Gallery spotlight/rim wash on focused `statue-*` monuments, gilded pedestal halo ring, and `statueId` propagation on GLB meshes, plus Jest unit tests (`web/tests/unit/spatialPolish.test.tsx`).
+3. **Engineering Hygiene, CI/CD & Backend Modularization**:
+   - **GitHub Actions CI (`.github/workflows/ci.yml`)**: Automated `backend-test` (Python 3.11/3.12), `frontend-test-and-build` (Node 20), and `e2e-test` (Playwright Chromium via `scripts/run_e2e.sh`) on pushes/PRs to `main`.
+   - **FastAPI Router Split (`web/api/routers/`)**: Split `web/api/main.py` into `classical.py`, `historical.py`, `modern.py`, and `cryptanalysis.py`, keeping `main.py` as the clean entrypoint with `VercelPathMiddleware` and health/validate routes.
+   - **Legacy E2E Audit (`web/tests/e2e/`)**: Added `helpers.ts` and updated `classical.spec.ts`, `historical.spec.ts`, `modern.spec.ts`, `interactions.spec.ts`, and `scenarios.spec.ts` (plus `PLAYWRIGHT_BASE_URL` in `web/playwright.config.ts`) to align with the 3D/HUD layout.
 
-## Verification (Verified on `main` at `e1eba6b0`)
-- `pytest -q`: **869 passed**, 0 failed
-- `cd web && npm test -- --silent`: **7 suites, 100 tests passed**
+## Verification (Verified on `main`)
+- `pytest -q`: **894 passed**, 0 failed
+- `python3 -m pytest web/api/test_main.py -q`: **398 passed**, 0 failed
+- `cd web && npm test -- --silent`: **9/9 suites, 111 passed**, 0 failed
 - `cd web && npx next build`: Clean TypeScript + Turbopack build
-- `python3 scripts/diagnose.py --check --verbose`: Core checks passed
-- Playwright E2E (`museum-3d.spec.ts` + `audit-mobile-a11y.spec.ts`): **11 passed**, 0 failed (8/8 + 3/3)
+- Playwright E2E (all 7 specs): **110 passed**, 0 failed
+- Snyk Code SAST (`methods/`, `web/api/`, `web/src/components/museum/`): **0 issues**
+- `graphify update .`: **1967 nodes, 3067 edges, 145 communities**
 
 ## Immediate Next Steps
-- Repository was moved from `~/Desktop/Cryptography` to `~/Desktop/projects/Cryptography` mid-session; in a fresh session rooted at `/Users/abc/Desktop/projects/Cryptography`, run `graphify update .` and commit `handoff.md` (and `graphify-out/` if tracked).
+- Push local `main` to `origin/main` when ready to trigger the new `.github/workflows/ci.yml` pipeline and Vercel deployment.
+- Optional next milestone: **Next-Gen Cryptography Wing Expansion** (Elliptic Curve Cryptography ECDH/ECDSA, Authenticated Encryption AES-GCM/ChaCha20-Poly1305, Merkle Trees).
