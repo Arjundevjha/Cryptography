@@ -2832,4 +2832,190 @@ def test_mlkem_demo_validation_errors():
     assert r2.status_code == 400
 
 
+# ==========================================
+# CRYPTANALYSIS LAB ENDPOINT TESTS
+# ==========================================
+
+_SAMPLE_ENGLISH = (
+    "Cryptography is the practice and study of techniques for secure communication "
+    "in the presence of adversarial behavior. More generally, cryptography is about "
+    "constructing and analyzing protocols that prevent third parties from reading private messages."
+)
+
+
+def test_cryptanalysis_caesar_endpoint():
+    from methods.classical import caesar
+
+    ct = caesar.encrypt(_SAMPLE_ENGLISH, 7)
+    resp = client.post("/api/cryptanalysis/caesar", json={"ciphertext": ct})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["candidates"]) == 25
+    assert data["best"]["shift"] == 7
+    assert data["best"]["plaintext"] == _SAMPLE_ENGLISH
+
+    bad = client.post("/api/cryptanalysis/caesar", json={"ciphertext": "   "})
+    assert bad.status_code == 400
+
+
+def test_cryptanalysis_affine_endpoint():
+    from methods.classical import affine
+
+    ct = affine.encrypt(_SAMPLE_ENGLISH, 7, 11)
+    r_bf = client.post(
+        "/api/cryptanalysis/affine",
+        json={"mode": "bruteforce", "ciphertext": ct, "limit": 10},
+    )
+    assert r_bf.status_code == 200
+    bf_data = r_bf.json()
+    assert bf_data["mode"] == "bruteforce"
+    assert bf_data["total_keys"] == 312
+    assert len(bf_data["candidates"]) == 10
+    assert bf_data["best"]["a"] == 7
+    assert bf_data["best"]["b"] == 11
+
+    r_kp = client.post(
+        "/api/cryptanalysis/affine",
+        json={
+            "mode": "known_plaintext",
+            "plaintext_pair": "CR",
+            "ciphertext_pair": ct[:2],
+            "ciphertext": ct,
+        },
+    )
+    assert r_kp.status_code == 200
+    kp_data = r_kp.json()
+    assert kp_data["a"] == 7
+    assert kp_data["b"] == 11
+    assert kp_data["unique"] is True
+
+    bad = client.post("/api/cryptanalysis/affine", json={"mode": "invalid"})
+    assert bad.status_code == 400
+
+
+def test_cryptanalysis_vigenere_endpoint():
+    from methods.classical import vigenere
+
+    ct = vigenere.encrypt(_SAMPLE_ENGLISH, "SECRET")
+    resp = client.post("/api/cryptanalysis/vigenere", json={"ciphertext": ct})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["key"] == "SECRET"
+    assert data["key_length"] == 6
+    assert data["plaintext"] == _SAMPLE_ENGLISH
+    assert len(data["ioc_candidates"]) > 0
+    assert "repeated_ngrams" in data["kasiski"]
+
+    bad = client.post("/api/cryptanalysis/vigenere", json={"ciphertext": "123"})
+    assert bad.status_code == 400
+
+
+def test_cryptanalysis_enigma_bombe_endpoint():
+    enc = client.post(
+        "/api/enigma/encipher",
+        json={
+            "plaintext": "WETTERBERICHT",
+            "rotors": ["I", "II", "III"],
+            "positions": ["A", "C", "M"],
+            "rings": ["1", "1", "1"],
+            "plugboard": ["AB"],
+            "reflector": "B",
+        },
+    )
+    assert enc.status_code == 200
+    ct = enc.json()["ciphertext"]
+
+    resp = client.post(
+        "/api/cryptanalysis/enigma-bombe",
+        json={
+            "ciphertext": ct,
+            "crib": "WETTER",
+            "rotors": ["I", "II", "III"],
+            "reflector": "B",
+            "plugboard": ["AB"],
+            "rings": [1, 1, 1],
+            "fixed_left_rotor": "A",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["positions_tested"] == 676
+    assert any(m["position_str"] == "ACM" for m in data["matches"])
+
+    bad = client.post(
+        "/api/cryptanalysis/enigma-bombe",
+        json={"ciphertext": "ABC", "crib": "WETTER"},
+    )
+    assert bad.status_code == 400
+
+
+def test_cryptanalysis_lorenz_depth_endpoint():
+    from methods.historical.lorenz.lorenz import Lorenz
+
+    c1 = Lorenz().encrypt_text("ATTACK AT DAWN")
+    c2 = Lorenz().encrypt_text("WEATHER REPORT")
+
+    resp = client.post(
+        "/api/cryptanalysis/lorenz-depth",
+        json={"ciphertext1": c1, "ciphertext2": c2, "crib": "ATTACK"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["length"] == 14
+    assert any(
+        r["offset"] == 0 and r["recovered_fragment"] == "WEATHE"
+        for r in data["crib_results"]
+    )
+
+    bad = client.post(
+        "/api/cryptanalysis/lorenz-depth",
+        json={"ciphertext1": "", "ciphertext2": c2},
+    )
+    assert bad.status_code == 400
+
+
+def test_cryptanalysis_cbc_bitflip_endpoint():
+    resp = client.post(
+        "/api/cryptanalysis/cbc-bitflip",
+        json={
+            "plaintext": "user=alice;role=guest;pad=1",
+            "target_from": "guest",
+            "target_to": "admin",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["forged_successfully"] is True
+    assert "admin" in data["decrypted_text"]
+    assert data["decrypted_blocks"][0]["status"] == "corrupted"
+    assert data["decrypted_blocks"][1]["status"] == "forged"
+
+    bad = client.post(
+        "/api/cryptanalysis/cbc-bitflip",
+        json={"plaintext": "user=alice;role=guest", "target_from": "guest", "target_to": "longer"},
+    )
+    assert bad.status_code == 400
+
+
+def test_cryptanalysis_rsa_factor_endpoint():
+    resp = client.post(
+        "/api/cryptanalysis/rsa-factor",
+        json={"n": 10007 * 10037, "e": 65537, "method": "both"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["p"] == 10007
+    assert data["q"] == 10037
+    assert data["d"] is not None
+    assert data["fermat"]["found"] is True
+    assert data["pollard_rho"]["found"] is True
+
+    bad = client.post(
+        "/api/cryptanalysis/rsa-factor",
+        json={"n": 15, "e": 65537, "method": "invalid"},
+    )
+    assert bad.status_code == 400
+
+
+
 
