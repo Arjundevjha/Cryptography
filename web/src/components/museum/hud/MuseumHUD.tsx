@@ -202,7 +202,7 @@ export function MuseumHUD({
       {/* Unified Non-Overlapping 3-Zone Top Header HUD */}
       <header className="select-none fixed top-4 inset-x-4 sm:inset-x-5 z-40 flex items-center justify-between gap-2 pointer-events-none">
         {/* Left Zone: Branding & Return to Lobby */}
-        <div className="pointer-events-auto flex items-center gap-2 min-w-0">
+        <div className="pointer-events-auto flex items-center gap-2 min-w-0 sm:shrink-0">
           <div className="px-3.5 py-2 rounded-2xl bg-[#161412]/95 backdrop-blur-xl border border-amber-500/30 text-stone-100 shadow-2xl flex items-center gap-2.5 min-w-0">
             <span className="text-amber-400 text-sm leading-none shrink-0" aria-hidden="true">
               ◈
@@ -344,7 +344,7 @@ export function MuseumHUD({
             ) : (
               <Volume2 className="w-4 h-4 text-amber-400 shrink-0" />
             )}
-            <span className="hidden xl:inline">{isMuted ? 'Muted' : 'Audio'}</span>
+            <span className="hidden 2xl:inline">{isMuted ? 'Muted' : 'Audio'}</span>
           </button>
 
           <ApiStatusDot />
