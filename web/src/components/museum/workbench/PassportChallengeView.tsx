@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { CipherExhibit } from '../museumData';
 import { Award, CheckCircle2, HelpCircle, Send, AlertCircle } from 'lucide-react';
+import { playVaultChime } from '../audio/museumAudio';
 
 export const PASSPORT_STORAGE_KEY = 'cryptography-museum-passport-v1';
 export const PASSPORT_UPDATED_EVENT = 'museum-passport-updated';
@@ -168,6 +169,7 @@ export function PassportChallengeView({ exhibit }: PassportChallengeViewProps) {
       const updated = savePassportStamp(exhibit.id);
       setStamps(updated);
       setStatus('success');
+      playVaultChime();
     } else {
       setStatus('error');
     }

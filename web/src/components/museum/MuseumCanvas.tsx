@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import ThreeMuseumScene from './ThreeMuseumScene';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from './museumData';
 import { MuseumHUD, TourMode, TourStop } from './hud/MuseumHUD';
+import { MobileNavPad, MobileMoveDirection } from './hud/MobileNavPad';
 import { WorkbenchPanel } from './workbench/WorkbenchPanel';
 import { StatueCuratorialDrawer } from './workbench/StatueCuratorialDrawer';
 import { AudioSystem } from './AudioSystem';
+import { playMechanicalClick } from './audio/museumAudio';
 import {
   BookOpen,
   History,
@@ -87,6 +89,17 @@ export function MuseumCanvas() {
   const [isTourActive, setIsTourActive] = useState(false);
   const [tourMode, setTourMode] = useState<TourMode>('chronological');
   const [tourStepIdx, setTourStepIdx] = useState(0);
+  const mobileKeysRef = useRef<Record<string, boolean>>({});
+
+  const handleMobileMove = useCallback((direction: MobileMoveDirection, active: boolean) => {
+    const keyMap: Record<MobileMoveDirection, string> = {
+      forward: 'KeyW',
+      backward: 'KeyS',
+      left: 'KeyA',
+      right: 'KeyD',
+    };
+    mobileKeysRef.current[keyMap[direction]] = active;
+  }, []);
 
   const wingTourStops = useMemo<TourStop[]>(() => {
     const stops: TourStop[] = [];
@@ -151,6 +164,9 @@ export function MuseumCanvas() {
   }, [activeExhibit, activeWing, currentView, isTourActive]);
 
   const handleSelectRoom = useCallback((roomId: string) => {
+    if (roomId === 'enigma' || roomId === 'lorenz') {
+      playMechanicalClick();
+    }
     setCurrentView(roomId);
   }, []);
 
@@ -204,6 +220,7 @@ export function MuseumCanvas() {
         <ThreeMuseumScene
           currentView={currentView}
           onSelectRoom={handleSelectRoom}
+          mobileKeysRef={mobileKeysRef}
         />
       )}
 
@@ -378,6 +395,9 @@ export function MuseumCanvas() {
           onSelectWing={handleSelectRoom}
         />
       )}
+
+      {/* === MOBILE TOUCH D-PAD NAVIGATION === */}
+      <MobileNavPad onMoveChange={handleMobileMove} />
 
       {/* === AUDIO SYSTEM (Spatial Ambient & Synth Audio) === */}
       <AudioSystem currentView={currentView} isTourActive={isTourActive} tourStepIdx={tourStepIdx} />

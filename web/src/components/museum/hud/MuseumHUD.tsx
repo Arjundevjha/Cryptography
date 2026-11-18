@@ -13,8 +13,16 @@ import {
   Award,
   ArrowLeft,
   ArrowRight,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from '../museumData';
+import {
+  AUDIO_STATE_EVENT,
+  isAudioMuted,
+  toggleAmbient,
+  toggleAudioMuted,
+} from '../audio/museumAudio';
 
 export const PASSPORT_STORAGE_KEY = 'cryptography-museum-passport-v1';
 export const PASSPORT_UPDATED_EVENT = 'museum-passport-updated';
@@ -71,6 +79,18 @@ export function MuseumHUD({
 }: MuseumHUDProps) {
   const [showMap, setShowMap] = useState(false);
   const [stampedIds, setStampedIds] = useState<string[]>([]);
+  const [isMuted, setIsMuted] = useState(true);
+
+  useEffect(() => {
+    const syncAudio = () => setIsMuted(isAudioMuted());
+    syncAudio();
+    window.addEventListener('storage', syncAudio);
+    window.addEventListener(AUDIO_STATE_EVENT, syncAudio);
+    return () => {
+      window.removeEventListener('storage', syncAudio);
+      window.removeEventListener(AUDIO_STATE_EVENT, syncAudio);
+    };
+  }, []);
 
   useEffect(() => {
     const syncStamps = () => setStampedIds(readPassportStamps());
@@ -111,6 +131,15 @@ export function MuseumHUD({
   const activeExhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
   const activeWing = MUSEUM_WINGS.find((w) => w.id === currentView);
   const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentView);
+
+  const handleToggleAudio = () => {
+    const wingCategory = activeWing?.category ?? activeExhibit?.category;
+    const nextMuted = toggleAudioMuted(wingCategory);
+    setIsMuted(nextMuted);
+    if (!nextMuted) {
+      toggleAmbient(wingCategory);
+    }
+  };
 
   const getSubtext = () => {
     if (currentView === 'atrium') return 'Grand Entrance Rotunda';
@@ -296,6 +325,27 @@ export function MuseumHUD({
               {stampedCount}/{totalExhibits}
             </span>
           </div>
+
+          <button
+            type="button"
+            onClick={handleToggleAudio}
+            aria-label={isMuted ? 'Unmute museum audio' : 'Mute museum audio'}
+            aria-pressed={!isMuted}
+            title={isMuted ? 'Unmute Museum Audio' : 'Mute Museum Audio'}
+            data-testid="hud-audio-toggle"
+            className={`px-3 py-2 rounded-2xl backdrop-blur-xl border text-xs font-sans font-semibold flex items-center gap-1.5 shadow-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+              !isMuted
+                ? 'bg-amber-500/20 border-amber-400/50 text-amber-200 hover:bg-amber-500/30'
+                : 'bg-[#161412]/95 border-amber-500/25 text-stone-300 hover:text-stone-100'
+            }`}
+          >
+            {isMuted ? (
+              <VolumeX className="w-4 h-4 text-stone-400 shrink-0" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-400 shrink-0" />
+            )}
+            <span className="hidden xl:inline">{isMuted ? 'Muted' : 'Audio'}</span>
+          </button>
 
           <ApiStatusDot />
 

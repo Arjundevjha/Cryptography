@@ -18,6 +18,7 @@ import {
 interface ThreeMuseumSceneProps {
   currentView: string;
   onSelectRoom: (roomId: string) => void;
+  mobileKeysRef?: React.MutableRefObject<Record<string, boolean>>;
 }
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
@@ -103,6 +104,7 @@ if (typeof window !== 'undefined') {
 export default function ThreeMuseumScene({
   currentView,
   onSelectRoom,
+  mobileKeysRef,
 }: ThreeMuseumSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -127,6 +129,7 @@ export default function ThreeMuseumScene({
 
   const currentViewRef = useRef(currentView);
   const onSelectRoomRef = useRef(onSelectRoom);
+  const mobileKeysPropRef = useRef(mobileKeysRef);
   const initializedRef = useRef(false);
 
   // Build the full 3D scene once
@@ -1100,13 +1103,19 @@ export default function ThreeMuseumScene({
       const delta = Math.min(rawDelta, 0.1);
       lastTime = time;
 
-      // --- A. WASD & ARROW KEYS FIRST-PERSON EYE-LEVEL WALKING CONTROL ---
+      // --- A. WASD, ARROW KEYS & MOBILE D-PAD FIRST-PERSON EYE-LEVEL WALKING CONTROL ---
       const walkSpeed = 16.0 * delta;
       const keys = keysPressedRef.current;
-      const isWalking = !!(
-        keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD'] ||
-        keys['ArrowUp'] || keys['ArrowDown'] || keys['ArrowLeft'] || keys['ArrowRight']
-      );
+      const mobKeys = mobileKeysPropRef.current?.current;
+      const moveForward = !!(keys['KeyW'] || keys['ArrowUp'] || mobKeys?.['KeyW']);
+      const moveBackward = !!(keys['KeyS'] || keys['ArrowDown'] || mobKeys?.['KeyS']);
+      const moveLeft = !!(keys['KeyA'] || keys['ArrowLeft'] || mobKeys?.['KeyA']);
+      const moveRight = !!(keys['KeyD'] || keys['ArrowRight'] || mobKeys?.['KeyD']);
+      const isWalking = moveForward || moveBackward || moveLeft || moveRight;
+
+      if (mobKeys && (mobKeys['KeyW'] || mobKeys['KeyS'] || mobKeys['KeyA'] || mobKeys['KeyD'])) {
+        isAnimatingRef.current = false;
+      }
 
       if (isWalking) {
         const forward = new THREE.Vector3();
@@ -1119,10 +1128,10 @@ export default function ThreeMuseumScene({
 
         const moveVector = new THREE.Vector3();
 
-        if (keys['KeyW'] || keys['ArrowUp']) moveVector.addScaledVector(forward, walkSpeed);
-        if (keys['KeyS'] || keys['ArrowDown']) moveVector.addScaledVector(forward, -walkSpeed);
-        if (keys['KeyA'] || keys['ArrowLeft']) moveVector.addScaledVector(right, -walkSpeed);
-        if (keys['KeyD'] || keys['ArrowRight']) moveVector.addScaledVector(right, walkSpeed);
+        if (moveForward) moveVector.addScaledVector(forward, walkSpeed);
+        if (moveBackward) moveVector.addScaledVector(forward, -walkSpeed);
+        if (moveLeft) moveVector.addScaledVector(right, -walkSpeed);
+        if (moveRight) moveVector.addScaledVector(right, walkSpeed);
 
         if (moveVector.lengthSq() > 0) {
           // Clamp camera position within exterior building walls [-80, 80] and [-90, 30]
@@ -1201,8 +1210,9 @@ export default function ThreeMuseumScene({
         }
       });
 
-      // Position single shared exhibit spotlight & wash on the active exhibit room
+      // Position single shared exhibit spotlight & wash on the active exhibit room or pioneer statue
       const activeEx = MUSEUM_EXHIBITS.find((e) => e.id === activeExhibitId);
+      const activeStat = !activeEx ? MUSEUM_STATUES.find((s) => s.id === activeExhibitId) : undefined;
       if (activeExhibitSpotRef.current && activeExhibitWashRef.current) {
         if (activeEx) {
           activeExhibitSpotRef.current.position.set(activeEx.position[0], 8.1, activeEx.position[2] + 1.8);
@@ -1211,6 +1221,20 @@ export default function ThreeMuseumScene({
           activeExhibitSpotRef.current.intensity = 7.5;
           activeExhibitWashRef.current.position.set(activeEx.position[0], 6.2, activeEx.position[2] + 1.5);
           activeExhibitWashRef.current.intensity = 2.4;
+        } else if (activeStat) {
+          const [sx, , sz] = activeStat.position;
+          const frontX = sx + Math.sin(activeStat.rotationY) * 2.4;
+          const frontZ = sz + Math.cos(activeStat.rotationY) * 2.4;
+          activeExhibitSpotRef.current.position.set(frontX, 7.6, frontZ);
+          activeExhibitSpotRef.current.target.position.set(sx, 2.2, sz);
+          activeExhibitSpotRef.current.target.updateMatrixWorld();
+          activeExhibitSpotRef.current.intensity = 8.0;
+          activeExhibitWashRef.current.position.set(
+            sx - Math.sin(activeStat.rotationY) * 1.4,
+            4.2,
+            sz - Math.cos(activeStat.rotationY) * 1.4
+          );
+          activeExhibitWashRef.current.intensity = 2.6;
         } else {
           activeExhibitSpotRef.current.intensity = 0;
           activeExhibitWashRef.current.intensity = 0;
@@ -1291,6 +1315,7 @@ export default function ThreeMuseumScene({
   useEffect(() => {
     currentViewRef.current = currentView;
     onSelectRoomRef.current = onSelectRoom;
+    mobileKeysPropRef.current = mobileKeysRef;
     lastRoomChangeTimeRef.current = performance.now() + 1500; // 1.5s grace period on programmatic selection
     if (isSpatialUpdateRef.current) {
       isSpatialUpdateRef.current = false;
@@ -1858,6 +1883,9 @@ function populatePioneerBustGroup(
     const mesh = new THREE.Mesh(geo, mat);
     mesh.scale.setScalar(scale);
     mesh.rotation.y = 0;
+    if (group.userData?.statueId) {
+      mesh.userData = { statueId: group.userData.statueId };
+    }
     group.add(mesh);
   });
 }
@@ -2041,6 +2069,20 @@ function buildStatueMonument(
   const capGoldRim = new THREE.Mesh(new THREE.BoxGeometry(capWidth + 0.04, 0.03, capDepth + 0.04), gildedGold);
   capGoldRim.position.set(0, 1.73, 0);
   group.add(capGoldRim);
+
+  // Warm Gilded Pedestal Halo Ring framing the Pioneer Bust
+  const bustHaloMat = new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    emissive: 0xd97706,
+    emissiveIntensity: 0.35,
+    metalness: 0.9,
+    roughness: 0.2,
+  });
+  const bustHaloRadius = isTwin ? 1.12 : 0.78;
+  const bustHalo = new THREE.Mesh(new THREE.TorusGeometry(bustHaloRadius, 0.016, 12, 48), bustHaloMat);
+  bustHalo.rotation.x = Math.PI / 2;
+  bustHalo.position.set(0, 1.745, 0);
+  group.add(bustHalo);
 
   // Heavy Cast Brass Plaque with Hex Rivets
   const plaqueTex = getStatuePlaqueTexture(statue.name, statue.lifespan, statue.title);
