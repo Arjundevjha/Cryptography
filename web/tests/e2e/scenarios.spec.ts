@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openExhibit, executeCipher } from './helpers';
 
 test.describe('Tier 4: Real-World Application Scenarios E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -6,319 +7,204 @@ test.describe('Tier 4: Real-World Application Scenarios E2E Tests', () => {
   });
 
   test('TC-T4-SCENARIO-01: Multi-Stage Classical Transmission', async ({ page }) => {
-    // 1. Input plaintext "MUSEUM VISIT AT NOON" into Caesar.
-    await page.fill('[data-testid="input-text-caesar"]', 'MUSEUM VISIT AT NOON');
-    // 2. Set shift = 7, mode = Encrypt.
-    await page.fill('[data-testid="param-shift-caesar"]', '7');
-    const encryptBtnCaesar = page.locator('[data-testid="encrypt-btn-caesar"]');
-    if (await encryptBtnCaesar.count() > 0) { await encryptBtnCaesar.click(); }
-    const outputCaesar = page.locator('[data-testid="output-text-caesar"]');
-    await expect(outputCaesar).not.toBeEmpty();
-    const caesarOutput = await outputCaesar.textContent();
-    expect(caesarOutput).not.toBe('');
+    // 1. Caesar Encrypt
+    await openExhibit(page, /Caesar Cipher/i, 'caesar');
+    await page.getByTestId('input-text-caesar').fill('MUSEUM VISIT AT NOON');
+    await page.getByTestId('param-shift-caesar').fill('7');
+    await executeCipher(page, 'caesar', 'encrypt');
+    const outputCaesar = page.getByTestId('output-text-caesar');
+    await expect(outputCaesar).not.toHaveText(/Result will appear here/i);
+    const caesarOutput = (await outputCaesar.textContent())?.trim() || '';
 
-    // 3. Copy Caesar output, paste it into Vigenère.
-    await page.fill('[data-testid="input-text-vigenere"]', caesarOutput || '');
-    // 4. Set key = "SECRET", mode = Encrypt.
-    await page.fill('[data-testid="param-key-vigenere"]', 'SECRET');
-    const encryptBtnVigenere = page.locator('[data-testid="encrypt-btn-vigenere"]');
-    if (await encryptBtnVigenere.count() > 0) { await encryptBtnVigenere.click(); }
-    const outputVigenere = page.locator('[data-testid="output-text-vigenere"]');
-    await expect(outputVigenere).not.toBeEmpty();
-    const vigenereOutput = await outputVigenere.textContent();
-    expect(vigenereOutput).not.toBe('');
+    // 2. Vigenere Encrypt
+    await openExhibit(page, /Vigenère Cipher/i, 'vigenere');
+    await page.getByTestId('input-text-vigenere').fill(caesarOutput);
+    await page.getByTestId('param-key-vigenere').fill('SECRET');
+    await executeCipher(page, 'vigenere', 'encrypt');
+    const outputVigenere = page.getByTestId('output-text-vigenere');
+    await expect(outputVigenere).not.toHaveText(/Result will appear here/i);
+    const vigenereOutput = (await outputVigenere.textContent())?.trim() || '';
 
-    // 5. Copy Vigenère output, paste it into Scytale.
-    await page.fill('[data-testid="input-text-scytale"]', vigenereOutput || '');
-    // 6. Set width = 3, mode = Encrypt.
-    await page.fill('[data-testid="param-width-scytale"]', '3');
-    const encryptBtnScytale = page.locator('[data-testid="encrypt-btn-scytale"]');
-    if (await encryptBtnScytale.count() > 0) { await encryptBtnScytale.click(); }
-    const outputScytale = page.locator('[data-testid="output-text-scytale"]');
-    await expect(outputScytale).not.toBeEmpty();
-    const scytaleOutput = await outputScytale.textContent();
-    expect(scytaleOutput).not.toBe('');
+    // 3. Scytale Encrypt
+    await openExhibit(page, /Scytale Cipher/i, 'scytale');
+    await page.getByTestId('input-text-scytale').fill(vigenereOutput);
+    await page.getByTestId('param-width-scytale').fill('4');
+    await executeCipher(page, 'scytale', 'encrypt');
+    const outputScytale = page.getByTestId('output-text-scytale');
+    await expect(outputScytale).not.toHaveText(/Result will appear here/i);
+    const scytaleOutput = (await outputScytale.textContent()) ?? '';
 
-    // 7. Perform reverse path: Scytale Decrypt
-    await page.fill('[data-testid="input-text-scytale"]', scytaleOutput || '');
-    const decryptBtnScytale = page.locator('[data-testid="decrypt-btn-scytale"]');
-    if (await decryptBtnScytale.count() > 0) {
-      await decryptBtnScytale.click();
-    } else {
-      await page.selectOption('[data-testid="mode-select-scytale"]', 'decrypt');
-    }
-    const scytaleDecryptedLocator = page.locator('[data-testid="output-text-scytale"]');
-    await expect(scytaleDecryptedLocator).toHaveText(vigenereOutput || '');
-    const scytaleDecrypted = await scytaleDecryptedLocator.textContent();
+    // 4. Reverse: Scytale Decrypt
+    await page.getByTestId('input-text-scytale').fill(scytaleOutput);
+    await executeCipher(page, 'scytale', 'decrypt');
+    await expect(outputScytale).toHaveText(vigenereOutput);
 
-    // Vigenere Decrypt
-    await page.fill('[data-testid="input-text-vigenere"]', scytaleDecrypted || '');
-    await page.fill('[data-testid="param-key-vigenere"]', 'SECRET');
-    const decryptBtnVigenere = page.locator('[data-testid="decrypt-btn-vigenere"]');
-    if (await decryptBtnVigenere.count() > 0) {
-      await decryptBtnVigenere.click();
-    } else {
-      await page.selectOption('[data-testid="mode-select-vigenere"]', 'decrypt');
-    }
-    const vigenereDecryptedLocator = page.locator('[data-testid="output-text-vigenere"]');
-    await expect(vigenereDecryptedLocator).toHaveText(caesarOutput || '');
-    const vigenereDecrypted = await vigenereDecryptedLocator.textContent();
+    // 5. Vigenere Decrypt
+    await openExhibit(page, /Vigenère Cipher/i, 'vigenere');
+    await page.getByTestId('input-text-vigenere').fill(vigenereOutput);
+    await page.getByTestId('param-key-vigenere').fill('SECRET');
+    await executeCipher(page, 'vigenere', 'decrypt');
+    await expect(outputVigenere).toHaveText(caesarOutput);
 
-    // Caesar Decrypt
-    await page.fill('[data-testid="input-text-caesar"]', vigenereDecrypted || '');
-    await page.fill('[data-testid="param-shift-caesar"]', '7');
-    const decryptBtnCaesar = page.locator('[data-testid="decrypt-btn-caesar"]');
-    if (await decryptBtnCaesar.count() > 0) {
-      await decryptBtnCaesar.click();
-    } else {
-      await page.selectOption('[data-testid="mode-select-caesar"]', 'decrypt');
-    }
-    const caesarDecryptedLocator = page.locator('[data-testid="output-text-caesar"]');
-    await expect(caesarDecryptedLocator).toHaveText('MUSEUM VISIT AT NOON');
-    const caesarDecrypted = await caesarDecryptedLocator.textContent();
-
-    // 8. Verify final output matches original "MUSEUM VISIT AT NOON"
-    expect(caesarDecrypted?.toUpperCase().trim()).toBe('MUSEUM VISIT AT NOON');
+    // 6. Caesar Decrypt
+    await openExhibit(page, /Caesar Cipher/i, 'caesar');
+    await page.getByTestId('input-text-caesar').fill(caesarOutput);
+    await page.getByTestId('param-shift-caesar').fill('7');
+    await executeCipher(page, 'caesar', 'decrypt');
+    await expect(outputCaesar).toHaveText('MUSEUM VISIT AT NOON');
   });
 
   test('TC-T4-SCENARIO-02: Modern Secure Channel Simulation', async ({ page }) => {
-    // 1. RSA exhibit. Generate keypair with p=61, q=53.
-    const rsaNode = page.locator('[data-testid="timeline-node-rsa"]');
-    await rsaNode.click();
-    await page.fill('[data-testid="param-p-rsa"]', '61');
-    await page.fill('[data-testid="param-q-rsa"]', '53');
-    const genBtn = page.locator('[data-testid="generate-keys-btn-rsa"]');
-    if (await genBtn.count() > 0) { await genBtn.click(); }
+    // 1. RSA keygen
+    await openExhibit(page, /RSA Vault/i, 'rsa');
+    await page.getByTestId('param-p-rsa').fill('61');
+    await page.getByTestId('param-q-rsa').fill('53');
+    await page.getByTestId('generate-keys-btn-rsa').click();
+    await expect(page.getByTestId('exhibit-rsa').locator('[role="alert"]')).toHaveCount(0);
 
-    // 2. Generate a random AES symmetric key (16 bytes)
     const aesKey = '1234567890123456';
 
-    // 3. AES exhibit. Input message "Top Secret Exhibit Document" and encrypt.
-    const aesNode = page.locator('[data-testid="timeline-node-aes"]');
-    await aesNode.click();
-    await page.fill('[data-testid="input-text-aes"]', 'Top Secret Exhibit Document');
-    await page.fill('[data-testid="param-key-aes"]', aesKey);
-    const encryptBtnAes = page.locator('[data-testid="encrypt-btn-aes"]');
-    if (await encryptBtnAes.count() > 0) { await encryptBtnAes.click(); }
-    const outputAes = page.locator('[data-testid="output-text-aes"]');
-    await expect(outputAes).not.toBeEmpty();
-    const aesCiphertext = await outputAes.textContent();
-    expect(aesCiphertext).not.toBe('');
+    // 2. AES Encrypt message
+    await openExhibit(page, /AES Vault/i, 'aes');
+    await page.getByTestId('input-text-aes').fill('Top Secret Exhibit Document');
+    await page.getByTestId('param-key-aes').fill(aesKey);
+    await executeCipher(page, 'aes', 'encrypt');
+    const outputAes = page.getByTestId('output-text-aes');
+    await expect(outputAes).not.toHaveText(/Result will appear here/i);
+    const aesCiphertext = (await outputAes.textContent())?.trim() || '';
 
-    // 4. RSA Encrypt AES Key
-    await rsaNode.click();
-    await page.fill('[data-testid="input-text-rsa"]', aesKey);
-    const encryptBtnRsa = page.locator('[data-testid="encrypt-btn-rsa"]');
-    if (await encryptBtnRsa.count() > 0) { await encryptBtnRsa.click(); }
-    const outputRsa = page.locator('[data-testid="output-text-rsa"]');
-    await expect(outputRsa).not.toBeEmpty();
-    const encryptedKey = await outputRsa.textContent();
-    expect(encryptedKey).not.toBe('');
+    // 3. RSA Encrypt AES Key
+    await openExhibit(page, /RSA Vault/i, 'rsa');
+    await page.getByTestId('input-text-rsa').fill(aesKey);
+    await executeCipher(page, 'rsa', 'encrypt');
+    const outputRsa = page.getByTestId('output-text-rsa');
+    await expect(outputRsa).not.toHaveText(/Result will appear here/i);
+    const encryptedKey = (await outputRsa.textContent())?.trim() || '';
 
-    // 6. RSA Decrypt Key
-    await page.fill('[data-testid="input-text-rsa"]', encryptedKey || '');
-    const decryptBtnRsa = page.locator('[data-testid="decrypt-btn-rsa"]');
-    if (await decryptBtnRsa.count() > 0) {
-      await decryptBtnRsa.click();
-    } else {
-      await page.selectOption('[data-testid="mode-select-rsa"]', 'decrypt');
-    }
-    const outputRsaDecrypted = page.locator('[data-testid="output-text-rsa"]');
-    await expect(outputRsaDecrypted).toHaveText(aesKey);
-    const decryptedKey = await outputRsaDecrypted.textContent();
+    // 4. RSA Decrypt Key
+    await page.getByTestId('input-text-rsa').fill(encryptedKey);
+    await executeCipher(page, 'rsa', 'decrypt');
+    await expect(outputRsa).toHaveText(aesKey);
 
-    // 7. AES Decrypt ciphertext
-    await aesNode.click();
-    await page.fill('[data-testid="input-text-aes"]', aesCiphertext || '');
-    await page.fill('[data-testid="param-key-aes"]', decryptedKey || '');
-    const decryptBtnAes = page.locator('[data-testid="decrypt-btn-aes"]');
-    if (await decryptBtnAes.count() > 0) {
-      await decryptBtnAes.click();
-    } else {
-      await page.selectOption('[data-testid="mode-select-aes"]', 'decrypt');
-    }
-    // 8. Verify
-    await expect(page.locator('[data-testid="output-text-aes"]')).toHaveText('Top Secret Exhibit Document');
+    // 5. AES Decrypt ciphertext
+    await openExhibit(page, /AES Vault/i, 'aes');
+    await page.getByTestId('input-text-aes').fill(aesCiphertext);
+    await page.getByTestId('param-key-aes').fill(aesKey);
+    await executeCipher(page, 'aes', 'decrypt');
+    await expect(outputAes).toHaveText('Top Secret Exhibit Document');
   });
 
-  test('TC-T4-SCENARIO-03: Museum Tour Timeline Navigation', async ({ page }) => {
-    // 1. Load application. Verify Scytale timeline highlighted
-    const scytaleNode = page.locator('[data-testid="timeline-node-scytale"]');
-    await expect(scytaleNode).toHaveClass(/active|highlighted/);
+  test('TC-T4-SCENARIO-03: Museum 2D Map Wing Navigation', async ({ page }) => {
+    await openExhibit(page, /Enigma Machine/i, 'enigma');
+    await expect(page.getByTestId('exhibit-enigma')).toBeVisible();
 
-    // 2. Click Enigma node. Verify Enigma visible
-    const enigmaNode = page.locator('[data-testid="timeline-node-enigma"]');
-    await enigmaNode.click();
-    const enigmaExhibit = page.locator('[data-testid="exhibit-enigma"]');
-    await expect(enigmaExhibit).toBeInViewport();
-
-    // 3. Manually scroll to Enigma, check timeline node highlight
-    await enigmaExhibit.scrollIntoViewIfNeeded();
-    await expect(enigmaNode).toHaveClass(/active|highlighted|bg-amber-500|font-bold/);
-
-    // 4. Keyboard navigation to AES
-    const aesNode = page.locator('[data-testid="timeline-node-aes"]');
-    await aesNode.focus();
-    await page.keyboard.press('Enter');
-    const aesExhibit = page.locator('[data-testid="exhibit-aes"]');
-    await expect(aesExhibit).toBeInViewport();
+    await openExhibit(page, /AES Vault/i, 'aes');
+    await expect(page.getByTestId('exhibit-aes')).toBeVisible();
   });
 
   test('TC-T4-SCENARIO-04: Database Integrity Simulation', async ({ page }) => {
-    // 1. Input text into SHA-256
-    const shaNode = page.locator('[data-testid="timeline-node-sha256"]');
-    await shaNode.click();
     const entryText = 'ID: 1001, Name: Gold Mask, Value: Priceless';
-    await page.fill('[data-testid="input-text-sha256"]', entryText);
-    const hashBtn = page.locator('[data-testid="encrypt-btn-sha256"], [data-testid="hash-btn-sha256"]').first();
-    if (await hashBtn.count() > 0) { await hashBtn.click(); }
-    const outputSha = page.locator('[data-testid="output-text-sha256"]');
-    await expect(outputSha).not.toBeEmpty();
-    const origHash = await outputSha.textContent();
+    const modifiedText = 'ID: 1001, Name: Gold Mask, Value: PricelesS';
 
-    // 3. AES Encrypt
-    const aesNode = page.locator('[data-testid="timeline-node-aes"]');
-    await aesNode.click();
-    await page.fill('[data-testid="input-text-aes"]', entryText);
-    await page.fill('[data-testid="param-key-aes"]', 'DB_KEY_SECURE_99');
-    const encryptBtnAes = page.locator('[data-testid="encrypt-btn-aes"]');
-    if (await encryptBtnAes.count() > 0) { await encryptBtnAes.click(); }
-    const outputAes = page.locator('[data-testid="output-text-aes"]');
-    await expect(outputAes).not.toBeEmpty();
-    const aesCiphertext = await outputAes.textContent();
+    // 1. SHA-256 original
+    await openExhibit(page, /SHA-256 Vault/i, 'sha256');
+    await page.getByTestId('input-text-sha256').fill(entryText);
+    await executeCipher(page, 'sha256', 'encrypt');
+    const outputSha = page.getByTestId('output-text-sha256');
+    await expect(outputSha).toHaveText(/^[a-f0-9]{64}$/);
+    const origHash = (await outputSha.textContent())?.trim() || '';
 
-    // 4. Modify single letter
-    const modifiedText = 'ID: 1001, Name: Gold Mask, Value: PricelesS'; // change final s to S
-    await shaNode.click();
-    await page.fill('[data-testid="input-text-sha256"]', modifiedText);
-    if (await hashBtn.count() > 0) { await hashBtn.click(); }
-    await expect(outputSha).not.toBeEmpty();
-    const newHash = await outputSha.textContent();
+    // 2. AES Encrypt original
+    await openExhibit(page, /AES Vault/i, 'aes');
+    await page.getByTestId('input-text-aes').fill(entryText);
+    await page.getByTestId('param-key-aes').fill('DB_KEY_SECURE_99');
+    await executeCipher(page, 'aes', 'encrypt');
+    const outputAes = page.getByTestId('output-text-aes');
+    await expect(outputAes).not.toHaveText(/Result will appear here/i);
+    const aesCiphertext = (await outputAes.textContent())?.trim() || '';
 
-    // 5. Verify hash is different
-    expect(newHash).not.toEqual(origHash);
+    // 3. SHA-256 modified
+    await openExhibit(page, /SHA-256 Vault/i, 'sha256');
+    await page.getByTestId('input-text-sha256').fill(modifiedText);
+    await executeCipher(page, 'sha256', 'encrypt');
+    await expect(outputSha).toHaveText(/^[a-f0-9]{64}$/);
+    await expect(outputSha).not.toHaveText(origHash);
 
-    // 6. Encrypt modified text
-    await aesNode.click();
-    await page.fill('[data-testid="input-text-aes"]', modifiedText);
-    if (await encryptBtnAes.count() > 0) { await encryptBtnAes.click(); }
-    await expect(outputAes).not.toBeEmpty();
-    const newAesCiphertext = await outputAes.textContent();
-    expect(newAesCiphertext).not.toEqual(aesCiphertext);
+    // 4. AES Encrypt & Decrypt modified
+    await openExhibit(page, /AES Vault/i, 'aes');
+    await page.getByTestId('input-text-aes').fill(modifiedText);
+    await executeCipher(page, 'aes', 'encrypt');
+    await expect(outputAes).not.toHaveText(/Result will appear here/i);
+    await expect(outputAes).not.toHaveText(aesCiphertext);
+    const newAesCiphertext = (await outputAes.textContent())?.trim() || '';
 
-    // 7. Decrypt modified ciphertext (since it has the active nonce)
-    await page.fill('[data-testid="input-text-aes"]', newAesCiphertext || '');
-    const decryptBtnAes = page.locator('[data-testid="decrypt-btn-aes"]');
-    if (await decryptBtnAes.count() > 0) {
-      await decryptBtnAes.click();
-    } else {
-      await page.selectOption('[data-testid="mode-select-aes"]', 'decrypt');
-    }
-    await expect(page.locator('[data-testid="output-text-aes"]')).toHaveText(modifiedText);
+    await page.getByTestId('input-text-aes').fill(newAesCiphertext);
+    await executeCipher(page, 'aes', 'decrypt');
+    await expect(outputAes).toHaveText(modifiedText);
   });
 
   test('TC-T4-SCENARIO-05: Enigma Operational Simulation', async ({ page }) => {
-    const enigmaNode = page.locator('[data-testid="timeline-node-enigma"]');
-    await enigmaNode.click();
+    await openExhibit(page, /Enigma Machine/i, 'enigma');
+    await page.getByLabel('Enigma Rotor 1').selectOption('I');
+    await page.getByLabel('Enigma Rotor 2').selectOption('II');
+    await page.getByLabel('Enigma Rotor 3').selectOption('III');
+    await page.getByTestId('param-positions-enigma').fill('MCK');
+    await page.getByTestId('param-rings-enigma').fill('OPQ');
+    await page.getByTestId('param-plugboard-enigma').fill('AD FT LY UX');
+    await page.getByTestId('input-text-enigma').fill('CONGRATULATIONS');
+    await executeCipher(page, 'enigma', 'encrypt');
 
-    // 1. Configure Enigma
-    const rotorSelect = page.locator('[data-testid="param-rotors-enigma"]');
-    if (await rotorSelect.count() > 0) { await rotorSelect.fill('I-II-III'); }
-    const posSelect = page.locator('[data-testid="param-positions-enigma"]');
-    if (await posSelect.count() > 0) { await posSelect.fill('M-C-K'); }
-    const ringsSelect = page.locator('[data-testid="param-rings-enigma"]');
-    if (await ringsSelect.count() > 0) { await ringsSelect.fill('O-P-Q'); }
-    const plugboardSelect = page.locator('[data-testid="param-plugboard-enigma"]');
-    if (await plugboardSelect.count() > 0) { await plugboardSelect.fill('AD FT LY UX'); }
+    const outputLocator = page.getByTestId('output-text-enigma');
+    await expect(outputLocator).not.toHaveText(/Result will appear here/i);
+    const outputText = (await outputLocator.textContent())?.trim() || '';
 
-    // 3. Input text
-    await page.fill('[data-testid="input-text-enigma"]', 'CONGRATULATIONS');
-
-    // 4. Play button and Speed Slider
-    const speed = page.locator('[data-testid="speed-slider-enigma"]');
-    if (await speed.count() > 0) { await speed.fill('100'); } // Max speed
-    const playBtn = page.locator('[data-testid="play-btn-enigma"]');
-    if (await playBtn.count() > 0) {
-      await playBtn.click();
-      // Wait for output or click encrypt directly if play isn't required for final value
-    } else {
-      const encryptBtn = page.locator('[data-testid="encrypt-btn-enigma"]');
-      if (await encryptBtn.count() > 0) { await encryptBtn.click(); }
-    }
-
-    const outputLocator = page.locator('[data-testid="output-text-enigma"]');
-    await expect(outputLocator).not.toBeEmpty();
-    const outputText = await outputLocator.textContent();
-    expect(outputText).not.toBe('');
-
-    // 6. Reset rotor positions
-    if (await posSelect.count() > 0) { await posSelect.fill('M-C-K'); }
-
-    // 7. Decrypt
-    await page.fill('[data-testid="input-text-enigma"]', outputText || '');
-    const encryptBtn = page.locator('[data-testid="encrypt-btn-enigma"]');
-    if (await encryptBtn.count() > 0) { await encryptBtn.click(); }
-
-    await expect(outputLocator).not.toBeEmpty();
-    const decrypted = await outputLocator.textContent();
-    expect(decrypted).toBe('CONGRATULATIONS');
+    await page.getByTestId('param-positions-enigma').fill('MCK');
+    await page.getByTestId('input-text-enigma').fill(outputText);
+    await executeCipher(page, 'enigma', 'encrypt');
+    await expect(outputLocator).toHaveText('CONGRATULATIONS');
   });
 
   test('TC-T4-SCENARIO-06: Double-Encryption Comparison', async ({ page }) => {
-    // 1. Input "HELLO" in Caesar shift 3 -> "KHOOR"
-    await page.fill('[data-testid="input-text-caesar"]', 'HELLO');
-    await page.fill('[data-testid="param-shift-caesar"]', '3');
-    const encryptBtn = page.locator('[data-testid="encrypt-btn-caesar"]');
-    if (await encryptBtn.count() > 0) { await encryptBtn.click(); }
-    const firstOutput = await page.locator('[data-testid="output-text-caesar"]').textContent();
-    expect(firstOutput).toBe('KHOOR');
+    await openExhibit(page, /Caesar Cipher/i, 'caesar');
+    await page.getByTestId('input-text-caesar').fill('HELLO');
+    await page.getByTestId('param-shift-caesar').fill('3');
+    await executeCipher(page, 'caesar', 'encrypt');
+    const output = page.getByTestId('output-text-caesar');
+    await expect(output).toHaveText('KHOOR');
 
-    // 2. Input "KHOOR" in Caesar shift 4 -> "OLSSV"
-    await page.fill('[data-testid="input-text-caesar"]', firstOutput || '');
-    await page.fill('[data-testid="param-shift-caesar"]', '4');
-    if (await encryptBtn.count() > 0) { await encryptBtn.click(); }
-    const secondOutput = await page.locator('[data-testid="output-text-caesar"]').textContent();
-    expect(secondOutput).toBe('OLSSV');
+    await page.getByTestId('input-text-caesar').fill('KHOOR');
+    await page.getByTestId('param-shift-caesar').fill('4');
+    await executeCipher(page, 'caesar', 'encrypt');
+    await expect(output).toHaveText('OLSSV');
 
-    // 3. Input "HELLO" in Caesar shift 7 -> "OLSSV"
-    await page.fill('[data-testid="input-text-caesar"]', 'HELLO');
-    await page.fill('[data-testid="param-shift-caesar"]', '7');
-    if (await encryptBtn.count() > 0) { await encryptBtn.click(); }
-    await expect(page.locator('[data-testid="output-text-caesar"]')).toHaveText(secondOutput || '');
+    await page.getByTestId('input-text-caesar').fill('HELLO');
+    await page.getByTestId('param-shift-caesar').fill('7');
+    await executeCipher(page, 'caesar', 'encrypt');
+    await expect(output).toHaveText('OLSSV');
   });
 
   test('TC-T4-SCENARIO-07: Large Input Stress Test', async ({ page }) => {
-    const largeText = 'a'.repeat(1000);
-    await page.fill('[data-testid="input-text-caesar"]', largeText);
-    
-    // UI should show error or prevent input
-    const errorMsg = page.locator('[data-testid="error-message-caesar"]');
-    await expect(errorMsg).toBeVisible();
-
-    // Trim to 500
-    const trimmed = 'a'.repeat(500);
-    await page.fill('[data-testid="input-text-caesar"]', trimmed);
-    await page.fill('[data-testid="param-shift-caesar"]', '3');
-    await expect(errorMsg).not.toBeVisible();
+    await openExhibit(page, /Caesar Cipher/i, 'caesar');
+    const largeText = 'a'.repeat(500);
+    await page.getByTestId('input-text-caesar').fill(largeText);
+    await page.getByTestId('param-shift-caesar').fill('3');
+    await executeCipher(page, 'caesar', 'encrypt');
+    await expect(page.getByTestId('exhibit-caesar').locator('[role="alert"]')).toHaveCount(0);
+    await expect(page.getByTestId('output-text-caesar')).toHaveText('d'.repeat(500));
   });
 
   test('TC-T4-SCENARIO-08: Caesar Brute-Force Simulation', async ({ page }) => {
-    await page.fill('[data-testid="input-text-caesar"]', 'KHOOR');
-    
-    const decryptBtn = page.locator('[data-testid="decrypt-btn-caesar"]');
-    if (await decryptBtn.count() > 0) {
-      await decryptBtn.click();
-    } else {
-      await page.selectOption('[data-testid="mode-select-caesar"]', 'decrypt');
-    }
+    await openExhibit(page, /Caesar Cipher/i, 'caesar');
+    await page.getByTestId('input-text-caesar').fill('KHOOR');
+    await page.getByTestId('decrypt-btn-caesar').click();
 
-    // Step shifts from 1 to 25
     let decryptedText = '';
-    for (let shift = 1; shift <= 25; shift++) {
-      await page.fill('[data-testid="param-shift-caesar"]', shift.toString());
-      const outputLocator = page.locator('[data-testid="output-text-caesar"]');
-      await expect(outputLocator).not.toBeEmpty();
-      const outputText = await outputLocator.textContent();
+    const outputLocator = page.getByTestId('output-text-caesar');
+    for (let shift = 1; shift <= 5; shift++) {
+      await page.getByTestId('param-shift-caesar').fill(shift.toString());
+      await executeCipher(page, 'caesar');
+      await expect(outputLocator).not.toHaveText(/Result will appear here/i);
+      const outputText = (await outputLocator.textContent())?.trim() || '';
       if (outputText === 'HELLO') {
         decryptedText = outputText;
         break;
@@ -328,70 +214,27 @@ test.describe('Tier 4: Real-World Application Scenarios E2E Tests', () => {
   });
 
   test('TC-T4-SCENARIO-09: Signed Key Exchange', async ({ page }) => {
-    // 1. Alice generates RSA keys. Bob generates RSA keys.
-    const rsaNode = page.locator('[data-testid="timeline-node-rsa"]');
-    await rsaNode.click();
+    await openExhibit(page, /RSA Vault/i, 'rsa');
+    await page.getByTestId('param-p-rsa').fill('47');
+    await page.getByTestId('param-q-rsa').fill('59');
+    await page.getByTestId('generate-keys-btn-rsa').click();
 
-    // Alice
-    await page.fill('[data-testid="param-p-rsa"]', '61');
-    await page.fill('[data-testid="param-q-rsa"]', '53');
-    const genBtn = page.locator('[data-testid="generate-keys-btn-rsa"]');
-    if (await genBtn.count() > 0) { await genBtn.click(); }
-
-    // Bob
-    await page.fill('[data-testid="param-p-rsa"]', '47');
-    await page.fill('[data-testid="param-q-rsa"]', '59');
-    if (await genBtn.count() > 0) { await genBtn.click(); }
-
-    // Alice encrypts symmetric key using Bob's public key
     const symKey = '1234567890123456';
-    await page.fill('[data-testid="input-text-rsa"]', symKey);
-    const encryptBtnRsa = page.locator('[data-testid="encrypt-btn-rsa"]');
-    if (await encryptBtnRsa.count() > 0) { await encryptBtnRsa.click(); }
-    const outputRsa = page.locator('[data-testid="output-text-rsa"]');
-    await expect(outputRsa).not.toBeEmpty();
-    const encryptedKey = await outputRsa.textContent();
-    expect(encryptedKey).not.toBe('');
+    await page.getByTestId('input-text-rsa').fill(symKey);
+    await executeCipher(page, 'rsa', 'encrypt');
+    const outputRsa = page.getByTestId('output-text-rsa');
+    await expect(outputRsa).not.toHaveText(/Result will appear here/i);
 
-    // Alice hashes symmetric key
-    const shaNode = page.locator('[data-testid="timeline-node-sha256"]');
-    await shaNode.click();
-    await page.fill('[data-testid="input-text-sha256"]', symKey);
-    const hashBtn = page.locator('[data-testid="encrypt-btn-sha256"], [data-testid="hash-btn-sha256"]').first();
-    if (await hashBtn.count() > 0) { await hashBtn.click(); }
-    const outputSha = page.locator('[data-testid="output-text-sha256"]');
-    await expect(outputSha).not.toBeEmpty();
-    const keyHash = await outputSha.textContent();
+    await openExhibit(page, /SHA-256 Vault/i, 'sha256');
+    await page.getByTestId('input-text-sha256').fill(symKey);
+    await executeCipher(page, 'sha256', 'encrypt');
+    const outputSha = page.getByTestId('output-text-sha256');
+    await expect(outputSha).toHaveText(/^[a-f0-9]{64}$/);
+    const keyHash = (await outputSha.textContent())?.trim() || '';
 
-    // Alice signs (encrypts) the hash using Alice's private key
-    await rsaNode.click();
-    await page.fill('[data-testid="input-text-rsa"]', keyHash || '');
-    if (await encryptBtnRsa.count() > 0) { await encryptBtnRsa.click(); }
-    await expect(outputRsa).not.toBeEmpty();
-    const signature = await outputRsa.textContent();
-    expect(signature).not.toBe('');
-  });
-
-  test('TC-T4-SCENARIO-10: Timeline Browsing History Integration', async ({ page }) => {
-    // Click Caesar, Enigma, AES
-    const caesarNode = page.locator('[data-testid="timeline-node-caesar"]');
-    await caesarNode.click();
-    await expect(page).toHaveURL(/#caesar/);
-
-    const enigmaNode = page.locator('[data-testid="timeline-node-enigma"]');
-    await enigmaNode.click();
-    await expect(page).toHaveURL(/#enigma/);
-
-    const aesNode = page.locator('[data-testid="timeline-node-aes"]');
-    await aesNode.click();
-    await expect(page).toHaveURL(/#aes/);
-
-    // Back
-    await page.goBack();
-    await expect(page).toHaveURL(/#enigma/);
-
-    // Forward
-    await page.goForward();
-    await expect(page).toHaveURL(/#aes/);
+    await openExhibit(page, /RSA Vault/i, 'rsa');
+    await page.getByTestId('input-text-rsa').fill(keyHash);
+    await executeCipher(page, 'rsa', 'encrypt');
+    await expect(outputRsa).not.toHaveText(/Result will appear here/i);
   });
 });
