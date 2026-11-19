@@ -72,9 +72,14 @@ jobs:
         run: npx next build
 
   e2e-test:
-    name: Playwright E2E Tests
+    name: Playwright E2E (${{ matrix.shard }})
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [backend-test, frontend-test-and-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/4", "2/4", "3/4", "4/4"]
 
     steps:
       - name: Checkout repository
@@ -108,13 +113,13 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E test suite
-        run: bash scripts/run_e2e.sh
+        run: bash scripts/run_e2e.sh --shard=${{ matrix.shard }}
 
       - name: Upload Playwright report and server logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-e2e-artifacts
+          name: playwright-e2e-artifacts-${{ strategy.job-index }}
           path: |
             web/playwright-report/
             test-results/

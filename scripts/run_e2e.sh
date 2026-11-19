@@ -17,6 +17,7 @@ mkdir -p "$LOG_DIR"
 
 INSTALL_DEPS=false
 DEV_MODE=false
+PW_ARGS=()
 
 for arg in "$@"; do
     case "$arg" in
@@ -27,6 +28,7 @@ for arg in "$@"; do
             DEV_MODE=true
             ;;
         *)
+            PW_ARGS+=("$arg")
             ;;
     esac
 done
@@ -140,7 +142,7 @@ fi
 
 # Run Playwright test suite
 echo ">> Executing Playwright E2E tests..."
-npx playwright test --config=playwright.config.ts
+npx playwright test --config=playwright.config.ts "${PW_ARGS[@]}"
 TEST_EXIT_CODE=$?
 
 if [ $TEST_EXIT_CODE -eq 0 ]; then
