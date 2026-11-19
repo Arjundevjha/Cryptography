@@ -133,8 +133,13 @@ test.describe('Tier 4: Real-World Application Scenarios E2E Tests', () => {
     // 4. AES Encrypt & Decrypt modified
     await openExhibit(page, /AES Vault/i, 'aes');
     await page.getByTestId('input-text-aes').fill(modifiedText);
+    await page.getByTestId('param-key-aes').fill('DB_KEY_SECURE_99');
+    const prevAesOutput = (await outputAes.textContent())?.trim() || '';
     await executeCipher(page, 'aes', 'encrypt');
     await expect(outputAes).not.toHaveText(/Result will appear here/i);
+    if (prevAesOutput) {
+      await expect(outputAes).not.toHaveText(prevAesOutput);
+    }
     await expect(outputAes).not.toHaveText(aesCiphertext);
     const newAesCiphertext = (await outputAes.textContent())?.trim() || '';
 
