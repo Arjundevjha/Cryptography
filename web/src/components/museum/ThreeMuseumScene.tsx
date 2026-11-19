@@ -12,8 +12,18 @@ import {
   createFlutedColumnTexture,
   createCofferedCeilingTexture,
   createContactShadowTexture,
-  createWingGalleryArtTexture,
 } from './museumTextures';
+import {
+  createExhibitPlateTexture,
+  createSideGalleryPanelTexture,
+  createFoyerMuralTexture,
+  createUniquePortraitTexture,
+} from './scene/wallArtTextures';
+import {
+  decorateExhibitRoom,
+  decorateFoyerWalls,
+  getRoomAccentPalette,
+} from './scene/wingArchitecture';
 
 interface ThreeMuseumSceneProps {
   currentView: string;
@@ -114,7 +124,6 @@ export default function ThreeMuseumScene({
   const animIdRef = useRef<number>(0);
   const rotatingArtifactsRef = useRef<THREE.Object3D[]>([]);
   const floatingMarkersRef = useRef<THREE.Object3D[]>([]);
-  const statueGlyphsRef = useRef<THREE.Object3D[]>([]);
   const activeExhibitSpotRef = useRef<THREE.SpotLight | null>(null);
   const activeExhibitWashRef = useRef<THREE.PointLight | null>(null);
 
@@ -397,33 +406,13 @@ export default function ThreeMuseumScene({
     frontWall.position.set(0, 6, -104);
     scene.add(frontWall);
 
-    // Grand Central Vista Focal Apse on the Far North Wall (anchors the main corridor sightline)
-    const apseGroup = new THREE.Group();
-    apseGroup.position.set(0, 0, -103.4);
-    const apseWainscot = new THREE.Mesh(new THREE.BoxGeometry(26, 1.4, 0.4), wainscotMat);
-    apseWainscot.position.y = 0.7;
-    apseGroup.add(apseWainscot);
-    const apsePanel = new THREE.Mesh(
-      new THREE.BoxGeometry(12, 8.2, 0.35),
-      new THREE.MeshStandardMaterial({ color: 0x3b4e41, roughness: 0.65 })
-    );
-    apsePanel.position.set(0, 5.2, 0.15);
-    apseGroup.add(apsePanel);
-    const apseFrame = new THREE.Mesh(new THREE.BoxGeometry(12.6, 8.8, 0.25), goldMat);
-    apseFrame.position.set(0, 5.2, 0.08);
-    apseGroup.add(apseFrame);
-    const apseCrest = new THREE.Mesh(new THREE.TorusGeometry(2.2, 0.12, 16, 48), goldMat);
-    apseCrest.position.set(0, 5.4, 0.4);
-    apseGroup.add(apseCrest);
-    const apseCrestInner = new THREE.Mesh(new THREE.OctahedronGeometry(0.95, 0), goldMat);
-    apseCrestInner.position.set(0, 5.4, 0.42);
-    apseGroup.add(apseCrestInner);
-    [-6.8, 6.8].forEach((px) => {
-      const pilaster = new THREE.Mesh(new THREE.BoxGeometry(0.95, 11.4, 0.65), travertineTrimMat);
-      pilaster.position.set(px, 5.7, 0.25);
-      apseGroup.add(pilaster);
-    });
-    scene.add(apseGroup);
+    // Continuous subtle wainscoting flush along the north perimeter wall
+    const northWainscot = new THREE.Mesh(new THREE.BoxGeometry(170, 1.4, 0.12), wainscotMat);
+    northWainscot.position.set(0, 0.7, -103.54);
+    scene.add(northWainscot);
+    const northRail = new THREE.Mesh(new THREE.BoxGeometry(170, 0.06, 0.16), trimMat);
+    northRail.position.set(0, 1.42, -103.54);
+    scene.add(northRail);
 
     const sideWallGeo = new THREE.BoxGeometry(0.8, 12, 140);
     const leftExteriorWall = new THREE.Mesh(sideWallGeo, wallMat);
@@ -433,6 +422,17 @@ export default function ThreeMuseumScene({
     const rightExteriorWall = new THREE.Mesh(sideWallGeo, wallMat);
     rightExteriorWall.position.set(85, 6, -35);
     scene.add(rightExteriorWall);
+
+    decorateFoyerWalls(scene, {
+      materials: { goldMat, trimMat, wainscotMat, travertineTrimMat, crystalMat },
+      murals: {
+        leftTex: createFoyerMuralTexture('classical'),
+        rightTex: createFoyerMuralTexture('modern'),
+        classicalTex: createFoyerMuralTexture('evolution'),
+        historicalTex: createFoyerMuralTexture('historical'),
+        modernTex: createFoyerMuralTexture('modern'),
+      },
+    });
 
     // Architectural Wall Sconces along Perimeter & Rotunda
     const buildWallSconce = (sx: number, sy: number, sz: number, rotY: number) => {
@@ -447,38 +447,6 @@ export default function ThreeMuseumScene({
       scene.add(sconce);
     };
     [-22, -10, 10, 22].forEach((sx) => buildWallSconce(sx, 5.2, 31.5, Math.PI));
-
-    // Museum Walnut & Tufted Leather Gallery Benches
-    const buildGalleryBench = (bx: number, bz: number, rotY: number = 0) => {
-      const bench = new THREE.Group();
-      bench.position.set(bx, 0, bz);
-      bench.rotation.y = rotY;
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.12, 0.95), wainscotMat);
-      frame.position.y = 0.42;
-      bench.add(frame);
-      const cushion = new THREE.Mesh(new THREE.BoxGeometry(2.72, 0.14, 0.88), leatherMat);
-      cushion.position.y = 0.54;
-      cushion.castShadow = true;
-      bench.add(cushion);
-      const brassTrim = new THREE.Mesh(new THREE.BoxGeometry(2.82, 0.03, 0.97), trimMat);
-      brassTrim.position.y = 0.36;
-      bench.add(brassTrim);
-      [
-        [-1.15, -0.35],
-        [1.15, -0.35],
-        [-1.15, 0.35],
-        [1.15, 0.35],
-      ].forEach(([lx, lz]) => {
-        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.36, 0.12), matteBlackMat);
-        leg.position.set(lx, 0.18, lz);
-        bench.add(leg);
-      });
-      scene.add(bench);
-    };
-    buildGalleryBench(-13.5, 16, Math.PI / 5);
-    buildGalleryBench(13.5, 16, -Math.PI / 5);
-    buildGalleryBench(-20, -16, Math.PI / 4);
-    buildGalleryBench(20, -16, -Math.PI / 4);
 
     // ============================
     // 8. GRAND ENTRANCE FOYER, COLONNADE, PORTRAITS & TIMELINE FRIEZE
@@ -618,8 +586,8 @@ export default function ThreeMuseumScene({
         name: 'Marian Rejewski',
         lifespan: '1905–1980',
         legacy: 'First Mathematical Breaker of Enigma (1932)',
-        pos: [-12.5, 0, 31.2] as [number, number, number],
-        rotY: Math.PI,
+        pos: [-12.2, 0, -1.8] as [number, number, number],
+        rotY: Math.PI * 0.14,
       },
       {
         name: 'Charles Wheatstone',
@@ -658,7 +626,7 @@ export default function ThreeMuseumScene({
       outerFrame.position.set(0, 3.45, 0.22);
       steleGroup.add(outerFrame);
 
-      const portraitTex = getArchivalPortraitTexture(pt.name, pt.lifespan, pt.legacy);
+      const portraitTex = createUniquePortraitTexture(pt.name, pt.lifespan, pt.legacy);
       const canvasMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(2.15, 2.75),
         new THREE.MeshStandardMaterial({ map: portraitTex, roughness: 0.38 })
@@ -686,19 +654,15 @@ export default function ThreeMuseumScene({
     // ============================
     // 8.5. GRAND ROTUNDA OF CRYPTOGRAPHIC PIONEERS (THE 4 PILLARS)
     // ============================
-    const statueGlyphs: THREE.Object3D[] = [];
-
     MUSEUM_STATUES.forEach((statue) => {
       const statueGroup = new THREE.Group();
       statueGroup.position.set(...statue.position);
       statueGroup.rotation.y = statue.rotationY;
       statueGroup.userData = { statueId: statue.id };
 
-      buildStatueMonument(statue, statueGroup, statueGlyphs);
+      buildStatueMonument(statue, statueGroup);
       scene.add(statueGroup);
     });
-
-    statueGlyphsRef.current = statueGlyphs;
 
     // ============================
     // 9. THEMATIC GRAND WING PORTALS & ARCHWAYS
@@ -827,7 +791,6 @@ export default function ThreeMuseumScene({
       roughness: 0.24,
       metalness: 0.05,
     });
-    const velvetBedMat = new THREE.MeshStandardMaterial({ color: 0x7a221a, roughness: 0.85, metalness: 0.02 });
 
     MUSEUM_EXHIBITS.forEach((exhibit, exIdx) => {
       const roomGroup = new THREE.Group();
@@ -835,18 +798,24 @@ export default function ThreeMuseumScene({
       roomGroup.rotation.y = exhibit.rotationY;
       roomGroup.userData = { exhibitId: exhibit.id };
       const roomWallMat = wingWallMaterials[exhibit.category];
+      const roomPalette = getRoomAccentPalette(exhibit.id, exhibit.category, exIdx);
+      const velvetBedMat = new THREE.MeshStandardMaterial({
+        color: roomPalette.velvetColor,
+        roughness: 0.85,
+        metalness: 0.02,
+      });
 
-      // Back Wall with Walnut Wainscoting & Crown Molding
+      // Back Wall with Interior Walnut Wainscoting & Crown Molding
       const backWall = new THREE.Mesh(new THREE.BoxGeometry(14, 8.5, 0.4), roomWallMat);
       backWall.position.set(0, 4.25, -6);
       roomGroup.add(backWall);
 
-      const backWainscot = new THREE.Mesh(new THREE.BoxGeometry(13.6, 1.2, 0.46), wainscotMat);
-      backWainscot.position.set(0, 0.6, -5.96);
+      const backWainscot = new THREE.Mesh(new THREE.BoxGeometry(13.6, 1.2, 0.08), wainscotMat);
+      backWainscot.position.set(0, 0.6, -5.76);
       roomGroup.add(backWainscot);
 
-      const backRail = new THREE.Mesh(new THREE.BoxGeometry(13.6, 0.05, 0.5), trimMat);
-      backRail.position.set(0, 1.22, -5.96);
+      const backRail = new THREE.Mesh(new THREE.BoxGeometry(13.6, 0.05, 0.08), trimMat);
+      backRail.position.set(0, 1.22, -5.76);
       roomGroup.add(backRail);
 
       // Warm Recessed Alcove Frame & Curatorial Archival Plate on Back Wall
@@ -858,7 +827,7 @@ export default function ThreeMuseumScene({
       alcoveInner.position.set(0, 4.35, -5.76);
       roomGroup.add(alcoveInner);
 
-      const galleryArtTex = createWingGalleryArtTexture(exhibit.name, exhibit.category, exhibit.timeline);
+      const galleryArtTex = createExhibitPlateTexture(exhibit.id, exhibit.name, exhibit.category, exhibit.timeline);
       const galleryArtMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(4.8, 4.05),
         new THREE.MeshStandardMaterial({ map: galleryArtTex, roughness: 0.42 })
@@ -872,7 +841,7 @@ export default function ThreeMuseumScene({
       alcoveLampHood.position.set(0, 6.85, -5.45);
       roomGroup.add(alcoveLampHood);
 
-      // Side Walls with Walnut Wainscoting
+      // Side Walls with Interior Walnut Wainscoting
       const sideWallGeo = new THREE.BoxGeometry(0.4, 8.5, 12);
       const leftWall = new THREE.Mesh(sideWallGeo, roomWallMat);
       leftWall.position.set(-7, 4.25, 0);
@@ -882,11 +851,11 @@ export default function ThreeMuseumScene({
       rightWall.position.set(7, 4.25, 0);
       roomGroup.add(rightWall);
 
-      [-6.95, 6.95].forEach((wx) => {
-        const sWainscot = new THREE.Mesh(new THREE.BoxGeometry(0.46, 1.2, 11.8), wainscotMat);
+      [-6.76, 6.76].forEach((wx) => {
+        const sWainscot = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.2, 11.6), wainscotMat);
         sWainscot.position.set(wx, 0.6, 0);
         roomGroup.add(sWainscot);
-        const sRail = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 11.8), trimMat);
+        const sRail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.05, 11.6), trimMat);
         sRail.position.set(wx, 1.22, 0);
         roomGroup.add(sRail);
       });
@@ -933,9 +902,9 @@ export default function ThreeMuseumScene({
         roomGroup.add(fWainscot);
       });
 
-      // Coffered Ceiling Roof
-      const roomRoof = new THREE.Mesh(new THREE.BoxGeometry(14.4, 0.3, 12.4), roomRoofMat);
-      roomRoof.position.set(0, 8.6, 0);
+      // Coffered Ceiling Roof (bottom flush at y=8.50, zero overlap/overhang)
+      const roomRoof = new THREE.Mesh(new THREE.BoxGeometry(14.0, 0.3, 12.0), roomRoofMat);
+      roomRoof.position.set(0, 8.65, 0);
       roomGroup.add(roomRoof);
 
       // Physical Ceiling Spotlight Track Rail & Angled Brass Cans
@@ -1024,6 +993,29 @@ export default function ThreeMuseumScene({
       buildHighQualityArtifact(exhibit.id, artifactGroup);
       roomGroup.add(artifactGroup);
       rotatingArtifacts.push(artifactGroup);
+
+      decorateExhibitRoom(roomGroup, {
+        exhibitId: exhibit.id,
+        title: exhibit.name,
+        subtitle: exhibit.subtitle,
+        timeline: exhibit.timeline,
+        category: exhibit.category,
+        exIdx,
+        sidePanelTex: createSideGalleryPanelTexture(
+          exhibit.id,
+          exhibit.name,
+          exhibit.subtitle,
+          exhibit.timeline,
+          exhibit.category
+        ),
+        materials: {
+          goldMat,
+          trimMat,
+          wainscotMat,
+          travertineTrimMat,
+          crystalMat,
+        },
+      });
 
       scene.add(roomGroup);
     });
@@ -1257,12 +1249,6 @@ export default function ThreeMuseumScene({
       floatingMarkersRef.current.forEach((marker, idx) => {
         marker.rotation.y += delta * 1.5;
         marker.position.y = marker.userData.baseY + Math.sin(time * 0.003 + idx * 0.5) * 0.25;
-      });
-
-      // Animate statue floating holographic glyphs
-      statueGlyphsRef.current.forEach((glyph, idx) => {
-        glyph.rotation.y += delta * 1.2;
-        glyph.position.y = (glyph.userData.baseY || 4.3) + Math.sin(time * 0.003 + idx * 1.2) * 0.15;
       });
 
       // Smooth frame-rate-independent camera lerp during button room selection jumps
@@ -1926,8 +1912,7 @@ function createPioneerBust(
 
 function buildStatueMonument(
   statue: CryptographicStatue,
-  group: THREE.Group,
-  statueGlyphs: THREE.Object3D[]
+  group: THREE.Group
 ) {
   // Rich Classical & Sculptural PBR Materials (MeshStandardMaterial for high FPS)
   const carraraMarble = new THREE.MeshStandardMaterial({
@@ -2221,33 +2206,6 @@ function buildStatueMonument(
 
     alkindiGroup.add(lecternGroup);
 
-    // 7. Floating Celestial Astrolabe Glyph with Frequency Bars
-    const glyphGroup = new THREE.Group();
-    glyphGroup.position.set(0, 4.35, 0);
-    glyphGroup.userData = { baseY: 4.35 };
-
-    const astrolabe = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.032, 16, 48), gildedGold);
-    glyphGroup.add(astrolabe);
-
-    const innerRing = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.022, 16, 32), antiqueGold);
-    innerRing.rotation.y = Math.PI / 2;
-    glyphGroup.add(innerRing);
-
-    const barHeights = [0.15, 0.38, 0.25, 0.52, 0.32, 0.18];
-    const barMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      emissive: 0xd97706,
-      emissiveIntensity: 0.8,
-    });
-    barHeights.forEach((h, bIdx) => {
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.06, h, 0.06), barMat);
-      bar.position.set(-0.25 + bIdx * 0.1, h / 2 - 0.15, 0);
-      glyphGroup.add(bar);
-    });
-
-    group.add(glyphGroup);
-    statueGlyphs.push(glyphGroup);
-
     group.add(alkindiGroup);
 
   } else if (statue.id === 'statue-turing') {
@@ -2346,29 +2304,6 @@ function buildStatueMonument(
     );
     turingGroup.add(punchTape);
 
-    // 7. Floating Bombe Electromechanical Rotor Contradiction Glyph
-    const glyphGroup = new THREE.Group();
-    glyphGroup.position.set(0, 4.35, 0);
-    glyphGroup.userData = { baseY: 4.35 };
-
-    [0.34, 0.24, 0.14].forEach((rRad, rIdx) => {
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(rRad, 0.022, 16, 48),
-        new THREE.MeshStandardMaterial({
-          color: 0xf59e0b,
-          emissive: 0xb45309,
-          emissiveIntensity: 0.75,
-          metalness: 0.88,
-          roughness: 0.15,
-        })
-      );
-      ring.rotation.x = rIdx * 0.6;
-      ring.rotation.y = rIdx * 0.8;
-      glyphGroup.add(ring);
-    });
-
-    group.add(glyphGroup);
-    statueGlyphs.push(glyphGroup);
     group.add(turingGroup);
 
   } else if (statue.id === 'statue-shannon') {
@@ -2455,40 +2390,6 @@ function buildStatueMonument(
       new THREE.MeshStandardMaterial({ color: 0xfef08a, roughness: 0.6 })
     );
     shannonGroup.add(tape);
-
-    // 7. Floating Celestial Double-Helix Entropy Spiral
-    const glyphGroup = new THREE.Group();
-    glyphGroup.position.set(0, 4.35, 0);
-    glyphGroup.userData = { baseY: 4.35 };
-
-    const spiral = new THREE.Mesh(
-      new THREE.TorusKnotGeometry(0.26, 0.055, 96, 24, 2, 3),
-      new THREE.MeshStandardMaterial({
-        color: 0x0284c7,
-        emissive: 0x0369a1,
-        emissiveIntensity: 0.8,
-        roughness: 0.1,
-        metalness: 0.8,
-      })
-    );
-    glyphGroup.add(spiral);
-
-    for (let b = 0; b < 4; b++) {
-      const bitAngle = (b * Math.PI) / 2;
-      const bitMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(0.04, 16, 16),
-        new THREE.MeshStandardMaterial({
-          color: 0x38bdf8,
-          emissive: 0x0284c7,
-          emissiveIntensity: 1.0,
-        })
-      );
-      bitMesh.position.set(Math.cos(bitAngle) * 0.42, Math.sin(bitAngle * 2) * 0.15, Math.sin(bitAngle) * 0.42);
-      glyphGroup.add(bitMesh);
-    }
-
-    group.add(glyphGroup);
-    statueGlyphs.push(glyphGroup);
 
     group.add(shannonGroup);
 
@@ -2667,33 +2568,6 @@ function buildStatueMonument(
     archGroup.add(medallion);
 
     twinGroup.add(archGroup);
-
-    // ---------------------------------------------
-    // FLOATING HOLOGRAM: INTERLOCKING PUBLIC/PRIVATE KEY RINGS
-    // ---------------------------------------------
-    const glyphGroup = new THREE.Group();
-    glyphGroup.position.set(0, 4.35, 0);
-    glyphGroup.userData = { baseY: 4.35 };
-
-    const pubRing = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.04, 16, 32), gildedGold);
-    glyphGroup.add(pubRing);
-
-    const privRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.26, 0.04, 16, 32),
-      new THREE.MeshStandardMaterial({
-        color: 0x9333ea,
-        emissive: 0x7e22ce,
-        emissiveIntensity: 0.7,
-      })
-    );
-    privRing.rotation.y = Math.PI / 2;
-    glyphGroup.add(privRing);
-
-    const lockBody = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.06), gildedGold);
-    glyphGroup.add(lockBody);
-
-    group.add(glyphGroup);
-    statueGlyphs.push(glyphGroup);
 
     group.add(twinGroup);
   }

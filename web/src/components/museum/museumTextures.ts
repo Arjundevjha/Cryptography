@@ -156,7 +156,7 @@ export function createHerringboneParquetTexture(repeatX = 2, repeatY = 14): THRE
 }
 
 /**
- * Textured Venetian plaster / gallery wall finish (avoids flat solid-color walls).
+ * Clean architectural Venetian plaster / subtle stone paneling finish.
  */
 export function createVenetianPlasterTexture(
   baseHex: string,
@@ -172,28 +172,47 @@ export function createVenetianPlasterTexture(
   ctx.fillStyle = baseHex;
   ctx.fillRect(0, 0, size, size);
 
-  // Soft trowel-mottled plaster clouds
-  for (let i = 0; i < 45; i++) {
-    const x = rand() * size;
+  // Gentle linear architectural sheen (no dark circular blotches)
+  const sheen = ctx.createLinearGradient(0, 0, size, size);
+  sheen.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+  sheen.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+  sheen.addColorStop(1, accentHex);
+  ctx.globalAlpha = 0.07;
+  ctx.fillStyle = sheen;
+  ctx.fillRect(0, 0, size, size);
+
+  // Subtle horizontal & vertical plaster trowel bands
+  ctx.globalAlpha = 0.04;
+  for (let i = 0; i < 18; i++) {
     const y = rand() * size;
-    const r = 24 + rand() * 58;
-    const grad = ctx.createRadialGradient(x, y, 2, x, y, r);
-    grad.addColorStop(0, accentHex);
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.globalAlpha = 0.14 + rand() * 0.12;
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
+    const h = 12 + rand() * 28;
+    ctx.fillStyle = i % 2 === 0 ? '#ffffff' : accentHex;
+    ctx.fillRect(0, y, size, h);
   }
   ctx.globalAlpha = 1;
 
-  // Fine mineral flecks
-  for (let i = 0; i < 450; i++) {
+  // Refined architectural stone panel seams
+  const panelSize = size / 2;
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.035)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 2; i++) {
+    const p = i * panelSize;
+    ctx.beginPath();
+    ctx.moveTo(p, 0);
+    ctx.lineTo(p, size);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, p);
+    ctx.lineTo(size, p);
+    ctx.stroke();
+  }
+
+  // Ultra-fine mineral grain
+  for (let i = 0; i < 240; i++) {
     const x = rand() * size;
     const y = rand() * size;
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,250,240,0.08)' : 'rgba(60,45,30,0.06)';
-    ctx.fillRect(x, y, 2, 2);
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 252, 245, 0.035)' : 'rgba(40, 32, 24, 0.02)';
+    ctx.fillRect(x, y, 1.5, 1.5);
   }
 
   return configureTexture(canvas, repeatX, repeatY);
