@@ -124,3 +124,13 @@ jobs:
             web/playwright-report/
             test-results/
           retention-days: 7
+
+  deploy:
+    name: Deploy to Vercel (Production)
+    runs-on: ubuntu-24.04
+    needs: [backend-test, frontend-test-and-build, e2e-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Trigger Vercel Production Deploy Hook
+        run: curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
