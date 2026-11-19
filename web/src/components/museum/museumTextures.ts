@@ -167,6 +167,7 @@ export function createVenetianPlasterTexture(
 ): THREE.CanvasTexture {
   const size = 256;
   const [canvas, ctx] = createCanvas(size, size);
+  if (!ctx) return configureTexture(canvas, repeatX, repeatY);
   const rand = seededRandom(seed);
 
   ctx.fillStyle = baseHex;

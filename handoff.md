@@ -1,28 +1,21 @@
-# Session Handoff Summary
+# Session Handoff — Cryptography Museum
 
 ## Executive Summary
-Completed **Cryptanalysis Attack Labs**, **Mobile 3D Navigation & Spatial Polish**, and **Engineering Hygiene, CI/CD & Backend Modularization** via parallel swarm execution, merged all 5 author branches onto `main`, and verified end-to-end:
-1. **Interactive Cryptanalysis & "Break the Cipher" Labs**:
-   - **Backend (`methods/*/cryptanalysis.py`, `web/api/routers/cryptanalysis.py`)**: Pure-Python engines and unit tests for Caesar chi-squared brute-force, Affine brute-force + known-plaintext solver, Vigenère IoC + Kasiski + key recovery, Enigma Bombe crib-dragging (`WETTER`), Lorenz depth XOR + crib-dragging, AES-CBC bit-flipping (`guest` → `admin`), and small-prime RSA factoring (Fermat + Pollard's rho + recovered `d`), exposed under `POST /api/cryptanalysis/{caesar,affine,vigenere,enigma-bombe,lorenz-depth,cbc-bitflip,rsa-factor}`.
-   - **Frontend (`web/src/components/museum/workbench/labs/`)**: `ClassicalAttackLab.tsx`, `HistoricalAttackLab.tsx`, `ModernAttackLab.tsx`, `AttackLabView.tsx`, and `labApi.ts`, wired as an **Attack Lab** tab in `WorkbenchPanel.tsx` for the 7 supported exhibits, plus Jest unit tests (`web/tests/unit/attackLabs.test.tsx`).
-2. **Mobile 3D Navigation & Spatial Polish**:
-   - **Mobile D-Pad (`web/src/components/museum/hud/MobileNavPad.tsx`)**: Touch D-pad (`md:hidden`) wired via `mobileKeysRef` in `MuseumCanvas.tsx` into `ThreeMuseumScene.tsx`'s WASD/proximity loop.
-   - **Procedural Web Audio (`web/src/components/museum/audio/museumAudio.ts`)**: Pure Web Audio API synthesizer (`playMechanicalClick`, `playVaultChime`, `toggleAmbient`) with `localStorage`-persisted mute toggle (`hud-audio-toggle`) in `MuseumHUD.tsx` and chime trigger in `PassportChallengeView.tsx`.
-   - **Pioneer Statue Polish (`web/src/components/museum/ThreeMuseumScene.tsx`)**: Gallery spotlight/rim wash on focused `statue-*` monuments, gilded pedestal halo ring, and `statueId` propagation on GLB meshes, plus Jest unit tests (`web/tests/unit/spatialPolish.test.tsx`).
-3. **Engineering Hygiene, CI/CD & Backend Modularization**:
-   - **GitHub Actions CI (`.github/workflows/ci.yml`)**: Automated `backend-test` (Python 3.11/3.12), `frontend-test-and-build` (Node 20), and `e2e-test` (Playwright Chromium via `scripts/run_e2e.sh`) on pushes/PRs to `main`.
-   - **FastAPI Router Split (`web/api/routers/`)**: Split `web/api/main.py` into `classical.py`, `historical.py`, `modern.py`, and `cryptanalysis.py`, keeping `main.py` as the clean entrypoint with `VercelPathMiddleware` and health/validate routes.
-   - **Legacy E2E Audit (`web/tests/e2e/`)**: Added `helpers.ts` and updated `classical.spec.ts`, `historical.spec.ts`, `modern.spec.ts`, `interactions.spec.ts`, and `scenarios.spec.ts` (plus `PLAYWRIGHT_BASE_URL` in `web/playwright.config.ts`) to align with the 3D/HUD layout.
+Completed **3D Museum Visual & Room Uniqueness** pass locally on `main` (commit `5da16427` merged from swarm branches; **NOT pushed** per user request):
+- **Unique Per-Exhibit Artwork & Side Panels**: Added `web/src/components/museum/scene/wallArtTextures.ts` (`EXHIBIT_ART_SPECS` for all 17 exhibits, `createExhibitPlateTexture`, `createSideGalleryPanelTexture`, `createFoyerMuralTexture`, `createUniquePortraitTexture`) so every room has bespoke schematics and right-wall curatorial fact sheets instead of category-wide duplicates.
+- **Per-Room & Foyer Architecture**: Added `web/src/components/museum/scene/wingArchitecture.ts` (`getRoomAccentPalette`, `decorateExhibitRoom`, `decorateFoyerWalls`) adding per-exhibit velvet colors, floor runners, wing-styled sconces, corner accents, and framed perimeter/foyer murals.
+- **Visual Bug Fixes in `ThreeMuseumScene.tsx` & `museumTextures.ts`**:
+  - Moved `Marian Rejewski` portrait from `[-12.5, 0, 31.2]` (behind spawn) to `[-12.2, 0, -1.8]` (`rotY: Math.PI * 0.14`) and gave all 5 archival portraits unique illustrations.
+  - Removed random floating `statueGlyphs` above the 4 pioneer statues' heads.
+  - Removed the bare north-wall `apseGroup` placeholder (green box, torus, floating octahedron, and jutting 26-wide `apseWainscot`) and replaced with clean continuous north-wall wainscoting + framed murals.
+  - Removed all stray/clipping `buildGalleryBench` placements.
+  - Fixed room exterior Z-fighting seams (`backWainscot`/`backRail`/`sWainscot`/`sRail` recessed to `0.08` interior-only trim) and ceiling-wall seam (`roomRoof` flush `14.0 x 0.3 x 12.0` at `y = 8.65`).
+  - Replaced mold-like radial blotches in `createVenetianPlasterTexture` with clean architectural plaster/stone paneling.
 
-## Verification (Verified on `main`)
-- `pytest -q`: **894 passed**, 0 failed
-- `python3 -m pytest web/api/test_main.py -q`: **398 passed**, 0 failed
-- `cd web && npm test -- --silent`: **9/9 suites, 111 passed**, 0 failed
-- `cd web && npx next build`: Clean TypeScript + Turbopack build
-- Playwright E2E (all 7 specs): **110 passed**, 0 failed
-- Snyk Code SAST (`methods/`, `web/api/`, `web/src/components/museum/`): **0 issues**
-- `graphify update .`: **1967 nodes, 3067 edges, 145 communities**
+## Active State
+- Branch: `main` at `5da16427` (ahead of `origin/main`, **unpushed**).
+- Tests verified: `cd web && npx tsc --noEmit` (0 errors), `cd web && npm test -- --silent` (11/11 suites, 124/124 tests passed), `cd web && npx next build` (clean), `graphify update .` (2012 nodes, 3165 edges).
+- Playwright E2E (`museum-3d.spec.ts` + `audit-mobile-a11y.spec.ts`) running/pending completion.
 
-## Immediate Next Steps
-- Push local `main` to `origin/main` when ready to trigger the new `.github/workflows/ci.yml` pipeline and Vercel deployment.
-- Optional next milestone: **Next-Gen Cryptography Wing Expansion** (Elliptic Curve Cryptography ECDH/ECDSA, Authenticated Encryption AES-GCM/ChaCha20-Poly1305, Merkle Trees).
+## Next Steps
+- Review live 3D museum locally (`npm run dev` in `web/`) and push to `origin main` only when the user explicitly approves.
