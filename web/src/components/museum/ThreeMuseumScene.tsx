@@ -143,8 +143,14 @@ export default function ThreeMuseumScene({
 
     // === 1. HIGH-PERFORMANCE WEBGL RENDERER ===
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+    const gl = renderer.getContext();
+    const debugRendererInfo = gl?.getExtension('WEBGL_debug_renderer_info');
+    const unmaskedRenderer = debugRendererInfo
+      ? String(gl.getParameter(debugRendererInfo.UNMASKED_RENDERER_WEBGL) || '')
+      : '';
+    const isSoftwareWebGL = /swiftshader|llvmpipe|software|mesa/i.test(unmaskedRenderer);
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
+    renderer.setPixelRatio(isSoftwareWebGL ? 0.5 : Math.min(window.devicePixelRatio, 1.0));
     renderer.shadowMap.enabled = false;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
@@ -1097,8 +1103,14 @@ export default function ThreeMuseumScene({
     // 12. FPV IN-PLACE HEAD LOOK & SPATIAL PROXIMITY ANIMATION LOOP
     // ============================
     let lastTime = performance.now();
+    let lastRenderTime = 0;
 
     const animate = (time: number) => {
+      if (isSoftwareWebGL && time - lastRenderTime < 100) {
+        animIdRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastRenderTime = time;
       const rawDelta = Math.max((time - lastTime) / 1000, 0.001);
       const delta = Math.min(rawDelta, 0.1);
       lastTime = time;
