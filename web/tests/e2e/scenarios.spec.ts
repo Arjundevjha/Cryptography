@@ -116,7 +116,10 @@ test.describe('Tier 4: Real-World Application Scenarios E2E Tests', () => {
 
     // 2. AES Encrypt original
     await openExhibit(page, /AES Vault/i, 'aes');
-    await page.getByTestId('input-text-aes').fill(entryText);
+    const aesInput = page.getByTestId('input-text-aes');
+    await expect(aesInput).toHaveValue('HELLO MUSEUM WORLD');
+    await aesInput.fill(entryText);
+    await expect(aesInput).toHaveValue(entryText);
     await page.getByTestId('param-key-aes').fill('DB_KEY_SECURE_99');
     await executeCipher(page, 'aes', 'encrypt');
     const outputAes = page.getByTestId('output-text-aes');
@@ -132,7 +135,9 @@ test.describe('Tier 4: Real-World Application Scenarios E2E Tests', () => {
 
     // 4. AES Encrypt & Decrypt modified
     await openExhibit(page, /AES Vault/i, 'aes');
-    await page.getByTestId('input-text-aes').fill(modifiedText);
+    await expect(aesInput).toHaveValue('HELLO MUSEUM WORLD');
+    await aesInput.fill(modifiedText);
+    await expect(aesInput).toHaveValue(modifiedText);
     await page.getByTestId('param-key-aes').fill('DB_KEY_SECURE_99');
     await executeCipher(page, 'aes', 'encrypt');
     await expect(outputAes).toHaveText(new RegExp(`^[a-f0-9]{${modifiedText.length * 2}}$`));
