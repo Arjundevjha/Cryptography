@@ -6,6 +6,24 @@ from . import symmetric
 from . import keypair
 from . import digital_signatures
 from . import hash_functions
+from . import ecc
+from . import stream_ciphers
+from .ecc import (
+    ecdh_shared_secret,
+    ecdsa_sign,
+    ecdsa_verify,
+    derive_public_key as ecc_derive_public_key,
+    pick_keys as ecc_pick_keys,
+)
+from .stream_ciphers import (
+    chacha20_block,
+    chacha20_decrypt,
+    chacha20_encrypt,
+    chacha20_keystream,
+    otp_decrypt,
+    otp_encrypt,
+    otp_generate_key,
+)
 
 __all__ = [
     'aes',
@@ -14,4 +32,18 @@ __all__ = [
     'keypair',
     'digital_signatures',
     'hash_functions',
+    'ecc',
+    'stream_ciphers',
+    'ecc_pick_keys',
+    'ecc_derive_public_key',
+    'ecdh_shared_secret',
+    'ecdsa_sign',
+    'ecdsa_verify',
+    'otp_generate_key',
+    'otp_encrypt',
+    'otp_decrypt',
+    'chacha20_block',
+    'chacha20_keystream',
+    'chacha20_encrypt',
+    'chacha20_decrypt',
 ]

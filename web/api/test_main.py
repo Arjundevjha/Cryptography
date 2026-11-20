@@ -3017,5 +3017,184 @@ def test_cryptanalysis_rsa_factor_endpoint():
     assert bad.status_code == 400
 
 
+# ==========================================
+# ECC (ECDH & ECDSA) ENDPOINT TESTS
+# ==========================================
+
+
+def test_ecc_keygen_and_ecdh_roundtrip():
+    alice = client.post("/api/ecc/keygen", json={}).json()
+    bob = client.post("/api/ecc/keygen", json={}).json()
+
+    assert alice["curve"] == "secp256r1"
+    assert len(alice["private_key"]) == 64
+    assert len(alice["public_key"]["x"]) == 64
+    assert len(alice["public_key"]["y"]) == 64
+
+    # Deterministic derivation from private_key
+    alice_derived = client.post("/api/ecc/keygen", json={"private_key": alice["private_key"]})
+    assert alice_derived.status_code == 200
+    assert alice_derived.json()["public_key"] == alice["public_key"]
+
+    ab = client.post(
+        "/api/ecc/ecdh",
+        json={
+            "private_key": alice["private_key"],
+            "peer_public_x": bob["public_key"]["x"],
+            "peer_public_y": bob["public_key"]["y"],
+        },
+    )
+    ba = client.post(
+        "/api/ecc/ecdh",
+        json={
+            "private_key": bob["private_key"],
+            "peer_public_x": alice["public_key"]["x"],
+            "peer_public_y": alice["public_key"]["y"],
+        },
+    )
+    assert ab.status_code == 200
+    assert ba.status_code == 200
+    assert ab.json()["shared_point"] == ba.json()["shared_point"]
+    assert ab.json()["shared_secret_hex"] == ba.json()["shared_secret_hex"]
+
+
+def test_ecc_ecdsa_sign_and_verify_endpoints():
+    kp = client.post("/api/ecc/keygen", json={}).json()
+    msg = "Museum ECC P-256 Signature Check"
+
+    sign_resp = client.post(
+        "/api/ecc/sign",
+        json={"message": msg, "private_key": kp["private_key"]},
+    )
+    assert sign_resp.status_code == 200
+    sign_data = sign_resp.json()
+    assert sign_data["algorithm"] == "ecdsa-p256-sha256"
+    assert len(sign_data["digest_hex"]) == 64
+
+    verify_resp = client.post(
+        "/api/ecc/verify",
+        json={
+            "message": msg,
+            "public_x": kp["public_key"]["x"],
+            "public_y": kp["public_key"]["y"],
+            "r": sign_data["signature"]["r"],
+            "s": sign_data["signature"]["s"],
+        },
+    )
+    assert verify_resp.status_code == 200
+    assert verify_resp.json()["valid"] is True
+
+    tampered_resp = client.post(
+        "/api/ecc/verify",
+        json={
+            "message": msg + "!",
+            "public_x": kp["public_key"]["x"],
+            "public_y": kp["public_key"]["y"],
+            "r": sign_data["signature"]["r"],
+            "s": sign_data["signature"]["s"],
+        },
+    )
+    assert tampered_resp.status_code == 200
+    assert tampered_resp.json()["valid"] is False
+
+
+def test_ecc_validation_errors():
+    # Invalid hex
+    assert client.post("/api/ecc/keygen", json={"private_key": "not-hex!"}).status_code == 400
+    # Zero private key
+    assert client.post("/api/ecc/keygen", json={"private_key": "0" * 64}).status_code == 400
+    # Off-curve peer point
+    assert (
+        client.post(
+            "/api/ecc/ecdh",
+            json={"private_key": "01", "peer_public_x": "01", "peer_public_y": "02"},
+        ).status_code
+        == 400
+    )
+    # Pydantic max_length bound (app converts RequestValidationError to 400)
+    assert client.post("/api/ecc/keygen", json={"private_key": "a" * 129}).status_code == 400
+
+
+# ==========================================
+# OTP & CHACHA20 STREAM CIPHER ENDPOINT TESTS
+# ==========================================
+
+
+def test_otp_encrypt_and_decrypt_endpoints():
+    enc = client.post("/api/otp/encrypt", json={"plaintext": "One-Time Pad Secret"})
+    assert enc.status_code == 200
+    enc_data = enc.json()
+    assert enc_data["plaintext_bytes"] == len(b"One-Time Pad Secret")
+
+    dec = client.post(
+        "/api/otp/decrypt",
+        json={
+            "ciphertext_hex": enc_data["ciphertext_hex"],
+            "key": enc_data["key_hex"],
+            "key_format": "hex",
+        },
+    )
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == "One-Time Pad Secret"
+
+    # Key shorter than plaintext fails
+    short_key = client.post(
+        "/api/otp/encrypt",
+        json={"plaintext": "hello world", "key": "abc", "key_format": "text"},
+    )
+    assert short_key.status_code == 400
+
+
+def test_chacha20_encrypt_and_decrypt_endpoints():
+    # Auto-generated key and nonce
+    enc = client.post("/api/chacha20/encrypt", json={"plaintext": "ChaCha20 Stream Cipher!"})
+    assert enc.status_code == 200
+    enc_data = enc.json()
+    assert len(enc_data["key_hex"]) == 64
+    assert len(enc_data["nonce_hex"]) == 24
+    assert len(enc_data["keystream_preview_hex"]) >= 32
+
+    dec = client.post(
+        "/api/chacha20/decrypt",
+        json={
+            "ciphertext_hex": enc_data["ciphertext_hex"],
+            "key": enc_data["key_hex"],
+            "nonce": enc_data["nonce_hex"],
+            "counter": enc_data["counter"],
+            "key_format": "hex",
+        },
+    )
+    assert dec.status_code == 200
+    assert dec.json()["plaintext"] == "ChaCha20 Stream Cipher!"
+
+
+def test_chacha20_validation_errors():
+    # Wrong key length
+    assert (
+        client.post(
+            "/api/chacha20/encrypt",
+            json={"plaintext": "hi", "key": "abcd", "key_format": "hex"},
+        ).status_code
+        == 400
+    )
+    # Wrong nonce length (Pydantic min_length=24 on decrypt, app converts to 400)
+    assert (
+        client.post(
+            "/api/chacha20/decrypt",
+            json={"ciphertext_hex": "00", "key": "00" * 32, "nonce": "00" * 4},
+        ).status_code
+        == 400
+    )
+    # Invalid key_format
+    assert (
+        client.post(
+            "/api/otp/encrypt",
+            json={"plaintext": "hi", "key": "abcd", "key_format": "base64"},
+        ).status_code
+        == 400
+    )
+
+
+
 
 

@@ -1,4 +1,4 @@
-"""Modern cipher routes: AES, AES-CBC, RSA, RSA-Sign, Hash, HMAC, Diffie-Hellman, ZKP, ML-KEM."""
+"""Modern cipher routes: AES, AES-CBC, RSA, RSA-Sign, Hash, HMAC, Diffie-Hellman, ZKP, ML-KEM, ECC, OTP, ChaCha20."""
 
 import logging
 import math
@@ -681,3 +681,305 @@ def mlkem_demo_endpoint(data: MlkemDemoInput):
     except Exception as e:
         logger.error("ML-KEM demo error: %s", e)
         raise HTTPException(status_code=400, detail="ML-KEM demo failed")
+
+
+class EccKeygenInput(BaseModel):
+    private_key: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=128,
+        description="Optional P-256 private key scalar in hex",
+    )
+
+
+class EccEcdhInput(BaseModel):
+    private_key: str = Field(..., min_length=1, max_length=128, description="Own P-256 private key scalar in hex")
+    peer_public_x: str = Field(..., min_length=1, max_length=128, description="Peer P-256 public key x in hex")
+    peer_public_y: str = Field(..., min_length=1, max_length=128, description="Peer P-256 public key y in hex")
+
+
+class EccSignInput(BaseModel):
+    message: str = Field(..., max_length=2000, description="Message to sign with ECDSA (P-256 / SHA-256)")
+    private_key: str = Field(..., min_length=1, max_length=128, description="P-256 private key scalar in hex")
+
+
+class EccVerifyInput(BaseModel):
+    message: str = Field(..., max_length=2000, description="Message to verify")
+    public_x: str = Field(..., min_length=1, max_length=128, description="Signer P-256 public key x in hex")
+    public_y: str = Field(..., min_length=1, max_length=128, description="Signer P-256 public key y in hex")
+    r: str = Field(..., min_length=1, max_length=128, description="ECDSA signature r in hex")
+    s: str = Field(..., min_length=1, max_length=128, description="ECDSA signature s in hex")
+
+
+class OtpEncryptInput(BaseModel):
+    plaintext: str = Field(..., min_length=1, max_length=500, description="Plaintext to encrypt with One-Time Pad")
+    key: str | None = Field(default=None, max_length=2000, description="Optional OTP key (hex or text)")
+    key_format: str = Field(default="hex", max_length=10, description="Key format: 'hex' or 'text'")
+
+
+class OtpDecryptInput(BaseModel):
+    ciphertext_hex: str = Field(..., min_length=2, max_length=2000, description="Hex ciphertext to decrypt")
+    key: str = Field(..., min_length=1, max_length=2000, description="OTP key (hex or text)")
+    key_format: str = Field(default="hex", max_length=10, description="Key format: 'hex' or 'text'")
+
+
+class ChaCha20EncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500, description="Plaintext to encrypt with ChaCha20")
+    key: str | None = Field(default=None, max_length=128, description="Optional 32-byte key (64 hex chars or 32-byte text)")
+    nonce: str | None = Field(default=None, max_length=64, description="Optional 12-byte nonce (24 hex chars)")
+    counter: int = Field(default=1, ge=0, lt=2**32, description="32-bit initial block counter")
+    key_format: str = Field(default="hex", max_length=10, description="Key format: 'hex' or 'text'")
+
+
+class ChaCha20DecryptInput(BaseModel):
+    ciphertext_hex: str = Field(..., max_length=2000, description="Hex ciphertext to decrypt")
+    key: str = Field(..., min_length=1, max_length=128, description="32-byte key (64 hex chars or 32-byte text)")
+    nonce: str = Field(..., min_length=24, max_length=24, description="12-byte nonce as 24 hex chars")
+    counter: int = Field(default=1, ge=0, lt=2**32, description="32-bit initial block counter")
+    key_format: str = Field(default="hex", max_length=10, description="Key format: 'hex' or 'text'")
+
+
+def _parse_ecc_hex_int(value: str, field_name: str) -> int:
+    cleaned = value.strip().lower()
+    if cleaned.startswith("0x"):
+        cleaned = cleaned[2:]
+    if not cleaned or not all(ch in "0123456789abcdef" for ch in cleaned):
+        raise HTTPException(status_code=400, detail=f"{field_name} must be a valid hex integer")
+    return int(cleaned, 16)
+
+
+def _format_ecc_hex(value: int) -> str:
+    return f"{value:064x}"
+
+
+def _parse_stream_key(key: str, key_format: str) -> bytes:
+    fmt = key_format.strip().lower()
+    if fmt not in ("hex", "text"):
+        raise HTTPException(status_code=400, detail="key_format must be 'hex' or 'text'")
+    if fmt == "hex":
+        try:
+            return bytes.fromhex(key.strip())
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail="Key must be valid hex when key_format='hex'") from ve
+    return key.encode("utf-8")
+
+
+@router.post("/api/ecc/keygen")
+def ecc_keygen(data: EccKeygenInput):
+    from methods.modern import ecc
+
+    try:
+        if data.private_key is not None:
+            priv_int = _parse_ecc_hex_int(data.private_key, "private_key")
+            pub_x, pub_y = ecc.derive_public_key(priv_int)
+        else:
+            priv_int, (pub_x, pub_y) = ecc.pick_keys()
+        return {
+            "curve": "secp256r1",
+            "private_key": _format_ecc_hex(priv_int),
+            "public_key": {
+                "x": _format_ecc_hex(pub_x),
+                "y": _format_ecc_hex(pub_y),
+            },
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ECC keygen error: %s", e)
+        raise HTTPException(status_code=400, detail="ECC key generation failed")
+
+
+@router.post("/api/ecc/ecdh")
+def ecc_ecdh(data: EccEcdhInput):
+    from methods.modern import ecc
+
+    try:
+        priv_int = _parse_ecc_hex_int(data.private_key, "private_key")
+        peer_x = _parse_ecc_hex_int(data.peer_public_x, "peer_public_x")
+        peer_y = _parse_ecc_hex_int(data.peer_public_y, "peer_public_y")
+        (shared_x, shared_y), shared_secret_hex = ecc.ecdh_shared_secret(priv_int, (peer_x, peer_y))
+        return {
+            "curve": "secp256r1",
+            "shared_point": {
+                "x": _format_ecc_hex(shared_x),
+                "y": _format_ecc_hex(shared_y),
+            },
+            "shared_secret_hex": shared_secret_hex,
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ECC ECDH error: %s", e)
+        raise HTTPException(status_code=400, detail="ECC ECDH failed")
+
+
+@router.post("/api/ecc/sign")
+def ecc_sign_endpoint(data: EccSignInput):
+    import hashlib
+    from methods.modern import ecc
+
+    try:
+        priv_int = _parse_ecc_hex_int(data.private_key, "private_key")
+        r_val, s_val = ecc.ecdsa_sign(data.message, priv_int)
+        digest_hex = hashlib.sha256(data.message.encode("utf-8")).hexdigest()
+        return {
+            "curve": "secp256r1",
+            "algorithm": "ecdsa-p256-sha256",
+            "digest_hex": digest_hex,
+            "signature": {
+                "r": _format_ecc_hex(r_val),
+                "s": _format_ecc_hex(s_val),
+            },
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ECC sign error: %s", e)
+        raise HTTPException(status_code=400, detail="ECC signing failed")
+
+
+@router.post("/api/ecc/verify")
+def ecc_verify_endpoint(data: EccVerifyInput):
+    import hashlib
+    from methods.modern import ecc
+
+    try:
+        pub_x = _parse_ecc_hex_int(data.public_x, "public_x")
+        pub_y = _parse_ecc_hex_int(data.public_y, "public_y")
+        r_val = _parse_ecc_hex_int(data.r, "r")
+        s_val = _parse_ecc_hex_int(data.s, "s")
+        valid = ecc.ecdsa_verify(data.message, (r_val, s_val), (pub_x, pub_y))
+        digest_hex = hashlib.sha256(data.message.encode("utf-8")).hexdigest()
+        return {
+            "curve": "secp256r1",
+            "algorithm": "ecdsa-p256-sha256",
+            "digest_hex": digest_hex,
+            "valid": valid,
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ECC verify error: %s", e)
+        raise HTTPException(status_code=400, detail="ECC verification failed")
+
+
+@router.post("/api/otp/encrypt")
+def otp_encrypt_endpoint(data: OtpEncryptInput):
+    from methods.modern import stream_ciphers
+
+    try:
+        pt_bytes = data.plaintext.encode("utf-8")
+        if data.key is None or data.key == "":
+            key_bytes = stream_ciphers.otp_generate_key(len(pt_bytes))
+        else:
+            key_bytes = _parse_stream_key(data.key, data.key_format)
+        ct_bytes = stream_ciphers.otp_encrypt(pt_bytes, key_bytes)
+        return {
+            "ciphertext_hex": ct_bytes.hex(),
+            "key_hex": key_bytes.hex(),
+            "plaintext_bytes": len(pt_bytes),
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("OTP encrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="OTP encryption failed")
+
+
+@router.post("/api/otp/decrypt")
+def otp_decrypt_endpoint(data: OtpDecryptInput):
+    from methods.modern import stream_ciphers
+
+    try:
+        try:
+            ct_bytes = bytes.fromhex(data.ciphertext_hex.strip())
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail="ciphertext_hex must be valid hex") from ve
+        key_bytes = _parse_stream_key(data.key, data.key_format)
+        pt_bytes = stream_ciphers.otp_decrypt(ct_bytes, key_bytes)
+        return {
+            "plaintext": pt_bytes.decode("utf-8", errors="replace"),
+            "plaintext_hex": pt_bytes.hex(),
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("OTP decrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="OTP decryption failed")
+
+
+@router.post("/api/chacha20/encrypt")
+def chacha20_encrypt_endpoint(data: ChaCha20EncryptInput):
+    import secrets
+    from methods.modern import stream_ciphers
+
+    try:
+        if data.key is None or data.key == "":
+            key_bytes = secrets.token_bytes(32)
+        else:
+            key_bytes = _parse_stream_key(data.key, data.key_format)
+        if data.nonce is None or data.nonce == "":
+            nonce_bytes = secrets.token_bytes(12)
+        else:
+            try:
+                nonce_bytes = bytes.fromhex(data.nonce.strip())
+            except ValueError as ve:
+                raise HTTPException(status_code=400, detail="nonce must be valid hex") from ve
+
+        pt_bytes = data.plaintext.encode("utf-8")
+        ct_bytes = stream_ciphers.chacha20_encrypt(pt_bytes, key_bytes, nonce_bytes, counter=data.counter)
+        preview_len = min(64, max(16, len(pt_bytes)))
+        keystream_preview = stream_ciphers.chacha20_keystream(
+            key_bytes, nonce_bytes, preview_len, counter=data.counter
+        )
+        return {
+            "ciphertext_hex": ct_bytes.hex(),
+            "key_hex": key_bytes.hex(),
+            "nonce_hex": nonce_bytes.hex(),
+            "counter": data.counter,
+            "keystream_preview_hex": keystream_preview.hex(),
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ChaCha20 encrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="ChaCha20 encryption failed")
+
+
+@router.post("/api/chacha20/decrypt")
+def chacha20_decrypt_endpoint(data: ChaCha20DecryptInput):
+    from methods.modern import stream_ciphers
+
+    try:
+        try:
+            ct_bytes = bytes.fromhex(data.ciphertext_hex.strip())
+            nonce_bytes = bytes.fromhex(data.nonce.strip())
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail="ciphertext_hex and nonce must be valid hex") from ve
+        key_bytes = _parse_stream_key(data.key, data.key_format)
+        pt_bytes = stream_ciphers.chacha20_decrypt(ct_bytes, key_bytes, nonce_bytes, counter=data.counter)
+        return {
+            "plaintext": pt_bytes.decode("utf-8", errors="replace"),
+            "plaintext_hex": pt_bytes.hex(),
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ChaCha20 decrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="ChaCha20 decryption failed")
