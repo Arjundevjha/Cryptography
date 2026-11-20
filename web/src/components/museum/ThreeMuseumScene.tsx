@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { MUSEUM_EXHIBITS, MUSEUM_WINGS, MUSEUM_STATUES } from './museumData';
+import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { MUSEUM_EXHIBITS, MUSEUM_STATUES } from './museumData';
 import {
   createMarbleTileTexture,
   createHerringboneParquetTexture,
@@ -32,6 +32,11 @@ import {
   getPlaqueTexture,
   type FoyerBuildMaterials,
 } from './scene/statuesAndFoyer';
+import {
+  createMuseumCameraController,
+  resolveViewCameraTarget,
+  SPATIAL_GRACE_MS,
+} from './scene/cameraController';
 
 interface ThreeMuseumSceneProps {
   currentView: string;
@@ -103,41 +108,27 @@ export default function ThreeMuseumScene({
     scene.fog = new THREE.FogExp2(0xe5dbcd, 0.0042);
     sceneRef.current = scene;
 
-    // === 3. FIRST-PERSON EYE-LEVEL CAMERA & IN-PLACE CONTROLS ===
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 300);
-    camera.position.set(0, 2.5, 20); // Eye-level standing height
-    cameraRef.current = camera;
-
-    // OrbitControls configured for In-Place Head Look (Target stays right in front of camera!)
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-    controls.maxPolarAngle = Math.PI / 1.8; // Prevent looking upside down
-    controls.minPolarAngle = Math.PI / 4.0;
-    controls.minDistance = 0.1; // In-place rotation
-    controls.maxDistance = 0.5; // Lock camera distance to target origin for FPV Head Look!
-    controls.target.set(0, 2.5, 15);
-    controlsRef.current = controls;
-
-    controls.addEventListener('start', () => {
-      isAnimatingRef.current = false;
+    // === 3-4. CAMERA, ORBIT CONTROLS, RAYCASTING & WASD CONTROLLER ===
+    const cameraController = createMuseumCameraController({
+      width,
+      height,
+      domElement: renderer.domElement,
+      scene,
+      refs: {
+        keysPressedRef,
+        mobileKeysPropRef,
+        lastRoomChangeTimeRef,
+        isSpatialUpdateRef,
+        isAnimatingRef,
+        targetCamPos,
+        targetLookAt,
+        currentViewRef,
+        onSelectRoomRef,
+      },
     });
-
-    // ============================
-    // 4. WASD KEYBOARD LISTENERS
-    // ============================
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
-      keysPressedRef.current[e.code] = true;
-      isAnimatingRef.current = false; // Give immediate control to WASD FPV walking
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      keysPressedRef.current[e.code] = false;
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    const { camera } = cameraController;
+    cameraRef.current = camera;
+    controlsRef.current = cameraController.controls;
 
     // ============================
     // 5. GRAND CLASSICAL ARCHITECTURAL MATERIALS (PROCEDURALLY TEXTURED)
@@ -674,64 +665,7 @@ export default function ThreeMuseumScene({
     floatingMarkersRef.current = floatingMarkers;
 
     // ============================
-    // 11. RAYCASTING INTERACTION
-    // ============================
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    let mouseDownPos = { x: 0, y: 0 };
-
-    const handleMouseDown = (e: MouseEvent) => {
-      mouseDownPos = { x: e.clientX, y: e.clientY };
-    };
-
-    const handleClick = (e: MouseEvent) => {
-      const dx = e.clientX - mouseDownPos.x;
-      const dy = e.clientY - mouseDownPos.y;
-      if (Math.hypot(dx, dy) > 6) return;
-
-      const rect = renderer.domElement.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(scene.children, true);
-
-      if (intersects.length > 0) {
-        let obj: THREE.Object3D | null = intersects[0].object;
-        while (obj && obj.parent && obj.parent !== scene) {
-          if (obj.userData?.wingId) {
-            isSpatialUpdateRef.current = false;
-            lastRoomChangeTimeRef.current = performance.now() + 1500;
-            onSelectRoomRef.current(obj.userData.wingId);
-            return;
-          }
-          if (obj.userData?.statueId) {
-            const clickedStatueId = obj.userData.statueId;
-            if (clickedStatueId !== currentViewRef.current) {
-              isSpatialUpdateRef.current = false;
-              lastRoomChangeTimeRef.current = performance.now() + 1500;
-              onSelectRoomRef.current(clickedStatueId);
-            }
-            return;
-          }
-          if (obj.userData?.exhibitId) {
-            const clickedExhibitId = obj.userData.exhibitId;
-            if (clickedExhibitId !== currentViewRef.current) {
-              isSpatialUpdateRef.current = false;
-              lastRoomChangeTimeRef.current = performance.now() + 1500;
-              onSelectRoomRef.current(clickedExhibitId);
-            }
-            return;
-          }
-          obj = obj.parent;
-        }
-      }
-    };
-    renderer.domElement.addEventListener('mousedown', handleMouseDown);
-    renderer.domElement.addEventListener('click', handleClick);
-
-    // ============================
-    // 12. FPV IN-PLACE HEAD LOOK & SPATIAL PROXIMITY ANIMATION LOOP
+    // 11-12. ANIMATION LOOP (DELEGATED CAMERA/WALKING + SPOTLIGHT & ARTIFACT MOTION)
     // ============================
     let lastTime = performance.now();
     let lastRenderTime = 0;
@@ -746,100 +680,7 @@ export default function ThreeMuseumScene({
       const delta = Math.min(rawDelta, 0.1);
       lastTime = time;
 
-      // --- A. WASD, ARROW KEYS & MOBILE D-PAD FIRST-PERSON EYE-LEVEL WALKING CONTROL ---
-      const walkSpeed = 16.0 * delta;
-      const keys = keysPressedRef.current;
-      const mobKeys = mobileKeysPropRef.current?.current;
-      const moveForward = !!(keys['KeyW'] || keys['ArrowUp'] || mobKeys?.['KeyW']);
-      const moveBackward = !!(keys['KeyS'] || keys['ArrowDown'] || mobKeys?.['KeyS']);
-      const moveLeft = !!(keys['KeyA'] || keys['ArrowLeft'] || mobKeys?.['KeyA']);
-      const moveRight = !!(keys['KeyD'] || keys['ArrowRight'] || mobKeys?.['KeyD']);
-      const isWalking = moveForward || moveBackward || moveLeft || moveRight;
-
-      if (mobKeys && (mobKeys['KeyW'] || mobKeys['KeyS'] || mobKeys['KeyA'] || mobKeys['KeyD'])) {
-        isAnimatingRef.current = false;
-      }
-
-      if (isWalking) {
-        const forward = new THREE.Vector3();
-        camera.getWorldDirection(forward);
-        forward.y = 0; // Lock movement horizontally on marble floor
-        forward.normalize();
-
-        const right = new THREE.Vector3();
-        right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
-
-        const moveVector = new THREE.Vector3();
-
-        if (moveForward) moveVector.addScaledVector(forward, walkSpeed);
-        if (moveBackward) moveVector.addScaledVector(forward, -walkSpeed);
-        if (moveLeft) moveVector.addScaledVector(right, -walkSpeed);
-        if (moveRight) moveVector.addScaledVector(right, walkSpeed);
-
-        if (moveVector.lengthSq() > 0) {
-          // Clamp camera position within exterior building walls [-80, 80] and [-90, 30]
-          const newPos = camera.position.clone().add(moveVector);
-          newPos.x = THREE.MathUtils.clamp(newPos.x, -80, 80);
-          newPos.z = THREE.MathUtils.clamp(newPos.z, -90, 30);
-          newPos.y = 2.5; // Fixed eye-level standing height!
-
-          const deltaPos = newPos.clone().sub(camera.position);
-          camera.position.copy(newPos);
-          controls.target.add(deltaPos); // Shift look target in sync so head look never swings on a distant pole!
-        }
-      }
-
-      // Keep OrbitControls target close to camera for in-place head look!
-      const currentDir = new THREE.Vector3();
-      camera.getWorldDirection(currentDir);
-      controls.target.copy(camera.position).addScaledVector(currentDir, 0.2);
-
-      // --- B. AUTOMATIC 3D SPATIAL PROXIMITY ROOM DETECTION ---
-      // CRITICAL: Only evaluate spatial room changes when the user is ACTUALLY walking with WASD!
-      const now = performance.now();
-      if (isWalking && !isAnimatingRef.current && now > lastRoomChangeTimeRef.current) {
-        let insideRoomId: string | null = null;
-
-        if (currentViewRef.current.startsWith('statue-')) {
-          const activeStatue = MUSEUM_STATUES.find((s) => s.id === currentViewRef.current);
-          if (activeStatue) {
-            const [sx, , sz] = activeStatue.position;
-            // Retain statue view within 6.5m viewing perimeter
-            if (Math.hypot(camera.position.x - sx, camera.position.z - sz) <= 6.5) {
-              insideRoomId = activeStatue.id;
-            }
-          }
-        }
-
-        for (const ex of MUSEUM_EXHIBITS) {
-          const [exX, , exZ] = ex.position;
-          // Exhibit room interior check (|X - exX| <= 6.8 and Z in [exZ - 5.8, exZ + 6.2])
-          if (Math.abs(camera.position.x - exX) <= 6.8 && camera.position.z >= exZ - 5.8 && camera.position.z <= exZ + 6.2) {
-            insideRoomId = ex.id;
-            break;
-          }
-        }
-
-        if (insideRoomId) {
-          if (insideRoomId !== currentViewRef.current) {
-            lastRoomChangeTimeRef.current = now + 500;
-            isSpatialUpdateRef.current = true;
-            onSelectRoomRef.current(insideRoomId);
-          }
-        } else {
-          // Corridor / Wing auto-detection
-          let targetArea = 'atrium';
-          if (camera.position.x < -20) targetArea = 'wing-classical';
-          else if (camera.position.x > 20) targetArea = 'wing-modern';
-          else if (camera.position.z < -10) targetArea = 'wing-historical';
-
-          if (targetArea !== currentViewRef.current) {
-            lastRoomChangeTimeRef.current = now + 500;
-            isSpatialUpdateRef.current = true;
-            onSelectRoomRef.current(targetArea);
-          }
-        }
-      }
+      cameraController.update(rawDelta, delta);
 
       // Rotate artifacts: only spin the active exhibit or when viewing wing/rotunda overview
       const activeExhibitId = currentViewRef.current;
@@ -890,23 +731,6 @@ export default function ThreeMuseumScene({
         marker.position.y = marker.userData.baseY + Math.sin(time * 0.003 + idx * 0.5) * 0.25;
       });
 
-      // Smooth frame-rate-independent camera lerp during button room selection jumps
-      if (isAnimatingRef.current) {
-        const lerpAlpha = 1 - Math.exp(-8.5 * Math.min(rawDelta, 0.35));
-        camera.position.lerp(targetCamPos.current, lerpAlpha);
-        const lookDir = targetLookAt.current.clone().sub(camera.position).normalize();
-        if (lookDir.lengthSq() > 0.001) {
-          controls.target.copy(camera.position).addScaledVector(lookDir, 0.2);
-          camera.lookAt(targetLookAt.current);
-        }
-
-        if (camera.position.distanceTo(targetCamPos.current) < 0.05) {
-          camera.position.copy(targetCamPos.current);
-          isAnimatingRef.current = false;
-        }
-      }
-
-      controls.update();
       renderer.render(scene, camera);
       animIdRef.current = requestAnimationFrame(animate);
     };
@@ -920,8 +744,7 @@ export default function ThreeMuseumScene({
       if (!container) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
+      cameraController.handleResize(w, h);
       renderer.setSize(w, h);
     };
     window.addEventListener('resize', handleResize);
@@ -929,10 +752,7 @@ export default function ThreeMuseumScene({
     return () => {
       cancelAnimationFrame(animIdRef.current);
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      renderer.domElement.removeEventListener('mousedown', handleMouseDown);
-      renderer.domElement.removeEventListener('click', handleClick);
+      cameraController.dispose();
       if (container && renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
       }
@@ -953,34 +773,17 @@ export default function ThreeMuseumScene({
     currentViewRef.current = currentView;
     onSelectRoomRef.current = onSelectRoom;
     mobileKeysPropRef.current = mobileKeysRef;
-    lastRoomChangeTimeRef.current = performance.now() + 1500; // 1.5s grace period on programmatic selection
+    lastRoomChangeTimeRef.current = performance.now() + SPATIAL_GRACE_MS;
     if (isSpatialUpdateRef.current) {
       isSpatialUpdateRef.current = false;
     } else {
       isAnimatingRef.current = true;
     }
 
-    if (currentView === 'atrium') {
-      targetCamPos.current.set(0, 2.5, 20);
-      targetLookAt.current.set(0, 2.5, 10);
-    } else if (currentView.startsWith('wing-')) {
-      const wing = MUSEUM_WINGS.find((w) => w.id === currentView);
-      if (wing) {
-        targetCamPos.current.set(wing.cameraPosition[0], 2.5, wing.cameraPosition[2]);
-        targetLookAt.current.set(wing.cameraTarget[0], 2.5, wing.cameraTarget[2]);
-      }
-    } else if (currentView.startsWith('statue-')) {
-      const statue = MUSEUM_STATUES.find((s) => s.id === currentView);
-      if (statue) {
-        targetCamPos.current.set(...statue.cameraPosition);
-        targetLookAt.current.set(...statue.cameraTarget);
-      }
-    } else {
-      const exhibit = MUSEUM_EXHIBITS.find((e) => e.id === currentView);
-      if (exhibit) {
-        targetCamPos.current.set(exhibit.cameraPosition[0], 2.25, exhibit.cameraPosition[2]);
-        targetLookAt.current.set(exhibit.cameraTarget[0], 1.88, exhibit.cameraTarget[2]);
-      }
+    const target = resolveViewCameraTarget(currentView);
+    if (target) {
+      targetCamPos.current.set(...target.position);
+      targetLookAt.current.set(...target.lookAt);
     }
   }, [currentView]);
 
