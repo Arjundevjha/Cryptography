@@ -29,9 +29,9 @@
 The **Cryptography Museum** is a dual-purpose educational platform combining an interactive, first-person 3D WebGL museum with an audited, high-performance Python cryptography engine.
 
 Visitors can walk through three grand architectural wings spanning over two millennia of secrecy:
-1. **Classical Ciphers Wing** (58 BC – 1850s): Ancient Spartan Scytale cylinders, Caesar shift disks, Renaissance Vigenère wheels, Playfair matrix boards, and Polybius watchtower squares.
+1. **Classical Ciphers Wing** (400 BC – 1850s): Ancient Spartan Scytale cylinders, Caesar shift disks, Polybius watchtower squares, Renaissance Vigenère wheels, Affine gears, Playfair matrix boards, and keyed Substitution ciphers.
 2. **Historical Systems Wing** (1918 – 1945): Electromechanical WWII rotor engines, including the 3-rotor Enigma Machine (with plugboard and reflector) and the German High Command Lorenz SZ42 12-pinwheel teleprinter stream cipher.
-3. **Modern Cryptography Wing** (1970s – Present): Mathematically rigorous asymmetric public-key systems (RSA-4096), symmetric block ciphers (AES-128 Rijndael state matrix), and cryptographic hash cascades (SHA-256 Merkle compression).
+3. **Modern Cryptography Wing** (1970s – Present): Asymmetric public-key systems (RSA Vault, Diffie-Hellman Exchange, RSA Digital Signatures, Elliptic Curve Cryptography `secp256r1`), symmetric block & stream ciphers (AES-128 CTR/CBC, One-Time Pad & ChaCha20 RFC 8439), cryptographic hash cascades (SHA-256, Multi-Hash & HMAC), Schnorr Zero-Knowledge Proofs, and Post-Quantum ML-KEM (Lattice LWE).
 
 Every cipher in the 3D museum connects directly to a live curatorial workbench backed by a FastAPI microservice and native Python implementations, allowing real-time encryption, decryption, input/output swapping, step-by-step playback, and vulnerability exploration.
 
@@ -39,11 +39,13 @@ Every cipher in the 3D museum connects directly to a live curatorial workbench b
 
 ## 🌟 Key Features
 
-- **🏛️ Spatial 3D Radial Museum**: Built with [Three.js](https://threejs.org/) and React Three Fiber. Features an open entrance foyer with three grand exhibition wings radially spaced to prevent occlusion and provide natural acoustic and visual flow.
+- **🏛️ Spatial 3D Radial Museum**: Built with [Three.js](https://threejs.org/). Features an open entrance foyer with three grand exhibition wings radially spaced to prevent occlusion and provide natural acoustic and visual flow.
 - **🎮 Dual Traversal Modes**: Seamlessly switch between first-person **WASD / Arrow-key walking** across gallery halls and **OrbitControls 360° inspection** for examining exhibit artifacts up close.
 - **🧪 Interactive Curatorial Workbench**: Test ciphers live with custom plaintexts, dynamic keys, instant **Swap I/O**, playback speed sliders, step-by-step animation controls, and real-time ciphertext streaming.
+- **🔓 Cryptanalysis Attack Labs**: Three dedicated interactive attack laboratories (**Classical**, **Historical**, and **Modern**) for running live brute-force, Kasiski/IoC, Enigma Bombe crib matching, Lorenz depth attacks, AES CBC bit-flipping, and small-prime RSA factorization.
+- **🛂 Museum Passport Challenge**: Interactive per-exhibit decryption challenges across all museum exhibits with hints, live verification, and persistent stamp collection.
 - **📖 Curatorial Drawers & Vulnerability Analysis**: In-depth sliding curatorial dossiers detailing historical context, mathematical formulas, and cryptanalysis vulnerabilities (e.g. letter frequency analysis, Kasiski examination, crib attacks, depth attacks, Shor's quantum algorithm).
-- **🗿 Memorial Hall of Fame Statues**: High-fidelity 3D statues in the central foyer honoring the intellectual giants of cryptology: **Al-Kindi** (frequency analysis), **Claude Shannon** (information entropy and perfect secrecy), and **Whitfield Diffie & Martin Hellman [with Ralph Merkle]** (public-key cryptography).
+- **🗿 Memorial Hall of Fame Statues**: High-fidelity 3D statues in the central foyer honoring four intellectual giants of cryptology: **Al-Kindi** (frequency analysis), **Alan Turing** (British Bombe & wartime cryptanalysis), **Claude Shannon** (information entropy and perfect secrecy), and **Whitfield Diffie & Martin Hellman [with Ralph Merkle]** (public-key cryptography).
 - **🗺️ Interactive 2D Map HUD**: Instant birds-eye museum navigation map accessible via keyboard shortcut (`[M]`) or HUD button.
 - **🔊 Procedural 3D Web Audio**: Immersive ambient hall resonance and interactive acoustic feedback synthesized directly via the Web Audio API.
 - **🐍 Pure Python Standard Library Invariant**: The entire `methods/` engine is written exclusively using Python standard library primitives (`hashlib`, `hmac`, `os`, `random`, `struct`). No third-party cryptography packages (`pycryptodome`, `cryptography`) are permitted, guaranteeing transparency, auditability, and educational value.
@@ -62,27 +64,35 @@ Every cipher in the 3D museum connects directly to a live curatorial workbench b
 | **Classical** | **Vigenère Cipher** | 1553 AD | Jefferson Multi-Rotor Disk Roll | Polyalphabetic substitution via keyword-driven Tabula Recta | Kasiski examination, Friedman test, Index of Coincidence | [`methods.classical.vigenere`](methods/classical/vigenere.py) |
 | **Classical** | **Affine Cipher** | c. 1600s | Dual-Gear Calculator Machine | Linear modular arithmetic: $E(x) = (ax + b) \bmod 26$ with $\gcd(a, 26)=1$ | Very small key space (312 keys); vulnerable to known-plaintext pairs | [`methods.classical.affine`](methods/classical/affine.py) |
 | **Classical** | **Playfair Cipher** | 1854 AD | Marble Matrix Board & Laser | Digraph substitution on $5 \times 5$ grid (row, col, rectangle rules) | Digram frequency analysis; leaves single-letter frequencies partially obscured | [`methods.classical.playfair`](methods/classical/playfair.py) |
+| **Classical** | **Substitution Cipher** | Ancient–1800s | Keyed Alphabet Permutation Wheel | Monoalphabetic keyed 26-letter permutation mapping | Frequency analysis & hill-climbing / pattern matching | [`methods.classical.substitution`](methods/classical/substitution.py) |
 | **Historical** | **Enigma Machine** | 1918–1945 | 3-Rotor Electromechanical Engine | Stepping mechanical rotors, plugboard (Steckerbrett), and reflector | Letters never encrypt to themselves; vulnerable to cribs and Turing Bombe | [`methods.historical.enigma`](methods/historical/enigma/) |
 | **Historical** | **Lorenz SZ42** | 1940–1945 | 12-Pinwheel Teleprinter Rig | Stream cipher XORing 5-bit ITA2 Baudot code with 12 pinwheels | Depth attacks from key reuse; broken by Bill Tutte & Colossus | [`methods.historical.lorenz`](methods/historical/lorenz/) |
 | **Modern** | **RSA Vault** | 1977 AD | Interlocking Prime Rings & Vault | Asymmetric public key cryptography: $C \equiv M^e \pmod n$, factoring $n = pq$ | Vulnerable to small prime factorization; broken by Shor's quantum algorithm | [`methods.modern.rsa`](methods/modern/rsa.py) |
-| **Modern** | **AES-128 Vault** | 2001 AD | $4 \times 4$ ShiftRows Matrix State | Rijndael SPN block cipher: SubBytes, ShiftRows, MixColumns, AddRoundKey | Grover's quantum search reduces effective key strength from 128 to 64 bits | [`methods.modern.aes`](methods/modern/aes.py) |
+| **Modern** | **AES Vault** | 2001 AD | $4 \times 4$ ShiftRows Matrix State | Rijndael SPN block cipher (CTR & CBC): SubBytes, ShiftRows, MixColumns, AddRoundKey | CBC bit-flipping without MAC; Grover's search halves effective key bits | [`methods.modern.aes`](methods/modern/aes.py) |
 | **Modern** | **SHA-256 Vault** | 2001 AD | Merkle Tree Compression Cascade | 64-round cryptographic compression function operating on 512-bit blocks | Pre-image resistant, second pre-image resistant, and collision resistant | [`methods.modern.hash_functions`](methods/modern/hash_functions.py) |
+| **Modern** | **Multi-Hash & HMAC** | 1996–2015 | Dual-Pass Hash & Keyed Pad Forge | Cryptographic digests (SHA-256, BLAKE2b/s, MD5) & keyed HMAC authentication | Length-extension on raw Merkle–Damgård hashes (mitigated by HMAC) | [`methods.modern.hash_functions`](methods/modern/hash_functions.py) |
+| **Modern** | **Diffie-Hellman Exchange** | 1976 AD | Twin Modular Exponentiation Towers | Asymmetric key agreement $g^{ab} \bmod p$ over public channels | Vulnerable to MitM without authentication; broken by Shor's algorithm | [`methods.modern.keypair`](methods/modern/keypair.py) |
+| **Modern** | **RSA Digital Signatures** | 1978 AD | Wax-Seal & Prime Verification Pillar | Asymmetric authentication & non-repudiation via private-key signing | Weak padding or small-exponent attacks without proper hashing/PSS | [`methods.modern.digital_signatures`](methods/modern/digital_signatures.py) |
+| **Modern** | **Schnorr Zero-Knowledge Proof** | 1989 AD | Interactive Prover–Verifier Chamber | 3-move $\Sigma$-protocol proving knowledge of $x$ in $y = g^x \bmod p$ without revealing $x$ | Nonce ($r$) reuse leaks the secret key $x$ immediately | [`methods.modern.contemporary`](methods/modern/contemporary.py) |
+| **Modern** | **Post-Quantum ML-KEM** | 2024 AD | Lattice LWE Encapsulation Prism | Module Learning-With-Errors (LWE) lattice key encapsulation ($q = 3329$) | Resistant to Shor's quantum algorithm; relies on hardness of noisy lattice problems | [`methods.modern.contemporary`](methods/modern/contemporary.py) |
+| **Modern** | **Elliptic Curve Cryptography (ECC)** | 1985 AD | Secp256r1 Curve & Point-Addition Pedestal | ECDH key agreement & ECDSA signatures over `secp256r1` ($y^2 = x^3 + ax + b \pmod p$) | Nonce ($k$) reuse leaks private key; broken by Shor's quantum algorithm | [`methods.modern.ecc`](methods/modern/ecc.py) |
+| **Modern** | **One-Time Pad & ChaCha20** | 1917 / 2008 AD | Vernam XOR Tape & ARX Quarter-Round Core | Unconditionally secure OTP XOR & RFC 8439 ChaCha20 256-bit ARX stream cipher | Key/nonce reuse leaks $P_1 \oplus P_2$; OTP requires true-random key $\ge$ message length | [`methods.modern.stream_ciphers`](methods/modern/stream_ciphers.py) |
 
 ---
 
 ## 🗿 The Cryptographic Hall of Fame
 
-Located in the museum's central entrance rotunda are 3D interactive memorial statues honoring fundamental pioneers:
+Located in the museum's central entrance rotunda are 4 interactive 3D memorial statues honoring fundamental pioneers:
 
 ```
                       [ HISTORICAL WINGS (Enigma, Lorenz) ]
                                         ▲
                                         │
 [ CLASSICAL WINGS ]  ◄─────── [ ENTRANCE ROTUNDA ] ───────►  [ MODERN WINGS ]
-(Caesar, Scytale,              [Al-Kindi]   [Shannon]       (RSA, AES, SHA)
- Affine, Vigenere,                   [Diffie-Hellman]
- Playfair, Polybius)                    ▲
-                                        │
+(Caesar, Scytale,             [Turing]    [Shannon]          (RSA, AES, SHA-256,
+ Affine, Vigenère,          [Al-Kindi]  [Diffie-Hellman]      HMAC, DH, ZKP, ML-KEM)
+ Playfair, Polybius,                    ▲
+ Substitution)                          │
                                   [ MAIN FOYER ]
 ```
 
@@ -90,13 +100,37 @@ Located in the museum's central entrance rotunda are 3D interactive memorial sta
    Authored *A Manuscript on Deciphering Cryptographic Messages* at Baghdad's House of Wisdom. Introduced statistical frequency analysis, demonstrating that monoalphabetic ciphers could be systematically broken without knowing the key.
    - *Interactive Demo*: Real-time letter frequency distribution analyzer.
 
-2. **Claude Shannon (1916–2001)** — *The Architect of Mathematical Cryptography*  
+2. **Alan Turing (1912–1954)** — *The Titan of Wartime Cryptanalysis*  
+   At Bletchley Park's Hut 8 during World War II, Turing devised the British Bombe electromechanical machine to systematically break the German Naval Enigma cipher using known-plaintext "cribs", laying the foundations for modern computer science.
+   - *Interactive Demo*: Interactive Turing Bombe crib-matching simulator.
+
+3. **Claude Shannon (1916–2001)** — *The Architect of Mathematical Cryptography*  
    Published *Communication Theory of Secrecy Systems* (1949). Defined Information Theory, entropy $H(X)$, the concepts of Confusion and Diffusion, and proved the unconditional secrecy of the One-Time Pad ($H(M|C) = H(M)$).
    - *Interactive Demo*: Information entropy and redundancy calculator.
 
-3. **Whitfield Diffie & Martin Hellman [with Ralph Merkle]** — *Pioneers of Asymmetric Cryptography*  
+4. **Whitfield Diffie & Martin Hellman [with Ralph Merkle]** — *Pioneers of Public-Key Cryptography*  
    Published *New Directions in Cryptography* (1976). Solved the millennia-old key distribution problem using one-way trapdoor mathematical functions, establishing the bedrock for modern internet encryption (TLS/HTTPS).
    - *Interactive Demo*: Interactive Diffie-Hellman modular exponentiation key exchange.
+
+---
+
+## 🔓 Cryptanalysis Attack Labs & Passport Challenge
+
+### Cryptanalysis Attack Labs
+Inside the curatorial workbench, visitors can switch to the **Attack Lab** tab on supported exhibits to execute real cryptanalysis attacks against live ciphertexts:
+1. **Classical Attack Lab** (`caesar`, `affine`, `vigenere`):
+   - **Caesar**: Exhaustive 26-shift brute-force ranked by English $\chi^2$ letter-frequency scoring.
+   - **Affine**: 312-key brute-force and known-plaintext modular inverse recovery.
+   - **Vigenère**: Automated Index of Coincidence (IoC) and Kasiski examination key-length estimation + column frequency breaking.
+2. **Historical Attack Lab** (`enigma`, `lorenz`):
+   - **Enigma**: Turing Bombe crib-matching across rotor orders and ring/start positions.
+   - **Lorenz SZ42**: Depth-attack XOR recovery on two ciphertexts encrypted with reused keystreams ($C_1 \oplus C_2 = P_1 \oplus P_2$).
+3. **Modern Attack Lab** (`aes`, `rsa`):
+   - **AES-CBC**: Ciphertext bit-flipping malleability attack demonstrating why unauthenticated CBC mode allows predictable plaintext tampering.
+   - **RSA**: Small-prime modulus factorization using Fermat's factorization and Pollard's Rho to recover the private exponent $d$.
+
+### Museum Passport Challenge
+The **Passport Challenge** (`PassportChallengeView`) turns the museum into an interactive cryptographic scavenger hunt. Each exhibit features a curated decryption puzzle with an optional hint; solving it awards a persistent digital passport stamp stored in `localStorage` (`cryptography-museum-passport-v1`).
 
 ---
 
@@ -410,27 +444,34 @@ Cryptography/
 │   │   └── tests/                    # Historical unit test suites
 │   ├── modern/                       # Modern Symmetric & Asymmetric Cryptography
 │   │   ├── aes.py                    # AES-128 block cipher with GF(2^8) lookup tables
-│   │   ├── digital_signatures.py     # HMAC and digital signature schemes
+│   │   ├── contemporary.py           # Schnorr Zero-Knowledge Proof & Post-Quantum ML-KEM (LWE)
+│   │   ├── cryptanalysis.py          # Classical, Historical & Modern cryptanalysis attack engines
+│   │   ├── digital_signatures.py     # HMAC and RSA digital signature schemes
+│   │   ├── ecc.py                    # Pure-Python secp256r1 ECDH key exchange & ECDSA sign/verify
 │   │   ├── hash_functions.py         # SHA-256, BLAKE2b/s, MD5 standard library implementations
+│   │   ├── helpers.py                # Shared modern cryptography helpers
 │   │   ├── keypair.py                # Asymmetric keypair generation & DoS-bounded primes
 │   │   ├── rsa.py                    # RSA encryption, decryption & Euler totient arithmetic
+│   │   ├── stream_ciphers.py         # One-Time Pad (OTP) & RFC 8439 ChaCha20 stream cipher
 │   │   ├── symmetric.py              # CBC / CTR symmetric modes and padding helpers
 │   │   └── tests/                    # Modern unit test suites
 │   └── tests/                        # Cross-cutting integration tests
 ├── web/                              # Next.js 16 Web Application & FastAPI Backend
 │   ├── api/                          # FastAPI microservice
-│   │   ├── main.py                   # ASGI application routes & Pydantic models
+│   │   ├── main.py                   # ASGI application entry point & security middleware
+│   │   ├── routers/                  # Classical, Historical, Modern & Cryptanalysis API routers
 │   │   └── test_main.py              # API endpoint unit tests
 │   ├── app/                          # Next.js App Router (pages, layout, API routes)
 │   │   ├── page.tsx                  # Main 3D museum viewport and overlays
 │   │   └── utils/ciphers.ts          # Client-side TypeScript cipher adapters
 │   ├── src/components/museum/        # Three.js 3D WebGL scene and museum UI
-│   │   ├── ThreeMuseumScene.tsx      # Main 3D canvas, radial wings, artifact meshes
+│   │   ├── ThreeMuseumScene.tsx      # Main 3D canvas & scene orchestration
+│   │   ├── scene/                    # Wall art textures, wing architecture & modular 3D builders
 │   │   ├── MuseumCanvas.tsx          # Canvas container & fallback boundary
-│   │   ├── museumData.ts             # Exhibits, wings, statues metadata and coordinates
+│   │   ├── museumData.ts             # Exhibits (19), wings (3), statues (4) metadata & coordinates
 │   │   ├── AudioSystem.tsx           # Procedural Web Audio synthesis
 │   │   ├── hud/                      # HUD overlay, 2D floorplan map, status indicator
-│   │   └── workbench/                # Curatorial workbench, metadata drawer, statue drawers
+│   │   └── workbench/                # Curatorial workbench, EccView, StreamCipherView, Attack Labs & Passport Challenge
 │   └── tests/                        # Frontend Jest unit & Playwright E2E suites
 │       ├── unit/                     # Component & accessibility unit tests
 │       └── e2e/                      # Playwright end-to-end user journey tests
