@@ -8,7 +8,7 @@ export const DRAG_CLICK_THRESHOLD_PX = 6;
 export const SPATIAL_GRACE_MS = 1500;
 export const SPATIAL_DEBOUNCE_MS = 500;
 export const BOUNDARY_X: readonly [number, number] = [-80, 80];
-export const BOUNDARY_Z: readonly [number, number] = [-90, 30];
+export const BOUNDARY_Z: readonly [number, number] = [-105, 30];
 
 export interface CameraTargetSpec {
   position: [number, number, number];

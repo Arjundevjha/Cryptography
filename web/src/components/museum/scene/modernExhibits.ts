@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { ArtifactMaterialSet } from './artifactMaterials';
 import type { ExhibitArtifactBuilder } from './classicalExhibits';
+import { buildModernNewExhibit } from './modernNewExhibits';
 
 function buildRsaArtifact(group: THREE.Group, m: ArtifactMaterialSet) {
   const { antiqueBrass, polishedGold, agedBronze, obsidian, brushedSteel } = m;
@@ -582,4 +583,10 @@ export const MODERN_EXHIBIT_BUILDERS: Record<string, ExhibitArtifactBuilder> = {
   'rsa-signatures': buildRsaSignaturesArtifact,
   'zkp-schnorr': buildZkpSchnorrArtifact,
   'post-quantum-kem': buildPostQuantumKemArtifact,
+  ecc: (group, m) => {
+    buildModernNewExhibit('ecc', group, m);
+  },
+  'otp-chacha20': (group, m) => {
+    buildModernNewExhibit('otp-chacha20', group, m);
+  },
 };
