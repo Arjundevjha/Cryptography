@@ -155,6 +155,18 @@ const EXHIBIT_PALETTES: Record<string, Omit<RoomAccentPalette, 'sconceStyle'>> =
     velvetColor: 0x242861,
     runnerColor: 0x212454,
   },
+  ecc: {
+    accentHex: 0x0ea5e9,
+    accentColor: '#0ea5e9',
+    velvetColor: 0x0c3d59,
+    runnerColor: 0x10354a,
+  },
+  'otp-chacha20': {
+    accentHex: 0x14b8a6,
+    accentColor: '#14b8a6',
+    velvetColor: 0x0f4743,
+    runnerColor: 0x113d39,
+  },
 };
 
 function toHexString(hex: number): string {

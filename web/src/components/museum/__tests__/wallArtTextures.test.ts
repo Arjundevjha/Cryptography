@@ -26,6 +26,8 @@ const ALL_EXHIBIT_IDS = [
   'rsa-signatures',
   'zkp-schnorr',
   'post-quantum-kem',
+  'ecc',
+  'otp-chacha20',
 ] as const;
 
 const PORTRAIT_SUBJECTS = [
@@ -70,9 +72,9 @@ function createMock2dContext(): CanvasRenderingContext2D {
 
 describe('wallArtTextures', () => {
   describe('EXHIBIT_ART_SPECS', () => {
-    it('covers all 17 exhibit IDs with unique titles, motifs, and formulas', () => {
+    it('covers all 19 exhibit IDs with unique titles, motifs, and formulas', () => {
       const specIds = Object.keys(EXHIBIT_ART_SPECS);
-      expect(specIds).toHaveLength(17);
+      expect(specIds).toHaveLength(19);
       ALL_EXHIBIT_IDS.forEach((id) => {
         expect(EXHIBIT_ART_SPECS[id]).toBeDefined();
         expect(EXHIBIT_ART_SPECS[id].id).toBe(id);
@@ -83,10 +85,10 @@ describe('wallArtTextures', () => {
       const formulas = new Set(ALL_EXHIBIT_IDS.map((id) => EXHIBIT_ART_SPECS[id].formula));
       const facts = new Set(ALL_EXHIBIT_IDS.map((id) => EXHIBIT_ART_SPECS[id].historicalFact));
 
-      expect(titles.size).toBe(17);
-      expect(motifs.size).toBe(17);
-      expect(formulas.size).toBe(17);
-      expect(facts.size).toBe(17);
+      expect(titles.size).toBe(19);
+      expect(motifs.size).toBe(19);
+      expect(formulas.size).toBe(19);
+      expect(facts.size).toBe(19);
     });
   });
 
@@ -130,7 +132,7 @@ describe('wallArtTextures', () => {
       HTMLCanvasElement.prototype.getContext = originalGetContext;
     });
 
-    it('renders unique exhibit plates for all 17 exhibits and caches repeated calls', () => {
+    it('renders unique exhibit plates for all 19 exhibits and caches repeated calls', () => {
       const plates = ALL_EXHIBIT_IDS.map((id) => {
         const spec = EXHIBIT_ART_SPECS[id];
         return createExhibitPlateTexture(id, spec.title, spec.category, 'Archival');
@@ -139,7 +141,7 @@ describe('wallArtTextures', () => {
       plates.forEach((tex) => {
         expect(tex).toBeInstanceOf(THREE.CanvasTexture);
       });
-      expect(new Set(plates).size).toBe(17);
+      expect(new Set(plates).size).toBe(19);
 
       const cached = createExhibitPlateTexture(
         'rsa',
@@ -150,13 +152,13 @@ describe('wallArtTextures', () => {
       expect(cached).toBe(plates[ALL_EXHIBIT_IDS.indexOf('rsa')]);
     });
 
-    it('renders side gallery panels for all 17 exhibits and caches repeated calls', () => {
+    it('renders side gallery panels for all 19 exhibits and caches repeated calls', () => {
       const panels = ALL_EXHIBIT_IDS.map((id) => {
         const spec = EXHIBIT_ART_SPECS[id];
         return createSideGalleryPanelTexture(id, spec.title, spec.motif, 'Timeline', spec.category);
       });
 
-      expect(new Set(panels).size).toBe(17);
+      expect(new Set(panels).size).toBe(19);
       const cached = createSideGalleryPanelTexture(
         'aes',
         EXHIBIT_ART_SPECS.aes.title,

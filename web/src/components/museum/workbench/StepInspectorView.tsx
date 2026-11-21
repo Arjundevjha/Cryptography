@@ -304,6 +304,38 @@ export function StepInspectorView({
     );
   }
 
+  if (exhibitId === 'ecc') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-ecc">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> Elliptic Curve (P-256) ECDH &amp; ECDSA Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Curve: <span className="text-amber-300">y² ≡ x³ + ax + b (mod p)</span></div>
+          <div className="text-stone-300">2. ECDH: <span className="text-amber-300">A = a·G, B = b·G ⇒ S = a·B = b·A</span></div>
+          <div className="text-stone-300">3. ECDSA Sign: <span className="text-amber-300">r = (k·G).x, s = k⁻¹(z + r·d) mod n</span></div>
+          <div className="text-emerald-300">4. ECDSA Verify: (u₁·G + u₂·Q).x ≡ r (mod n)</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exhibitId === 'otp-chacha20') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-otp-chacha20">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> One-Time Pad &amp; ChaCha20 Stream Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. OTP: <span className="text-amber-300">C = P ⊕ K</span> (|K| ≥ |P|, true random, single-use)</div>
+          <div className="text-stone-300">2. ChaCha20 State: <span className="text-amber-300">4×4 matrix (const, 256-bit key, counter, 96-bit nonce)</span></div>
+          <div className="text-stone-300">3. ARX Rounds: <span className="text-amber-300">20 rounds of Add-Rotate-XOR quarter-rounds</span></div>
+          <div className="text-emerald-300">4. Stream XOR: C = P ⊕ Keystream(Key, Nonce, Counter)</div>
+        </div>
+      </div>
+    );
+  }
+
   // Generic character-level inspector for Caesar & other exhibits
   const previewChars = (inputText || 'HELLO').slice(0, 8).split('');
   return (

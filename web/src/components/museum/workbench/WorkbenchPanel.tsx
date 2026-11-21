@@ -25,6 +25,8 @@ import { AesBlockMode } from './AesModeVisualizer';
 import { RsaSignaturesView } from './RsaSignaturesView';
 import { ZkpSchnorrView } from './ZkpSchnorrView';
 import { PostQuantumKemView } from './PostQuantumKemView';
+import { EccView } from './EccView';
+import { StreamCipherView } from './StreamCipherView';
 import { AttackLabView } from './labs/AttackLabView';
 import { hasAttackLab } from './labs/labApi';
 
@@ -298,7 +300,9 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
   const isProtocolExhibit =
     exhibit.id === 'rsa-signatures' ||
     exhibit.id === 'zkp-schnorr' ||
-    exhibit.id === 'post-quantum-kem';
+    exhibit.id === 'post-quantum-kem' ||
+    exhibit.id === 'ecc' ||
+    exhibit.id === 'otp-chacha20';
 
   const visibleTabs: WorkbenchTab[] = [
     'workbench',
@@ -462,6 +466,10 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             <ZkpSchnorrView />
           ) : exhibit.id === 'post-quantum-kem' ? (
             <PostQuantumKemView />
+          ) : exhibit.id === 'ecc' ? (
+            <EccView />
+          ) : exhibit.id === 'otp-chacha20' ? (
+            <StreamCipherView />
           ) : (
             <>
           {/* Input Field */}

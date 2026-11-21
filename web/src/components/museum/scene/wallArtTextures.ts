@@ -237,6 +237,32 @@ export const EXHIBIT_ART_SPECS: Record<string, ExhibitArtSpec> = {
     cryptanalysisNote:
       'Bounded noise e prevents Gaussian elimination; Fujisaki-Okamoto transform protects decapsulation against chosen-ciphertext attacks.',
   },
+  ecc: {
+    id: 'ecc',
+    title: 'Elliptic Curve Cryptography',
+    category: 'Modern',
+    motif: 'Weierstrass Curve Point Addition & Scalar Multiplication',
+    accentColor: '#1e4a5f',
+    secondaryColor: '#38bdf8',
+    formula: 'y^2 = x^3 + ax + b (mod p),  Q = d * G',
+    historicalFact:
+      'Proposed independently by Neal Koblitz and Victor Miller in 1985; P-256 achieves 128-bit security with 256-bit keys instead of 3072-bit RSA.',
+    cryptanalysisNote:
+      'Reusing the ECDSA nonce k across two signatures exposes the private key d = (s*k - z) * r^-1 mod n.',
+  },
+  'otp-chacha20': {
+    id: 'otp-chacha20',
+    title: 'One-Time Pad & ChaCha20',
+    category: 'Modern',
+    motif: 'Perfect Secrecy XOR & ARX Quarter-Round Stream',
+    accentColor: '#24475a',
+    secondaryColor: '#2dd4bf',
+    formula: 'OTP: C = P xor K  |  ChaCha20: ARX(a, b, c, d) x 20',
+    historicalFact:
+      'Shannon proved OTP’s unconditional secrecy in 1949; Bernstein’s ChaCha20 (2008, RFC 8439) delivers constant-time speed in TLS 1.3.',
+    cryptanalysisNote:
+      'Never reuse a key or nonce: C1 xor C2 = P1 xor P2 collapses stream confidentiality into a two-time pad.',
+  },
 };
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
