@@ -1,12 +1,18 @@
+"""Unit tests for the digital signatures module (HMAC creation and verification)."""
+
 import pytest
-from methods.modern.digital_signatures import create_hmac, verify_hmac, generate_key
+
+from methods.modern.digital_signatures import create_hmac, generate_key, verify_hmac
+
 
 def test_create_hmac_unsupported_algorithm():
     """Test that creating an HMAC with an unsupported algorithm raises a ValueError."""
     data = b"test data"
     key = b"test key"
 
-    with pytest.raises(ValueError, match="Only sha256 is supported in this pure Python implementation"):
+    with pytest.raises(
+        ValueError, match="Only sha256 is supported in this pure Python implementation"
+    ):
         create_hmac(data, key, algorithm="md5")
 
 def test_create_hmac_happy_path():
@@ -43,7 +49,7 @@ def test_verify_hmac_invalid_signature():
     assert is_valid is False
 
 def test_verify_hmac_length_mismatch_and_invalid_types():
-    """Test verification handles length mismatches, non-strings, and unsupported algorithms gracefully."""
+    """Test verification of length mismatches, non-strings, and invalid values."""
     key = generate_key()
     data = b"message to sign"
 

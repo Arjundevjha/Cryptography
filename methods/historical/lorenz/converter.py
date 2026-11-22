@@ -75,7 +75,8 @@ def ita2_to_char(vec: Union[List[int], tuple]) -> str:
     """
     if len(vec) != 5:
         raise ValueError(f"Vector must be 5 bits long, got length {len(vec)}.")
-    # OPTIMIZATION: Direct tuple conversion eliminates list comprehension and re-packing overhead (~2.6x speedup).
+    # OPTIMIZATION: Direct tuple conversion eliminates list comprehension and
+    # re-packing overhead (~2.6x speedup).
     vec_tuple = tuple(vec)
     return ITA2_VEC_TO_CHAR.get(vec_tuple, "?")
 

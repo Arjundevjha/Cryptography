@@ -1,5 +1,9 @@
+"""Unit tests for the Enigma Reflector class (signal reflection)."""
+
 import pytest
+
 from methods.historical.enigma.reflector import Reflector
+
 
 def test_reflector_initialization():
     """Test standard initialization of the Reflector."""

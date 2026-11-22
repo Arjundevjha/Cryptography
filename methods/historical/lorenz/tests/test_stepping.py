@@ -6,6 +6,7 @@ from methods.historical.lorenz.stepping import SteppingController
 
 
 def test_stepping_controller_init_defaults():
+    """Test that a fresh SteppingController reports the expected default positions."""
     sc = SteppingController()
     pos = sc.get_positions()
     assert len(pos["chi"]) == 5
@@ -15,6 +16,7 @@ def test_stepping_controller_init_defaults():
 
 
 def test_stepping_chi_unconditional():
+    """Test that all chi wheels step on every controller step."""
     sc = SteppingController()
     sc.step()
     pos = sc.get_positions()
@@ -22,6 +24,7 @@ def test_stepping_chi_unconditional():
 
 
 def test_stepping_motor1_unconditional():
+    """Test that the first motor wheel steps unconditionally on every step."""
     sc = SteppingController()
     sc.step()
     pos = sc.get_positions()
@@ -29,6 +32,7 @@ def test_stepping_motor1_unconditional():
 
 
 def test_stepping_motor2_gated_by_mu1():
+    """Test that motor wheel 2 steps only when mu1's active pin is 1."""
     # Set mu1 active pin to 0
     sc = SteppingController()
     sc.motor[0].set_pins([0] * 61)
@@ -45,6 +49,7 @@ def test_stepping_motor2_gated_by_mu1():
 
 
 def test_stepping_psi_gated_by_mu2():
+    """Test that psi wheels step only when mu2's active pin is 1."""
     sc = SteppingController()
     # Set mu2 active pin to 0
     sc.motor[1].set_pins([0] * 37)
@@ -60,6 +65,7 @@ def test_stepping_psi_gated_by_mu2():
 
 
 def test_set_get_positions():
+    """Test set_positions/get_positions round-trips with flat and dict inputs."""
     sc = SteppingController()
     sc.set_positions([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
     pos = sc.get_positions()
@@ -81,6 +87,7 @@ def test_set_get_positions():
 
 
 def test_get_keystream_vector():
+    """Test keystream vector equals chi XOR psi for default and custom pin patterns."""
     sc = SteppingController()
     # Default wheels start with all pins at 0 or initial state
     chi_vec = sc.get_chi_vector()
@@ -107,6 +114,7 @@ def test_get_keystream_vector():
 
 
 def test_get_keystream_vector_across_steps_and_custom_wheels():
+    """Test keystream across steps with custom alternating chi/psi pin patterns."""
     # Construct custom wheels with specific pin patterns
     chi_sizes = [41, 31, 29, 26, 23]
     psi_sizes = [43, 47, 51, 53, 59]
@@ -137,6 +145,7 @@ def test_get_keystream_vector_across_steps_and_custom_wheels():
 
 
 def test_stepping_controller_init_validation():
+    """Test that SteppingController rejects invalid chi/motor/psi wheel lists."""
     with pytest.raises(ValueError, match="Requires exactly 5 Chi wheels"):
         SteppingController(chi_wheels=[Wheel(41)] * 4)
 
@@ -148,8 +157,12 @@ def test_stepping_controller_init_validation():
 
 
 def test_set_positions_validation():
+    """Test that set_positions validates dict shapes and flat-list lengths."""
     sc = SteppingController()
-    with pytest.raises(ValueError, match="Positions dict must contain 5 chi, 2 motor, and 5 psi values"):
+    with pytest.raises(
+        ValueError,
+        match="Positions dict must contain 5 chi, 2 motor, and 5 psi values",
+    ):
         sc.set_positions({"chi": [0] * 4, "motor": [0] * 2, "psi": [0] * 5})
 
     with pytest.raises(ValueError, match="Flat positions list must contain exactly 12 integers"):

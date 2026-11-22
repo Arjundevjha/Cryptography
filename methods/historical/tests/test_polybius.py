@@ -1,4 +1,9 @@
-from methods.historical.polybius import encrypt, decrypt, pick_keys, ALPHABET
+"""Unit tests for the Polybius Square fractionating cipher."""
+
+import pytest
+
+from methods.historical.polybius import decrypt, encrypt, pick_keys, ALPHABET
+
 
 def test_pick_keys():
     """Test picking a random key grid."""
@@ -23,13 +28,14 @@ def test_encrypt_i_j_merge():
 def test_encrypt_non_alphabetic():
     """Test encryption preserves spaces and punctuation."""
     assert encrypt("hello!") == "23 15 31 31 34!"
-    # The implementation ignores non-digits for trailing spaces, which results in:
+    # The implementation ignores non-digits for trailing spaces,
+    # which results in:
     assert encrypt("he llo") == "23 15 31 31 34"
 
 def test_decrypt_non_alphabetic():
     """Test decryption preserves spaces and punctuation."""
-    # Note: Spaces are completely stripped out by `ciphertext.replace(" ", "")` in the current implementation.
-    # So we test that punctuation is preserved.
+    # Note: Spaces are completely stripped out by `ciphertext.replace(" ", "")`
+    # in the current implementation. So we test that punctuation is preserved.
     assert decrypt("23 15 31 31 34!") == "HELLO!"
 
 def test_decrypt_invalid_coordinates():
@@ -63,8 +69,6 @@ def test_encrypt_uppercase_key():
 
 def test_input_validation():
     """Test type checks, key bounds, and text length limits."""
-    import pytest
-
     # Non-string input
     with pytest.raises(TypeError):
         encrypt(123)

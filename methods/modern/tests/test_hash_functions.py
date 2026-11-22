@@ -1,6 +1,9 @@
-import warnings
-import pytest
+"""Unit tests for the cryptographic hash functions (SHA-256, SHA-512, SHA3, BLAKE2, MD5, SHA-1)."""
+
 import hashlib
+
+import pytest
+
 from methods.modern.hash_functions import (
     sha256,
     sha512,
@@ -30,7 +33,9 @@ def test_sha256_kats():
     assert sha256("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq") == (
         "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
     )
-    assert compute_hash("abc", "sha256") == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    assert compute_hash("abc", "sha256") == (
+        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    )
 
 
 def test_sha512_kats():
@@ -49,11 +54,13 @@ def test_sha512_kats():
     )
     assert (
         sha512("The quick brown fox jumps over the lazy dog")
-        == "07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6"
+        == "07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb64"
+        "2e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6"
     )
     assert (
         sha512("abcdefghbcdefghi23456789345678904567890156789012678901237890123489012345")
-        == "2aa48b769a279f9a51ed5f48ddd3ed3cbfe0c515a90f0f8f7da47e670b0d814b5b20aaaab72d6a278a82701f187830928cda4a60abf3c584b7086de2ca21fc7e"
+        == "2aa48b769a279f9a51ed5f48ddd3ed3cbfe0c515a90f0f8f7da47e670b0d814b"
+        "5b20aaaab72d6a278a82701f187830928cda4a60abf3c584b7086de2ca21fc7e"
     )
     assert compute_hash("abc", "sha512") == (
         "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
@@ -62,7 +69,7 @@ def test_sha512_kats():
 
 
 def test_sha512_block_boundaries_and_unicode():
-    """Test SHA-512 against standard hashlib for various block sizes, boundaries, and UTF-8 string inputs."""
+    """Test SHA-512 against hashlib for block sizes, boundaries, and UTF-8 inputs."""
     test_cases = [
         # Boundary around PADDING_TARGET_112 (112 bytes)
         "a" * 111,
@@ -128,7 +135,8 @@ def test_blake2b_kats_and_compute_hash():
     assert blake2b("") == expected_empty
     assert (
         blake2b("")
-        == "786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce"
+        == "786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1"
+        "031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce"
     )
 
     # Test short ASCII string input ("abc")
@@ -136,7 +144,8 @@ def test_blake2b_kats_and_compute_hash():
     assert blake2b("abc") == expected_abc
     assert (
         blake2b("abc")
-        == "ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923"
+        == "ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d8"
+        "7c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923"
     )
     assert compute_hash("abc", "blake2b") == expected_abc
 
@@ -146,7 +155,8 @@ def test_blake2b_kats_and_compute_hash():
     assert blake2b(phrase) == expected_phrase
     assert (
         blake2b(phrase)
-        == "a8add4bdddfd93e4877d2746e62817b116364a1fa7bc148d95090bc7333b3673f82401cf7aa2e4cb1ecd90296e3f14cb5413f8ed77be73045b13914cdcd6a918"
+        == "a8add4bdddfd93e4877d2746e62817b116364a1fa7bc148d95090bc7333b3673f82"
+        "401cf7aa2e4cb1ecd90296e3f14cb5413f8ed77be73045b13914cdcd6a918"
     )
 
     # Test multi-block string input (> 128 bytes block size)
@@ -192,7 +202,7 @@ def test_blake2s_kats_and_compute_hash():
 
 
 def test_sha3_256_kats():
-    """Test SHA3-256 implementation against known-answer vectors, boundary conditions, and Unicode."""
+    """Test SHA3-256 KATs, boundaries, and Unicode input strings."""
     # Empty string KAT
     assert (
         sha3_256("")

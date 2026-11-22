@@ -1,5 +1,9 @@
+"""Unit tests for the Enigma Keyboard class (letter/signal mapping)."""
+
 import pytest
+
 from methods.historical.enigma.keyboard import Keyboard
+
 
 def test_keyboard_initialization():
     """Test the standard initialization of the Keyboard."""

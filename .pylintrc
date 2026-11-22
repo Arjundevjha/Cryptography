@@ -1,0 +1,14 @@
+# pylintrc for Cryptography — CI runs `python -m pylint methods/` from repo root.
+#
+# duplicate-code is reported after all files are parsed, so per-file
+# `# pylint: disable=duplicate-code` comments do not suppress it; it is listed
+# here instead. It is a stylistic similarity heuristic: several methods/
+# modules intentionally duplicate test vectors and formula-verification code
+# (e.g. SHA-256 compression math is checked in both helpers and hash_functions,
+# and playfair/vigenere share input-validation idioms).
+[MESSAGES CONTROL]
+disable=duplicate-code
+
+[FORMAT]
+# Contributors write modern Python; this is kept at the repo default of 100.
+max-line-length=100

@@ -1,7 +1,12 @@
+"""Unit tests for the Scytale transposition cipher."""
+
 import pytest
-from methods.historical.scytale import encrypt, decrypt, pick_keys
+
+from methods.historical.scytale import decrypt, encrypt, pick_keys
+
 
 def test_encrypt_standard():
+    """Test encryption of a standard message with the hand-computed ciphertext."""
     plaintext = "I AM HURT VERY BADLY"
     diameter = 4
     # Calculate the expected ciphertext manually based on Python logic:
@@ -15,12 +20,14 @@ def test_encrypt_standard():
     assert encrypt(plaintext, diameter) == "I TRA H YDAUV LMREBY"
 
 def test_decrypt_standard():
+    """Test decryption of the standard ciphertext back to the original message."""
     plaintext = "I AM HURT VERY BADLY"
     diameter = 4
     ciphertext = "I TRA H YDAUV LMREBY"
     assert decrypt(ciphertext, diameter) == plaintext
 
 def test_encrypt_padding():
+    """Test encryption with a message length not a multiple of the diameter."""
     plaintext = "HELLO"
     diameter = 3
     # "HELLO" len=5. padding=(3 - (5%3))%3 = (3-2)%3 = 1 space -> "HELLO "
@@ -33,13 +40,14 @@ def test_encrypt_padding():
     assert encrypt(plaintext, diameter) == "HLEOL "
 
 def test_decrypt_padding():
-    plaintext = "HELLO"
+    """Test decryption strips the padding space back to the original message."""
     diameter = 3
     ciphertext = "HLEOL "
     # Decrypt returns stripped output.
     assert decrypt(ciphertext, diameter) == "HELLO"
 
 def test_invalid_diameter():
+    """Test that encrypt/decrypt reject non-positive diameters."""
     with pytest.raises(ValueError, match="Diameter must be positive"):
         encrypt("HELLO", 0)
     with pytest.raises(ValueError, match="Diameter must be positive"):
@@ -48,15 +56,18 @@ def test_invalid_diameter():
         decrypt("HLEOL ", 0)
 
 def test_empty_string():
+    """Test that empty strings encrypt/decrypt to empty strings."""
     assert encrypt("", 3) == ""
     assert decrypt("", 3) == ""
 
 def test_pick_keys():
+    """Test that pick_keys returns diameters within the 3..8 range."""
     for _ in range(50):
         key = pick_keys()
         assert 3 <= key <= 8
 
 def test_scytale_single_row():
+    """Test that a diameter equal to the text length produces the identity transform."""
     # Width equals length
     plaintext = "HELLO"
     width = 5
@@ -66,6 +77,7 @@ def test_scytale_single_row():
     assert decrypted == plaintext
 
 def test_invalid_input_types():
+    """Test that invalid text and diameter types raise TypeError."""
     with pytest.raises(TypeError, match="Text must be a string"):
         encrypt(123, 3)
     with pytest.raises(TypeError, match="Text must be a string"):
@@ -76,12 +88,14 @@ def test_invalid_input_types():
         decrypt("HLEOL ", 3.14)
 
 def test_boundary_limits():
+    """Test that text length and diameter size limits are enforced."""
     with pytest.raises(ValueError, match="Text length exceeds maximum limit"):
         encrypt("A" * 100001, 3)
     with pytest.raises(ValueError, match="Diameter exceeds maximum limit"):
         encrypt("HELLO", 10001)
 
 def test_decrypt_edge_cases():
+    """Test that invalid decryption diameters raise ValueError."""
     with pytest.raises(ValueError, match="Diameter cannot be greater than ciphertext length"):
         decrypt("HELLO", 10)
     with pytest.raises(ValueError, match="Ciphertext length must be a multiple of diameter"):

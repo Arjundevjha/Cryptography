@@ -6,6 +6,7 @@ from methods.modern import ecc
 
 
 def test_generator_and_curve_invariants():
+    """Test curve invariants: generator on-curve, infinity identity, order n*G."""
     assert ecc.is_on_curve(ecc.P256_G) is True
     assert ecc.is_on_curve(None) is True
     assert ecc.is_on_curve((0, 0)) is False
@@ -24,6 +25,7 @@ def test_generator_and_curve_invariants():
 
 
 def test_pick_keys_and_derive_public_key():
+    """Test pick_keys returns valid privates and their derived public keys."""
     priv, pub = ecc.pick_keys()
     assert 1 <= priv < ecc.P256_N
     assert ecc.is_on_curve(pub) is True
@@ -31,6 +33,7 @@ def test_pick_keys_and_derive_public_key():
 
 
 def test_ecdh_shared_secret_agreement():
+    """Test that ECDH key agreement produces the same shared secret on both sides."""
     alice_priv, alice_pub = ecc.pick_keys()
     bob_priv, bob_pub = ecc.pick_keys()
 
@@ -43,6 +46,7 @@ def test_ecdh_shared_secret_agreement():
 
 
 def test_ecdsa_sign_and_verify_roundtrip():
+    """Test ECDSA sign/verify round-trip including tampered message and bad key."""
     priv, pub = ecc.pick_keys()
     message = "Elliptic Curve Digital Signature Test"
     sig = ecc.ecdsa_sign(message, priv)
@@ -62,9 +66,11 @@ def test_ecdsa_sign_and_verify_roundtrip():
 
 
 def test_ecdsa_deterministic_nonce_and_bounds():
+    """Test ECDSA with a deterministic nonce and out-of-range r/s verification."""
     priv = 0xC9AFA9D845BA75166B5C215767B1D6934E50C3DB36E89B127B8A622B120F6721
     pub = ecc.derive_public_key(priv)
-    sig = ecc.ecdsa_sign("sample", priv, nonce_k=0xA6E3C57DD01ABE90086538398355DD4C3B17AA873382B0F24D6129493D8AAD60)
+    nonce_k = 0xA6E3C57DD01ABE90086538398355DD4C3B17AA873382B0F24D6129493D8AAD60
+    sig = ecc.ecdsa_sign("sample", priv, nonce_k=nonce_k)
     assert ecc.ecdsa_verify("sample", sig, pub) is True
 
     # Out-of-range r or s returns False
@@ -73,6 +79,7 @@ def test_ecdsa_deterministic_nonce_and_bounds():
 
 
 def test_ecc_validation_errors():
+    """Test that ECC validation raises ValueError/TypeError for invalid inputs."""
     with pytest.raises(ValueError):
         ecc.derive_public_key(0)
     with pytest.raises(ValueError):

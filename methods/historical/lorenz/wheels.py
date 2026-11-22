@@ -33,7 +33,8 @@ class Wheel:
         else:
             self.set_pins(pins)
 
-        self.set_position(position)
+        self._validate_position(position)
+        self.position = position
 
     def set_pins(self, pins: List[int]) -> None:
         """Set the pin states for this wheel.
@@ -64,11 +65,22 @@ class Wheel:
         Raises:
             ValueError: If position is out of valid range [0, size - 1].
         """
-        if not (0 <= position < self.size):
+        self._validate_position(position)
+        self.position = position
+
+    def _validate_position(self, position: int) -> None:
+        """Validate that a position is within the wheel's valid range.
+
+        Args:
+            position: 0-indexed position integer to validate.
+
+        Raises:
+            ValueError: If position is out of valid range [0, size - 1].
+        """
+        if not 0 <= position < self.size:
             raise ValueError(
                 f"Position {position} out of bounds for wheel '{self.name}' (size {self.size})."
             )
-        self.position = position
 
     def get_position(self) -> int:
         """Get the current position of the wheel."""

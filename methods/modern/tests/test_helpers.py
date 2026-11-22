@@ -1,11 +1,14 @@
+"""Unit tests for the helpers module (Base64, SHA-256, HMAC, and bitwise helpers)."""
+
+import base64
+
+import pytest
+
 from methods.modern.helpers import (
     b64encode, b64decode, rotr, shr,
     ch_func, maj_func, sigma_0_upper, sigma_1_upper, sigma_0_lower, sigma_1_lower,
     sha256, hmac_sha256
 )
-
-import base64
-import pytest
 
 
 def test_b64encode_rfc_vectors():
@@ -55,7 +58,7 @@ def test_b64encode_binary_and_edge_values():
 
 @pytest.mark.parametrize("length", range(0, 65))
 def test_b64encode_stdlib_parity(length: int):
-    """Verify b64encode matches standard library base64.b64encode for various payload lengths."""
+    """Verify b64encode matches stdlib base64.b64encode for various payload lengths."""
     data = bytes((i * 37) % 256 for i in range(length))
     expected = base64.b64encode(data).decode("utf-8")
     assert b64encode(data) == expected
@@ -82,7 +85,9 @@ def test_b64encode_roundtrip():
         decoded = b64decode(encoded)
         assert decoded == payload
 
+
 def test_b64decode():
+    """Test Base64 decoding against RFC 4648 vectors and whitespace stripping."""
     assert b64decode("") == b""
     assert b64decode("Zg==") == b"f"
     assert b64decode("Zm8=") == b"fo"
@@ -93,8 +98,9 @@ def test_b64decode():
     # test stripping whitespace
     assert b64decode("  Zm9vYmFy \n\r") == b"foobar"
 
+
 def test_b64decode_validation_errors():
-    """Verify that b64decode raises ValueError on invalid characters or invalid lengths."""
+    """Verify that b64decode raises ValueError on invalid characters or lengths."""
     # Invalid ASCII characters
     with pytest.raises(ValueError, match="Invalid character in Base64 string"):
         b64decode("Zm!v")
@@ -109,48 +115,72 @@ def test_b64decode_validation_errors():
     with pytest.raises(ValueError, match="Invalid Base64 string length"):
         b64decode("Z")
 
+
 def test_bitwise_operations():
+    """Test 32-bit bitwise operations: rotr and shr."""
     # Test 32-bit bound and rotation
     val = 0x80000001
     assert rotr(val, 1) == 0xC0000000
     assert rotr(val, 31) == 0x00000003
     assert shr(val, 1) == 0x40000000
 
+
 def test_sha256_logic_funcs_specifics():
+    """Test SHA-256 logic functions (ch, maj, sigma) against known formulas."""
     # ch(x, y, z) = (x & y) ^ (~x & z)
-    # In Python, ~x for x > 0 gives a negative number, but when masked or combined with positive z,
-    # it behaves consistently with two's complement. Wait, we should make sure it stays 32-bit if it matters,
-    # but the sha256 loop explicitly does `& 0xFFFFFFFF` at the end of additions, and bitwise ops on positive ints
-    # masked by positive z will yield bounded results, EXCEPT ~x & z.
-    # Let's test this carefully.
+    # In Python, ~x for x > 0 gives a negative number, but when masked or
+    # combined with positive z, it behaves consistently with two's
+    # complement. Let's test this carefully.
     x, y, z = 1, 2, 3
     # ~1 = -2. -2 in binary is ...1111111111111110
     # -2 & 3 = 2
     # 1 & 2 = 0
     # 0 ^ 2 = 2
-    assert ch_func(1, 2, 3) == 2
+    assert ch_func(x, y, z) == 2
 
     # maj(x, y, z) = (x & y) ^ (x & z) ^ (y & z)
     # 1 & 2 = 0
     # 1 & 3 = 1
     # 2 & 3 = 2
     # 0 ^ 1 ^ 2 = 3
-    assert maj_func(1, 2, 3) == 3
+    assert maj_func(x, y, z) == 3
 
-    assert sigma_0_upper(0x80000000) == (rotr(0x80000000, 2) ^ rotr(0x80000000, 13) ^ rotr(0x80000000, 22))
-    assert sigma_1_upper(0x80000000) == (rotr(0x80000000, 6) ^ rotr(0x80000000, 11) ^ rotr(0x80000000, 25))
-    assert sigma_0_lower(0x80000000) == (rotr(0x80000000, 7) ^ rotr(0x80000000, 18) ^ shr(0x80000000, 3))
-    assert sigma_1_lower(0x80000000) == (rotr(0x80000000, 17) ^ rotr(0x80000000, 19) ^ shr(0x80000000, 10))
+    assert sigma_0_upper(0x80000000) == (
+        rotr(0x80000000, 2) ^ rotr(0x80000000, 13) ^ rotr(0x80000000, 22)
+    )
+    assert sigma_1_upper(0x80000000) == (
+        rotr(0x80000000, 6) ^ rotr(0x80000000, 11) ^ rotr(0x80000000, 25)
+    )
+    assert sigma_0_lower(0x80000000) == (
+        rotr(0x80000000, 7) ^ rotr(0x80000000, 18) ^ shr(0x80000000, 3)
+    )
+    assert sigma_1_lower(0x80000000) == (
+        rotr(0x80000000, 17) ^ rotr(0x80000000, 19) ^ shr(0x80000000, 10)
+    )
+
 
 def test_sha256_kat():
-    assert sha256(b'').hex() == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    assert sha256(b'abc').hex() == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
-    assert sha256(b'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq').hex() == "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+    """Known Answer Test for sha256 against standard digest vectors."""
+    assert sha256(b'').hex() == (
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    )
+    assert sha256(b'abc').hex() == (
+        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    )
+    assert sha256(b'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq').hex() == (
+        "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+    )
+
 
 def test_hmac_sha256_kat():
+    """Known Answer Test for hmac_sha256 against standard vectors."""
     msg = b'The quick brown fox jumps over the lazy dog'
     key1 = b'key'
-    assert hmac_sha256(key1, msg).hex() == "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8"
+    assert hmac_sha256(key1, msg).hex() == (
+        "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8"
+    )
 
     key2 = b'a' * 100
-    assert hmac_sha256(key2, msg).hex() == "ee128dd7d40b70b8e0f75153d8541bd8fd9685cf8fbec61719ed8b542b81f07c"
+    assert hmac_sha256(key2, msg).hex() == (
+        "ee128dd7d40b70b8e0f75153d8541bd8fd9685cf8fbec61719ed8b542b81f07c"
+    )

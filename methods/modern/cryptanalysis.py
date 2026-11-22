@@ -30,13 +30,102 @@ def _decrypt_cbc_raw(ciphertext: bytes, key: bytes, iv: bytes) -> tuple[list[byt
     return blocks, unpadded
 
 
+def _flip_byte_at(pt_idx: int, from_byte: int, to_byte: int, state: dict) -> None:
+    """Tamper IV/CT bytes at a plaintext offset so the tampered value decrypts to the target."""
+    target_block = pt_idx // symmetric.BLOCK_SIZE
+    byte_in_block = pt_idx % symmetric.BLOCK_SIZE
+    xor_mask = from_byte ^ to_byte
+
+    if target_block == 0:
+        state["tampered_iv"][byte_in_block] ^= xor_mask
+        modified_block = -1
+    else:
+        modified_block = target_block - 1
+        state["tampered_ct"][modified_block * symmetric.BLOCK_SIZE + byte_in_block] ^= xor_mask
+        state["corrupted_blocks"].add(modified_block)
+
+    state["forged_blocks"].add(target_block)
+    state["flipped_positions"].append(
+        {
+            "plaintext_offset": pt_idx,
+            "target_block": target_block,
+            "modified_block": modified_block,
+            "byte_index": byte_in_block,
+            "orig_byte_hex": f"{from_byte:02x}",
+            "new_byte_hex": f"{to_byte:02x}",
+            "xor_mask_hex": f"{xor_mask:02x}",
+        }
+    )
+
+
+def _compute_bitflip_tamper(
+    pt_bytes: bytes,
+    from_bytes: bytes,
+    to_bytes: bytes,
+    ct_bytes: bytes,
+    iv: bytes,
+) -> dict:
+    """Compute tampered IV/CT so that CBC decryption yields the forged target."""
+    pos = pt_bytes.index(from_bytes)
+    state = {
+        "tampered_iv": bytearray(iv),
+        "tampered_ct": bytearray(ct_bytes),
+        "flipped_positions": [],
+        "corrupted_blocks": set(),
+        "forged_blocks": set(),
+    }
+    for j, from_byte in enumerate(from_bytes):
+        _flip_byte_at(pos + j, from_byte, to_bytes[j], state)
+
+    return {
+        "tampered_iv": bytes(state["tampered_iv"]),
+        "tampered_ct": bytes(state["tampered_ct"]),
+        "flipped_positions": state["flipped_positions"],
+        "corrupted_blocks": state["corrupted_blocks"],
+        "forged_blocks": state["forged_blocks"],
+    }
+
+
+def _hex_blocks(data: bytes) -> list[str]:
+    """Split raw bytes into a list of hex-encoded block strings."""
+    return [
+        data[i : i + symmetric.BLOCK_SIZE].hex()
+        for i in range(0, len(data), symmetric.BLOCK_SIZE)
+    ]
+
+
+def _block_status_info(dec_blocks: list[bytes], tamper: dict) -> list[dict]:
+    """Return per-block decryption status info for the tampered ciphertext."""
+    decrypted_blocks_info: list[dict] = []
+    for idx, blk in enumerate(dec_blocks):
+        if idx in tamper["forged_blocks"]:
+            blk_status = "forged"
+        elif idx in tamper["corrupted_blocks"]:
+            blk_status = "corrupted"
+        else:
+            blk_status = "intact"
+        decrypted_blocks_info.append(
+            {
+                "index": idx,
+                "hex": blk.hex(),
+                "text": blk.decode("utf-8", errors="replace"),
+                "status": blk_status,
+            }
+        )
+    return decrypted_blocks_info
+
+
 def cbc_bitflip_attack(
     plaintext: str = "user=alice;role=guest;pad=1",
     target_from: str = "guest",
     target_to: str = "admin",
 ) -> dict:
     """Demonstrate an AES-256-CBC bit-flipping attack forging `target_from` -> `target_to`."""
-    if not isinstance(plaintext, str) or not isinstance(target_from, str) or not isinstance(target_to, str):
+    if (
+        not isinstance(plaintext, str)
+        or not isinstance(target_from, str)
+        or not isinstance(target_to, str)
+    ):
         raise TypeError("plaintext, target_from, and target_to must be strings")
     if not plaintext or not target_from or not target_to:
         raise ValueError("plaintext, target_from, and target_to cannot be empty")
@@ -53,82 +142,23 @@ def cbc_bitflip_attack(
     key = symmetric.generate_key()
     iv = symmetric.generate_iv()
     ct_bytes = symmetric.encrypt(plaintext, key, iv)
-
-    pos = pt_bytes.index(from_bytes)
-    tampered_iv = bytearray(iv)
-    tampered_ct = bytearray(ct_bytes)
-
-    flipped_positions: list[dict] = []
-    corrupted_blocks: set[int] = set()
-    forged_blocks: set[int] = set()
-
-    for j in range(len(from_bytes)):
-        pt_idx = pos + j
-        target_block = pt_idx // symmetric.BLOCK_SIZE
-        byte_in_block = pt_idx % symmetric.BLOCK_SIZE
-        xor_mask = from_bytes[j] ^ to_bytes[j]
-
-        if target_block == 0:
-            tampered_iv[byte_in_block] ^= xor_mask
-            modified_block = -1
-        else:
-            modified_block = target_block - 1
-            tampered_ct[modified_block * symmetric.BLOCK_SIZE + byte_in_block] ^= xor_mask
-            corrupted_blocks.add(modified_block)
-
-        forged_blocks.add(target_block)
-        flipped_positions.append(
-            {
-                "plaintext_offset": pt_idx,
-                "target_block": target_block,
-                "modified_block": modified_block,
-                "byte_index": byte_in_block,
-                "orig_byte_hex": f"{from_bytes[j]:02x}",
-                "new_byte_hex": f"{to_bytes[j]:02x}",
-                "xor_mask_hex": f"{xor_mask:02x}",
-            }
-        )
-
-    tampered_iv_bytes = bytes(tampered_iv)
-    tampered_ct_bytes = bytes(tampered_ct)
-    dec_blocks, unpadded = _decrypt_cbc_raw(tampered_ct_bytes, key, tampered_iv_bytes)
+    tamper = _compute_bitflip_tamper(pt_bytes, from_bytes, to_bytes, ct_bytes, iv)
+    dec_blocks, unpadded = _decrypt_cbc_raw(tamper["tampered_ct"], key, tamper["tampered_iv"])
 
     decrypted_text = unpadded.decode("utf-8", errors="replace")
-    decrypted_blocks_info: list[dict] = []
-    for idx, blk in enumerate(dec_blocks):
-        if idx in forged_blocks:
-            blk_status = "forged"
-        elif idx in corrupted_blocks:
-            blk_status = "corrupted"
-        else:
-            blk_status = "intact"
-        decrypted_blocks_info.append(
-            {
-                "index": idx,
-                "hex": blk.hex(),
-                "text": blk.decode("utf-8", errors="replace"),
-                "status": blk_status,
-            }
-        )
 
     return {
         "plaintext": plaintext,
         "target_from": target_from,
         "target_to": target_to,
         "iv_hex": iv.hex(),
-        "tampered_iv_hex": tampered_iv_bytes.hex(),
-        "original_blocks_hex": [
-            ct_bytes[i : i + symmetric.BLOCK_SIZE].hex()
-            for i in range(0, len(ct_bytes), symmetric.BLOCK_SIZE)
-        ],
-        "tampered_blocks_hex": [
-            tampered_ct_bytes[i : i + symmetric.BLOCK_SIZE].hex()
-            for i in range(0, len(tampered_ct_bytes), symmetric.BLOCK_SIZE)
-        ],
-        "flipped_positions": flipped_positions,
+        "tampered_iv_hex": tamper["tampered_iv"].hex(),
+        "original_blocks_hex": _hex_blocks(ct_bytes),
+        "tampered_blocks_hex": _hex_blocks(tamper["tampered_ct"]),
+        "flipped_positions": tamper["flipped_positions"],
         "decrypted_text": decrypted_text,
         "decrypted_raw_hex": unpadded.hex(),
-        "decrypted_blocks": decrypted_blocks_info,
+        "decrypted_blocks": _block_status_info(dec_blocks, tamper),
         "forged_successfully": target_to in decrypted_text,
     }
 
@@ -259,8 +289,16 @@ def rsa_factor_small(
     if normalized_method not in ("fermat", "pollard_rho", "both"):
         raise ValueError("method must be 'fermat', 'pollard_rho', or 'both'")
 
-    fermat_res = _fermat_factor(n, max_iterations=max_iterations) if normalized_method in ("fermat", "both") else None
-    rho_res = _pollard_rho_factor(n, max_iterations=max_iterations) if normalized_method in ("pollard_rho", "both") else None
+    fermat_res = (
+        _fermat_factor(n, max_iterations=max_iterations)
+        if normalized_method in ("fermat", "both")
+        else None
+    )
+    rho_res = (
+        _pollard_rho_factor(n, max_iterations=max_iterations)
+        if normalized_method in ("pollard_rho", "both")
+        else None
+    )
 
     p = None
     q = None
