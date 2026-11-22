@@ -10,9 +10,9 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](LICENSE)
 
-[![Tests: 862 Passed](https://img.shields.io/badge/Tests-862%20Passed%20(100%25)-10B981?style=flat-square&logo=pytest&logoColor=white)](scripts/diagnose.py)
-[![Python Tests](https://img.shields.io/badge/pytest-801%20passed-10B981?style=flat-square&logo=python&logoColor=white)](methods/)
-[![Web Tests](https://img.shields.io/badge/jest-61%20passed-10B981?style=flat-square&logo=jest&logoColor=white)](web/)
+[![Tests: 911 Passed](https://img.shields.io/badge/Tests-911%20Passed%20(100%25)-10B981?style=flat-square&logo=pytest&logoColor=white)](scripts/diagnose.py)
+[![Python Tests](https://img.shields.io/badge/pytest-507%20passed-10B981?style=flat-square&logo=python&logoColor=white)](methods/)
+[![Web Tests](https://img.shields.io/badge/jest-148%20passed-10B981?style=flat-square&logo=jest&logoColor=white)](web/)
 [![Pylint](https://img.shields.io/badge/pylint-10.00%2F10-10B981?style=flat-square&logo=pylint&logoColor=white)](methods/)
 [![Dependencies: Zero External Crypto](https://img.shields.io/badge/crypto%20deps-zero%20external%20(stdlib%20only)-blue?style=flat-square)](STYLE_GUIDE.md)
 
