@@ -12,5 +12,15 @@
   },
   "rules": {
     "unused-dependencies": "warn"
-  }
+  },
+  "ignoreExports": [
+    {
+      "file": "src/components/museum/museumData.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/museum/workbench/PassportChallengeView.tsx",
+      "exports": ["*"]
+    }
+  ]
 }

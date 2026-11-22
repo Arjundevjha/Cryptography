@@ -102,7 +102,7 @@ const DEFAULT_CHALLENGES: Record<string, ExhibitChallenge> = {
   },
 };
 
-export function loadPassportStamps(): string[] {
+function loadPassportStamps(): string[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = window.localStorage.getItem(PASSPORT_STORAGE_KEY);
@@ -114,7 +114,7 @@ export function loadPassportStamps(): string[] {
   }
 }
 
-export function savePassportStamp(exhibitId: string): string[] {
+function savePassportStamp(exhibitId: string): string[] {
   const current = loadPassportStamps();
   if (!current.includes(exhibitId)) {
     const updated = [...current, exhibitId];

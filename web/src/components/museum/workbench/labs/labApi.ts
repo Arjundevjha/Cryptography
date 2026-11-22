@@ -1,6 +1,6 @@
-export const OFFLINE_ERROR_MSG = 'Could not reach encryption server — is the API running?';
+const OFFLINE_ERROR_MSG = 'Could not reach encryption server — is the API running?';
 
-export const ATTACK_LAB_EXHIBITS = new Set([
+const ATTACK_LAB_EXHIBITS = new Set([
   'caesar',
   'affine',
   'vigenere',

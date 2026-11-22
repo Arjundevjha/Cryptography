@@ -444,7 +444,7 @@ export function substitutionDecrypt(ciphertext: string, keyAlphabet: string): st
 // Cryptanalysis Helpers (Frequency Analysis, Chi-Squared, IoC, Key Recovery)
 // ============================================================================
 
-export const ENGLISH_FREQUENCIES: Record<string, number> = {
+const ENGLISH_FREQUENCIES: Record<string, number> = {
   A: 8.167, B: 1.492, C: 2.782, D: 4.253, E: 12.702, F: 2.228,
   G: 2.015, H: 6.094, I: 6.966, J: 0.153, K: 0.772, L: 4.025,
   M: 2.406, N: 6.749, O: 7.507, P: 1.929, Q: 0.095, R: 5.987,

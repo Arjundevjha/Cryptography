@@ -25,7 +25,7 @@ export interface VigenereCandidate {
   preview: string;
 }
 
-export const ENGLISH_FREQUENCIES: Record<string, number> = {
+const ENGLISH_FREQUENCIES: Record<string, number> = {
   A: 8.167, B: 1.492, C: 2.782, D: 4.253, E: 12.702, F: 2.228, G: 2.015,
   H: 6.094, I: 6.966, J: 0.153, K: 0.772, L: 4.025, M: 2.406, N: 6.749,
   O: 7.507, P: 1.929, Q: 0.095, R: 5.987, S: 6.327, T: 9.056, U: 2.758,
@@ -82,7 +82,7 @@ export function computeIndexOfCoincidence(text: string): number {
   return sum / (n * (n - 1));
 }
 
-export function chiSquaredScore(text: string): number {
+function chiSquaredScore(text: string): number {
   const { frequencies, totalLetters } = computeLetterFrequencies(text);
   if (totalLetters === 0) return Infinity;
 

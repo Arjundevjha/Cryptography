@@ -313,7 +313,7 @@ export function createContactShadowTexture(): THREE.CanvasTexture {
 /**
  * Framed archival diagram / gallery plate mounted inside each exhibit room's back alcove.
  */
-export function createWingGalleryArtTexture(
+function createWingGalleryArtTexture(
   title: string,
   category: 'Classical' | 'Historical' | 'Modern',
   timeline: string

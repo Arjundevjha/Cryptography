@@ -83,7 +83,7 @@ export function isAmbientActive(): boolean {
   return ambientActive;
 }
 
-export function stopAmbient(): void {
+function stopAmbient(): void {
   try {
     ambientOscPrimary?.stop();
     ambientOscPrimary?.disconnect();

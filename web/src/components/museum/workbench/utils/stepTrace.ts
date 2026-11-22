@@ -1,6 +1,6 @@
 import { enigmaStepRotors } from '../../../../../app/utils/ciphers';
 
-export interface PlayfairGridCell {
+interface PlayfairGridCell {
   letter: string;
   row: number;
   col: number;
