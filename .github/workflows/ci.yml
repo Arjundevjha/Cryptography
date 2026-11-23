@@ -137,8 +137,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install pylint
-        run: python -m pip install --upgrade pip && python -m pip install pylint
+      # pytest is installed because pylint resolves pytest imports in methods/
+      # test modules; without it pylint reports E0401 (import-error).
+      - name: Install pylint and pytest
+        run: python -m pip install --upgrade pip && python -m pip install pylint pytest
 
       # pylint exits non-zero if any issue is found or the score is below 10
       # (fail-under default). The repo maintains methods/ at 10.00/10.
