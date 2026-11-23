@@ -1,18 +1,31 @@
-import pytest
+"""Unit tests for the RSA implementation (key generation, encryption, decryption)."""
+
+import builtins
 import os
+import runpy
+import sys
+from importlib import reload
 from unittest.mock import patch
+
+import pytest
+
+from methods.modern.helpers import b64encode
+from methods.modern.keypair import (
+    generate_encrypted_keypair,
+    generate_keypair,
+)
 from methods.modern.rsa import (
     _parse_pem,
-    encrypt,
     decrypt,
     decrypt_private_key,
+    encrypt,
+    main,
 )
-from methods.modern.keypair import (
-    generate_keypair,
-    generate_encrypted_keypair,
-)
+import methods.modern.rsa as rsa_module
+
 
 def test_parse_pem_public_key():
+    """Test that _parse_pem returns the public key parameters n and e."""
     pub_pem, _ = generate_keypair(key_size=512)
     header = "-----BEGIN RSA PUBLIC KEY-----"
     footer = "-----END RSA PUBLIC KEY-----"
@@ -23,6 +36,7 @@ def test_parse_pem_public_key():
     assert n > 0
 
 def test_parse_pem_private_key():
+    """Test that _parse_pem returns the private key parameters n, e, d, p, q."""
     _, priv_pem = generate_keypair(key_size=512)
     header = "-----BEGIN RSA PRIVATE KEY-----"
     footer = "-----END RSA PRIVATE KEY-----"
@@ -36,6 +50,7 @@ def test_parse_pem_private_key():
     assert q > 0
 
 def test_encrypt_decrypt_standard_message():
+    """Test that RSA encryption/decryption round-trips a standard message."""
     pub_pem, priv_pem = generate_keypair(key_size=512)
     message = "Secret message for RSA"
     ciphertext = encrypt(message, pub_pem)
@@ -47,6 +62,7 @@ def test_encrypt_decrypt_standard_message():
     assert decrypted_message == message
 
 def test_encrypt_decrypt_empty_message():
+    """Test that RSA encryption/decryption handles an empty message."""
     pub_pem, priv_pem = generate_keypair(key_size=512)
     message = ""
     ciphertext = encrypt(message, pub_pem)
@@ -58,6 +74,7 @@ def test_encrypt_decrypt_empty_message():
     assert decrypted_message == message
 
 def test_encrypt_decrypt_large_message():
+    """Test that RSA encryption/decryption round-trips a large message."""
     pub_pem, priv_pem = generate_keypair(key_size=512)
     message = "A" * 1000
     ciphertext = encrypt(message, pub_pem)
@@ -69,6 +86,7 @@ def test_encrypt_decrypt_large_message():
     assert decrypted_message == message
 
 def test_encrypt_decrypt_unicode_message():
+    """Test that RSA encryption/decryption round-trips a Unicode message."""
     pub_pem, priv_pem = generate_keypair(key_size=512)
     message = "Hello World 🔑🔒! Café & Naïve Unicode 🔏"
     ciphertext = encrypt(message, pub_pem)
@@ -80,6 +98,7 @@ def test_encrypt_decrypt_unicode_message():
     assert decrypted_message == message
 
 def test_decrypt_encrypted_private_key():
+    """Test that decrypt_private_key recovers an encrypted key and round-trips a message."""
     passphrase = b"supersecretpassphrase"
     pub_pem, enc_priv_pem = generate_encrypted_keypair(passphrase, key_size=512)
 
@@ -94,7 +113,7 @@ def test_decrypt_encrypted_private_key():
     assert decrypted_message == message
 
 def test_main_unencrypted_keypair(capsys):
-    from methods.modern.rsa import main
+    """Test the RSA module main output with the default (unencrypted) keypair."""
     # Ensure RSA_PASSPHRASE is not set
     with patch.dict(os.environ, clear=True):
         main()
@@ -104,7 +123,7 @@ def test_main_unencrypted_keypair(capsys):
         assert "--- Skipping Encrypted Keypair Test ---" in captured.out
 
 def test_main_encrypted_keypair(capsys):
-    from methods.modern.rsa import main
+    """Test the RSA module main output with an encrypted keypair."""
     with patch.dict(os.environ, {"RSA_PASSPHRASE": "testpassphrase"}):
         main()
         captured = capsys.readouterr()
@@ -115,17 +134,12 @@ def test_main_encrypted_keypair(capsys):
 
 def test_fallback_imports():
     """Test fallback imports by masking the modern module temporarily."""
-    import sys
-    import builtins
-    from importlib import reload
-    import methods.modern.rsa as rsa_module
-
     original_import = builtins.__import__
 
-    def mocked_import(name, globals=None, locals=None, fromlist=(), level=0):
+    def mocked_import(name, global_ns=None, local_ns=None, fromlist=(), level=0):
         if level > 0 and name in ('', 'symmetric', 'helpers', 'keypair'):
             raise ImportError(f"Mocked ImportError for {name}")
-        return original_import(name, globals, locals, fromlist, level)
+        return original_import(name, global_ns, local_ns, fromlist, level)
 
     with patch("builtins.__import__", side_effect=mocked_import):
         sys.path.insert(0, 'methods/modern')
@@ -143,8 +157,9 @@ def test_fallback_imports():
     reload(rsa_module)
 
 def test_rsa_decrypt_private_key_wrong_passphrase():
+    """Test that decrypting with a wrong passphrase raises an exception."""
     passphrase = b"correct_passphrase"
-    public_key, enc_private_key = generate_encrypted_keypair(passphrase, key_size=512)
+    _public_key, enc_private_key = generate_encrypted_keypair(passphrase, key_size=512)
 
     wrong_passphrase = b"wrong_passphrase"
 
@@ -154,35 +169,27 @@ def test_rsa_decrypt_private_key_wrong_passphrase():
         decrypt_private_key(enc_private_key, wrong_passphrase)
 
 def test_decrypt_with_trailing_empty_block():
+    """Test that decrypt handles the empty-block guard path in rsa.py."""
     pub_pem, priv_pem = generate_keypair(key_size=512)
     message = "Test block"
-    ciphertext = encrypt(message, pub_pem)
+    _ciphertext = encrypt(message, pub_pem)
 
     # _parse_pem returns key_params [n, e, d, p, q] for private key
     header = "-----BEGIN RSA PRIVATE KEY-----"
     footer = "-----END RSA PRIVATE KEY-----"
     key_params = _parse_pem(priv_pem, header, footer)
     n = key_params[0]
-    key_size_bytes = (n.bit_length() + 7) // 8
+    _key_size_bytes = (n.bit_length() + 7) // 8
 
-    # Pad ciphertext with zero bytes that are a multiple of key_size_bytes
-    # or append empty slice at the end to trigger `if not (block := ...): continue`
-    # In rsa.py: for i in range(0, len(ciphertext), key_size_bytes):
-    # If len(ciphertext) is artificially extended with a partial block that turns into b""
-    # or if range exceeds, but actually if ciphertext has trailing bytes, let's verify range behavior.
-    # When ciphertext length is, say, key_size_bytes + 0, range(0, len, key_size_bytes) yields 0.
-    # If we pass a ciphertext where block slice is empty or evaluated in the loop:
-    # Notice line 97-98: `if not (block := ciphertext[i : i + key_size_bytes]): continue`
-    # If i < len(ciphertext), ciphertext[i : i + key_size_bytes] is non-empty unless len(ciphertext) == 0 (range produces nothing).
-    # But if ciphertext is modified or sliced such that `ciphertext[i:i+key_size_bytes]` could be empty if `i == len(ciphertext)`,
-    # or if ciphertext is a custom byte sequence with an extra range step, e.g. mock range or empty slice.
-    # Let's test decrypting empty ciphertext directly:
+    # Comment: range(0, len(ciphertext), key_size_bytes) yields no i when ciphertext is
+    # empty; the `if not (block := ciphertext[i : i + key_size_bytes]): continue` guard
+    # in rsa.py covers any other trailing-empty cases. Let's test decrypting the empty
+    # ciphertext directly:
     decrypted_empty = decrypt(b"", priv_pem)
     assert decrypted_empty == ""
 
 def test_decrypt_ciphertext_with_extra_empty_slice():
     """Specifically test line 98 where `if not (block := ...)` is truthy/falsy."""
-    import builtins
     pub_pem, priv_pem = generate_keypair(key_size=512)
     message = "A"
     ciphertext = encrypt(message, pub_pem)
@@ -191,7 +198,7 @@ def test_decrypt_ciphertext_with_extra_empty_slice():
     footer = "-----END RSA PRIVATE KEY-----"
     key_params = _parse_pem(priv_pem, header, footer)
     n = key_params[0]
-    key_size_bytes = (n.bit_length() + 7) // 8
+    _key_size_bytes = (n.bit_length() + 7) // 8
 
     original_range = builtins.range
 
@@ -206,14 +213,15 @@ def test_decrypt_ciphertext_with_extra_empty_slice():
         assert decrypted == message
 
 def test_main_execution_module():
-    import runpy
-    import sys
+    """Test the rsa module main via runpy when executed as __main__."""
     with patch.dict(os.environ, clear=True):
-        # Temporarily remove methods.modern.rsa from sys.modules so run_module executes __name__ == "__main__"
+        # Temporarily remove methods.modern.rsa from sys.modules so
+        # run_module executes __name__ == "__main__".
         sys.modules.pop("methods.modern.rsa", None)
         runpy.run_module("methods.modern.rsa", run_name="__main__")
 
 def test_parse_pem_invalid_payload():
+    """Test that _parse_pem raises ValueError for invalid base64 PEM payloads."""
     header = "-----BEGIN RSA PUBLIC KEY-----"
     footer = "-----END RSA PUBLIC KEY-----"
     invalid_pem = b"-----BEGIN RSA PUBLIC KEY-----\nNOT_BASE64_!!!\n-----END RSA PUBLIC KEY-----\n"
@@ -221,12 +229,13 @@ def test_parse_pem_invalid_payload():
         _parse_pem(invalid_pem, header, footer)
 
 def test_encrypt_invalid_key_pem():
+    """Test that encrypt raises for an invalid public key PEM."""
     invalid_pem = b"-----BEGIN RSA PUBLIC KEY-----\n\n-----END RSA PUBLIC KEY-----\n"
     with pytest.raises(Exception):
         encrypt("Test", invalid_pem)
 
 def test_rsa_encrypt_small_modulus_error():
-    from methods.modern.helpers import b64encode
+    """Test that encrypt raises ValueError for a small RSA modulus."""
     # Construct a PEM key with small n (e.g., n = 15, e = 3)
     pub_str = "15:3"
     pub_b64 = b64encode(pub_str.encode('utf-8'))
@@ -240,7 +249,7 @@ def test_rsa_encrypt_small_modulus_error():
         encrypt("Test", small_pub_pem)
 
 def test_rsa_decrypt_small_modulus_error():
-    from methods.modern.helpers import b64encode
+    """Test that decrypt raises ValueError for a small RSA modulus."""
     # Construct a private key PEM with small n (e.g., n = 15, e = 3, d = 3, p = 3, q = 5)
     priv_str = "15:3:3:3:5"
     priv_b64 = b64encode(priv_str.encode('utf-8'))
@@ -279,7 +288,6 @@ def test_decrypt_private_key_missing_header_or_footer():
 
 def test_parse_pem_single_parameter_or_non_integer():
     """Test that _parse_pem raises ValueError for single parameter or non-integer payloads."""
-    from methods.modern.helpers import b64encode
     header = "-----BEGIN RSA PUBLIC KEY-----"
     footer = "-----END RSA PUBLIC KEY-----"
 
@@ -299,7 +307,6 @@ def test_parse_pem_single_parameter_or_non_integer():
 
 def test_decrypt_private_key_payload_too_short():
     """Test that decrypt_private_key raises ValueError when the payload is under 16 bytes."""
-    from methods.modern.helpers import b64encode
     header = "-----BEGIN ENCRYPTED RSA PRIVATE KEY-----"
     footer = "-----END ENCRYPTED RSA PRIVATE KEY-----"
     short_pem = f"{header}\n{b64encode(b'short')}\n{footer}".encode('utf-8')

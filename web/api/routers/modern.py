@@ -619,7 +619,7 @@ def zkp_prove_step(data: ZkpProveStepInput):
         if step == "verify":
             if data.t is None or data.c is None or data.s is None or data.y is None:
                 raise HTTPException(status_code=400, detail="t, c, s, and y are required for 'verify' step")
-            result = contemporary.schnorr_verify(data.t, data.c, data.s, data.y, data.p, data.q, data.g)
+            result = contemporary.schnorr_verify(data.t, data.c, data.s, data.y, p=data.p, q=data.q, g=data.g)
             return {
                 "step": "verify",
                 "p": data.p,
@@ -641,7 +641,7 @@ def zkp_prove_step(data: ZkpProveStepInput):
         r_val, t_val = contemporary.schnorr_commit(data.r, data.p, data.q, data.g)
         c_val = contemporary.schnorr_challenge(data.c, data.q)
         s_val = contemporary.schnorr_respond(r_val, c_val, secret_x, data.q)
-        result = contemporary.schnorr_verify(t_val, c_val, s_val, y_val, data.p, data.q, data.g)
+        result = contemporary.schnorr_verify(t_val, c_val, s_val, y_val, p=data.p, q=data.q, g=data.g)
         return {
             "step": "full",
             "p": data.p,

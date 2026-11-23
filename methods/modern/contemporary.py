@@ -36,7 +36,7 @@ def validate_schnorr_params(p: int, q: int, g: int) -> None:
         raise ValueError("q must be a prime >= 2")
     if (p - 1) % q != 0:
         raise ValueError("q must divide p - 1")
-    if not (2 <= g < p):
+    if not 2 <= g < p:
         raise ValueError("g must satisfy 2 <= g < p")
     if pow(g, q, p) != 1:
         raise ValueError("g must generate a subgroup of order q modulo p (g^q mod p == 1)")
@@ -50,7 +50,7 @@ def schnorr_public_key(
 ) -> int:
     """Compute Schnorr public key y = g^x mod p."""
     validate_schnorr_params(p, q, g)
-    if not isinstance(secret_x, int) or isinstance(secret_x, bool) or not (1 <= secret_x < q):
+    if not isinstance(secret_x, int) or isinstance(secret_x, bool) or not 1 <= secret_x < q:
         raise ValueError(f"secret_x must be an integer in [1, {q - 1}]")
     return pow(g, secret_x, p)
 
@@ -66,7 +66,7 @@ def schnorr_commit(
     if r is None:
         r_val = secrets.randbelow(q - 1) + 1
     else:
-        if not isinstance(r, int) or isinstance(r, bool) or not (1 <= r < q):
+        if not isinstance(r, int) or isinstance(r, bool) or not 1 <= r < q:
             raise ValueError(f"r must be an integer in [1, {q - 1}]")
         r_val = r
     t_val = pow(g, r_val, p)
@@ -79,7 +79,7 @@ def schnorr_challenge(c: int | None = None, q: int = SCHNORR_DEFAULT_Q) -> int:
         raise ValueError("q must be an integer >= 2")
     if c is None:
         return secrets.randbelow(q)
-    if not isinstance(c, int) or isinstance(c, bool) or not (0 <= c < q):
+    if not isinstance(c, int) or isinstance(c, bool) or not 0 <= c < q:
         raise ValueError(f"c must be an integer in [0, {q - 1}]")
     return c
 
@@ -93,20 +93,23 @@ def schnorr_respond(
     """Prover step 3: compute response s = (r + c * x) mod q."""
     if not isinstance(q, int) or isinstance(q, bool) or q < 2:
         raise ValueError("q must be an integer >= 2")
-    if not isinstance(r, int) or isinstance(r, bool) or not (1 <= r < q):
+    if not isinstance(r, int) or isinstance(r, bool) or not 1 <= r < q:
         raise ValueError(f"r must be an integer in [1, {q - 1}]")
-    if not isinstance(c, int) or isinstance(c, bool) or not (0 <= c < q):
+    if not isinstance(c, int) or isinstance(c, bool) or not 0 <= c < q:
         raise ValueError(f"c must be an integer in [0, {q - 1}]")
-    if not isinstance(secret_x, int) or isinstance(secret_x, bool) or not (1 <= secret_x < q):
+    if not isinstance(secret_x, int) or isinstance(secret_x, bool) or not 1 <= secret_x < q:
         raise ValueError(f"secret_x must be an integer in [1, {q - 1}]")
     return (r + c * secret_x) % q
 
 
-def schnorr_verify(
+# schnorr_verify intentionally exposes the 7-step public ZKP verification surface
+# (t, c, s, y, p, q, g) mirroring the interactive Sigma protocol steps.
+def schnorr_verify(  # pylint: disable=too-many-arguments
     t: int,
     c: int,
     s: int,
     y: int,
+    *,
     p: int = SCHNORR_DEFAULT_P,
     q: int = SCHNORR_DEFAULT_Q,
     g: int = SCHNORR_DEFAULT_G,
@@ -114,11 +117,11 @@ def schnorr_verify(
     """Verifier step 4: check g^s mod p == (t * y^c) mod p."""
     validate_schnorr_params(p, q, g)
     for name, val in (("t", t), ("y", y)):
-        if not isinstance(val, int) or isinstance(val, bool) or not (1 <= val < p):
+        if not isinstance(val, int) or isinstance(val, bool) or not 1 <= val < p:
             raise ValueError(f"{name} must be an integer in [1, {p - 1}]")
-    if not isinstance(c, int) or isinstance(c, bool) or not (0 <= c < q):
+    if not isinstance(c, int) or isinstance(c, bool) or not 0 <= c < q:
         raise ValueError(f"c must be an integer in [0, {q - 1}]")
-    if not isinstance(s, int) or isinstance(s, bool) or not (0 <= s < q):
+    if not isinstance(s, int) or isinstance(s, bool) or not 0 <= s < q:
         raise ValueError(f"s must be an integer in [0, {q - 1}]")
 
     lhs = pow(g, s, p)
@@ -154,11 +157,15 @@ def _derive_shared_secret_hex(bit: int) -> str:
 
 
 def _validate_mlkem_params(n: int, q: int, noise_bound: int) -> None:
-    if not isinstance(n, int) or isinstance(n, bool) or not (2 <= n <= 8):
+    if not isinstance(n, int) or isinstance(n, bool) or not 2 <= n <= 8:
         raise ValueError("Lattice dimension n must be an integer between 2 and 8")
-    if not isinstance(q, int) or isinstance(q, bool) or not (17 <= q <= 65537) or not is_prime(q):
+    if not isinstance(q, int) or isinstance(q, bool) or not 17 <= q <= 65537 or not is_prime(q):
         raise ValueError("Modulus q must be a prime integer between 17 and 65537")
-    if not isinstance(noise_bound, int) or isinstance(noise_bound, bool) or not (0 <= noise_bound <= 500):
+    if (
+        not isinstance(noise_bound, int)
+        or isinstance(noise_bound, bool)
+        or not 0 <= noise_bound <= 500
+    ):
         raise ValueError("noise_bound must be an integer between 0 and 500")
 
 
@@ -200,7 +207,11 @@ def mlkem_encapsulate(
     if message_bit is None:
         m_bit = secrets.randbelow(2)
     else:
-        if not isinstance(message_bit, int) or isinstance(message_bit, bool) or message_bit not in (0, 1):
+        if (
+            not isinstance(message_bit, int)
+            or isinstance(message_bit, bool)
+            or message_bit not in (0, 1)
+        ):
             raise ValueError("message_bit must be 0 or 1")
         m_bit = message_bit
 

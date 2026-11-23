@@ -31,7 +31,7 @@ function createDefaultPolishedGold(): THREE.MeshStandardMaterial {
  * a sculpted Weierstrass curve ribbon, point-addition nodes (P, Q, P+Q),
  * and an orbiting generator ring.
  */
-export function buildEccArtifact(
+function buildEccArtifact(
   group: THREE.Group,
   materials?: ModernArtifactMaterials
 ): ModernExhibitAnimationHandle {
@@ -120,7 +120,7 @@ export function buildEccArtifact(
  * a 4x4 ARX state matrix of glowing cells flanking a central XOR prism
  * and counter-rotating quarter-round rings.
  */
-export function buildOtpChachaArtifact(
+function buildOtpChachaArtifact(
   group: THREE.Group,
   materials?: ModernArtifactMaterials
 ): ModernExhibitAnimationHandle {

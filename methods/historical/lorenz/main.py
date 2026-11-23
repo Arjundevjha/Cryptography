@@ -17,7 +17,11 @@ def run_cli():
     print("  Psi wheels (5):  Sizes 43, 47, 51, 53, 59")
 
     # Set starting positions
-    pos_input = input("\nEnter initial positions (12 numbers 0-indexed separated by spaces, or press Enter for default 0s): ").strip()
+    pos_prompt = (
+        "\nEnter initial positions (12 numbers 0-indexed separated by spaces, "
+        "or press Enter for default 0s): "
+    )
+    pos_input = input(pos_prompt).strip()
     if pos_input:
         try:
             positions = [int(p) for p in pos_input.split()]

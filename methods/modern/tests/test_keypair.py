@@ -1,39 +1,56 @@
-import pytest
+"""Unit tests for the keypair generation module (prime generation, keypairs, primality)."""
+
+import builtins
+import sys
+from importlib import reload
 from unittest.mock import patch
+
+import pytest
+
+from methods.modern.helpers import b64decode
 from methods.modern.keypair import (
-    is_prime,
-    generate_prime,
-    generate_keypair,
     generate_encrypted_keypair,
+    generate_keypair,
+    generate_prime,
+    is_prime,
+    main,
 )
+import methods.modern.keypair as keypair_module
+
 
 def test_is_prime_known_primes():
+    """Test that known small primes are identified as prime."""
     primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 97, 101, 7919]
     for p in primes:
         assert is_prime(p) is True
 
 def test_is_prime_known_composites():
+    """Test that known composite numbers are not prime."""
     composites = [4, 6, 8, 9, 10, 12, 14, 15, 20, 100, 7920]
     for c in composites:
         assert is_prime(c) is False
 
 def test_is_prime_edge_cases():
+    """Test that 0, 1, and negative numbers are not prime."""
     assert is_prime(-1) is False
     assert is_prime(0) is False
     assert is_prime(1) is False
 
 def test_generate_prime():
+    """Test that generate_prime returns a prime of the requested bit length."""
     bits = 128
     prime = generate_prime(bits)
     assert is_prime(prime) is True
     assert prime.bit_length() == bits
 
 def test_generate_prime_raises_runtime_error_if_failed():
+    """Test that generate_prime raises RuntimeError when prime generation keeps failing."""
     with patch("methods.modern.keypair.is_prime", return_value=False):
         with pytest.raises(RuntimeError, match="Failed to generate prime"):
             generate_prime(128)
 
 def test_generate_prime_invalid_bits():
+    """Test that generate_prime rejects bit lengths below 2."""
     with pytest.raises(ValueError, match="Bit length must be at least 2"):
         generate_prime(1)
     with pytest.raises(ValueError, match="Bit length must be at least 2"):
@@ -42,6 +59,7 @@ def test_generate_prime_invalid_bits():
         generate_prime(-5)
 
 def test_generate_prime_security_bounds_and_types():
+    """Test that generate_prime enforces the 4096-bit cap and integer type."""
     with pytest.raises(ValueError, match="cannot exceed 4096 bits"):
         generate_prime(10000)
     with pytest.raises(TypeError, match="Bit length must be an integer"):
@@ -50,6 +68,7 @@ def test_generate_prime_security_bounds_and_types():
         generate_prime("128")
 
 def test_generate_keypair_invalid_key_size():
+    """Test that generate_keypair rejects invalid key sizes and types."""
     with pytest.raises(ValueError, match="Key size must be at least 16 bits"):
         generate_keypair(key_size=15)
     with pytest.raises(ValueError, match="Key size cannot exceed 4096 bits"):
@@ -60,12 +79,14 @@ def test_generate_keypair_invalid_key_size():
         generate_keypair(key_size="1024")
 
 def test_generate_encrypted_keypair_invalid_passphrase():
+    """Test that generate_encrypted_keypair rejects empty or invalid passphrases."""
     with pytest.raises(ValueError, match="Passphrase cannot be empty"):
         generate_encrypted_keypair(b"", key_size=512)
     with pytest.raises(TypeError, match="Passphrase must be bytes or bytearray"):
         generate_encrypted_keypair("invalid_type_passphrase", key_size=512)
 
 def test_generate_keypair_default_params():
+    """Test that generate_keypair with default params returns valid PEM keys."""
     public_key, private_key = generate_keypair(key_size=512)
     assert isinstance(public_key, bytes)
     assert isinstance(private_key, bytes)
@@ -75,6 +96,7 @@ def test_generate_keypair_default_params():
     assert b"-----END RSA PRIVATE KEY-----" in private_key
 
 def test_generate_encrypted_keypair():
+    """Test that generate_encrypted_keypair returns a public key and encrypted private key."""
     passphrase = b"supersecretpassphrase"
     public_key, enc_private_key = generate_encrypted_keypair(passphrase, key_size=512)
 
@@ -85,7 +107,7 @@ def test_generate_encrypted_keypair():
     assert b"-----END ENCRYPTED RSA PRIVATE KEY-----" in enc_private_key
 
 def test_main_function(capsys):
-    from methods.modern.keypair import main
+    """Test the keypair module main function output."""
     main()
     captured = capsys.readouterr()
     assert "Public Key:" in captured.out
@@ -98,17 +120,12 @@ def test_main_function(capsys):
 
 def test_fallback_imports():
     """Test fallback imports by masking the modern module temporarily."""
-    import sys
-    import builtins
-    from importlib import reload
-    import methods.modern.keypair as keypair_module
-
     original_import = builtins.__import__
 
-    def mocked_import(name, globals=None, locals=None, fromlist=(), level=0):
+    def mocked_import(name, global_ns=None, local_ns=None, fromlist=(), level=0):
         if level > 0 and name in ('', 'symmetric', 'helpers'):
             raise ImportError(f"Mocked ImportError for {name}")
-        return original_import(name, globals, locals, fromlist, level)
+        return original_import(name, global_ns, local_ns, fromlist, level)
 
     with patch("builtins.__import__", side_effect=mocked_import):
         sys.path.insert(0, 'methods/modern')
@@ -121,8 +138,7 @@ def test_fallback_imports():
     reload(keypair_module)
 
 def test_generate_keypair_output_primality():
-    from methods.modern.helpers import b64decode
-
+    """Test that generated private key payloads decode to prime p and q."""
     # Generate a keypair
     _, private_key = generate_keypair(key_size=128)
 

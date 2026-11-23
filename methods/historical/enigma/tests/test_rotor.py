@@ -1,7 +1,11 @@
+"""Unit tests for the Enigma Rotor class (forward/backward mapping and rotation)."""
+
 from methods.historical.enigma.rotor import Rotor
 
+
 def test_rotor_initialization():
-    wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ" # Rotor I wiring
+    """Test Rotor initialization: default alphabet, wiring, and notch storage."""
+    wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"  # Rotor I wiring
     notch = "Q"
     rotor = Rotor(wiring, notch)
 
@@ -10,6 +14,7 @@ def test_rotor_initialization():
     assert rotor.notch == notch
 
 def test_rotor_forward():
+    """Test Rotor forward mapping at indices 0, 1, and 25."""
     # Rotor I
     wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     rotor = Rotor(wiring, "Q")
@@ -26,6 +31,7 @@ def test_rotor_forward():
     assert rotor.forward(25) == 9
 
 def test_rotor_backwards():
+    """Test Rotor backward mapping at indices 0 and 4."""
     # Rotor I
     wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     rotor = Rotor(wiring, "Q")
@@ -39,7 +45,7 @@ def test_rotor_backwards():
     assert rotor.backwards(4) == 0
 
 def test_rotor_rotate():
-    # Test simple forward rotation
+    """Test Rotor rotation by 1 and 2 steps forward."""
     wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     rotor = Rotor(wiring, "Q")
 
@@ -53,6 +59,7 @@ def test_rotor_rotate():
     assert rotor.right == "FLGDQVZNTOWYHXUSPAIBRCJEKM"
 
 def test_rotor_rotate_backwards():
+    """Test Rotor rotation by 1 step backward."""
     wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     rotor = Rotor(wiring, "Q")
 
@@ -64,6 +71,7 @@ def test_rotor_rotate_backwards():
     assert rotor.right == "JEKMFLGDQVZNTOWYHXUSPAIBRC"
 
 def test_rotor_rotate_to_letter():
+    """Test Rotor rotate_to_letter to 'C' (index 2)."""
     wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     rotor = Rotor(wiring, "Q")
 
@@ -73,6 +81,7 @@ def test_rotor_rotate_to_letter():
     assert rotor.right == "MFLGDQVZNTOWYHXUSPAIBRCJEK"
 
 def test_rotor_set_ring():
+    """Test Rotor set_ring with settings 1 and 2 (notch P and O respectively)."""
     wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     rotor = Rotor(wiring, "Q")
 

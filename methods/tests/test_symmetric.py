@@ -1,14 +1,21 @@
+"""Unit tests for the AES symmetric mode implementation (CBC modes, padding, GF(2^8))."""
+
+import secrets
+
 import pytest
+
 from methods.modern.symmetric import (
     encrypt, decrypt, generate_key, generate_iv,
     pkcs7_pad, pkcs7_unpad, encrypt_with_new_key,
     encrypt_block, decrypt_block, key_expansion, add_round_key,
     sub_bytes, inv_sub_bytes, SBOX, INV_SBOX,
     sub_word, rot_word, xtime, mul_gf,
-    mix_columns, inv_mix_columns
+    mix_columns, inv_mix_columns, shift_rows, inv_shift_rows,
 )
 
+
 def test_pkcs7_padding():
+    """Verify that PKCS7 padding produces the expected block length and value."""
     data = b"Hello"
     padded = pkcs7_pad(data)
     assert len(padded) % 16 == 0
@@ -17,6 +24,7 @@ def test_pkcs7_padding():
     assert unpadded == data
 
 def test_pkcs7_unpad_invalid_bytes():
+    """Corrupted padding bytes must raise ValueError."""
     # Corrupt last byte of padding
     with pytest.raises(ValueError, match="Invalid PKCS7 padding bytes"):
         pkcs7_unpad(b"Hello\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0a")
@@ -30,6 +38,7 @@ def test_pkcs7_unpad_invalid_bytes():
         pkcs7_unpad(b"Hello\x0b\x0b\x0b\x0b\x0b\xFF\x0b\x0b\x0b\x0b\x0b")
 
 def test_pkcs7_unpad_invalid_value():
+    """Invalid padding values must raise ValueError."""
     with pytest.raises(ValueError, match="Invalid PKCS7 padding value"):
         pkcs7_unpad(b"Hello\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11")
 
@@ -45,6 +54,7 @@ def test_pkcs7_unpad_empty_and_unaligned_data():
         pkcs7_unpad(b"unaligned_data")  # 14 bytes
 
 def test_encrypt_decrypt():
+    """Test encrypt/decrypt round-trip with a generated key and IV."""
     message = "Secret message"
     key = generate_key()
     iv = generate_iv()
@@ -57,27 +67,35 @@ def test_encrypt_decrypt():
     assert plaintext == message
 
 def test_encrypt_invalid_iv_length():
+    """Test that encrypt rejects an IV that is not exactly 16 bytes."""
     key = generate_key()
     invalid_iv = b"short_iv"
     with pytest.raises(ValueError, match="IV must be exactly 16 bytes"):
         encrypt("Test message", key, invalid_iv)
 
 def test_decrypt_invalid_iv_length():
+    """Test that decrypt rejects an IV that is not exactly 16 bytes."""
     key = generate_key()
     invalid_iv = b"short_iv"
     with pytest.raises(ValueError, match="IV must be exactly 16 bytes"):
         decrypt(b"ciphertext_bytes", key, invalid_iv)
 
 def test_decrypt_empty_and_unaligned_ciphertext():
+    """Test that decrypt rejects empty or non-multiple-of-16 ciphertexts."""
     key = generate_key()
     iv = generate_iv()
-    with pytest.raises(ValueError, match="Ciphertext length must be a non-empty multiple of 16 bytes"):
+    with pytest.raises(
+        ValueError, match="Ciphertext length must be a non-empty multiple of 16 bytes"
+    ):
         decrypt(b"", key, iv)
 
-    with pytest.raises(ValueError, match="Ciphertext length must be a non-empty multiple of 16 bytes"):
+    with pytest.raises(
+        ValueError, match="Ciphertext length must be a non-empty multiple of 16 bytes"
+    ):
         decrypt(b"unaligned_15_bt", key, iv)
 
 def test_encrypt_empty_message():
+    """Test encrypt/decrypt of an empty message."""
     message = ""
     key = generate_key()
     iv = generate_iv()
@@ -88,12 +106,13 @@ def test_encrypt_empty_message():
 
 def test_kat_aes_256_cbc():
     """Known Answer Test for AES-256 in CBC mode."""
-    key = bytes([i for i in range(32)])
-    iv = bytes([i for i in range(16)])
+    key = bytes(range(32))
+    iv = bytes(range(16))
     message = "Known answer test for AES-256 CBC"
 
     expected_ciphertext = bytes.fromhex(
-        "0677792407c396879dfe465ca9958063813e3616b4faaf11c021e2b563ed9b5361a9e1c330a6dee3feabdc49bb8a1f70"
+        "0677792407c396879dfe465ca9958063813e3616b4faaf11c021e2b563ed9b536"
+        "1a9e1c330a6dee3feabdc49bb8a1f70"
     )
 
     ciphertext = encrypt(message, key, iv)
@@ -104,12 +123,15 @@ def test_kat_aes_256_cbc():
 
 def test_kat_aes_256_cbc_large_message():
     """Known Answer Test for AES-256 in CBC mode with a larger message."""
-    key = bytes([i for i in range(32, 64)])
-    iv = bytes([i for i in range(16, 32)])
+    key = bytes(range(32, 64))
+    iv = bytes(range(16, 32))
     message = "A" * 100
 
     expected_ciphertext = bytes.fromhex(
-        "af2a4fd5a1e5e4ded6db731d778297947b69df614ce796a9dff2b46e77e65e9c12eecc8bd0a3c9fa9a7d707cc137ce735eeaa94cb389aeaae2027dffbb726fd95d14eba28938c9698bf13cddc49ea7844c2b4e4ceb37449d48d68fe1d5d41b53d0adc4f2f10f0a9971bea30c12b759be"
+        "af2a4fd5a1e5e4ded6db731d778297947b69df614ce796a9dff2b46e77e65e9c"
+        "12eecc8bd0a3c9fa9a7d707cc137ce735eeaa94cb389aeaae2027dffbb726fd9"
+        "5d14eba28938c9698bf13cddc49ea7844c2b4e4ceb37449d48d68fe1d5d41b5"
+        "3d0adc4f2f10f0a9971bea30c12b759be"
     )
 
     ciphertext = encrypt(message, key, iv)
@@ -119,6 +141,7 @@ def test_kat_aes_256_cbc_large_message():
     assert plaintext == message
 
 def test_encrypt_with_new_key():
+    """Test that encrypt_with_new_key generates a fresh key and round-trips a message."""
     message = "Test new key generation"
     ciphertext, key, iv = encrypt_with_new_key(message)
 
@@ -132,7 +155,7 @@ def test_encrypt_with_new_key():
 def test_single_block_encryption_decryption():
     """Test raw block encryption and decryption to ensure no data loss in core AES functions."""
     key = generate_key()
-    block = bytes([i for i in range(16)])
+    block = bytes(range(16))
     round_keys = key_expansion(key)
 
     encrypted_block = encrypt_block(block, round_keys)
@@ -143,19 +166,24 @@ def test_single_block_encryption_decryption():
     assert decrypted_block == block
 
 def test_key_expansion_invalid_key_length():
+    """Test that key_expansion rejects key lengths other than 16/24/32 bytes."""
     with pytest.raises(ValueError, match="Key length must be 16, 24, or 32 bytes"):
         key_expansion(b"12345") # 5 bytes
 
 def test_sub_bytes_known_state():
     """Test sub_bytes with a known input state against expected S-box substitution values."""
-    input_state = [0x00, 0x01, 0x02, 0x0f, 0x10, 0x53, 0xff, 0x80, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde]
+    input_state = [
+        0x00, 0x01, 0x02, 0x0f, 0x10, 0x53, 0xff, 0x80,
+        0x00, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde,
+    ]
     expected_output = [SBOX[b] for b in input_state]
 
     output_state = sub_bytes(input_state)
     assert output_state == expected_output
     assert len(output_state) == len(input_state)
     # Check specific expected values from SBOX
-    # SBOX[0x00] == 0x63, SBOX[0x01] == 0x7c, SBOX[0x02] == 0x77, SBOX[0x0f] == 0x76, SBOX[0xff] == 0x16
+    # SBOX[0x00] == 0x63, SBOX[0x01] == 0x7c, SBOX[0x02] == 0x77,
+    # SBOX[0x0f] == 0x76, SBOX[0xff] == 0x16
     assert output_state[0] == 0x63
     assert output_state[1] == 0x7c
     assert output_state[2] == 0x77
@@ -170,6 +198,7 @@ def test_sub_bytes_inv_sub_bytes_roundtrip():
     assert restored_state == input_state
 
 def test_key_expansion_valid_key_lengths():
+    """Test that key_expansion accepts 16-, 24-, and 32-byte keys."""
     # 16 bytes
     key16 = b"1" * 16
     assert len(key_expansion(key16)) > 0
@@ -210,7 +239,6 @@ def test_mix_columns_zero_state():
 
 def test_mix_columns_inv_mix_columns_random_roundtrip():
     """Test that inv_mix_columns reverses mix_columns for arbitrary states."""
-    import secrets
     for _ in range(10):
         state = list(secrets.token_bytes(16))
         mixed = mix_columns(state)
@@ -297,8 +325,6 @@ def test_xtime_matches_mul_gf():
 
 def test_shift_rows():
     """Test shift_rows function with a 16-byte state represented as 0..15."""
-    from methods.modern.symmetric import shift_rows, inv_shift_rows
-
     # State elements 0..15 corresponding to AES matrix positions
     state = list(range(16))
 
@@ -318,8 +344,6 @@ def test_shift_rows():
 
 def test_inv_shift_rows():
     """Test inv_shift_rows function directly with a known input state."""
-    from methods.modern.symmetric import inv_shift_rows
-
     state = list(range(16))
     expected_inv_shifted = [
         0, 13, 10, 7,
@@ -328,7 +352,8 @@ def test_inv_shift_rows():
         12, 9, 6, 3
     ]
     assert inv_shift_rows(state) == expected_inv_shifted
- 
+
+
 def test_inv_sub_bytes():
     """Test inv_sub_bytes direct transformation and inverse relationship with sub_bytes."""
     state = list(range(16))
@@ -336,17 +361,25 @@ def test_inv_sub_bytes():
 
     assert inv_sub_bytes(state) == expected_inv
 
-    # Verify that inv_sub_bytes(sub_bytes(state)) returns original state for all possible byte values 0..255
+    # Verify inv_sub_bytes(sub_bytes(state)) returns the original state for
+    # all possible byte values 0..255
     all_bytes = list(range(256))
     subbed = sub_bytes(all_bytes)
     inv_subbed = inv_sub_bytes(subbed)
     assert inv_subbed == all_bytes
- 
+
+
 def test_add_round_key():
     """Test XOR state with round key in AES."""
-    state = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]
-    round_key = [0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00]
-    expected = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]
+    state = [
+        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+    ]
+    round_key = [
+        0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88,
+        0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00,
+    ]
+    expected = [0xff] * 16
 
     result = add_round_key(state, round_key)
     assert result == expected
@@ -380,7 +413,8 @@ def test_add_round_key_immutability():
     assert round_key == key_copy
     assert result is not state
     assert result is not round_key
- 
+
+
 def test_sub_word():
     """Test byte substitution on 4-byte words using the S-box."""
     word = [0x00, 0x01, 0x02, 0x03]
@@ -451,7 +485,10 @@ def test_inv_mix_columns_column_independence():
 
 def test_inv_mix_columns_matches_mul_gf():
     """Verify inv_mix_columns calculations match explicit GF(2^8) multiplications."""
-    state = [0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10]
+    state = [
+        0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+        0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10,
+    ]
     unmixed = inv_mix_columns(state)
 
     expected = [0] * 16
@@ -483,7 +520,6 @@ def test_mix_columns_fips197_single_column_vectors():
 
 def test_mix_columns_linearity():
     """Verify linearity of MixColumns: MixColumns(A XOR B) == MixColumns(A) XOR MixColumns(B)."""
-    import secrets
     state_a = [secrets.randbelow(256) for _ in range(16)]
     state_b = [secrets.randbelow(256) for _ in range(16)]
     state_xor = [a ^ b for a, b in zip(state_a, state_b)]
@@ -567,8 +603,6 @@ def test_add_round_key_fips197_kat():
 
 def test_shift_rows_fips_197_kat():
     """Test shift_rows against FIPS 197 Appendix B Known Answer Test vector."""
-    from methods.modern.symmetric import shift_rows
-
     state = [
         0xd4, 0x27, 0x11, 0xae,
         0xe0, 0xbf, 0x98, 0xf1,
@@ -588,8 +622,6 @@ def test_shift_rows_fips_197_kat():
 
 def test_shift_rows_four_rotations_identity():
     """Test that applying shift_rows 4 times returns the state to its original configuration."""
-    from methods.modern.symmetric import shift_rows
-
     state = list(range(16))
     current = state.copy()
     for _ in range(4):
@@ -599,8 +631,6 @@ def test_shift_rows_four_rotations_identity():
 
 def test_shift_rows_immutability():
     """Verify shift_rows returns a new list and does not mutate the input state list in-place."""
-    from methods.modern.symmetric import shift_rows
-
     state = list(range(16))
     original_state = state.copy()
     shifted = shift_rows(state)
@@ -611,8 +641,6 @@ def test_shift_rows_immutability():
 
 def test_shift_rows_row_level_shifting():
     """Verify shift_rows shifts row 0 by 0, row 1 by 1, row 2 by 2, and row 3 by 3."""
-    from methods.modern.symmetric import shift_rows
-
     state = [0] * 16
     for col in range(4):
         state[0 + 4 * col] = 0x00 + col

@@ -245,19 +245,19 @@ describe('WorkbenchPanel Modular Components & New Exhibits', () => {
       .fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ public_key: 'PUB_PEM', private_key: 'PRIV_PEM' }),
+        json: () => Promise.resolve({ public_key: 'mock_public_key', private_key: 'mock_private_key' }),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ signature: 'deadbeef', digest_hex: '1234', algorithm: 'rsa-sha256' }),
+        json: () => Promise.resolve({ signature: 'mock_signature_hex', digest_hex: 'mock_digest_hex', algorithm: 'rsa-sha256' }),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ valid: true, digest_hex: '1234', algorithm: 'rsa-sha256' }),
+        json: () => Promise.resolve({ valid: true, digest_hex: 'mock_digest_hex', algorithm: 'rsa-sha256' }),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ valid: false, digest_hex: '9999', algorithm: 'rsa-sha256' }),
+        json: () => Promise.resolve({ valid: false, digest_hex: 'mock_invalid_digest_hex', algorithm: 'rsa-sha256' }),
       }) as jest.Mock;
 
     await React.act(async () => {
@@ -266,7 +266,7 @@ describe('WorkbenchPanel Modular Components & New Exhibits', () => {
     await React.act(async () => {
       fireEvent.click(screen.getByTestId('rsa-sig-sign-btn'));
     });
-    expect(screen.getByTestId('rsa-sig-hex')).toHaveValue('deadbeef');
+    expect(screen.getByTestId('rsa-sig-hex')).toHaveValue('mock_signature_hex');
 
     await React.act(async () => {
       fireEvent.click(screen.getByTestId('rsa-sig-verify-btn'));
@@ -344,8 +344,8 @@ describe('WorkbenchPanel Modular Components & New Exhibits', () => {
           public_key: { A: [[1, 2, 3, 4]], t: [10, 20, 30, 40] },
           secret_key: { s: [1, 0, -1, 1], e: [1, -1, 0, 1] },
           ciphertext: { u: [5, 6, 7, 8], v: 1665 },
-          encapsulation: { r: [1, 1, 0, 0], e1: [0, 1, 0, 0], e2: 1, message_bit: 1, shared_secret_hex: 'a1b2c3d4' },
-          decapsulation: { noisy_diff: 1664, centered_diff: 1664, recovered_bit: 1, shared_secret_hex: 'a1b2c3d4' },
+          encapsulation: { r: [1, 1, 0, 0], e1: [0, 1, 0, 0], e2: 1, message_bit: 1, shared_secret_hex: 'mock_shared_secret_hex' },
+          decapsulation: { noisy_diff: 1664, centered_diff: 1664, recovered_bit: 1, shared_secret_hex: 'mock_shared_secret_hex' },
           match: true,
         }),
     }) as jest.Mock;

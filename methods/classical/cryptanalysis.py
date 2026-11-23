@@ -181,37 +181,9 @@ def vigenere_kasiski(
     if len(clean) < min_ngram * 2:
         return {"repeated_ngrams": [], "factor_scores": []}
 
-    repeated_ngrams: list[dict] = []
-    factor_counts: Counter[int] = Counter()
-
-    for n in range(min_ngram, max_ngram + 1):
-        positions_map: dict[str, list[int]] = {}
-        for idx in range(len(clean) - n + 1):
-            gram = clean[idx : idx + n]
-            positions_map.setdefault(gram, []).append(idx)
-
-        for gram, positions in positions_map.items():
-            if len(positions) < 2:
-                continue
-            distances = [positions[i + 1] - positions[i] for i in range(len(positions) - 1)]
-            overall_gcd = distances[0]
-            for d in distances[1:]:
-                overall_gcd = math.gcd(overall_gcd, d)
-
-            for d in distances:
-                for factor in range(2, min(d, max_factor) + 1):
-                    if d % factor == 0:
-                        factor_counts[factor] += 1
-
-            repeated_ngrams.append(
-                {
-                    "ngram": gram,
-                    "length": n,
-                    "positions": positions,
-                    "distances": distances,
-                    "gcd": overall_gcd,
-                }
-            )
+    repeated_ngrams, factor_counts = _collect_repeated_ngrams(
+        clean, min_ngram, max_ngram, max_factor
+    )
 
     repeated_ngrams.sort(key=lambda item: (-len(item["positions"]), -item["length"], item["ngram"]))
     factor_scores = [
@@ -223,6 +195,63 @@ def vigenere_kasiski(
         "repeated_ngrams": repeated_ngrams[:20],
         "factor_scores": factor_scores,
     }
+
+
+def _index_ngrams(clean: str, n: int) -> dict[str, list[int]]:
+    """Map each length-n gram in clean to the list of its occurrence indices."""
+    positions_map: dict[str, list[int]] = {}
+    for idx in range(len(clean) - n + 1):
+        gram = clean[idx : idx + n]
+        positions_map.setdefault(gram, []).append(idx)
+    return positions_map
+
+
+def _ngram_distances(positions: list[int]) -> list[int]:
+    """Return successive distance gaps between occurrences of a repeated n-gram."""
+    return [positions[i + 1] - positions[i] for i in range(len(positions) - 1)]
+
+
+def _gcd_of_distances(distances: list[int]) -> int:
+    """Return the GCD of a list of distances."""
+    overall_gcd = distances[0]
+    for d in distances[1:]:
+        overall_gcd = math.gcd(overall_gcd, d)
+    return overall_gcd
+
+
+def _count_distance_factors(
+    distances: list[int], max_factor: int, factor_counts: Counter[int]
+) -> None:
+    """Accumulate factor counts for all factors of each distance in factor_counts."""
+    for d in distances:
+        for factor in range(2, min(d, max_factor) + 1):
+            if d % factor == 0:
+                factor_counts[factor] += 1
+
+
+def _collect_repeated_ngrams(
+    clean: str, min_ngram: int, max_ngram: int, max_factor: int
+) -> tuple[list[dict], Counter[int]]:
+    """Collect repeated n-grams with distances and aggregate factor frequency counts."""
+    repeated_ngrams: list[dict] = []
+    factor_counts: Counter[int] = Counter()
+    for n in range(min_ngram, max_ngram + 1):
+        positions_map = _index_ngrams(clean, n)
+        for gram, positions in positions_map.items():
+            if len(positions) < 2:
+                continue
+            distances = _ngram_distances(positions)
+            _count_distance_factors(distances, max_factor, factor_counts)
+            repeated_ngrams.append(
+                {
+                    "ngram": gram,
+                    "length": n,
+                    "positions": positions,
+                    "distances": distances,
+                    "gcd": _gcd_of_distances(distances),
+                }
+            )
+    return repeated_ngrams, factor_counts
 
 
 def _best_shift_for_coset(coset: list[int]) -> int:
@@ -283,24 +312,9 @@ def vigenere_crack(
         plaintext = vigenere.decrypt(ciphertext, recovered_key)
         chi2 = chi_squared_score(plaintext)
     else:
-        # Evaluate top IoC candidates with an AIC-style key-length penalty to prevent
-        # both underfitting (sub-harmonics like L/2) and overfitting (long keys).
-        ranked_lengths = sorted(
-            ioc_candidates,
-            key=lambda item: abs(item["ioc"] - ENGLISH_IOC),
-        )[:6]
-        best_result: tuple[float, float, str, str] | None = None
-        for cand in ranked_lengths:
-            k_len = cand["key_length"]
-            cand_key = _recover_key_for_length(letters, k_len)
-            cand_pt = vigenere.decrypt(ciphertext, cand_key)
-            cand_chi = chi_squared_score(cand_pt)
-            penalized = cand_chi + 3.0 * k_len
-            if best_result is None or penalized < best_result[0]:
-                best_result = (penalized, cand_chi, cand_key, cand_pt)
-
-        assert best_result is not None
-        _, chi2, recovered_key, plaintext = best_result
+        best = _select_best_ioc_result(ciphertext, letters, ioc_candidates)
+        assert best is not None
+        _, chi2, recovered_key, plaintext = best
 
     return {
         "key": recovered_key,
@@ -310,3 +324,31 @@ def vigenere_crack(
         "ioc_candidates": ioc_candidates,
         "kasiski": kasiski,
     }
+
+
+def _select_best_ioc_result(
+    ciphertext: str,
+    letters: list[int],
+    ioc_candidates: list[dict],
+) -> tuple[float, float, str, str] | None:
+    """Select the top IoC candidate key minimizing the AIC-style chi-squared penalty.
+
+    Evaluates the top IoC candidates to prevent both underfitting (sub-harmonics
+    like L/2) and overfitting (long keys): minimize ``chi2 + 3.0 * key_length``.
+    """
+    ranked_lengths = sorted(
+        ioc_candidates,
+        key=lambda item: abs(item["ioc"] - ENGLISH_IOC),
+    )[:6]
+    best_penalty = float("inf")
+    best: tuple[float, float, str, str] | None = None
+    for cand in ranked_lengths:
+        k_len = cand["key_length"]
+        cand_key = _recover_key_for_length(letters, k_len)
+        cand_pt = vigenere.decrypt(ciphertext, cand_key)
+        cand_chi = chi_squared_score(cand_pt)
+        penalty = cand_chi + 3.0 * k_len
+        if penalty < best_penalty:
+            best_penalty = penalty
+            best = (penalty, cand_chi, cand_key, cand_pt)
+    return best

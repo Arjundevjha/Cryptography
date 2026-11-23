@@ -4,9 +4,9 @@ import { createUniquePortraitTexture } from './wallArtTextures';
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
-export type PioneerBustKey = 'alkindi' | 'turing' | 'shannon' | 'diffie' | 'hellman';
+type PioneerBustKey = 'alkindi' | 'turing' | 'shannon' | 'diffie' | 'hellman';
 
-export interface PioneerBustMaterials {
+interface PioneerBustMaterials {
   skin: THREE.Material;
   hair: THREE.Material;
   turban?: THREE.Material;
@@ -18,7 +18,7 @@ const pioneerBustCache = new Map<PioneerBustKey, Map<string, THREE.BufferGeometr
 const pioneerBustLoading = new Set<PioneerBustKey>();
 const pioneerBustCallbacks = new Map<PioneerBustKey, Array<(parts: Map<string, THREE.BufferGeometry>) => void>>();
 
-export function loadPioneerBust(
+function loadPioneerBust(
   bustKey: PioneerBustKey,
   onReady?: (parts: Map<string, THREE.BufferGeometry>) => void
 ) {

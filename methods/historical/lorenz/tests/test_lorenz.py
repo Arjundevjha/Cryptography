@@ -6,6 +6,7 @@ from methods.historical.lorenz.lorenz import Lorenz
 
 
 def test_lorenz_basic_reciprocity():
+    """Test encrypt/decrypt reciprocity with two machines at the same initial positions."""
     # Initialized two Lorenz machines with identical initial positions and pins
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
@@ -19,6 +20,7 @@ def test_lorenz_basic_reciprocity():
 
 
 def test_lorenz_vector_processing():
+    """Test encrypt_vector/decrypt_vector round-trip on a known vector."""
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
 
@@ -30,6 +32,7 @@ def test_lorenz_vector_processing():
 
 
 def test_lorenz_custom_pins():
+    """Test process_message with custom chi/motor/psi pin configurations."""
     custom_chi = [[1] * 41, [0] * 31, [1] * 29, [0] * 26, [1] * 23]
     custom_motor = [[1] * 61, [1] * 37]
     custom_psi = [[0] * 43, [1] * 47, [0] * 51, [1] * 53, [0] * 59]
@@ -55,6 +58,7 @@ def test_lorenz_custom_pins():
 
 
 def test_lorenz_manual_position_change():
+    """Test that set_positions writes chi, motor, and psi wheel positions correctly."""
     lorenz = Lorenz(positions=[0] * 12)
     lorenz.set_positions([2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24])
 
@@ -65,6 +69,7 @@ def test_lorenz_manual_position_change():
 
 
 def test_lorenz_char_processing():
+    """Test encrypt_char/decrypt_char reciprocity for a single character."""
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
 
@@ -77,6 +82,7 @@ def test_lorenz_char_processing():
 
 
 def test_lorenz_encrypt_char_and_stepping():
+    """Test that encrypt_char steps the machine wheels after encryption."""
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
 
@@ -96,6 +102,7 @@ def test_lorenz_encrypt_char_and_stepping():
 
 
 def test_lorenz_text_aliases():
+    """Test the encrypt_text/decrypt_text aliases on multi-character messages."""
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
 
@@ -107,6 +114,7 @@ def test_lorenz_text_aliases():
 
 
 def test_lorenz_set_pins():
+    """Test set_pins updates chi/motor/psi pins and validates array counts."""
     lorenz = Lorenz(positions=[0] * 12)
 
     new_chi = [[1] * 41, [1] * 31, [1] * 29, [1] * 26, [1] * 23]
@@ -134,6 +142,7 @@ def test_lorenz_set_pins():
 
 
 def test_lorenz_process_message_non_ita2_char():
+    """Test that non-ITA2 characters pass through process_message unchanged."""
     lorenz = Lorenz(positions=[0] * 12)
     text_with_special = "HELLO! @WORLD"
     processed = lorenz.process_message(text_with_special)
@@ -143,6 +152,7 @@ def test_lorenz_process_message_non_ita2_char():
 
 
 def test_lorenz_decrypt_char_direct_and_stepping():
+    """Test that decrypt_char steps the machine and reverses encrypt_char."""
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
 
@@ -164,12 +174,14 @@ def test_lorenz_decrypt_char_direct_and_stepping():
 
 
 def test_lorenz_encrypt_char_unsupported_char_raises_value_error():
+    """Test that encrypt_char raises ValueError for characters outside the ITA2 alphabet."""
     lorenz = Lorenz(positions=[0] * 12)
     with pytest.raises(ValueError, match="Character '!' is not supported in ITA2 alphabet."):
         lorenz.encrypt_char("!")
 
 
 def test_lorenz_encrypt_char_state_stepping_and_keystream():
+    """Test encrypt_char output against a manually computed keystream XOR."""
     lorenz = Lorenz(positions=[0] * 12)
     initial_pos = lorenz.get_positions()
 
@@ -192,6 +204,7 @@ def test_lorenz_encrypt_char_state_stepping_and_keystream():
 
 
 def test_lorenz_encrypt_char_special_ita2_symbols():
+    """Test encrypt/decrypt round-trip for special ITA2 symbols."""
     special_chars = [' ', '\r', '\n', '#', '*']
     for c in special_chars:
         lorenz1 = Lorenz(positions=[0] * 12)
@@ -202,12 +215,14 @@ def test_lorenz_encrypt_char_special_ita2_symbols():
 
 
 def test_lorenz_decrypt_char_unsupported_char_raises_value_error():
+    """Test that decrypt_char raises ValueError for characters outside the ITA2 alphabet."""
     lorenz = Lorenz(positions=[0] * 12)
     with pytest.raises(ValueError, match="Character '!' is not supported in ITA2 alphabet."):
         lorenz.decrypt_char("!")
 
 
 def test_lorenz_decrypt_char_case_insensitivity():
+    """Test that lowercase input chars encrypt the same as uppercase equivalents."""
     lorenz1 = Lorenz(positions=[0] * 12)
     lorenz2 = Lorenz(positions=[0] * 12)
 

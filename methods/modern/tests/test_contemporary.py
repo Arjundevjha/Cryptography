@@ -86,7 +86,9 @@ def test_mlkem_keygen_encapsulate_decapsulate():
     assert len(keys["t"]) == MLKEM_DEFAULT_N
 
     for bit in (0, 1):
-        encap = mlkem_encapsulate(keys["A"], keys["t"], message_bit=bit, q=MLKEM_DEFAULT_Q, noise_bound=2)
+        encap = mlkem_encapsulate(
+            keys["A"], keys["t"], message_bit=bit, q=MLKEM_DEFAULT_Q, noise_bound=2
+        )
         decap = mlkem_decapsulate(keys["s"], encap["u"], encap["v"], q=MLKEM_DEFAULT_Q)
         assert encap["message_bit"] == bit
         assert decap["recovered_bit"] == bit

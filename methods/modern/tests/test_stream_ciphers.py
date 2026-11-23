@@ -6,6 +6,7 @@ from methods.modern import stream_ciphers
 
 
 def test_otp_roundtrip_and_keygen():
+    """Test OTP key generation, encryption/decryption round-trip, and UTF-8 support."""
     key = stream_ciphers.otp_generate_key(32)
     assert len(key) == 32
 
@@ -22,6 +23,7 @@ def test_otp_roundtrip_and_keygen():
 
 
 def test_otp_validation_errors():
+    """Test that OTP key generation and encrypt/decrypt validate inputs."""
     with pytest.raises(ValueError):
         stream_ciphers.otp_generate_key(0)
     with pytest.raises(TypeError):
@@ -79,6 +81,7 @@ def test_chacha20_rfc8439_encrypt_vector():
 
 
 def test_chacha20_multiblock_and_validation():
+    """Test ChaCha20 multi-block encryption and input validation."""
     key, nonce = stream_ciphers.pick_keys()
     msg = "ChaCha20 multi-block stream test! " * 5  # > 128 bytes
     ct = stream_ciphers.chacha20_encrypt(msg, key, nonce, counter=0)

@@ -1,5 +1,8 @@
+"""Unit tests for the AES symmetric block cipher (CTR encryption/decryption)."""
+
 import os
 from unittest.mock import patch
+
 import pytest
 
 from methods.modern.aes import encrypt, decrypt, NONCE_SIZE, BLOCK_SIZE
@@ -7,8 +10,14 @@ from methods.modern.aes import encrypt, decrypt, NONCE_SIZE, BLOCK_SIZE
 # Use the KAT generated earlier
 KAT_KEY = bytes.fromhex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
 KAT_NONCE = bytes.fromhex("000102030405060708090a0b")
-KAT_PLAINTEXT = "Hello, World! This is a Known Answer Test for AES-256-CTR. It should be long enough."
-KAT_CIPHERTEXT = bytes.fromhex("f5b920a6de7c469bae8c07689b336ade9db1fb74b0a8648330fc786b332ac0a23475b369e5b1a768f961f1e4c3c93928d0fbb501c6561c286a49c5cc694973da6e65c2988fa377b818cb118aa8e246579b3e08a3")
+KAT_PLAINTEXT = (
+    "Hello, World! This is a Known Answer Test for AES-256-CTR. It should be long enough."
+)
+KAT_CIPHERTEXT = bytes.fromhex(
+    "f5b920a6de7c469bae8c07689b336ade9db1fb74b0a8648330fc786b332ac0a2"
+    "3475b369e5b1a768f961f1e4c3c93928d0fbb501c6561c286a49c5cc694973da"
+    "6e65c2988fa377b818cb118aa8e246579b3e08a3"
+)
 
 def test_aes_encrypt_kat():
     """Known Answer Test for AES-256-CTR encryption."""
@@ -24,8 +33,9 @@ def test_aes_decrypt_kat():
     assert decrypted == KAT_PLAINTEXT
 
 def test_aes_encrypt_decrypt_roundtrip():
-    """Test that encrypting and decrypting a message recovers the original with 256-bit key."""
-    key = os.urandom(32) # Test data generation doesn't need secrets module, but we can update anyway or leave it. We'll use os.urandom for testing.
+
+    """Test encrypt/decrypt round-trip with a 256-bit key."""
+    key = os.urandom(32)  # os.urandom is fine for random test data
     message = "A test message with arbitrary length!"
     ciphertext, nonce = encrypt(message, key)
     decrypted = decrypt(ciphertext, key, nonce)

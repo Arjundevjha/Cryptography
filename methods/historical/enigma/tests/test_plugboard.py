@@ -1,4 +1,7 @@
+"""Unit tests for the Enigma Plugboard class (signal/letter forward and backward mapping)."""
+
 from methods.historical.enigma.plugboard import Plugboard
+
 
 def test_plugboard_no_pairs():
     """Test plugboard with no pairs."""

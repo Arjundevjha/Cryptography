@@ -2,11 +2,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MUSEUM_EXHIBITS, MUSEUM_STATUES, MUSEUM_WINGS } from '../museumData';
 
-export const WALK_SPEED = 16.0;
+const WALK_SPEED = 16.0;
 export const EYE_LEVEL_Y = 2.5;
-export const DRAG_CLICK_THRESHOLD_PX = 6;
+const DRAG_CLICK_THRESHOLD_PX = 6;
 export const SPATIAL_GRACE_MS = 1500;
-export const SPATIAL_DEBOUNCE_MS = 500;
+const SPATIAL_DEBOUNCE_MS = 500;
 export const BOUNDARY_X: readonly [number, number] = [-80, 80];
 export const BOUNDARY_Z: readonly [number, number] = [-105, 30];
 

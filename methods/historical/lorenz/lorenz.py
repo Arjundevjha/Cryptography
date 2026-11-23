@@ -126,7 +126,12 @@ class Lorenz:
         """Decrypt a single ITA2 character (identical to encrypt_char)."""
         return self.encrypt_char(char)
 
-    def process_message(self, text: str) -> str:
+    # The optimized stepping registers are intentionally tracked as scalar locals
+    # (see BOLT OPTIMIZATION comment below); the statement count is bounded by the
+    # manual message loop.
+    def process_message(  # pylint: disable=too-many-locals,too-many-statements
+        self, text: str
+    ) -> str:
         """Process an entire text string through the Lorenz cipher machine.
 
         Non-ITA2 characters are ignored/skipped or passed through if unmapped.

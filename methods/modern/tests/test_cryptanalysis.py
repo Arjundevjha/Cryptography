@@ -6,6 +6,7 @@ from methods.modern.cryptanalysis import cbc_bitflip_attack, rsa_factor_small
 
 
 def test_cbc_bitflip_attack_forges_admin():
+    """Test the CBC bit-flipping attack forges the target plaintext into admin."""
     result = cbc_bitflip_attack(
         plaintext="user=alice;role=guest;pad=1",
         target_from="guest",
@@ -23,6 +24,7 @@ def test_cbc_bitflip_attack_forges_admin():
 
 
 def test_cbc_bitflip_attack_iv_target_block0():
+    """Test the bit-flip attack when the target lands in block 0 (IV tamper path)."""
     result = cbc_bitflip_attack(
         plaintext="role=guest;user=alice",
         target_from="guest",
@@ -34,6 +36,7 @@ def test_cbc_bitflip_attack_iv_target_block0():
 
 
 def test_cbc_bitflip_attack_validation():
+    """Test that bit-flip attack validates mismatched target strings and found-substrings."""
     with pytest.raises(ValueError):
         cbc_bitflip_attack("user=alice;role=guest", "guest", "superuser")
     with pytest.raises(ValueError):
@@ -41,6 +44,7 @@ def test_cbc_bitflip_attack_validation():
 
 
 def test_rsa_factor_small_both_methods():
+    """Test rsa_factor_small with close primes using both Fermat and Pollard rho."""
     # Close primes -> Fermat is very fast; Pollard rho also works
     p, q = 10007, 10037
     n = p * q
@@ -56,6 +60,7 @@ def test_rsa_factor_small_both_methods():
 
 
 def test_rsa_factor_small_40bit_pollard_rho():
+    """Test rsa_factor_small on a 40-bit modulus using Pollard rho."""
     # 20-bit primes -> ~40-bit modulus
     p, q = 1048583, 1048601
     n = p * q
@@ -67,6 +72,7 @@ def test_rsa_factor_small_40bit_pollard_rho():
 
 
 def test_rsa_factor_small_validation():
+    """Test that rsa_factor_small validates its inputs."""
     with pytest.raises(ValueError):
         rsa_factor_small(3)
     with pytest.raises(ValueError):
