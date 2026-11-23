@@ -1,48 +1,49 @@
 # Session Handoff — Cryptography Museum
 
 ## Executive Summary
-This branch (`improvements/security-ci-docs`) improves the repo across
-security, quality gates, dead code, and docs:
-
-- **M1 Security** (commit `133668c8`): replaced hardcoded test secrets in
-  `web/tests/unit/workbench.test.tsx` flagged by Snyk; Snyk now reports 0
-  issues.
-- **M2 Pylint 10.00/10** (commits `726922a4`, `4a0fc01c`): fixed every
-  pylint finding in `methods/` (refactors + docstrings + mechanical fixes),
-  added `.pylintrc` at repo root (disables `duplicate-code` — intentionally
-  replicated KAT-vector blocks; pylint cannot suppress it inline).
-  `python -m pylint methods/` → **10.00/10, 0 issues**, `pytest methods/` → 507 passed.
-- **M3 CI quality gates** (commit `6109da4f`): added `python-lint`
-  (`python -m pylint methods/`), `dead-code` (`npx fallow dead-code` in web/),
-  and `diagnostics` (`python3 scripts/diagnose.py --check`) jobs to CI;
-  verified locally (diagnostics passes; YAML valid).
-- **M3a Dead-code cleanup** (commit `f25b37d7`): removed 16 unused
-  exports/types in `web/` via fallow auto-fix + 3 manual `export` removals
-  (`PioneerBustKey`, `PioneerBustMaterials`, `PlayfairGridCell`), added
-  `ignoreExports` to `web/.fallowrc.json` for the intentional
-  `ExhibitChallenge` barrel duplication. Verified: fallow error gate passes,
-  `npm test` 16/16 (148 tests), `tsc --noEmit` clean.
-- **M4 Docs** (pending commit): `CHANGELOG.md` + `SECURITY.md` added; README
-  badges synced to real counts (Tests 911, Python 507, Jest 148).
+- `improvements/security-ci-docs` merged into `main` via PR #438
+  (merged 2026-11-23; merge commit `a5f2c9a2` — the PR-438 changes;
+  pushed to origin/main by the merge).
+- All CI gates green: PR run (after fix) and main-branch run `45097268067`
+  (including the new `deploy` job — Deploy to Vercel (Production) success).
+- Python Lint issue fixed: `python-lint` job now installs `pytest`
+  (pylint 4.1.4 flags E0401 when pytest is missing; the methods/ tests
+  import pytest). Local pylint upgraded 4.0.5 -> 4.1.4; `python3 -m
+  pylint methods/` = 10.00/10.
+- Stale branch `swarm-audit-e2e-db932a43` (`cb277f45`): reviewed as
+  superseded (main is 40 commits beyond it, incl. b549c599 which updates
+  the same spec to 19/22). Deleted: worktree + local branch (never on
+  origin — ls-remote empty).
+- `improvements/security-ci-docs` deleted locally + remotely by
+  `gh pr merge --delete-branch`.
 
 ## Active State
-- Branch: `improvements/security-ci-docs` (base: `main` at `b549c599`).
-- Pending commit: M4 docs (`CHANGELOG.md`, `SECURITY.md`, README badges).
-- `swarm-modern-crypto-backend-128de99a` and `swarm-modern-crypto-frontend-a6e8a67d`
-  are already merged into `main` (no pending commits ahead).
-- Stale branch to review: `swarm-audit-e2e-db932a` (`cb277f45` — expects 17
-  exhibits/20 tour stops vs main's 19/22; likely superseded).
+- Branch: `main`, clean tree, up to date with `origin/main`.
+- Remaining worktrees/branches: `swarm-backend-crypto-9a6923f3`,
+  `swarm-museum-data-fcec9fa3`, `swarm-scene-3d-3eae8c31`,
+  `swarm-workbench-ui-1cb7e8de` (already merged, per earlier handoff).
+- Local pylint: 4.1.4 (astroid 4.3.4); `python3 -m pylint methods/` -> 10.00/10.
 
 ## Technical Decisions
-- `methods/` must stay at 10.00/10 pylint; `.pylintrc` disables
-  `duplicate-code` because pylint reports R0801 during final report
-  generation and cannot honor per-file disables.
-- Test-file code was cleaned first (docstrings, wraps) because they carry
-  most pylint findings.
-- Snyk policy: mock values in tests are named to avoid secret-pattern matches.
+- CI fix (commit `40fcb0ec`): `.github/workflows/ci.yml` python-lint job:
+  `python -m pip install --upgrade pip && python -m pip install pylint pytest`.
+  CI installs latest pylint (4.1.4 as of 2026-11-23); without pytest the
+  job reports `E0401: Unable to import 'pytest'` in
+  `methods/*/tests/test_*.py` (pytest not installed in that job).
+- Verified locally with pylint 4.1.4: `python3 -m pylint methods/` exit 0,
+  rated 10.00/10.
+
+## CI History
+- Run `45095929073` (PR #438, first push): Python Lint fail — pylint 4.1.4,
+  22x E0401 import-error for pytest, score 9.80/10. Other jobs green.
+- Run `45096636543` (PR re-run after fix `40fcb0ec`): ALL GREEN —
+  Python Lint, Backend Tests (3.11/3.12), Frontend Test & Build,
+  Playwright E2E (1/4, 2/4, 3/4, 4/4), Dead-Code Audit, Repository
+  Diagnostics, GitGuardian, CodeRabbit.
+- Run `45097268067` (main push of merge commit `a5f2c9a2`): completed
+  success — all of the above plus `deploy` (Deploy to Vercel (Production)).
 
 ## Next Steps
-1. Commit M4 docs; merge `improvements/security-ci-docs` into `main` (PR).
-2. Review/merge or delete stale branch `swarm-audit-e2e-db932a`
-   (expects 17 vs main's 19 exhibits).
-3. Optionally: push the new branches to origin, trigger CI on PR.
+- None — repo is green on `main`. Open a new branch/PR if follow-up work
+  is needed (e.g., the optional "full qualvf pipeline on merge" note:
+  the e2e browser tests are now covered by green CI, so nothing pending).
