@@ -8,6 +8,7 @@ from . import digital_signatures
 from . import hash_functions
 from . import ecc
 from . import stream_ciphers
+from . import secret_sharing
 from .ecc import (
     ecdh_shared_secret,
     ecdsa_sign,
@@ -24,6 +25,12 @@ from .stream_ciphers import (
     otp_encrypt,
     otp_generate_key,
 )
+from .secret_sharing import (
+    reconstruct_secret,
+    reconstruct_text_secret,
+    split_secret,
+    split_text_secret,
+)
 
 __all__ = [
     'aes',
@@ -34,6 +41,7 @@ __all__ = [
     'hash_functions',
     'ecc',
     'stream_ciphers',
+    'secret_sharing',
     'ecc_pick_keys',
     'ecc_derive_public_key',
     'ecdh_shared_secret',
@@ -46,4 +54,8 @@ __all__ = [
     'chacha20_keystream',
     'chacha20_encrypt',
     'chacha20_decrypt',
+    'split_secret',
+    'reconstruct_secret',
+    'split_text_secret',
+    'reconstruct_text_secret',
 ]
