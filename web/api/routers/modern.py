@@ -1,4 +1,4 @@
-"""Modern cipher routes: AES, AES-CBC, RSA, RSA-Sign, Hash, HMAC, Diffie-Hellman, ZKP, ML-KEM, ECC, OTP, ChaCha20."""
+"""Modern cipher routes: AES, AES-CBC, RSA, RSA-Sign, Hash, HMAC, Diffie-Hellman, ZKP, ML-KEM, ECC, OTP, ChaCha20, Shamir."""
 
 import logging
 import math
@@ -983,3 +983,140 @@ def chacha20_decrypt_endpoint(data: ChaCha20DecryptInput):
     except Exception as e:
         logger.error("ChaCha20 decrypt error: %s", e)
         raise HTTPException(status_code=400, detail="ChaCha20 decryption failed")
+
+
+class ShamirShareInput(BaseModel):
+    x: int = Field(..., ge=1, le=255, description="Share x-coordinate")
+    y: str = Field(..., min_length=1, max_length=256, description="Share y-coordinate (decimal or hex)")
+
+
+class ShamirSplitInput(BaseModel):
+    secret: str = Field(..., min_length=1, max_length=64, description="Integer or UTF-8 text secret")
+    mode: str = Field(default="integer", max_length=16, description="Mode: 'integer' or 'text'")
+    threshold: int = Field(default=3, ge=2, le=10, description="Reconstruction threshold k")
+    num_shares: int = Field(default=5, ge=2, le=10, description="Total number of shares n")
+    prime: str | None = Field(default=None, max_length=256, description="Optional prime modulus")
+
+
+class ShamirReconstructInput(BaseModel):
+    shares: list[ShamirShareInput] = Field(..., min_length=2, max_length=10, description="Shares to interpolate")
+    mode: str = Field(default="integer", max_length=16, description="Mode: 'integer' or 'text'")
+    prime: str = Field(..., min_length=1, max_length=256, description="Field prime modulus (decimal or hex)")
+    byte_length: int | None = Field(default=None, ge=1, le=64, description="Original UTF-8 byte length for text mode")
+
+
+@router.post("/api/shamir/split")
+def shamir_split_endpoint(data: ShamirSplitInput):
+    from methods.modern import secret_sharing
+
+    mode = data.mode.strip().lower()
+    if mode not in ("integer", "text"):
+        raise HTTPException(status_code=400, detail="mode must be 'integer' or 'text'")
+
+    try:
+        if mode == "integer":
+            try:
+                secret_int = int(data.secret.strip(), 10)
+            except ValueError as ve:
+                raise HTTPException(status_code=400, detail="secret must be a base-10 integer in integer mode") from ve
+
+            if data.prime and data.prime.strip():
+                try:
+                    prime_val = int(data.prime.strip(), 10)
+                except ValueError as ve:
+                    raise HTTPException(status_code=400, detail="prime must be a base-10 integer") from ve
+            else:
+                prime_val = 1613 if secret_int < 1613 else secret_sharing.DEFAULT_PRIME
+
+            res = secret_sharing.split_secret(
+                secret=secret_int,
+                threshold=data.threshold,
+                num_shares=data.num_shares,
+                prime=prime_val,
+            )
+            return {
+                "mode": "integer",
+                "prime": str(res["prime"]),
+                "threshold": res["threshold"],
+                "num_shares": res["num_shares"],
+                "coefficients": [str(c) for c in res["coefficients"]],
+                "shares": [{"x": s["x"], "y": str(s["y"])} for s in res["shares"]],
+            }
+
+        res = secret_sharing.split_text_secret(
+            secret_text=data.secret,
+            threshold=data.threshold,
+            num_shares=data.num_shares,
+        )
+        return {
+            "mode": "text",
+            "prime_hex": res["prime_hex"],
+            "byte_length": res["byte_length"],
+            "threshold": res["threshold"],
+            "num_shares": res["num_shares"],
+            "shares": [{"x": s["x"], "y": s["y_hex"]} for s in res["shares"]],
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("Shamir split error: %s", e)
+        raise HTTPException(status_code=400, detail="Shamir secret splitting failed")
+
+
+@router.post("/api/shamir/reconstruct")
+def shamir_reconstruct_endpoint(data: ShamirReconstructInput):
+    from methods.modern import secret_sharing
+
+    mode = data.mode.strip().lower()
+    if mode not in ("integer", "text"):
+        raise HTTPException(status_code=400, detail="mode must be 'integer' or 'text'")
+
+    try:
+        base = 10 if mode == "integer" else 16
+        try:
+            prime_val = int(data.prime.strip(), base)
+            shares = [(s.x, int(s.y.strip(), base)) for s in data.shares]
+        except ValueError as ve:
+            raise HTTPException(
+                status_code=400,
+                detail=f"prime and share y values must be valid base-{base} integers",
+            ) from ve
+
+        if mode == "integer":
+            res = secret_sharing.reconstruct_secret(shares, prime=prime_val)
+            return {
+                "mode": "integer",
+                "secret": str(res["secret"]),
+                "prime": str(res["prime"]),
+                "shares_used": res["shares_used"],
+                "lagrange_basis": [
+                    {
+                        "x": item["x"],
+                        "y": str(item["y"]),
+                        "lambda_0": str(item["lambda_0"]),
+                        "term": str(item["term"]),
+                    }
+                    for item in res["lagrange_basis"]
+                ],
+            }
+
+        res = secret_sharing.reconstruct_text_secret(
+            shares,
+            prime=prime_val,
+            byte_length=data.byte_length,
+        )
+        return {
+            "mode": "text",
+            "secret_text": res["secret_text"],
+            "secret_hex": res["secret_hex"],
+            "shares_used": res["shares_used"],
+        }
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("Shamir reconstruct error: %s", e)
+        raise HTTPException(status_code=400, detail="Shamir secret reconstruction failed")

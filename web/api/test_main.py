@@ -3195,6 +3195,101 @@ def test_chacha20_validation_errors():
     )
 
 
+# ==========================================
+# SHAMIR'S SECRET SHARING ENDPOINT TESTS
+# ==========================================
+
+
+def test_shamir_integer_split_and_reconstruct():
+    split_resp = client.post(
+        "/api/shamir/split",
+        json={"secret": "1234", "mode": "integer", "threshold": 3, "num_shares": 5, "prime": "1613"},
+    )
+    assert split_resp.status_code == 200
+    split_data = split_resp.json()
+    assert split_data["mode"] == "integer"
+    assert split_data["prime"] == "1613"
+    assert len(split_data["shares"]) == 5
+    assert split_data["coefficients"][0] == "1234"
+
+    subset = [split_data["shares"][0], split_data["shares"][2], split_data["shares"][4]]
+    rec_resp = client.post(
+        "/api/shamir/reconstruct",
+        json={"shares": subset, "mode": "integer", "prime": split_data["prime"]},
+    )
+    assert rec_resp.status_code == 200
+    rec_data = rec_resp.json()
+    assert rec_data["secret"] == "1234"
+    assert rec_data["shares_used"] == 3
+    assert len(rec_data["lagrange_basis"]) == 3
+
+
+def test_shamir_text_split_and_reconstruct():
+    secret_msg = "Museum-Threshold-2026"
+    split_resp = client.post(
+        "/api/shamir/split",
+        json={"secret": secret_msg, "mode": "text", "threshold": 3, "num_shares": 5},
+    )
+    assert split_resp.status_code == 200
+    split_data = split_resp.json()
+    assert split_data["mode"] == "text"
+    assert len(split_data["shares"]) == 5
+
+    subset = [split_data["shares"][1], split_data["shares"][3], split_data["shares"][4]]
+    rec_resp = client.post(
+        "/api/shamir/reconstruct",
+        json={
+            "shares": subset,
+            "mode": "text",
+            "prime": split_data["prime_hex"],
+            "byte_length": split_data["byte_length"],
+        },
+    )
+    assert rec_resp.status_code == 200
+    rec_data = rec_resp.json()
+    assert rec_data["secret_text"] == secret_msg
+    assert rec_data["shares_used"] == 3
+
+
+def test_shamir_validation_errors():
+    # Non-prime modulus
+    assert (
+        client.post(
+            "/api/shamir/split",
+            json={"secret": "42", "mode": "integer", "threshold": 2, "num_shares": 3, "prime": "15"},
+        ).status_code
+        == 400
+    )
+    # threshold > num_shares
+    assert (
+        client.post(
+            "/api/shamir/split",
+            json={"secret": "42", "mode": "integer", "threshold": 4, "num_shares": 3, "prime": "1613"},
+        ).status_code
+        == 400
+    )
+    # Non-numeric secret in integer mode
+    assert (
+        client.post(
+            "/api/shamir/split",
+            json={"secret": "not-an-int", "mode": "integer", "threshold": 2, "num_shares": 3},
+        ).status_code
+        == 400
+    )
+    # Duplicate x in reconstruct
+    assert (
+        client.post(
+            "/api/shamir/reconstruct",
+            json={
+                "shares": [{"x": 1, "y": "10"}, {"x": 1, "y": "20"}],
+                "mode": "integer",
+                "prime": "1613",
+            },
+        ).status_code
+        == 400
+    )
+
+
 
 
 
