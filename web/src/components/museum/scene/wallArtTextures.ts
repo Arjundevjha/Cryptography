@@ -263,6 +263,19 @@ export const EXHIBIT_ART_SPECS: Record<string, ExhibitArtSpec> = {
     cryptanalysisNote:
       'Never reuse a key or nonce: C1 xor C2 = P1 xor P2 collapses stream confidentiality into a two-time pad.',
   },
+  'shamir-secret-sharing': {
+    id: 'shamir-secret-sharing',
+    title: "Shamir's Secret Sharing",
+    category: 'Modern',
+    motif: 'Degree-(k-1) Polynomial & Lagrange Interpolation',
+    accentColor: '#2c1e4a',
+    secondaryColor: '#a78bfa',
+    formula: 'f(x) = S + a1*x + ... + a_{k-1}*x^{k-1} (mod p)',
+    historicalFact:
+      'Published by Adi Shamir in 1979, threshold secret sharing lets any k of n custodians reconstruct S while k - 1 shares reveal nothing.',
+    cryptanalysisNote:
+      'Compromising k shares immediately recovers f(0); non-prime moduli or biased coefficients weaken information-theoretic security.',
+  },
 };
 
 const textureCache = new Map<string, THREE.CanvasTexture>();

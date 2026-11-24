@@ -336,6 +336,22 @@ export function StepInspectorView({
     );
   }
 
+  if (exhibitId === 'shamir-secret-sharing') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-shamir-secret-sharing">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> Shamir&apos;s Secret Sharing Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Polynomial: <span className="text-amber-300">f(x) = S + a₁x + … + aₖ₋₁xᵏ⁻¹ mod p</span></div>
+          <div className="text-stone-300">2. Share Split: <span className="text-amber-300">Evaluate (i, f(i)) for i = 1 … n</span></div>
+          <div className="text-stone-300">3. Lagrange Basis: <span className="text-amber-300">λᵢ(0) = Π (-xⱼ)·(xᵢ - xⱼ)⁻¹ mod p</span></div>
+          <div className="text-emerald-300">4. Reconstruct: S = f(0) = Σ yᵢ·λᵢ(0) mod p</div>
+        </div>
+      </div>
+    );
+  }
+
   // Generic character-level inspector for Caesar & other exhibits
   const previewChars = (inputText || 'HELLO').slice(0, 8).split('');
   return (

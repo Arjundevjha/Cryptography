@@ -589,4 +589,7 @@ export const MODERN_EXHIBIT_BUILDERS: Record<string, ExhibitArtifactBuilder> = {
   'otp-chacha20': (group, m) => {
     buildModernNewExhibit('otp-chacha20', group, m);
   },
+  'shamir-secret-sharing': (group, m) => {
+    buildModernNewExhibit('shamir-secret-sharing', group, m);
+  },
 };

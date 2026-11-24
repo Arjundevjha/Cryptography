@@ -27,6 +27,7 @@ import { ZkpSchnorrView } from './ZkpSchnorrView';
 import { PostQuantumKemView } from './PostQuantumKemView';
 import { EccView } from './EccView';
 import { StreamCipherView } from './StreamCipherView';
+import { ShamirView } from './ShamirView';
 import { AttackLabView } from './labs/AttackLabView';
 import { hasAttackLab } from './labs/labApi';
 
@@ -302,7 +303,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     exhibit.id === 'zkp-schnorr' ||
     exhibit.id === 'post-quantum-kem' ||
     exhibit.id === 'ecc' ||
-    exhibit.id === 'otp-chacha20';
+    exhibit.id === 'otp-chacha20' ||
+    exhibit.id === 'shamir-secret-sharing';
 
   const visibleTabs: WorkbenchTab[] = [
     'workbench',
@@ -470,6 +472,8 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             <EccView />
           ) : exhibit.id === 'otp-chacha20' ? (
             <StreamCipherView />
+          ) : exhibit.id === 'shamir-secret-sharing' ? (
+            <ShamirView />
           ) : (
             <>
           {/* Input Field */}

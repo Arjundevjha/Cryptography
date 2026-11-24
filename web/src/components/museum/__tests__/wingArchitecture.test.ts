@@ -29,7 +29,7 @@ function countMeshes(root: THREE.Object3D): number {
 
 describe('wingArchitecture', () => {
   describe('getRoomAccentPalette', () => {
-    it('returns unique accent, velvet, and runner colors across all 19 museum exhibits', () => {
+    it('returns unique accent, velvet, and runner colors across all 20 museum exhibits', () => {
       const accentHexes = new Set<number>();
       const velvetColors = new Set<number>();
       const runnerColors = new Set<number>();
@@ -42,10 +42,10 @@ describe('wingArchitecture', () => {
         runnerColors.add(palette.runnerColor);
       });
 
-      expect(MUSEUM_EXHIBITS.length).toBe(19);
-      expect(accentHexes.size).toBe(19);
-      expect(velvetColors.size).toBe(19);
-      expect(runnerColors.size).toBe(19);
+      expect(MUSEUM_EXHIBITS.length).toBe(20);
+      expect(accentHexes.size).toBe(20);
+      expect(velvetColors.size).toBe(20);
+      expect(runnerColors.size).toBe(20);
     });
 
     it('assigns category-specific sconce styles', () => {

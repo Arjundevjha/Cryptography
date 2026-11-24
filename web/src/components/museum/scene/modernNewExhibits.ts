@@ -6,7 +6,7 @@ export interface ModernArtifactMaterials {
 }
 
 export interface ModernExhibitAnimationHandle {
-  exhibitId: 'ecc' | 'otp-chacha20';
+  exhibitId: 'ecc' | 'otp-chacha20' | 'shamir-secret-sharing';
   update: (elapsed: number) => void;
 }
 
@@ -191,7 +191,103 @@ function buildOtpChachaArtifact(
 }
 
 /**
- * Dispatcher for the newly added Modern Cryptography exhibits (`ecc`, `otp-chacha20`).
+ * Builds the 3D Shamir's Secret Sharing artifact:
+ * a glowing degree-(k-1) polynomial curve over GF(p), a golden f(0) secret
+ * core at the origin, and 5 orbiting/pulsing share nodes on vertical stems.
+ */
+function buildShamirArtifact(
+  group: THREE.Group,
+  materials?: ModernArtifactMaterials
+): ModernExhibitAnimationHandle {
+  const obsidian = materials?.obsidian ?? createDefaultObsidian();
+  const polishedGold = materials?.polishedGold ?? createDefaultPolishedGold();
+
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.65, 0.09, 36), obsidian);
+  base.position.y = -0.44;
+  group.add(base);
+
+  const container = new THREE.Group();
+  container.position.y = 0.02;
+  group.add(container);
+
+  const polyPoints: THREE.Vector3[] = [];
+  for (let i = 0; i <= 24; i++) {
+    const t = -0.4 + (i / 24) * 0.8;
+    const y = 0.14 + 0.55 * t * t - 0.12 * t - 0.16;
+    polyPoints.push(new THREE.Vector3(t, y, 0));
+  }
+
+  const curveMat = new THREE.MeshStandardMaterial({
+    color: 0xa78bfa,
+    emissive: 0x7c3aed,
+    emissiveIntensity: 0.95,
+    roughness: 0.18,
+    metalness: 0.35,
+  });
+  const polyTube = new THREE.Mesh(
+    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(polyPoints), 28, 0.02, 10, false),
+    curveMat
+  );
+  container.add(polyTube);
+
+  const secretCore = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.1, 0),
+    new THREE.MeshStandardMaterial({
+      color: 0xfbbf24,
+      emissive: 0xd97706,
+      emissiveIntensity: 1.2,
+      roughness: 0.14,
+      metalness: 0.6,
+    })
+  );
+  secretCore.position.set(0, -0.02, 0);
+  container.add(secretCore);
+
+  const shareNodes: THREE.Mesh[] = [];
+  const stemGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.24, 8);
+  const sharePositions = [-0.34, -0.17, 0.12, 0.26, 0.38];
+  sharePositions.forEach((xPos, idx) => {
+    const yPos = 0.14 + 0.55 * xPos * xPos - 0.12 * xPos - 0.16;
+    const node = new THREE.Mesh(
+      new THREE.SphereGeometry(0.05, 16, 16),
+      new THREE.MeshStandardMaterial({
+        color: 0xc4b5fd,
+        emissive: 0x8b5cf6,
+        emissiveIntensity: 0.9,
+        roughness: 0.18,
+      })
+    );
+    node.position.set(xPos, yPos, 0);
+    container.add(node);
+    shareNodes.push(node);
+
+    const stem = new THREE.Mesh(stemGeo, polishedGold);
+    stem.position.set(xPos, yPos - 0.12, 0);
+    container.add(stem);
+    void idx;
+  });
+
+  const thresholdRing = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.014, 12, 48), polishedGold);
+  thresholdRing.rotation.x = Math.PI / 2;
+  thresholdRing.position.y = -0.35;
+  group.add(thresholdRing);
+
+  return {
+    exhibitId: 'shamir-secret-sharing',
+    update: (elapsed: number) => {
+      container.rotation.y = elapsed * 0.35;
+      secretCore.rotation.y = -elapsed * 1.1;
+      thresholdRing.rotation.z = elapsed * 0.4;
+      shareNodes.forEach((node, idx) => {
+        const s = 1 + 0.15 * Math.sin(elapsed * 2.5 + idx * 1.1);
+        node.scale.setScalar(s);
+      });
+    },
+  };
+}
+
+/**
+ * Dispatcher for the newly added Modern Cryptography exhibits (`ecc`, `otp-chacha20`, `shamir-secret-sharing`).
  * Returns null for any other exhibitId so callers can fall back cleanly.
  */
 export function buildModernNewExhibit(
@@ -204,6 +300,9 @@ export function buildModernNewExhibit(
   }
   if (exhibitId === 'otp-chacha20') {
     return buildOtpChachaArtifact(group, materials);
+  }
+  if (exhibitId === 'shamir-secret-sharing') {
+    return buildShamirArtifact(group, materials);
   }
   return null;
 }

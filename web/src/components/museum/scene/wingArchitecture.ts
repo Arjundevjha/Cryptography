@@ -167,6 +167,12 @@ const EXHIBIT_PALETTES: Record<string, Omit<RoomAccentPalette, 'sconceStyle'>> =
     velvetColor: 0x0f4743,
     runnerColor: 0x113d39,
   },
+  'shamir-secret-sharing': {
+    accentHex: 0x8b5cf6,
+    accentColor: '#8b5cf6',
+    velvetColor: 0x311d6e,
+    runnerColor: 0x2a1b5c,
+  },
 };
 
 function toHexString(hex: number): string {

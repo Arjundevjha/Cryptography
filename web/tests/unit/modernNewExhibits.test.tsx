@@ -168,4 +168,83 @@ describe('New Modern Cryptography Exhibits (ecc & otp-chacha20)', () => {
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent('Could not reach encryption server — is the API running?');
   });
+
+  it('registers, builds 3D artifact, and renders ShamirView split/reconstruct & offline fallback', async () => {
+    const shamir = MUSEUM_EXHIBITS.find((e) => e.id === 'shamir-secret-sharing');
+    expect(shamir).toBeDefined();
+    expect(shamir?.category).toBe('Modern');
+    expect(shamir!.cameraPosition[2]).toBeCloseTo(shamir!.position[2] + 3.5, 5);
+    for (const other of MUSEUM_EXHIBITS) {
+      if (other.id === shamir!.id) continue;
+      const dx = Math.abs(shamir!.position[0] - other.position[0]);
+      const dz = Math.abs(shamir!.position[2] - other.position[2]);
+      expect(dx >= 14 || dz >= 12).toBe(true);
+    }
+
+    expect(EXHIBIT_ART_SPECS['shamir-secret-sharing']).toBeDefined();
+    const shamirPalette = getRoomAccentPalette('shamir-secret-sharing', 'Modern', 19);
+    expect(shamirPalette.sconceStyle).toBe('linear');
+
+    const shamirGroup = new THREE.Group();
+    const shamirHandle = buildModernNewExhibit('shamir-secret-sharing', shamirGroup);
+    expect(shamirHandle).not.toBeNull();
+    expect(shamirGroup.children.length).toBeGreaterThan(0);
+    expect(() => updateModernNewExhibit(shamirHandle, 1.5)).not.toThrow();
+
+    render(<WorkbenchPanel exhibit={shamir!} />);
+    expect(screen.getByTestId('shamir-view')).toBeInTheDocument();
+
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            mode: 'integer',
+            prime: '1613',
+            threshold: 3,
+            num_shares: 5,
+            coefficients: ['1234', '166', '94'],
+            shares: [
+              { x: 1, y: '1494' },
+              { x: 2, y: '329' },
+              { x: 3, y: '965' },
+              { x: 4, y: '176' },
+              { x: 5, y: '1188' },
+            ],
+          }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            mode: 'integer',
+            secret: '1234',
+            prime: '1613',
+            shares_used: 3,
+            lagrange_basis: [
+              { x: 1, y: '1494', lambda_0: '3', term: '1256' },
+              { x: 2, y: '329', lambda_0: '1610', term: '626' },
+              { x: 3, y: '965', lambda_0: '1', term: '965' },
+            ],
+          }),
+      }) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(screen.getByTestId('shamir-split-btn'));
+    });
+    expect(screen.getByTestId('shamir-reconstruct-btn')).toBeInTheDocument();
+
+    await React.act(async () => {
+      fireEvent.click(screen.getByTestId('shamir-reconstruct-btn'));
+    });
+    expect(screen.getByTestId('shamir-reconstruct-result')).toHaveTextContent('1234');
+
+    global.fetch = jest.fn().mockRejectedValueOnce(new TypeError('Failed to fetch')) as jest.Mock;
+    await React.act(async () => {
+      fireEvent.click(screen.getByTestId('shamir-split-btn'));
+    });
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Could not reach encryption server — is the API running?');
+  });
 });

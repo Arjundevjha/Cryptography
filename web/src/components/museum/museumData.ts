@@ -654,6 +654,38 @@ export const MUSEUM_EXHIBITS: CipherExhibit[] = [
       answer: 'XOR',
     },
   },
+  {
+    id: 'shamir-secret-sharing',
+    name: "Shamir's Secret Sharing",
+    category: 'Modern',
+    wing: 'Modern Cryptography Wing',
+    subtitle: 'Threshold Cryptography & Lagrange Polynomial Interpolation',
+    description: 'Splits a secret S into n shares over a finite field GF(p) such that any k shares uniquely reconstruct S via polynomial interpolation, while k - 1 shares reveal zero information.',
+    historicalContext: 'Invented by Adi Shamir in 1979 in "How to Share a Secret". Today, threshold secret sharing underpins hardware security module (HSM) key ceremonies, MPC wallets, and distributed key custody.',
+    vulnerabilities: 'If an adversary compromises k or more shares, the secret is immediately recovered. Using a non-prime modulus or predictable polynomial coefficients can also leak partial information.',
+    timeline: '1979 AD–Present – Threshold Cryptography',
+    position: [45, 0, -96],
+    cameraPosition: [45, 2.2, -92.5],
+    cameraTarget: [45, 1.6, -96],
+    macroPosition: [45, 2.8, -94.2],
+    macroTarget: [45, 1.6, -96],
+    rotationY: 0,
+    endpoint: {
+      encrypt: '/api/shamir/split',
+      decrypt: '/api/shamir/reconstruct',
+    },
+    defaultParams: {
+      threshold: 3,
+      numShares: 5,
+      prime: '1613',
+    },
+    challenge: {
+      prompt: 'Which polynomial interpolation method recovers the constant term f(0) from any k shares?',
+      ciphertext: 'f(0) = Σ y_i · Π (-x_j)/(x_i - x_j) mod p',
+      hint: 'Named after 18th-century mathematician Joseph-Louis ____.',
+      answer: 'Lagrange',
+    },
+  },
 ];
 
 export interface CryptographicStatue {
