@@ -9,6 +9,9 @@ from . import hash_functions
 from . import ecc
 from . import stream_ciphers
 from . import secret_sharing
+from . import aead
+from . import hash_signatures
+from . import kdf
 from .ecc import (
     ecdh_shared_secret,
     ecdsa_sign,
@@ -42,6 +45,9 @@ __all__ = [
     'ecc',
     'stream_ciphers',
     'secret_sharing',
+    'aead',
+    'hash_signatures',
+    'kdf',
     'ecc_pick_keys',
     'ecc_derive_public_key',
     'ecdh_shared_secret',

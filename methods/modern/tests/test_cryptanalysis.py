@@ -2,7 +2,12 @@
 
 import pytest
 
-from methods.modern.cryptanalysis import cbc_bitflip_attack, rsa_factor_small
+from methods.modern.cryptanalysis import (
+    cbc_bitflip_attack,
+    cbc_padding_oracle_attack,
+    ecdsa_nonce_reuse_attack,
+    rsa_factor_small,
+)
 
 
 def test_cbc_bitflip_attack_forges_admin():
@@ -79,3 +84,29 @@ def test_rsa_factor_small_validation():
         rsa_factor_small((1 << 65) + 1)
     with pytest.raises(ValueError):
         rsa_factor_small(15, method="unknown")
+
+
+def test_ecdsa_nonce_reuse_attack_recovers_private_key():
+    """Verify ECDSA nonce-reuse attack recovers the exact P-256 private key."""
+    res = ecdsa_nonce_reuse_attack(
+        "Transfer 100 coins to Alice",
+        "Transfer 500 coins to Eve",
+        private_key=0x123456789ABCDEF,
+        nonce_k=0x987654321FEDCBA,
+    )
+    assert res["recovered_match"] is True
+    assert res["recovered_private_key"] == res["actual_private_key"]
+
+    with pytest.raises(ValueError, match="distinct"):
+        ecdsa_nonce_reuse_attack("same", "same")
+
+
+def test_cbc_padding_oracle_attack_recovers_plaintext():
+    """Verify AES-CBC padding oracle recovers plaintext byte-by-byte."""
+    res = cbc_padding_oracle_attack("ORACLE TEST")
+    assert res["recovered_plaintext"] == "ORACLE TEST"
+    assert res["oracle_queries"] > 0
+    assert len(res["steps"]) == 16
+
+    with pytest.raises(ValueError, match="empty"):
+        cbc_padding_oracle_attack("")

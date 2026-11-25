@@ -80,8 +80,42 @@ def test_vigenere_ioc_and_kasiski_and_crack():
     assert cracked["plaintext"] == SAMPLE_ENGLISH
 
 
+def test_substitution_hill_climb_solver():
+    """Verify substitution hill-climbing solver improves score and recovers readable text."""
+    from methods.classical.cryptanalysis import substitution_hill_climb
+    from methods.classical.substitution import encrypt
+
+    key_str = "ZEBRASCDFGHIJKLMNOPQTUVWXY"
+    key = {chr(65 + i): ch for i, ch in enumerate(key_str)}
+    ct = encrypt(SAMPLE_ENGLISH, key)
+    res = substitution_hill_climb(ct, restarts=4, iterations=250, seed=7)
+    assert len(res["best_key"]) == 26
+    assert len(res["trace"]) == 4
+    assert "THE" in res["plaintext"].upper()
+
+    with pytest.raises(ValueError, match="alphabetic"):
+        substitution_hill_climb("12345!!!")
+
+
 def test_vigenere_crack_explicit_key_length():
     ct = vigenere.encrypt(SAMPLE_ENGLISH, "KEY")
     cracked = vigenere_crack(ct, key_length=3)
     assert cracked["key"] == "KEY"
     assert cracked["plaintext"] == SAMPLE_ENGLISH
+
+
+def test_substitution_hill_climb_solver():
+    """Verify substitution hill-climbing solver improves score and recovers readable text."""
+    from methods.classical.cryptanalysis import substitution_hill_climb
+    from methods.classical.substitution import encrypt
+
+    key_str = "ZEBRASCDFGHIJKLMNOPQTUVWXY"
+    key = {chr(65 + i): ch for i, ch in enumerate(key_str)}
+    ct = encrypt(SAMPLE_ENGLISH, key)
+    res = substitution_hill_climb(ct, restarts=4, iterations=250, seed=7)
+    assert len(res["best_key"]) == 26
+    assert len(res["trace"]) == 4
+    assert "THE" in res["plaintext"].upper()
+
+    with pytest.raises(ValueError, match="alphabetic"):
+        substitution_hill_climb("12345!!!")

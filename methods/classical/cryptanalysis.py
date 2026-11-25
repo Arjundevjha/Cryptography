@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import random
 from collections import Counter
 
 from . import affine, caesar, vigenere
@@ -352,3 +353,121 @@ def _select_best_ioc_result(
             best_penalty = penalty
             best = (penalty, cand_chi, cand_key, cand_pt)
     return best
+
+
+COMMON_BIGRAMS = {
+    "TH": 3.56, "HE": 3.07, "IN": 2.43, "ER": 2.05, "AN": 1.99,
+    "RE": 1.85, "ON": 1.76, "AT": 1.49, "EN": 1.45, "ND": 1.35,
+    "TI": 1.34, "ES": 1.34, "OR": 1.28, "TE": 1.20, "OF": 1.17,
+    "ED": 1.17, "IS": 1.13, "IT": 1.12, "AL": 1.09, "AR": 1.07,
+    "ST": 1.05, "TO": 1.04, "NT": 1.04, "NG": 0.95, "SE": 0.93,
+    "HA": 0.93, "AS": 0.87, "OU": 0.87, "IO": 0.83, "LE": 0.83,
+}
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+def _score_english_text(text: str) -> float:
+    """Score candidate plaintext using English unigram and bigram frequencies."""
+    letters = [ch for ch in text.upper() if "A" <= ch <= "Z"]
+    if not letters:
+        return -1e9
+    total = len(letters)
+    counts = Counter(letters)
+    score = sum(
+        (counts[ch] / total) * math.log(max(ENGLISH_FREQ[ord(ch) - 65], 0.01))
+        for ch in counts
+    ) * 100.0
+    for idx in range(total - 1):
+        bg = letters[idx] + letters[idx + 1]
+        if bg in COMMON_BIGRAMS:
+            score += COMMON_BIGRAMS[bg] * 1.4
+    return score
+
+
+def _apply_sub_key(ciphertext: str, key_map: dict[str, str]) -> str:
+    """Apply uppercase substitution mapping while preserving case and punctuation."""
+    out: list[str] = []
+    for ch in ciphertext:
+        up = ch.upper()
+        if up in key_map:
+            mapped = key_map[up]
+            out.append(mapped if ch.isupper() else mapped.lower())
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def _initial_freq_key(ciphertext: str) -> list[str]:
+    """Build initial cipher->plain mapping ordered by frequency alignment."""
+    freq_order = "".join(sorted(ALPHABET, key=lambda ch: -ENGLISH_FREQ[ord(ch) - 65]))
+    cipher_counts = Counter(ch.upper() for ch in ciphertext if ch.isalpha())
+    cipher_order = [ch for ch, _ in cipher_counts.most_common()]
+    for ch in ALPHABET:
+        if ch not in cipher_order:
+            cipher_order.append(ch)
+    mapping = {cipher_order[i]: freq_order[i] for i in range(26)}
+    return [mapping[ch] for ch in ALPHABET]
+
+
+def _run_hill_climb_restart(
+    ciphertext: str,
+    base_key: list[str],
+    restart_idx: int,
+    iterations: int,
+    rng: random.Random,
+) -> tuple[float, list[str], str]:
+    """Run one seeded hill-climbing restart for monoalphabetic substitution."""
+    cur_key = list(base_key)
+    if restart_idx > 0:
+        for _ in range(8):
+            a_idx, b_idx = rng.sample(range(26), 2)
+            cur_key[a_idx], cur_key[b_idx] = cur_key[b_idx], cur_key[a_idx]
+
+    cur_pt = _apply_sub_key(ciphertext, {ALPHABET[i]: cur_key[i] for i in range(26)})
+    cur_score = _score_english_text(cur_pt)
+
+    for _ in range(max(1, iterations)):
+        a_idx, b_idx = rng.sample(range(26), 2)
+        cur_key[a_idx], cur_key[b_idx] = cur_key[b_idx], cur_key[a_idx]
+        cand_pt = _apply_sub_key(ciphertext, {ALPHABET[i]: cur_key[i] for i in range(26)})
+        cand_score = _score_english_text(cand_pt)
+        if cand_score > cur_score:
+            cur_score, cur_pt = cand_score, cand_pt
+        else:
+            cur_key[a_idx], cur_key[b_idx] = cur_key[b_idx], cur_key[a_idx]
+    return cur_score, cur_key, cur_pt
+
+
+def substitution_hill_climb(
+    ciphertext: str,
+    restarts: int = 6,
+    iterations: int = 350,
+    seed: int = 42,
+) -> dict:
+    """Crack a monoalphabetic substitution cipher via seeded hill-climbing."""
+    if not ciphertext or not any(ch.isalpha() for ch in ciphertext):
+        raise ValueError("ciphertext must contain at least one alphabetic character")
+
+    rng = random.Random(seed)
+    best_score = -1e9
+    best_key = list(ALPHABET)
+    best_pt = ciphertext
+    trace: list[dict] = []
+    base_key = _initial_freq_key(ciphertext)
+
+    for restart_idx in range(max(1, restarts)):
+        cur_score, cur_key, cur_pt = _run_hill_climb_restart(
+            ciphertext, base_key, restart_idx, iterations, rng
+        )
+        trace.append({"restart": restart_idx + 1, "score": round(cur_score, 3)})
+        if cur_score > best_score:
+            best_score, best_key, best_pt = cur_score, cur_key, cur_pt
+
+    return {
+        "best_key": "".join(best_key),
+        "plaintext": best_pt,
+        "score": round(best_score, 3),
+        "restarts": max(1, restarts),
+        "iterations": max(1, iterations),
+        "trace": trace,
+    }
