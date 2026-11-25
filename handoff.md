@@ -1,25 +1,23 @@
 # Session Handoff — Cryptography Museum
 
 ## Executive Summary
-- Added **Shamir's Secret Sharing** as the 20th museum exhibit (Modern Wing) across 4 milestone commits on `main`:
-  1. Pure-Python GF(p) threshold secret sharing engine (`methods/modern/secret_sharing.py`, `methods/modern/__init__.py`, `methods/modern/tests/test_secret_sharing.py`) — `pylint methods/` 10.00/10.
-  2. FastAPI endpoints `POST /api/shamir/split` and `POST /api/shamir/reconstruct` (`web/api/routers/modern.py`, `web/api/test_main.py`) — 918 pytest tests passing.
-  3. 3D museum exhibit, room palette, wall art, `ShamirView.tsx` interactive workbench, step inspector, and unit/E2E tests (`web/src/components/museum/`, `web/tests/`).
-  4. Snyk security scan, `graphify update .`, `CHANGELOG.md`, and `handoff.md` update.
+- Expanded the Cryptography Museum from 20 to **25 exhibits** and **9 Attack Labs** across 6 milestone commits on `main`:
+  1. Historical Wing engines: `adfgvx` and `jefferson-disk` (`methods/historical/`).
+  2. Modern/PQ & Attack engines: `aead` (AES-GCM), `hash_signatures` (Lamport-Merkle), `kdf` (RFC 5869 HKDF), plus `ecdsa_nonce_reuse_attack`, `cbc_padding_oracle_attack`, and `substitution_hill_climb` (`methods/modern/`, `methods/classical/`).
+  3. 11 new FastAPI endpoints across `historical.py`, `modern.py`, and `cryptanalysis.py` (938 pytest tests passing).
+  4. 5 new 3D exhibits, unique room palettes, wall art textures, and interactive workbench views (`AdfgvxView.tsx`, `JeffersonDiskView.tsx`, `AesGcmView.tsx`, `LamportMerkleView.tsx`, `HkdfView.tsx`).
+  5. 3 new interactive Attack Labs (`substitution` hill-climbing, `aes` CBC padding oracle, `ecc` ECDSA nonce-reuse key recovery).
+  6. Snyk code scans, `graphify update .`, `CHANGELOG.md`, and `handoff.md`.
 
 ## Active State
 - Branch: `main`, clean working tree, pushed to `origin/main`.
-- Total exhibits: 20 (`MUSEUM_EXHIBITS`), guided tour stops: 23.
+- Total exhibits: **25** (`MUSEUM_EXHIBITS`), guided tour stops: **28**.
 - All local quality gates verified:
-  - `pytest -q`: 918 passed
+  - `pytest -q`: 938 passed
   - `python3 -m pylint methods/`: 10.00/10
-  - `npm test --prefix web`: 16 suites, 149 tests passed
+  - `npm test --prefix web`: 16 suites, 151 tests passed
   - `npm run build --prefix web`: production build succeeded
   - `npx fallow dead-code` (in `web/`): 0 dead-code findings
-
-## Key Technical Decisions
-- `secret_sharing.py` uses `DEFAULT_PRIME = (1 << 127) - 1` ($M_{127}$) for integer secrets and `TEXT_PRIME = (1 << 521) - 1` ($M_{521}$) for up to 64-byte UTF-8 text secrets, with `1613` as the default interactive prime for small integer secrets in `/api/shamir/split`.
-- Exhibit placed at `[45, 0, -96]` with interior `cameraPosition: [45, 2.2, -92.5]` (`z = position[2] + 3.5`) in the Modern Wing, with unique `0x8b5cf6` violet palette.
 
 ## Next Steps
 - None — repo is green on `main` and pushed to `origin/main`.

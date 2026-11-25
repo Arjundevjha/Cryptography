@@ -7,6 +7,12 @@ engine are documented here. Format follows Keep a Changelog.
 
 ### Added
 
+- **Historical Wing expansion** (`adfgvx`, `jefferson-disk`) bringing the museum to 25 exhibits:
+  - `methods/historical/adfgvx.py` & `methods/historical/jefferson_disk.py` with unit tests, `/api/adfgvx/*` and `/api/jefferson/*` endpoints, 3D artifacts, wall art, and interactive workbenches (`AdfgvxView.tsx`, `JeffersonDiskView.tsx`).
+- **Modern & Post-Quantum exhibits** (`aes-gcm`, `lamport-merkle`, `hkdf`):
+  - `methods/modern/aead.py` (pure-Python AES-GCM + GHASH), `methods/modern/hash_signatures.py` (Lamport OTS + 4-leaf Merkle tree), and `methods/modern/kdf.py` (RFC 5869 HKDF-SHA256), with `/api/aes-gcm/*`, `/api/lamport/demo`, `/api/hkdf/derive`, 3D artifacts, and interactive workbenches.
+- **Interactive Attack Labs expansion**:
+  - `ecdsa-nonce-reuse` on `ecc`, `padding-oracle` on `aes`, and `substitution-crack` hill-climbing solver on `substitution` (`methods/modern/cryptanalysis.py`, `methods/classical/cryptanalysis.py`, `/api/cryptanalysis/*`, `ClassicalAttackLab.tsx`, `ModernAttackLab.tsx`).
 - **Shamir's Secret Sharing exhibit** (20th museum exhibit, Modern Wing):
   - `methods/modern/secret_sharing.py`: GF(p) $(k, n)$ threshold splitting & Lagrange interpolation at $x=0$ (`split_secret`, `reconstruct_secret`, `split_text_secret`, `reconstruct_text_secret`) with unit tests (`methods/modern/tests/test_secret_sharing.py`).
   - `web/api/routers/modern.py`: `POST /api/shamir/split` and `POST /api/shamir/reconstruct` endpoints (integer GF(p) and UTF-8 text modes) with API tests in `web/api/test_main.py`.
