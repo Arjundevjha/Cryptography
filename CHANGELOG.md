@@ -7,6 +7,10 @@ engine are documented here. Format follows Keep a Changelog.
 
 ### Added
 
+- **Shamir's Secret Sharing exhibit** (20th museum exhibit, Modern Wing):
+  - `methods/modern/secret_sharing.py`: GF(p) $(k, n)$ threshold splitting & Lagrange interpolation at $x=0$ (`split_secret`, `reconstruct_secret`, `split_text_secret`, `reconstruct_text_secret`) with unit tests (`methods/modern/tests/test_secret_sharing.py`).
+  - `web/api/routers/modern.py`: `POST /api/shamir/split` and `POST /api/shamir/reconstruct` endpoints (integer GF(p) and UTF-8 text modes) with API tests in `web/api/test_main.py`.
+  - `web/`: 3D polynomial/share artifact (`modernNewExhibits.ts`), room palette (`wingArchitecture.ts`), wall art (`wallArtTextures.ts`), interactive `ShamirView.tsx` workbench, step inspector, and unit/E2E test updates.
 - CI quality gates (`.github/workflows/ci.yml`): new `python-lint`
   (`pylint methods/`), `dead-code` (`fallow` in `web/`), and `diagnostics`
   (`python3 scripts/diagnose.py --check`) jobs.
