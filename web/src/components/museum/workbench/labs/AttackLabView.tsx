@@ -25,6 +25,7 @@ export function AttackLabView({
     case 'caesar':
     case 'affine':
     case 'vigenere':
+    case 'substitution':
       return (
         <ClassicalAttackLab
           exhibitId={exhibit.id}
@@ -39,6 +40,7 @@ export function AttackLabView({
       return <HistoricalAttackLab exhibitId={exhibit.id} />;
     case 'aes':
     case 'rsa':
+    case 'ecc':
       return <ModernAttackLab exhibitId={exhibit.id} />;
     default:
       return null;

@@ -58,8 +58,37 @@ interface RsaFactorResponse {
   pollard_rho: FactorTraceResult | null;
 }
 
+interface PaddingOracleStep {
+  byte_index: number;
+  pad_value: number;
+  guessed_byte_hex: string;
+  intermediate_hex: string;
+  recovered_byte_hex: string;
+  recovered_char: string;
+}
+
+interface PaddingOracleResponse {
+  recovered_plaintext: string;
+  ciphertext_hex: string;
+  iv_hex: string;
+  block_count: number;
+  oracle_queries: number;
+  steps: PaddingOracleStep[];
+}
+
+interface EcdsaNonceReuseResponse {
+  curve: string;
+  actual_private_key: string;
+  recovered_private_key: string;
+  recovered_nonce: string;
+  r: string;
+  s1: string;
+  s2: string;
+  recovered_match: boolean;
+}
+
 interface ModernAttackLabProps {
-  exhibitId: 'aes' | 'rsa';
+  exhibitId: 'aes' | 'rsa' | 'ecc';
 }
 
 const RSA_PRESETS = [
@@ -69,17 +98,25 @@ const RSA_PRESETS = [
 ];
 
 export function ModernAttackLab({ exhibitId }: ModernAttackLabProps) {
-  // AES CBC Bit-Flipping state
+  // AES CBC Bit-Flipping & Padding Oracle state
+  const [aesMode, setAesMode] = useState<'bitflip' | 'padding-oracle'>('bitflip');
   const [cbcPlaintext, setCbcPlaintext] = useState('user=alice;role=guest;pad=1');
   const [targetFrom, setTargetFrom] = useState('guest');
   const [targetTo, setTargetTo] = useState('admin');
   const [cbcRes, setCbcRes] = useState<CbcBitflipResponse | null>(null);
+  const [oraclePlaintext, setOraclePlaintext] = useState('ORACLE SECRET');
+  const [oracleRes, setOracleRes] = useState<PaddingOracleResponse | null>(null);
 
   // RSA Factoring state
   const [rsaN, setRsaN] = useState('3233');
   const [rsaE, setRsaE] = useState('17');
   const [rsaMethod, setRsaMethod] = useState<'fermat' | 'pollard_rho' | 'both'>('both');
   const [rsaRes, setRsaRes] = useState<RsaFactorResponse | null>(null);
+
+  // ECDSA Nonce Reuse state
+  const [eccMsg1, setEccMsg1] = useState('Transfer 100 coins to Alice');
+  const [eccMsg2, setEccMsg2] = useState('Transfer 500 coins to Eve');
+  const [eccRes, setEccRes] = useState<EcdsaNonceReuseResponse | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -89,15 +126,31 @@ export function ModernAttackLab({ exhibitId }: ModernAttackLabProps) {
     setErrorMsg(null);
     try {
       if (exhibitId === 'aes') {
-        const data = await postCryptanalysis<CbcBitflipResponse>(
-          '/api/cryptanalysis/cbc-bitflip',
-          {
-            plaintext: cbcPlaintext,
-            target_from: targetFrom,
-            target_to: targetTo,
-          }
+        if (aesMode === 'bitflip') {
+          const data = await postCryptanalysis<CbcBitflipResponse>(
+            '/api/cryptanalysis/cbc-bitflip',
+            {
+              plaintext: cbcPlaintext,
+              target_from: targetFrom,
+              target_to: targetTo,
+            }
+          );
+          setOracleRes(null);
+          setCbcRes(data);
+        } else {
+          const data = await postCryptanalysis<PaddingOracleResponse>(
+            '/api/cryptanalysis/padding-oracle',
+            { plaintext: oraclePlaintext }
+          );
+          setCbcRes(null);
+          setOracleRes(data);
+        }
+      } else if (exhibitId === 'ecc') {
+        const data = await postCryptanalysis<EcdsaNonceReuseResponse>(
+          '/api/cryptanalysis/ecdsa-nonce-reuse',
+          { message1: eccMsg1, message2: eccMsg2 }
         );
-        setCbcRes(data);
+        setEccRes(data);
       } else {
         const data = await postCryptanalysis<RsaFactorResponse>(
           '/api/cryptanalysis/rsa-factor',
@@ -148,7 +201,12 @@ export function ModernAttackLab({ exhibitId }: ModernAttackLabProps) {
         <span className="font-display font-semibold text-amber-300 flex items-center gap-1.5">
           {exhibitId === 'aes' ? (
             <>
-              <ShieldAlert className="w-3.5 h-3.5" /> AES-CBC Bit-Flipping Forge
+              <ShieldAlert className="w-3.5 h-3.5" />{' '}
+              {aesMode === 'bitflip' ? 'AES-CBC Bit-Flipping Forge' : 'AES-CBC Padding Oracle'}
+            </>
+          ) : exhibitId === 'ecc' ? (
+            <>
+              <KeyRound className="w-3.5 h-3.5" /> ECDSA Nonce-Reuse Key Recovery
             </>
           ) : (
             <>
@@ -160,6 +218,30 @@ export function ModernAttackLab({ exhibitId }: ModernAttackLabProps) {
 
       {exhibitId === 'aes' ? (
         <div className="space-y-2.5">
+          <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-[#090b10] border border-stone-800">
+            <button
+              type="button"
+              data-testid="aes-mode-bitflip"
+              onClick={() => setAesMode('bitflip')}
+              className={`py-1 rounded text-[11px] font-semibold ${
+                aesMode === 'bitflip' ? 'bg-amber-500 text-stone-950' : 'text-stone-300'
+              }`}
+            >
+              CBC Bit-Flipping
+            </button>
+            <button
+              type="button"
+              data-testid="aes-mode-padding-oracle"
+              onClick={() => setAesMode('padding-oracle')}
+              className={`py-1 rounded text-[11px] font-semibold ${
+                aesMode === 'padding-oracle' ? 'bg-amber-500 text-stone-950' : 'text-stone-300'
+              }`}
+            >
+              Padding Oracle
+            </button>
+          </div>
+          {aesMode === 'bitflip' ? (
+            <>
           <div>
             <label
               htmlFor="cbc-plaintext"
@@ -209,6 +291,45 @@ export function ModernAttackLab({ exhibitId }: ModernAttackLabProps) {
                 className="w-full px-2 py-1.5 rounded bg-[#1a1714] border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               />
             </div>
+          </div>
+            </>
+          ) : (
+            <div>
+              <label htmlFor="oracle-plaintext" className="block text-[11px] text-stone-300 mb-1">
+                Target Secret Plaintext (≤ 32 bytes)
+              </label>
+              <input
+                id="oracle-plaintext"
+                data-testid="oracle-plaintext"
+                type="text"
+                value={oraclePlaintext}
+                onChange={(e) => setOraclePlaintext(e.target.value)}
+                className="w-full px-2.5 py-1.5 rounded-lg bg-[#1a1714] border border-stone-800 text-amber-300 font-mono text-xs"
+              />
+            </div>
+          )}
+        </div>
+      ) : exhibitId === 'ecc' ? (
+        <div className="space-y-2">
+          <div>
+            <label htmlFor="ecc-msg1" className="block text-[11px] text-stone-300 mb-1">Message 1 (signed with nonce k)</label>
+            <input
+              id="ecc-msg1"
+              type="text"
+              value={eccMsg1}
+              onChange={(e) => setEccMsg1(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg bg-[#1a1714] border border-stone-800 text-stone-100 font-mono text-xs"
+            />
+          </div>
+          <div>
+            <label htmlFor="ecc-msg2" className="block text-[11px] text-stone-300 mb-1">Message 2 (signed with same k)</label>
+            <input
+              id="ecc-msg2"
+              type="text"
+              value={eccMsg2}
+              onChange={(e) => setEccMsg2(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg bg-[#1a1714] border border-stone-800 text-amber-300 font-mono text-xs"
+            />
           </div>
         </div>
       ) : (
@@ -291,7 +412,15 @@ export function ModernAttackLab({ exhibitId }: ModernAttackLabProps) {
         className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       >
         {loading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-stone-950" />}
-        <span>{exhibitId === 'aes' ? 'Flip Ciphertext Bits & Decrypt' : 'Factor Modulus & Recover d'}</span>
+        <span>
+          {exhibitId === 'aes'
+            ? aesMode === 'bitflip'
+              ? 'Flip Ciphertext Bits & Decrypt'
+              : 'Run Byte-by-Byte Padding Oracle'
+            : exhibitId === 'ecc'
+            ? 'Extract Private Key from Reused Nonce'
+            : 'Factor Modulus & Recover d'}
+        </span>
       </button>
 
       {errorMsg && (
@@ -396,6 +525,32 @@ export function ModernAttackLab({ exhibitId }: ModernAttackLabProps) {
 
           {renderMethodCard('Fermat Factorization', rsaRes.fermat)}
           {renderMethodCard("Pollard's Rho Factorization", rsaRes.pollard_rho)}
+        </div>
+      )}
+
+      {exhibitId === 'aes' && oracleRes && (
+        <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/40 space-y-1.5" data-testid="aes-padding-oracle-results">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-300">
+            <span>Recovered: &quot;{oracleRes.recovered_plaintext}&quot;</span>
+            <span className="font-mono">{oracleRes.oracle_queries} queries</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {oracleRes.steps.slice(0, 8).map((s) => (
+              <span key={s.byte_index} className="px-1.5 py-0.5 rounded bg-[#090b10] font-mono text-[10px] text-amber-300">
+                [{s.byte_index}] {s.recovered_byte_hex} ({s.recovered_char})
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {exhibitId === 'ecc' && eccRes && (
+        <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/40 space-y-1.5 font-mono text-[10px]" data-testid="ecc-nonce-reuse-results">
+          <div className="font-sans text-[11px] font-semibold text-emerald-300">
+            Private Key Recovered: {eccRes.recovered_match ? 'EXACT MATCH' : 'MISMATCH'}
+          </div>
+          <div className="text-stone-300 break-all">Shared r: {eccRes.r.slice(0, 32)}…</div>
+          <div className="text-amber-300 break-all">Recovered d: {eccRes.recovered_private_key.slice(0, 32)}…</div>
         </div>
       )}
     </div>

@@ -4,10 +4,12 @@ const ATTACK_LAB_EXHIBITS = new Set([
   'caesar',
   'affine',
   'vigenere',
+  'substitution',
   'enigma',
   'lorenz',
   'aes',
   'rsa',
+  'ecc',
 ]);
 
 export function hasAttackLab(exhibitId: string): boolean {

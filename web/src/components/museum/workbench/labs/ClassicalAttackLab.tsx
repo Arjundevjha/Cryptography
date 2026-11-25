@@ -68,19 +68,29 @@ interface VigenereResponse {
   };
 }
 
+interface SubstitutionCrackResponse {
+  best_key: string;
+  plaintext: string;
+  score: number;
+  restarts: number;
+  iterations: number;
+}
+
 interface ClassicalAttackLabProps {
-  exhibitId: 'caesar' | 'affine' | 'vigenere';
+  exhibitId: 'caesar' | 'affine' | 'vigenere' | 'substitution';
   initialCiphertext?: string;
   onApplyShift?: (shift: number) => void;
   onApplyAffine?: (a: number, b: number) => void;
   onApplyKey?: (key: string) => void;
 }
 
-const SAMPLE_CIPHERTEXTS: Record<'caesar' | 'affine' | 'vigenere', string> = {
+const SAMPLE_CIPHERTEXTS: Record<'caesar' | 'affine' | 'vigenere' | 'substitution', string> = {
   caesar: 'KHOOR PXVHXP ZRUOG WKLV LV D VHFUHW PHVVDJH',
   affine: 'RCLLA MUPWUM WAPLV THIX IX A XWCPWT MWCXAOW',
   vigenere:
     'LXFOPVEFRNHR LXFOPVEFRNHR ATTACKATDAWN LXFOPVEFRNHR IS THE KEYWORD FOR VIGENERE',
+  substitution:
+    'WKH TXLFN EURZQ IRA MXPSV RYHU WKH ODCB GRJ DQG WKLV PHVVDJH LV EHLQJ FUDFNHG',
 };
 
 export function ClassicalAttackLab({
@@ -106,6 +116,7 @@ export function ClassicalAttackLab({
   const [affineBruteRes, setAffineBruteRes] = useState<AffineBruteforceResponse | null>(null);
   const [affineKnownRes, setAffineKnownRes] = useState<AffineKnownPlaintextResponse | null>(null);
   const [vigenereRes, setVigenereRes] = useState<VigenereResponse | null>(null);
+  const [subRes, setSubRes] = useState<SubstitutionCrackResponse | null>(null);
 
   const handleRunAttack = async () => {
     setLoading(true);
@@ -146,6 +157,12 @@ export function ClassicalAttackLab({
           max_key_length: 12,
         });
         setVigenereRes(data);
+      } else if (exhibitId === 'substitution') {
+        const data = await postCryptanalysis<SubstitutionCrackResponse>(
+          '/api/cryptanalysis/substitution-crack',
+          { ciphertext, restarts: 6, iterations: 350 }
+        );
+        setSubRes(data);
       }
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : 'Attack failed');
@@ -162,6 +179,7 @@ export function ClassicalAttackLab({
           {exhibitId === 'caesar' && 'Caesar Chi-Squared Exhaustive Attack'}
           {exhibitId === 'affine' && 'Affine Brute-Force & Known-Plaintext'}
           {exhibitId === 'vigenere' && 'Vigenère IoC & Kasiski Breaker'}
+          {exhibitId === 'substitution' && 'Substitution Hill-Climbing Solver'}
         </span>
         <button
           type="button"
@@ -496,6 +514,16 @@ export function ClassicalAttackLab({
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {exhibitId === 'substitution' && subRes && (
+        <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/40 space-y-1.5" data-testid="substitution-crack-results">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-300">
+            <span>Recovered Key: <span className="font-mono">{subRes.best_key}</span></span>
+            <span className="font-mono">Score: {subRes.score}</span>
+          </div>
+          <p className="font-mono text-xs text-stone-100 break-words">{subRes.plaintext}</p>
         </div>
       )}
     </div>

@@ -332,4 +332,71 @@ describe('Cryptanalysis Attack Labs', () => {
     rerender(<WorkbenchPanel exhibit={dhExhibit} />);
     expect(screen.queryByRole('tab', { name: /attack lab/i })).not.toBeInTheDocument();
   });
+
+  it('runs Substitution Hill-Climbing, AES-CBC Padding Oracle, and ECDSA Nonce-Reuse labs', async () => {
+    const subExhibit = makeExhibit({ id: 'substitution', name: 'Substitution Cipher', category: 'Classical' });
+    const { rerender } = render(<AttackLabView exhibit={subExhibit} />);
+
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          best_key: 'DEFGHIJKLMNOPQRSTUVWXYZABC',
+          plaintext: 'THE QUICK BROWN FOX',
+          score: 42.5,
+          restarts: 6,
+          iterations: 350,
+        }),
+    }) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(screen.getByTestId('run-attack-substitution'));
+    });
+    expect(screen.getByTestId('substitution-crack-results')).toHaveTextContent('THE QUICK BROWN FOX');
+
+    const aesExhibit = makeExhibit({ id: 'aes', name: 'AES-256', category: 'Modern' });
+    rerender(<AttackLabView exhibit={aesExhibit} />);
+    fireEvent.click(screen.getByTestId('aes-mode-padding-oracle'));
+
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          recovered_plaintext: 'ORACLE SECRET',
+          ciphertext_hex: 'aa',
+          iv_hex: 'bb',
+          block_count: 1,
+          oracle_queries: 1024,
+          steps: [{ byte_index: 15, pad_value: 1, guessed_byte_hex: '01', intermediate_hex: '00', recovered_byte_hex: '54', recovered_char: 'T' }],
+        }),
+    }) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(screen.getByTestId('run-attack-aes'));
+    });
+    expect(screen.getByTestId('aes-padding-oracle-results')).toHaveTextContent('ORACLE SECRET');
+
+    const eccExhibit = makeExhibit({ id: 'ecc', name: 'Elliptic Curve Cryptography', category: 'Modern' });
+    rerender(<AttackLabView exhibit={eccExhibit} />);
+
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          curve: 'secp256r1',
+          actual_private_key: 'a'.repeat(64),
+          recovered_private_key: 'a'.repeat(64),
+          recovered_nonce: 'b'.repeat(64),
+          r: 'c'.repeat(64),
+          s1: '1'.repeat(64),
+          s2: '2'.repeat(64),
+          recovered_match: true,
+        }),
+    }) as jest.Mock;
+
+    await React.act(async () => {
+      fireEvent.click(screen.getByTestId('run-attack-ecc'));
+    });
+    expect(screen.getByTestId('ecc-nonce-reuse-results')).toHaveTextContent('EXACT MATCH');
+  });
 });
