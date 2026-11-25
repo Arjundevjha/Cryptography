@@ -352,6 +352,80 @@ export function StepInspectorView({
     );
   }
 
+  if (exhibitId === 'adfgvx') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-adfgvx">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> ADFGVX Two-Stage Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Polybius 6×6: <span className="text-amber-300">Map A–Z, 0–9 → pairs in &#123;A,D,F,G,V,X&#125;</span></div>
+          <div className="text-stone-300">2. Keyed Grid: <span className="text-amber-300">Write pairs row-wise under transposition key</span></div>
+          <div className="text-emerald-300">3. Readout: Sort key columns alphabetically &amp; concatenate</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exhibitId === 'jefferson-disk') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-jefferson-disk">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> Jefferson Disk Cylinder Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Order Wheels: <span className="text-amber-300">Arrange 36 scrambled disks by shared key</span></div>
+          <div className="text-stone-300">2. Align Plaintext: <span className="text-amber-300">Rotate each disk to spell message</span></div>
+          <div className="text-emerald-300">3. Read Offset Row: Copy letters k rows down cylinder</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exhibitId === 'aes-gcm') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-aes-gcm">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> AES-GCM AEAD Pipeline
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. GCTR: <span className="text-amber-300">C = P ⊕ AES_K(J0 + 1, J0 + 2, …)</span></div>
+          <div className="text-stone-300">2. GHASH: <span className="text-amber-300">Fold AAD ‖ C ‖ len(AAD) ‖ len(C) in GF(2¹²⁸)</span></div>
+          <div className="text-emerald-300">3. Tag: T = GHASH ⊕ AES_K(J0)</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exhibitId === 'lamport-merkle') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-lamport-merkle">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> Lamport-Merkle Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Lamport OTS: <span className="text-amber-300">Reveal sk[i][bit_i] for each SHA-256 bit</span></div>
+          <div className="text-stone-300">2. Leaf Hash: <span className="text-amber-300">L_k = H(pk_0 ‖ pk_1 ‖ …)</span></div>
+          <div className="text-emerald-300">3. Auth Path: Climb sibling hashes to Merkle Root</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exhibitId === 'hkdf') {
+    return (
+      <div className="space-y-3" data-testid="step-inspector-hkdf">
+        <div className="text-xs font-display font-semibold text-amber-300 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5" /> RFC 5869 HKDF Steps
+        </div>
+        <div className="p-3 rounded-xl bg-[#090b10] border border-stone-800 space-y-2 text-xs font-mono">
+          <div className="text-stone-300">1. Extract: <span className="text-amber-300">PRK = HMAC-SHA256(salt, IKM)</span></div>
+          <div className="text-emerald-300">2. Expand: T(i) = HMAC(PRK, T(i-1) ‖ info ‖ i)</div>
+        </div>
+      </div>
+    );
+  }
+
   // Generic character-level inspector for Caesar & other exhibits
   const previewChars = (inputText || 'HELLO').slice(0, 8).split('');
   return (

@@ -247,4 +247,52 @@ describe('New Modern Cryptography Exhibits (ecc & otp-chacha20)', () => {
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent('Could not reach encryption server — is the API running?');
   });
+
+  it('registers, builds 3D meshes, and renders workbenches for adfgvx, jefferson-disk, aes-gcm, lamport-merkle, and hkdf', async () => {
+    const newIds = ['adfgvx', 'jefferson-disk', 'aes-gcm', 'lamport-merkle', 'hkdf'] as const;
+    for (const id of newIds) {
+      const exhibit = MUSEUM_EXHIBITS.find((e) => e.id === id);
+      expect(exhibit).toBeDefined();
+      expect(exhibit!.cameraPosition[2]).toBeCloseTo(exhibit!.position[2] + 3.5, 5);
+      for (const other of MUSEUM_EXHIBITS) {
+        if (other.id === exhibit!.id) continue;
+        const dx = Math.abs(exhibit!.position[0] - other.position[0]);
+        const dz = Math.abs(exhibit!.position[2] - other.position[2]);
+        expect(dx >= 14 || dz >= 12).toBe(true);
+      }
+      expect(EXHIBIT_ART_SPECS[id]).toBeDefined();
+    }
+
+    for (const modId of ['aes-gcm', 'lamport-merkle', 'hkdf'] as const) {
+      const grp = new THREE.Group();
+      const handle = buildModernNewExhibit(modId, grp);
+      expect(handle).not.toBeNull();
+      expect(grp.children.length).toBeGreaterThan(0);
+      expect(() => updateModernNewExhibit(handle, 1.0)).not.toThrow();
+    }
+
+    const adfgvxEx = MUSEUM_EXHIBITS.find((e) => e.id === 'adfgvx')!;
+    const { unmount } = render(<WorkbenchPanel exhibit={adfgvxEx} />);
+    expect(screen.getByTestId('adfgvx-view')).toBeInTheDocument();
+    unmount();
+
+    const jeffersonEx = MUSEUM_EXHIBITS.find((e) => e.id === 'jefferson-disk')!;
+    const jRender = render(<WorkbenchPanel exhibit={jeffersonEx} />);
+    expect(screen.getByTestId('jefferson-disk-view')).toBeInTheDocument();
+    jRender.unmount();
+
+    const gcmEx = MUSEUM_EXHIBITS.find((e) => e.id === 'aes-gcm')!;
+    const gRender = render(<WorkbenchPanel exhibit={gcmEx} />);
+    expect(screen.getByTestId('aes-gcm-view')).toBeInTheDocument();
+    gRender.unmount();
+
+    const lamportEx = MUSEUM_EXHIBITS.find((e) => e.id === 'lamport-merkle')!;
+    const lRender = render(<WorkbenchPanel exhibit={lamportEx} />);
+    expect(screen.getByTestId('lamport-merkle-view')).toBeInTheDocument();
+    lRender.unmount();
+
+    const hkdfEx = MUSEUM_EXHIBITS.find((e) => e.id === 'hkdf')!;
+    render(<WorkbenchPanel exhibit={hkdfEx} />);
+    expect(screen.getByTestId('hkdf-view')).toBeInTheDocument();
+  });
 });

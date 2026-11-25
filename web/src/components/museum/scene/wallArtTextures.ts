@@ -276,6 +276,71 @@ export const EXHIBIT_ART_SPECS: Record<string, ExhibitArtSpec> = {
     cryptanalysisNote:
       'Compromising k shares immediately recovers f(0); non-prime moduli or biased coefficients weaken information-theoretic security.',
   },
+  adfgvx: {
+    id: 'adfgvx',
+    title: 'ADFGVX Cipher',
+    category: 'Historical',
+    motif: '6x6 Polybius Grid & Columnar Transposition',
+    accentColor: '#365314',
+    secondaryColor: '#a3e635',
+    formula: 'M -> {A,D,F,G,V,X}^2 -> Keyed Columnar Readout',
+    historicalFact:
+      'Used by the German Army in 1918 and famously broken by French cryptanalyst Georges Painvin before the Second Battle of the Marne.',
+    cryptanalysisNote:
+      'Repeated transposition keys and stereotyped message headers reveal column boundaries and enable anagramming.',
+  },
+  'jefferson-disk': {
+    id: 'jefferson-disk',
+    title: 'Jefferson Disk',
+    category: 'Historical',
+    motif: '36-Wheel Bazeries Cipher Cylinder',
+    accentColor: '#5c220e',
+    secondaryColor: '#fb923c',
+    formula: 'C_i = Wheel_{order[i]}[(pos(P_i) + offset) mod 26]',
+    historicalFact:
+      'Invented by Thomas Jefferson around 1795 and later adopted by the U.S. Army as the M-94 cipher device.',
+    cryptanalysisNote:
+      'Reusing the same wheel ordering across many messages allows known-plaintext cribs to reconstruct wheel alphabets.',
+  },
+  'aes-gcm': {
+    id: 'aes-gcm',
+    title: 'AES-GCM (AEAD)',
+    category: 'Modern',
+    motif: 'AES-CTR Confidentiality + GHASH GF(2^128) Tag',
+    accentColor: '#0e4f5c',
+    secondaryColor: '#22d3ee',
+    formula: 'Tag = GHASH(H, AAD, C) xor E_K(J0)',
+    historicalFact:
+      'Standardized in NIST SP 800-38D (2007); AES-GCM provides both confidentiality and integrity in TLS 1.3 and QUIC.',
+    cryptanalysisNote:
+      'Nonce reuse under the same key leaks the GHASH authentication key H, allowing universal tag forgery.',
+  },
+  'lamport-merkle': {
+    id: 'lamport-merkle',
+    title: 'Lamport-Merkle Signatures',
+    category: 'Modern',
+    motif: 'One-Time Hash Signatures & Merkle Auth Path',
+    accentColor: '#3b1675',
+    secondaryColor: '#c084fc',
+    formula: 'Root = H(H(L0 || L1) || H(L2 || L3))',
+    historicalFact:
+      'Invented in 1979 by Leslie Lamport and Ralph Merkle; hash-based signatures resist quantum attacks and underpin NIST FIPS 205.',
+    cryptanalysisNote:
+      'Signing two distinct messages with the same Lamport leaf exposes private preimages and enables forgery.',
+  },
+  hkdf: {
+    id: 'hkdf',
+    title: 'HKDF Key Derivation',
+    category: 'Modern',
+    motif: 'RFC 5869 Extract-then-Expand Funnel',
+    accentColor: '#59153b',
+    secondaryColor: '#f472b6',
+    formula: 'PRK = HMAC(salt, IKM) -> OKM = Expand(PRK, info, L)',
+    historicalFact:
+      'Standardized in RFC 5869 (2010) by Hugo Krawczyk; HKDF powers the key schedules of TLS 1.3 and Signal.',
+    cryptanalysisNote:
+      'Omitting context info strings or skipping Extract on biased secrets risks cross-protocol key collisions.',
+  },
 };
 
 const textureCache = new Map<string, THREE.CanvasTexture>();

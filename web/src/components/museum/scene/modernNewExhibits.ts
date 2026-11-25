@@ -6,7 +6,13 @@ export interface ModernArtifactMaterials {
 }
 
 export interface ModernExhibitAnimationHandle {
-  exhibitId: 'ecc' | 'otp-chacha20' | 'shamir-secret-sharing';
+  exhibitId:
+    | 'ecc'
+    | 'otp-chacha20'
+    | 'shamir-secret-sharing'
+    | 'aes-gcm'
+    | 'lamport-merkle'
+    | 'hkdf';
   update: (elapsed: number) => void;
 }
 
@@ -286,8 +292,130 @@ function buildShamirArtifact(
   };
 }
 
+function buildAesGcmArtifact(
+  group: THREE.Group,
+  materials?: ModernArtifactMaterials
+): ModernExhibitAnimationHandle {
+  const obsidian = materials?.obsidian ?? createDefaultObsidian();
+  const polishedGold = materials?.polishedGold ?? createDefaultPolishedGold();
+
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.62, 0.09, 32), obsidian);
+  base.position.y = -0.44;
+  group.add(base);
+
+  const core = new THREE.Mesh(
+    new THREE.BoxGeometry(0.36, 0.36, 0.36),
+    new THREE.MeshStandardMaterial({
+      color: 0x06b6d4,
+      emissive: 0x0891b2,
+      emissiveIntensity: 0.9,
+      roughness: 0.2,
+      metalness: 0.45,
+    })
+  );
+  core.position.y = 0.06;
+  group.add(core);
+
+  const ghashRing = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.02, 14, 48), polishedGold);
+  ghashRing.position.y = 0.06;
+  ghashRing.rotation.x = Math.PI / 3;
+  group.add(ghashRing);
+
+  return {
+    exhibitId: 'aes-gcm',
+    update: (elapsed: number) => {
+      core.rotation.y = elapsed * 0.6;
+      ghashRing.rotation.z = elapsed * 0.9;
+    },
+  };
+}
+
+function buildLamportMerkleArtifact(
+  group: THREE.Group,
+  materials?: ModernArtifactMaterials
+): ModernExhibitAnimationHandle {
+  const obsidian = materials?.obsidian ?? createDefaultObsidian();
+  const polishedGold = materials?.polishedGold ?? createDefaultPolishedGold();
+
+  const base = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.09, 0.6), obsidian);
+  base.position.y = -0.44;
+  group.add(base);
+
+  const treeGroup = new THREE.Group();
+  group.add(treeGroup);
+
+  const nodeMat = new THREE.MeshStandardMaterial({
+    color: 0xa855f7,
+    emissive: 0x7e22ce,
+    emissiveIntensity: 0.95,
+    roughness: 0.18,
+  });
+
+  const root = new THREE.Mesh(new THREE.OctahedronGeometry(0.09, 0), polishedGold);
+  root.position.set(0, 0.38, 0);
+  treeGroup.add(root);
+
+  [-0.22, 0.22].forEach((x) => {
+    const mid = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 16), nodeMat);
+    mid.position.set(x, 0.12, 0);
+    treeGroup.add(mid);
+  });
+
+  [-0.34, -0.1, 0.1, 0.34].forEach((x) => {
+    const leaf = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.08), nodeMat);
+    leaf.position.set(x, -0.16, 0);
+    treeGroup.add(leaf);
+  });
+
+  return {
+    exhibitId: 'lamport-merkle',
+    update: (elapsed: number) => {
+      root.rotation.y = elapsed * 1.1;
+      treeGroup.rotation.y = Math.sin(elapsed * 0.4) * 0.25;
+    },
+  };
+}
+
+function buildHkdfArtifact(
+  group: THREE.Group,
+  materials?: ModernArtifactMaterials
+): ModernExhibitAnimationHandle {
+  const obsidian = materials?.obsidian ?? createDefaultObsidian();
+  const polishedGold = materials?.polishedGold ?? createDefaultPolishedGold();
+
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.6, 0.09, 32), obsidian);
+  base.position.y = -0.44;
+  group.add(base);
+
+  const extractCone = new THREE.Mesh(
+    new THREE.ConeGeometry(0.28, 0.32, 24),
+    new THREE.MeshStandardMaterial({
+      color: 0xec4899,
+      emissive: 0xbe185d,
+      emissiveIntensity: 0.85,
+      roughness: 0.2,
+    })
+  );
+  extractCone.rotation.x = Math.PI;
+  extractCone.position.y = 0.22;
+  group.add(extractCone);
+
+  const expandRing = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.018, 12, 40), polishedGold);
+  expandRing.rotation.x = Math.PI / 2;
+  expandRing.position.y = -0.05;
+  group.add(expandRing);
+
+  return {
+    exhibitId: 'hkdf',
+    update: (elapsed: number) => {
+      extractCone.rotation.y = elapsed * 0.7;
+      expandRing.rotation.z = -elapsed * 0.8;
+    },
+  };
+}
+
 /**
- * Dispatcher for the newly added Modern Cryptography exhibits (`ecc`, `otp-chacha20`, `shamir-secret-sharing`).
+ * Dispatcher for the newly added Modern Cryptography exhibits.
  * Returns null for any other exhibitId so callers can fall back cleanly.
  */
 export function buildModernNewExhibit(
@@ -303,6 +431,15 @@ export function buildModernNewExhibit(
   }
   if (exhibitId === 'shamir-secret-sharing') {
     return buildShamirArtifact(group, materials);
+  }
+  if (exhibitId === 'aes-gcm') {
+    return buildAesGcmArtifact(group, materials);
+  }
+  if (exhibitId === 'lamport-merkle') {
+    return buildLamportMerkleArtifact(group, materials);
+  }
+  if (exhibitId === 'hkdf') {
+    return buildHkdfArtifact(group, materials);
   }
   return null;
 }

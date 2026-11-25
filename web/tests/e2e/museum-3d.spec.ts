@@ -23,7 +23,7 @@ test.describe('3D Cryptography Museum E2E Suite', () => {
     expect(box!.height).toBeGreaterThan(200);
 
     await expect(page.getByRole('heading', { name: 'CRYPTOGRAPHY MUSEUM' })).toBeVisible();
-    await expect(page.getByTestId('passport-progress-badge')).toContainText('0/20');
+    await expect(page.getByTestId('passport-progress-badge')).toContainText('0/25');
     await expect(page.getByTestId('api-status-dot')).toBeVisible();
     expect(pageErrors).toEqual([]);
   });
@@ -102,13 +102,13 @@ test.describe('3D Cryptography Museum E2E Suite', () => {
     await expect(tourBar).toBeVisible();
 
     await tourBar.getByRole('button', { name: 'All Wings' }).click();
-    await expect(tourBar).toContainText('Stop 1 of 23');
+    await expect(tourBar).toContainText('Stop 1 of 28');
 
     await tourBar.getByRole('button', { name: 'Next tour stop' }).click();
-    await expect(tourBar).toContainText('Stop 2 of 23');
+    await expect(tourBar).toContainText('Stop 2 of 28');
 
     await tourBar.getByRole('button', { name: 'Previous tour stop' }).click();
-    await expect(tourBar).toContainText('Stop 1 of 23');
+    await expect(tourBar).toContainText('Stop 1 of 28');
 
     await page.keyboard.press('Escape');
     await expect(tourBar).toBeHidden();
@@ -143,10 +143,10 @@ test.describe('3D Cryptography Museum E2E Suite', () => {
     await page.getByTestId('challenge-input-caesar').fill('VENI VIDI VICI');
     await page.getByTestId('challenge-submit-caesar').click();
 
-    await expect(page.getByTestId('passport-progress-badge')).toContainText('1/20');
+    await expect(page.getByTestId('passport-progress-badge')).toContainText('1/25');
 
     await page.reload();
-    await expect(page.getByTestId('passport-progress-badge')).toContainText('1/20');
+    await expect(page.getByTestId('passport-progress-badge')).toContainText('1/25');
   });
 
   test('Mobile viewport responsiveness & touch controls', async ({ page }) => {

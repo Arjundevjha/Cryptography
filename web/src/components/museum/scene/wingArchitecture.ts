@@ -173,6 +173,36 @@ const EXHIBIT_PALETTES: Record<string, Omit<RoomAccentPalette, 'sconceStyle'>> =
     velvetColor: 0x311d6e,
     runnerColor: 0x2a1b5c,
   },
+  adfgvx: {
+    accentHex: 0x65a30d,
+    accentColor: '#65a30d',
+    velvetColor: 0x365314,
+    runnerColor: 0x2d4412,
+  },
+  'jefferson-disk': {
+    accentHex: 0xea580c,
+    accentColor: '#ea580c',
+    velvetColor: 0x6c2710,
+    runnerColor: 0x5c220e,
+  },
+  'aes-gcm': {
+    accentHex: 0x06b6d4,
+    accentColor: '#06b6d4',
+    velvetColor: 0x0e4f5c,
+    runnerColor: 0x10434d,
+  },
+  'lamport-merkle': {
+    accentHex: 0xa855f7,
+    accentColor: '#a855f7',
+    velvetColor: 0x4c1d95,
+    runnerColor: 0x3b1675,
+  },
+  hkdf: {
+    accentHex: 0xec4899,
+    accentColor: '#ec4899',
+    velvetColor: 0x6b1846,
+    runnerColor: 0x59153b,
+  },
 };
 
 function toHexString(hex: number): string {

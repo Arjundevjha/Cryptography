@@ -592,4 +592,13 @@ export const MODERN_EXHIBIT_BUILDERS: Record<string, ExhibitArtifactBuilder> = {
   'shamir-secret-sharing': (group, m) => {
     buildModernNewExhibit('shamir-secret-sharing', group, m);
   },
+  'aes-gcm': (group, m) => {
+    buildModernNewExhibit('aes-gcm', group, m);
+  },
+  'lamport-merkle': (group, m) => {
+    buildModernNewExhibit('lamport-merkle', group, m);
+  },
+  hkdf: (group, m) => {
+    buildModernNewExhibit('hkdf', group, m);
+  },
 };

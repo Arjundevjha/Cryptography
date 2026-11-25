@@ -28,6 +28,11 @@ import { PostQuantumKemView } from './PostQuantumKemView';
 import { EccView } from './EccView';
 import { StreamCipherView } from './StreamCipherView';
 import { ShamirView } from './ShamirView';
+import { AdfgvxView } from './AdfgvxView';
+import { JeffersonDiskView } from './JeffersonDiskView';
+import { AesGcmView } from './AesGcmView';
+import { LamportMerkleView } from './LamportMerkleView';
+import { HkdfView } from './HkdfView';
 import { AttackLabView } from './labs/AttackLabView';
 import { hasAttackLab } from './labs/labApi';
 
@@ -304,7 +309,12 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
     exhibit.id === 'post-quantum-kem' ||
     exhibit.id === 'ecc' ||
     exhibit.id === 'otp-chacha20' ||
-    exhibit.id === 'shamir-secret-sharing';
+    exhibit.id === 'shamir-secret-sharing' ||
+    exhibit.id === 'adfgvx' ||
+    exhibit.id === 'jefferson-disk' ||
+    exhibit.id === 'aes-gcm' ||
+    exhibit.id === 'lamport-merkle' ||
+    exhibit.id === 'hkdf';
 
   const visibleTabs: WorkbenchTab[] = [
     'workbench',
@@ -474,6 +484,16 @@ export function WorkbenchPanel({ exhibit }: WorkbenchPanelProps) {
             <StreamCipherView />
           ) : exhibit.id === 'shamir-secret-sharing' ? (
             <ShamirView />
+          ) : exhibit.id === 'adfgvx' ? (
+            <AdfgvxView />
+          ) : exhibit.id === 'jefferson-disk' ? (
+            <JeffersonDiskView />
+          ) : exhibit.id === 'aes-gcm' ? (
+            <AesGcmView />
+          ) : exhibit.id === 'lamport-merkle' ? (
+            <LamportMerkleView />
+          ) : exhibit.id === 'hkdf' ? (
+            <HkdfView />
           ) : (
             <>
           {/* Input Field */}

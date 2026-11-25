@@ -254,4 +254,46 @@ function buildLorenzArtifact(group: THREE.Group, m: ArtifactMaterialSet) {
 export const HISTORICAL_EXHIBIT_BUILDERS: Record<string, ExhibitArtifactBuilder> = {
   enigma: buildEnigmaArtifact,
   lorenz: buildLorenzArtifact,
+  adfgvx: (group, materials) => {
+    const { obsidian, antiqueBrass, brushedSteel, agedBronze } = materials;
+    const base = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.08, 0.68), agedBronze);
+    base.position.y = -0.44;
+    group.add(base);
+
+    const gridBoard = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.56, 0.06), obsidian);
+    gridBoard.position.set(0, 0.14, -0.14);
+    gridBoard.rotation.x = -0.18;
+    group.add(gridBoard);
+
+    const cellGeo = new THREE.BoxGeometry(0.07, 0.06, 0.03);
+    for (let r = 0; r < 6; r++) {
+      for (let c = 0; c < 6; c++) {
+        const cell = new THREE.Mesh(cellGeo, (r + c) % 2 === 0 ? antiqueBrass : brushedSteel);
+        cell.position.set((c - 2.5) * 0.095, 0.14 + (2.5 - r) * 0.075, -0.1);
+        group.add(cell);
+      }
+    }
+
+    const telegraphBase = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.05, 24), antiqueBrass);
+    telegraphBase.position.set(0, -0.36, 0.22);
+    group.add(telegraphBase);
+  },
+  'jefferson-disk': (group, materials) => {
+    const { obsidian, polishedGold, agedBronze, antiqueBrass } = materials;
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.48, 0.08, 32), obsidian);
+    base.position.y = -0.44;
+    group.add(base);
+
+    const spindle = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.92, 16), polishedGold);
+    spindle.position.y = 0.04;
+    group.add(spindle);
+
+    const wheelGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.055, 26);
+    for (let i = 0; i < 10; i++) {
+      const wheel = new THREE.Mesh(wheelGeo, i % 2 === 0 ? agedBronze : antiqueBrass);
+      wheel.position.y = -0.3 + i * 0.07;
+      wheel.rotation.y = i * 0.35;
+      group.add(wheel);
+    }
+  },
 };
