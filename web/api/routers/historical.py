@@ -224,3 +224,69 @@ def lorenz_decrypt(data: LorenzDecryptInput):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Decryption failed"
         )
+
+
+class AdfgvxInput(BaseModel):
+    text: str = Field(..., min_length=1, max_length=500, description="Plaintext or ADFGVX ciphertext")
+    transposition_key: str = Field(default="PRIVACY", min_length=1, max_length=32)
+    square_key: str | None = Field(default=None, max_length=36)
+
+
+class JeffersonInput(BaseModel):
+    text: str = Field(..., min_length=1, max_length=500, description="Plaintext or ciphertext")
+    wheel_order: list[int] | None = Field(default=None, max_length=36)
+    offset: int = Field(default=1, ge=1, le=25)
+
+
+@router.post("/api/adfgvx/encrypt")
+def adfgvx_encrypt_endpoint(data: AdfgvxInput):
+    from methods.historical import adfgvx
+
+    try:
+        sq = data.square_key if data.square_key else adfgvx.DEFAULT_SQUARE
+        return adfgvx.adfgvx_encrypt(data.text, data.transposition_key, square_key=sq)
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ADFGVX encrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="ADFGVX encryption failed")
+
+
+@router.post("/api/adfgvx/decrypt")
+def adfgvx_decrypt_endpoint(data: AdfgvxInput):
+    from methods.historical import adfgvx
+
+    try:
+        sq = data.square_key if data.square_key else adfgvx.DEFAULT_SQUARE
+        return adfgvx.adfgvx_decrypt(data.text, data.transposition_key, square_key=sq)
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ADFGVX decrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="ADFGVX decryption failed")
+
+
+@router.post("/api/jefferson/encrypt")
+def jefferson_encrypt_endpoint(data: JeffersonInput):
+    from methods.historical import jefferson_disk
+
+    try:
+        return jefferson_disk.jefferson_encrypt(data.text, wheel_order=data.wheel_order, offset=data.offset)
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("Jefferson encrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="Jefferson Disk encryption failed")
+
+
+@router.post("/api/jefferson/decrypt")
+def jefferson_decrypt_endpoint(data: JeffersonInput):
+    from methods.historical import jefferson_disk
+
+    try:
+        return jefferson_disk.jefferson_decrypt(data.text, wheel_order=data.wheel_order, offset=data.offset)
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("Jefferson decrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="Jefferson Disk decryption failed")

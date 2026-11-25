@@ -3290,6 +3290,107 @@ def test_shamir_validation_errors():
     )
 
 
+# ==========================================
+# NEW HISTORICAL, MODERN/PQ & ATTACK LAB TESTS
+# ==========================================
+
+
+def test_adfgvx_and_jefferson_endpoints():
+    adfgvx_enc = client.post(
+        "/api/adfgvx/encrypt",
+        json={"text": "ATTACK AT 1200", "transposition_key": "PRIVACY"},
+    )
+    assert adfgvx_enc.status_code == 200
+    ct = adfgvx_enc.json()["ciphertext"]
+    adfgvx_dec = client.post(
+        "/api/adfgvx/decrypt",
+        json={"text": ct, "transposition_key": "PRIVACY"},
+    )
+    assert adfgvx_dec.status_code == 200
+    assert adfgvx_dec.json()["plaintext"] == "ATTACKAT1200"
+
+    assert client.post("/api/adfgvx/decrypt", json={"text": "BAD", "transposition_key": "KEY"}).status_code == 400
+
+    j_enc = client.post("/api/jefferson/encrypt", json={"text": "RETREAT", "offset": 5})
+    assert j_enc.status_code == 200
+    j_dec = client.post("/api/jefferson/decrypt", json={"text": j_enc.json()["ciphertext"], "offset": 5})
+    assert j_dec.status_code == 200
+    assert j_dec.json()["plaintext"] == "RETREAT"
+    assert len(j_dec.json()["all_rows"]) == 25
+
+
+def test_aes_gcm_lamport_and_hkdf_endpoints():
+    key = "0123456789abcdef0123456789abcdef"
+    gcm_enc = client.post(
+        "/api/aes-gcm/encrypt",
+        json={"plaintext": "AEAD Message", "key": key, "aad": "header=v1"},
+    )
+    assert gcm_enc.status_code == 200
+    enc_data = gcm_enc.json()
+
+    gcm_dec = client.post(
+        "/api/aes-gcm/decrypt",
+        json={
+            "ciphertext_hex": enc_data["ciphertext_hex"],
+            "key": key,
+            "nonce_hex": enc_data["nonce_hex"],
+            "tag_hex": enc_data["tag_hex"],
+            "aad": "header=v1",
+        },
+    )
+    assert gcm_dec.status_code == 200
+    assert gcm_dec.json()["valid"] is True
+    assert gcm_dec.json()["plaintext"] == "AEAD Message"
+
+    gcm_tamper = client.post(
+        "/api/aes-gcm/decrypt",
+        json={
+            "ciphertext_hex": enc_data["ciphertext_hex"],
+            "key": key,
+            "nonce_hex": enc_data["nonce_hex"],
+            "tag_hex": enc_data["tag_hex"],
+            "aad": "header=tampered",
+        },
+    )
+    assert gcm_tamper.status_code == 200
+    assert gcm_tamper.json()["valid"] is False
+
+    lamport = client.post("/api/lamport/demo", json={"message": "Quantum Seal", "leaf_index": 1})
+    assert lamport.status_code == 200
+    assert lamport.json()["valid"] is True
+    assert lamport.json()["tampered_valid"] is False
+
+    hkdf_res = client.post(
+        "/api/hkdf/derive",
+        json={"ikm": "0b" * 22, "salt": "", "info": "session", "length": 42, "ikm_format": "hex"},
+    )
+    assert hkdf_res.status_code == 200
+    assert len(hkdf_res.json()["okm_hex"]) == 84
+
+
+def test_new_cryptanalysis_endpoints():
+    ecdsa = client.post(
+        "/api/cryptanalysis/ecdsa-nonce-reuse",
+        json={"message1": "msg one", "message2": "msg two"},
+    )
+    assert ecdsa.status_code == 200
+    assert ecdsa.json()["recovered_match"] is True
+
+    oracle = client.post(
+        "/api/cryptanalysis/padding-oracle",
+        json={"plaintext": "ORACLE"},
+    )
+    assert oracle.status_code == 200
+    assert oracle.json()["recovered_plaintext"] == "ORACLE"
+
+    sub = client.post(
+        "/api/cryptanalysis/substitution-crack",
+        json={"ciphertext": "WKH TXLFN EURZQ IRA MXPSV RYHU WKH ODCB GRJ", "restarts": 3, "iterations": 150},
+    )
+    assert sub.status_code == 200
+    assert len(sub.json()["best_key"]) == 26
+
+
 
 
 

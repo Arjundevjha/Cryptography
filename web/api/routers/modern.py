@@ -1120,3 +1120,118 @@ def shamir_reconstruct_endpoint(data: ShamirReconstructInput):
     except Exception as e:
         logger.error("Shamir reconstruct error: %s", e)
         raise HTTPException(status_code=400, detail="Shamir secret reconstruction failed")
+
+
+class AesGcmEncryptInput(BaseModel):
+    plaintext: str = Field(..., max_length=500)
+    key: str = Field(..., min_length=16, max_length=128)
+    aad: str = Field(default="", max_length=256)
+    key_format: str = Field(default="text", max_length=10)
+
+
+class AesGcmDecryptInput(BaseModel):
+    ciphertext_hex: str = Field(..., max_length=2000)
+    key: str = Field(..., min_length=16, max_length=128)
+    nonce_hex: str = Field(..., min_length=24, max_length=24)
+    tag_hex: str = Field(..., min_length=32, max_length=32)
+    aad: str = Field(default="", max_length=256)
+    key_format: str = Field(default="text", max_length=10)
+
+
+class LamportDemoInput(BaseModel):
+    message: str = Field(..., min_length=1, max_length=500)
+    leaf_index: int = Field(default=0, ge=0, le=3)
+    tamper_message: str | None = Field(default=None, max_length=500)
+
+
+class HkdfDeriveInput(BaseModel):
+    ikm: str = Field(..., min_length=1, max_length=500)
+    salt: str = Field(default="", max_length=256)
+    info: str = Field(default="", max_length=256)
+    length: int = Field(default=32, ge=1, le=256)
+    ikm_format: str = Field(default="text", max_length=10)
+
+
+@router.post("/api/aes-gcm/encrypt")
+def aes_gcm_encrypt_endpoint(data: AesGcmEncryptInput):
+    from methods.modern import aead
+
+    try:
+        key_bytes = parse_aes_key(data.key, data.key_format)
+        return aead.aes_gcm_encrypt(data.plaintext, key_bytes, aad=data.aad.encode("utf-8"))
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("AES-GCM encrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="AES-GCM encryption failed")
+
+
+@router.post("/api/aes-gcm/decrypt")
+def aes_gcm_decrypt_endpoint(data: AesGcmDecryptInput):
+    from methods.modern import aead
+
+    try:
+        key_bytes = parse_aes_key(data.key, data.key_format)
+        try:
+            ct_bytes = bytes.fromhex(data.ciphertext_hex.strip())
+            nonce_bytes = bytes.fromhex(data.nonce_hex.strip())
+            tag_bytes = bytes.fromhex(data.tag_hex.strip())
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail="ciphertext_hex, nonce_hex, and tag_hex must be valid hex") from ve
+        return aead.aes_gcm_decrypt(ct_bytes, key_bytes, nonce_bytes, tag_bytes, aad=data.aad.encode("utf-8"))
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("AES-GCM decrypt error: %s", e)
+        raise HTTPException(status_code=400, detail="AES-GCM decryption failed")
+
+
+@router.post("/api/lamport/demo")
+def lamport_demo_endpoint(data: LamportDemoInput):
+    from methods.modern import hash_signatures
+
+    try:
+        return hash_signatures.lamport_merkle_demo(
+            message=data.message,
+            leaf_index=data.leaf_index,
+            tamper_message=data.tamper_message,
+        )
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("Lamport Merkle demo error: %s", e)
+        raise HTTPException(status_code=400, detail="Lamport Merkle demo failed")
+
+
+@router.post("/api/hkdf/derive")
+def hkdf_derive_endpoint(data: HkdfDeriveInput):
+    from methods.modern import kdf
+
+    try:
+        fmt = data.ikm_format.strip().lower()
+        if fmt not in ("text", "hex"):
+            raise HTTPException(status_code=400, detail="ikm_format must be 'text' or 'hex'")
+        if fmt == "hex":
+            try:
+                ikm_bytes = bytes.fromhex(data.ikm.strip())
+            except ValueError as ve:
+                raise HTTPException(status_code=400, detail="ikm must be valid hex") from ve
+        else:
+            ikm_bytes = data.ikm.encode("utf-8")
+        return kdf.hkdf_derive(
+            ikm=ikm_bytes,
+            salt=data.salt.encode("utf-8"),
+            info=data.info.encode("utf-8"),
+            length=data.length,
+        )
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("HKDF derive error: %s", e)
+        raise HTTPException(status_code=400, detail="HKDF derivation failed")

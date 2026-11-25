@@ -203,3 +203,61 @@ def cryptanalysis_rsa_factor_endpoint(data: CryptanalysisRsaFactorInput):
     except Exception as e:
         logger.error("RSA factor cryptanalysis error: %s", e)
         raise HTTPException(status_code=400, detail="RSA factorization failed")
+
+
+class CryptanalysisEcdsaNonceReuseInput(BaseModel):
+    message1: str = Field(..., min_length=1, max_length=500)
+    message2: str = Field(..., min_length=1, max_length=500)
+
+
+class CryptanalysisPaddingOracleInput(BaseModel):
+    plaintext: str = Field(..., min_length=1, max_length=32)
+
+
+class CryptanalysisSubstitutionCrackInput(BaseModel):
+    ciphertext: str = Field(..., min_length=1, max_length=10000)
+    restarts: int = Field(default=6, ge=1, le=20)
+    iterations: int = Field(default=350, ge=50, le=2000)
+
+
+@router.post("/api/cryptanalysis/ecdsa-nonce-reuse")
+def cryptanalysis_ecdsa_nonce_reuse_endpoint(data: CryptanalysisEcdsaNonceReuseInput):
+    from methods.modern import cryptanalysis as modern_ca
+
+    try:
+        return modern_ca.ecdsa_nonce_reuse_attack(data.message1, data.message2)
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("ECDSA nonce reuse attack error: %s", e)
+        raise HTTPException(status_code=400, detail="ECDSA nonce reuse attack failed")
+
+
+@router.post("/api/cryptanalysis/padding-oracle")
+def cryptanalysis_padding_oracle_endpoint(data: CryptanalysisPaddingOracleInput):
+    from methods.modern import cryptanalysis as modern_ca
+
+    try:
+        return modern_ca.cbc_padding_oracle_attack(data.plaintext)
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("CBC padding oracle attack error: %s", e)
+        raise HTTPException(status_code=400, detail="CBC padding oracle attack failed")
+
+
+@router.post("/api/cryptanalysis/substitution-crack")
+def cryptanalysis_substitution_crack_endpoint(data: CryptanalysisSubstitutionCrackInput):
+    from methods.classical import cryptanalysis as classical_ca
+
+    try:
+        return classical_ca.substitution_hill_climb(
+            data.ciphertext,
+            restarts=data.restarts,
+            iterations=data.iterations,
+        )
+    except (ValueError, TypeError) as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.error("Substitution crack error: %s", e)
+        raise HTTPException(status_code=400, detail="Substitution hill-climb crack failed")
